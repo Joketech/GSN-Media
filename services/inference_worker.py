@@ -63,6 +63,11 @@ def capability():
     return result
 
 def validate(payload):
+    if not isinstance(payload, dict):
+        raise ValueError("Send a JSON object.")
+    request_id = payload.get("request_id")
+    if request_id is not None:
+        job_dir(request_id)
     kind = payload.get("kind")
     if kind not in (("voice",) if KIND == "voice" else ("image", "video")):
         raise ValueError("This worker cannot handle that job type.")
@@ -282,17 +287,22 @@ class Handler(BaseHTTPRequestHandler):
             if not 0 < length <= MAX_BODY:
                 return self.json_response(413, {"error": "Request must be under 30 MB."})
             payload = validate(json.loads(self.rfile.read(length)))
-            health = capability()
-            if not health["ready"]:
-                return self.json_response(503, {"error": health["message"]})
-            states = [json.loads(p.read_text()).get("state") for p in JOBS.glob("*/status.json")]
-            if sum(s not in ("complete", "failed", "interrupted") for s in states) >= 3:
-                return self.json_response(429, {"error": "Worker queue is full. Wait for an active job to finish."})
-            job_id = str(uuid.uuid4())
-            job_dir(job_id).mkdir()
-            state = update(job_id, state="queued", kind=payload["kind"], created_at=time.time(),
-                           message="Queued. Model weights are downloaded only if needed.")
-            EXECUTOR.submit(run, job_id, payload)
+            with LOCK:
+                request_id = payload.get("request_id")
+                records = [json.loads(p.read_text()) for p in JOBS.glob("*/status.json")]
+                previous = next((p for p in records if request_id and p.get("request_id") == request_id), None)
+                if previous:
+                    return self.json_response(202, previous)
+                health = capability()
+                if not health["ready"]:
+                    return self.json_response(503, {"error": health["message"]})
+                if sum(p.get("state") not in ("complete", "failed", "interrupted") for p in records) >= 3:
+                    return self.json_response(429, {"error": "Worker queue is full. Wait for an active job to finish."})
+                job_id = str(uuid.uuid4())
+                job_dir(job_id).mkdir()
+                state = update(job_id, state="queued", kind=payload["kind"], request_id=request_id, created_at=time.time(),
+                               message="Queued. Model weights are downloaded only if needed.")
+                EXECUTOR.submit(run, job_id, payload)
             self.json_response(202, state)
         except (ValueError, json.JSONDecodeError) as exc:
             self.json_response(400, {"error": str(exc)})

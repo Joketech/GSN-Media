@@ -5,3 +5,6 @@ models/
 __pycache__/
 *.pyc
 *.log
+.gsn-agent.env
+.gsn-test-*/
+.gsn-worker-test-*/

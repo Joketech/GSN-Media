@@ -17,7 +17,15 @@ jobs:
           node --check studio.js
           node --check ai-studio.js
           node --check ai-proxy.mjs
+          node --check v1-api.mjs
+          node --check v1.js
+          node --check template-engine.mjs
+          node --test tests/v1.test.mjs
           python3 -m py_compile services/inference_worker.py
+          python3 -m py_compile integrations/hermes/gsn.py
+          python3 tests/worker_idempotency.py
+          python3 integrations/hermes/gsn.py --help
           docker compose --profile voice --profile gpu --profile public config --quiet
           bash -n deploy/preflight.sh
           bash -n deploy/update.sh
+          bash -n deploy/setup-v1.sh

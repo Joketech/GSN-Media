@@ -18,6 +18,8 @@ Open `http://localhost:4188`, then **AI creation → Refresh workers**. An offli
 
 ## Server deployment
 
+For v1, read [integrations/hermes/README.md](integrations/hermes/README.md) first. Run `bash deploy/setup-v1.sh` before starting the app. It creates the `GSN_AGENT_TOKEN` access key without displaying it and preserves existing settings. The loopback/SSH-tunnel setup needs no public proxy. The steps below also cover optional future HTTPS hosting.
+
 1. Install Docker Engine/Compose on the Linux host and clone this repository.
 2. Run `bash deploy/preflight.sh` to inspect Docker, RAM, disk, and GPU availability.
 3. Copy `.env.example` to `.env`, set the real domain, and configure DNS.

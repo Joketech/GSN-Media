@@ -1,10 +1,14 @@
 import {handleCreation} from './ai-proxy.mjs';
+import {createV1} from './v1-api.mjs';
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
 const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','media.js','portal.css','portal.js','robot-hand.svg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','documentaries.js','documentary-catalog.json','sample-flower.mp4','ai-studio.js'].map(f=>['/'+f,f])]);
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
+const v1=createV1();
+allowed.set('/','v1.html');allowed.set('/classic','index.html');
+for(const name of ['v1.html','v1.css','v1.js'])allowed.set('/'+name,name);
 export async function synthesize(payload){const voiceProgram=await readFile(new URL('local-voice.ps1',import.meta.url),'utf8');return new Promise((resolve,reject)=>{
  if(process.platform!=='win32')return reject(Error('Offline speech synthesis currently requires Windows. Record or import narration instead.'));
  const child=spawn('powershell.exe',['-NoProfile','-NonInteractive','-Command',voiceProgram],{windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,GSN_VOICE_REQUEST:JSON.stringify(payload)}});
@@ -15,9 +19,11 @@ export async function synthesize(payload){const voiceProgram=await readFile(new 
 })}
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost:4187');
- const permittedHosts=['localhost:4187','127.0.0.1:4187','localhost:4188','127.0.0.1:4188',process.env.SITE_DOMAIN].filter(Boolean);if(!permittedHosts.includes(req.headers.host))return send(res,403,{error:'Invalid local host'});
- if(req.headers.origin&&!['http://localhost:4187','http://127.0.0.1:4187','http://localhost:4188','http://127.0.0.1:4188',process.env.SITE_DOMAIN?'https://'+process.env.SITE_DOMAIN:null].filter(Boolean).includes(req.headers.origin))return send(res,403,{error:'Cross-origin requests are not permitted'});
+ const localPort=Number(process.env.PORT)||4187;
+ const permittedHosts=['localhost:'+localPort,'127.0.0.1:'+localPort,'localhost:4187','127.0.0.1:4187','localhost:4188','127.0.0.1:4188',process.env.SITE_DOMAIN].filter(Boolean);if(!permittedHosts.includes(req.headers.host))return send(res,403,{error:'Invalid local host'});
+ if(req.headers.origin&&!['http://localhost:'+localPort,'http://127.0.0.1:'+localPort,'http://localhost:4187','http://127.0.0.1:4187','http://localhost:4188','http://127.0.0.1:4188',process.env.SITE_DOMAIN?'https://'+process.env.SITE_DOMAIN:null].filter(Boolean).includes(req.headers.origin))return send(res,403,{error:'Cross-origin requests are not permitted'});
  if(url.pathname==='/api/health'&&req.method==='GET')return send(res,200,{ok:true,app:'gsn-studio'});
+ if(await v1.handle(req,res,url))return;
  if(await handleCreation(req,res,url))return;
  if(url.pathname==='/api/voices'&&req.method==='GET'){try{return send(res,200,await synthesize({action:'voices'}))}catch(e){return send(res,503,{error:e.message})}}
  if(url.pathname==='/api/voice'&&req.method==='POST'){
@@ -27,5 +33,6 @@ const server=http.createServer(async(req,res)=>{
  const file=allowed.get(url.pathname);if(!file||req.method!=='GET'){res.writeHead(404);return res.end('Not found')}
  try{const data=await readFile(fileURLToPath(new URL(file,import.meta.url)));res.writeHead(200,{'Content-Type':file.endsWith('.mp4')?'video/mp4':file.endsWith('.json')?'application/json':file.endsWith('.png')?'image/png':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.css')?'text/css; charset=utf-8':file.endsWith('.js')?'text/javascript; charset=utf-8':'text/html; charset=utf-8','Cache-Control':'no-cache'});res.end(data)}catch{res.writeHead(500);res.end('Unable to read application file')}
 });
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)server.listen(Number(process.env.PORT)||4187,process.env.BIND_HOST||'127.0.0.1',()=>console.log('GSN Studio: http://localhost:4187 — local Windows voice enabled'));
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)server.listen(Number(process.env.PORT)||4187,process.env.BIND_HOST||'127.0.0.1',()=>console.log('GSN Media v1 listening on configured host/port.'));
+server.on('close',()=>v1.close());
 export {server};

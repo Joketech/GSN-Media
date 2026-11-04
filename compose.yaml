@@ -12,6 +12,10 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       VOICE_WORKER_URL: ${VOICE_WORKER_URL:-http://voice:8091}
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
+      GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
+      GSN_DATA_DIR: /data
+    volumes:
+      - app-data:/data
     read_only: true
     tmpfs:
       - /tmp
@@ -72,6 +76,7 @@ services:
       app:
         condition: service_healthy
 volumes:
+  app-data:
   voice-data:
   voice-models:
   visual-data:
