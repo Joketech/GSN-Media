@@ -7,7 +7,8 @@ A handcoded content dashboard with seven specialist roles: Mira, Seline, Spectra
 - Rotating globe entrance and light, colorful liquid-glass navigation.
 - 200 editable post-design combinations and a separate catalog of 200 documentary edit plans.
 - Real-footage editing, recorded narration, scene timing, grading, and browser WebM export.
-- Optional Docker workers for original SDXL images, short Wan 2.2 video clips, and Qwen3-TTS narration from your voice sample.
+- Optional Docker workers for original SDXL images, short Wan 2.2 text-to-video or image-to-video clips, and Qwen3-TTS narration from your voice sample.
+- Image-to-video includes a starting-image upload/preview and motion prompt, with landscape/portrait framing and two- or four-second clip controls.
 - Queued jobs, worker health/status, persisted model results, and import of completed assets into the editor.
 
 **The documentary catalog contains edit plans, not 200 generated films or stock clips.** One small CC0 sample is included for playback tests. AI roles are defined in the application; autonomous research/publishing and live social-network integrations are not connected.

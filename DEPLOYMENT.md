@@ -46,7 +46,7 @@ The models are:
 | Images | Stable Diffusion XL base 1.0 | [Open RAIL++ model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) |
 | Voice-reference narration | Qwen3-TTS 0.6B Base | [Apache 2.0 model card](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base) |
 
-The video preset creates 2/4-second landscape or portrait clips. It does not generate an entire documentary in one inference call or provide image-to-video controls yet. Assemble reviewed scenes and narration in the editor. Keep `VISUAL_WORKER_URL` private through a trusted network or tunnel when using a separate GPU machine.
+The video preset creates 2/4-second landscape or portrait clips. Both text-to-video and image-to-video are wired in AI creation. Select Image to video, upload a PNG/JPEG/WebP under 10 MB (64 pixels per side minimum, 16 megapixels maximum), and describe subject/camera movement. The worker uses the image as the first frame, centre-cropped to the selected landscape/portrait output. Images are sent to your private GPU worker and are not saved in job status or browser job history. It does not generate an entire documentary in one inference call. Image-conditioned GPU inference still requires a real hardware smoke test. Assemble reviewed scenes and narration in the editor. Keep `VISUAL_WORKER_URL` private through a trusted network or tunnel when using a separate GPU machine.
 
 ## GitHub Container Registry
 

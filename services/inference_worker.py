@@ -3,6 +3,7 @@ import base64
 import concurrent.futures
 import importlib.util
 import json
+import io
 import mimetypes
 import os
 from pathlib import Path
@@ -82,7 +83,42 @@ def validate(payload):
             raise ValueError("The reference audio is not valid base64.")
     if payload.get("ratio", "16:9") not in ("16:9", "9:16", "1:1"):
         raise ValueError("Unsupported aspect ratio.")
+    if kind == "video":
+        if payload.get("video_mode", "text") not in ("text", "image"):
+            raise ValueError("Choose text-to-video or image-to-video.")
+        if payload.get("ratio", "16:9") == "1:1":
+            raise ValueError("Video supports landscape or portrait, not square.")
+        if payload.get("seconds", 2) not in (2, 4):
+            raise ValueError("Choose a two- or four-second video.")
+        if payload.get("video_mode", "text") == "image":
+            reference_image(payload.get("image_base64")).close()
+        elif payload.get("image_base64"):
+            raise ValueError("Choose image-to-video to supply a starting image.")
+    elif payload.get("image_base64"):
+        raise ValueError("Starting images are supported only for image-to-video.")
     return payload
+
+def reference_image(encoded):
+    """Decode bounded raster data only; never accept a remote URL or server path."""
+    from PIL import Image, ImageOps, UnidentifiedImageError
+    if not isinstance(encoded, str) or not encoded or len(encoded) > 14_000_000:
+        raise ValueError("Upload a PNG, JPEG or WebP image under 10 MB.")
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+        if len(raw) > 10 * 1024 * 1024:
+            raise ValueError("Starting image must be under 10 MB.")
+        with Image.open(io.BytesIO(raw)) as image:
+            if image.format not in ("PNG", "JPEG", "WEBP"):
+                raise ValueError("Starting image must be PNG, JPEG or WebP.")
+            w, h = image.size
+            if min(w, h) < 64 or w * h > 16_000_000:
+                raise ValueError("Use an image at least 64 pixels per side and at most 16 megapixels.")
+            if getattr(image, "is_animated", False):
+                raise ValueError("Use a still image, not an animated image.")
+            image.load()
+            return ImageOps.exif_transpose(image).convert("RGB")
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise ValueError("The starting image cannot be decoded. Use a valid PNG, JPEG or WebP.") from exc
 
 def voice(job_id, p):
     global MODEL, MODEL_KIND
@@ -136,12 +172,14 @@ def visuals(job_id, p):
     global MODEL, MODEL_KIND
     import gc
     import torch
-    from diffusers import AutoencoderKLWan, StableDiffusionXLPipeline, WanPipeline
+    from diffusers import AutoencoderKLWan, StableDiffusionXLPipeline, WanPipeline, WanImageToVideoPipeline
     from diffusers.utils import export_to_video
     if not torch.cuda.is_available():
         raise ValueError("CUDA is unavailable. A CPU-only VPS cannot run this visual worker configuration.")
     kind = p["kind"]
-    if MODEL_KIND != kind:
+    image_video = kind == "video" and p.get("video_mode", "text") == "image"
+    pipeline_kind = "video_image" if image_video else kind
+    if MODEL_KIND != pipeline_kind:
         MODEL = None
         gc.collect()
         torch.cuda.empty_cache()
@@ -149,13 +187,15 @@ def visuals(job_id, p):
         update(job_id, state="loading_model", model=model_id, message="Downloading/loading visual weights. First run may take many minutes.")
         if kind == "video":
             vae = AutoencoderKLWan.from_pretrained(model_id, subfolder="vae", torch_dtype=torch.float32)
-            MODEL = WanPipeline.from_pretrained(model_id, vae=vae, torch_dtype=torch.bfloat16)
+            pipeline = WanImageToVideoPipeline if image_video else WanPipeline
+            options = {"image_encoder": None, "image_processor": None, "expand_timesteps": True} if image_video else {}
+            MODEL = pipeline.from_pretrained(model_id, vae=vae, torch_dtype=torch.bfloat16, **options)
             MODEL.enable_model_cpu_offload()
         else:
             MODEL = StableDiffusionXLPipeline.from_pretrained(model_id, torch_dtype=torch.float16,
                                                              use_safetensors=True, variant="fp16")
             MODEL.to("cuda")
-        MODEL_KIND = kind
+        MODEL_KIND = pipeline_kind
     model_id = os.environ.get("VIDEO_MODEL", "Wan-AI/Wan2.2-TI2V-5B-Diffusers") if kind == "video" else os.environ.get("IMAGE_MODEL", "stabilityai/stable-diffusion-xl-base-1.0")
     seed = int(p.get("seed", 42)) % (2**32)
     generator = torch.Generator(device="cuda").manual_seed(seed)
@@ -173,7 +213,12 @@ def visuals(job_id, p):
         w, h = (1280, 704) if ratio == "16:9" else (704, 1280)
         seconds = min(4, max(2, int(p.get("seconds", 2))))
         frames = seconds * 24 + 1
-        output = MODEL(prompt=p["text"], negative_prompt="watermark, subtitles, low quality, jitter, deformed anatomy",
+        conditioning = {}
+        if image_video:
+            from PIL import Image, ImageOps
+            with reference_image(p["image_base64"]) as image:
+                conditioning["image"] = ImageOps.fit(image, (w, h), method=Image.Resampling.LANCZOS)
+        output = MODEL(**conditioning, prompt=p["text"], negative_prompt="watermark, subtitles, low quality, jitter, deformed anatomy",
                        width=w, height=h, num_frames=frames, num_inference_steps=30,
                        guidance_scale=5.0, generator=generator).frames[0]
         export_to_video(output, str(job_dir(job_id) / "result.mp4"), fps=24)
