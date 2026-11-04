@@ -1,0 +1,11 @@
+sample-flower.mp4 — CC0 flower demonstration clip from Mozilla/MDN.
+Downloaded from:
+https://developer.mozilla.org/shared-assets/videos/flower.mp4
+Original CC0 media path:
+https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4
+Documentation usage:
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video
+
+This single small sample is supplied to test real footage import/playback.
+It is not a 200-clip stock library and does not represent the subjects in
+the documentary plans. Replace it with your own appropriate footage.

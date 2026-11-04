@@ -1,0 +1,9 @@
+FROM pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+WORKDIR /worker
+RUN pip install --no-cache-dir diffusers==0.35.2 transformers==4.57.3 accelerate==1.12.0 safetensors sentencepiece imageio imageio-ffmpeg pillow ftfy
+COPY services/inference_worker.py /worker/inference_worker.py
+ENV WORKER_KIND=visuals DATA_DIR=/data HF_HOME=/models PYTHONUNBUFFERED=1
+EXPOSE 8091
+HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8091/health',timeout=3)"
+CMD ["python", "inference_worker.py"]

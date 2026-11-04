@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" fill="none">
+<defs>
+<linearGradient id="shell" x1="200" y1="200" x2="480" y2="620" gradientUnits="userSpaceOnUse"><stop stop-color="#e8f3f3"/><stop offset=".23" stop-color="#b4c9d2"/><stop offset=".48" stop-color="#f1f8f7"/><stop offset=".57" stop-color="#9cb4c3"/><stop offset=".83" stop-color="#446273"/><stop offset="1" stop-color="#162e40"/></linearGradient>
+<linearGradient id="finger" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4f8ec"/><stop offset=".23" stop-color="#cfdee0"/><stop offset=".52" stop-color="#92b0c1"/><stop offset=".76" stop-color="#436274"/><stop offset="1" stop-color="#172d3c"/></linearGradient>
+<linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1823"/><stop offset=".45" stop-color="#283c4a"/><stop offset=".7" stop-color="#071521"/><stop offset="1" stop-color="#577788"/></linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d8af"/><stop offset=".25" stop-color="#e5eff0"/><stop offset=".5" stop-color="#57778b"/><stop offset=".75" stop-color="#d4e5ed"/><stop offset="1" stop-color="#263e50"/></linearGradient>
+<radialGradient id="palm"><stop stop-color="#dfebec"/><stop offset=".5" stop-color="#b8d0d9"/><stop offset=".85" stop-color="#6e94aa"/><stop offset="1" stop-color="#24485d"/></radialGradient>
+<radialGradient id="joint"><stop stop-color="#7a99aa"/><stop offset=".37" stop-color="#2a4556"/><stop offset=".5" stop-color="#9bb7c4"/><stop offset=".58" stop-color="#233d4d"/><stop offset="1" stop-color="#061722"/></radialGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<!-- Wrist: layered ceramic armour over exposed mechanical tendons. -->
+<path d="M-50 564 314 340 465 377 511 459 186 671Z" fill="url(#dark)" stroke="#183f55" stroke-width="5"/>
+<path d="M-12 560 291 373 367 412 75 640Z" fill="url(#shell)" stroke="#c6dce5" stroke-width="2"/>
+<path d="M106 640 394 432 455 467 199 661Z" fill="url(#shell)" stroke="#89a8b9" stroke-width="2"/>
+<path d="M55 540 320 379M82 560 340 400M112 585 366 416" stroke="#071823" stroke-width="12"/>
+<path d="M54 537 318 376M82 557 338 397M110 582 364 413" stroke="#5d8398" stroke-width="3"/>
+<path d="M199 436 243 475 278 493 305 467 262 418Z" fill="url(#dark)" stroke="#4c6a7d" stroke-width="3"/>
+<path d="M288 371 327 348 421 403 404 437 363 432Z" fill="url(#rim)"/>
+<ellipse cx="404" cy="418" rx="65" ry="45" transform="rotate(-33 404 418)" fill="url(#joint)" stroke="#9db7c5" stroke-width="3"/>
+<ellipse cx="404" cy="418" rx="35" ry="25" transform="rotate(-33 404 418)" fill="#112e41" stroke="#607e91" stroke-width="4"/>
+<path d="M406 402 423 412 414 429 396 423Z" fill="#7da8ba"/>
+<!-- Rear fingers curl upward, reflecting the globe's warm light. -->
+<path d="M632 352C699 328 745 286 766 243L790 170 824 101C837 81 859 80 868 93 879 109 869 129 862 149L839 217C823 279 807 328 753 375Z" fill="url(#dark)" stroke="#66889c" stroke-width="3"/>
+<path d="M765 239 791 174C805 164 823 172 834 187L819 247C802 263 780 263 765 239Z" fill="url(#finger)" stroke="#9bbac9" stroke-width="2"/>
+<path d="M799 158 825 104C834 90 847 87 855 96 860 107 855 122 849 136L836 171C824 180 807 173 799 158Z" fill="url(#finger)"/>
+<path d="M682 366C751 350 802 308 827 265L862 195 895 110C903 88 922 77 936 87 948 97 943 116 939 133L918 209C899 275 883 329 827 384L746 421Z" fill="url(#dark)" stroke="#426c86" stroke-width="3"/>
+<path d="M829 260 858 202C877 193 899 205 906 223L885 279C868 296 843 290 829 260Z" fill="url(#finger)" stroke="#aecbd9" stroke-width="2"/>
+<path d="M867 183 896 113C903 97 916 89 927 96 935 107 926 132 922 148L910 196C893 205 878 197 867 183Z" fill="url(#finger)"/>
+<path d="M738 405C799 387 847 358 879 319L908 268 929 211C940 188 957 183 967 194 977 207 970 225 964 240L953 284C936 340 907 395 864 432L789 465Z" fill="url(#dark)" stroke="#3c637b" stroke-width="3"/>
+<path d="M883 315 908 273C924 263 941 274 948 287L926 333C911 350 888 340 883 315Z" fill="url(#finger)" stroke="#94b2c4" stroke-width="2"/>
+<path d="M915 254 934 215C940 201 950 193 960 201 967 210 959 226 955 239L946 267C932 273 921 266 915 254Z" fill="url(#finger)"/>
+<!-- Index finger forms the leading silver crescent beside the globe. -->
+<path d="M549 329C616 298 688 261 725 203L766 130 798 55C806 33 823 19 839 26 858 34 853 56 848 77L828 149C806 225 782 291 715 344L624 395Z" fill="url(#dark)" stroke="#7999aa" stroke-width="3"/>
+<path d="M729 199 765 138C783 128 804 139 816 158L794 215C776 233 744 227 729 199Z" fill="url(#finger)" stroke="#bdd2d8" stroke-width="3"/>
+<path d="M773 119 798 60C805 41 819 31 832 37 842 45 835 67 831 82L817 133C802 144 783 137 773 119Z" fill="url(#finger)" stroke="#c4d7de" stroke-width="2"/>
+<path d="M802 59 816 42C821 37 828 39 828 45L824 70Z" fill="#f6d8ab" opacity=".65"/>
+<path d="M735 232 755 245 789 230" stroke="#102b3d" stroke-width="10"/>
+<ellipse cx="750" cy="248" rx="21" ry="24" transform="rotate(26 750 248)" fill="url(#joint)"/>
+<!-- Palm and connected tendons. -->
+<path d="M391 348C440 296 503 291 559 301 599 307 632 327 669 346L786 382C817 393 824 426 798 449 755 485 659 509 595 507L464 476C416 464 384 411 391 348Z" fill="url(#palm)" stroke="#aecbd5" stroke-width="3"/>
+<path d="M420 340C470 311 513 314 551 321 603 332 619 354 662 370L755 398C767 404 771 418 763 427 727 458 648 479 591 477L480 448C441 438 415 399 420 340Z" fill="url(#shell)" stroke="#e2eef0" stroke-width="2"/>
+<path d="M468 344C503 330 550 340 586 360L621 388 659 400C683 405 688 424 673 440L642 459 557 443 485 415C466 406 457 365 468 344Z" fill="#aec6cf" stroke="#547c94" stroke-width="2"/>
+<path d="M482 355 507 345 563 365M498 410 555 429 614 436" stroke="#ebf3ef" stroke-opacity=".7" stroke-width="3"/>
+<path d="M564 311 554 340M625 348 600 369M690 366 663 396M738 384 713 412" stroke="#1c3b4e" stroke-width="6"/>
+<path d="M584 477 601 495M659 467 677 484M729 439 747 458" stroke="#0b293c" stroke-width="7"/>
+<ellipse cx="438" cy="374" rx="30" ry="38" transform="rotate(-25 438 374)" fill="url(#joint)"/>
+<ellipse cx="438" cy="374" rx="12" ry="17" transform="rotate(-25 438 374)" fill="#94c5d7" stroke="#0f2d42" stroke-width="4"/>
+<!-- Thumb opposing the palm. -->
+<path d="M447 358C426 326 407 297 380 284 349 267 323 281 324 304 325 327 348 343 368 359L389 390C407 404 440 391 447 358Z" fill="url(#dark)" stroke="#7e9eaf" stroke-width="3"/>
+<path d="M416 335C404 315 390 301 372 292 357 284 341 287 339 299 338 312 353 326 371 336L394 356C408 356 418 348 416 335Z" fill="url(#finger)" stroke="#cbdde2" stroke-width="2"/>
+<ellipse cx="409" cy="363" rx="24" ry="20" transform="rotate(40 409 363)" fill="url(#joint)"/>
+<!-- Fasteners and handcode-etched detail. -->
+<g fill="#16394e" stroke="#8eb3c5" stroke-width="2"><circle cx="476" cy="435" r="5"/><circle cx="548" cy="458" r="5"/><circle cx="708" cy="435" r="5"/><circle cx="728" cy="391" r="4"/><circle cx="770" cy="168" r="4"/><circle cx="876" cy="227" r="4"/><circle cx="383" cy="410" r="5"/></g>
+<path d="M206 529 251 494" stroke="#87c3df" stroke-width="4"/><path d="M206 529 251 494" stroke="#87c3df" stroke-width="10" filter="url(#glow)" opacity=".5"/>
+<path d="M595 325 630 342M790 154 804 160M859 196 876 202" stroke="#f0c88f" stroke-width="3" stroke-linecap="round"/>
+<text x="486" y="389" font-family="Arial,sans-serif" font-size="12" letter-spacing="5" fill="#446d83" transform="rotate(15 486 389)">GSN / 07</text>
+</svg>

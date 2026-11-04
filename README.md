@@ -45,4 +45,3 @@ Uploaded project media/settings are currently browser-local; generated results a
 ## Credits
 
 The hero artwork is a one-time generated static asset; runtime editing does not call an image-generation service. The mountain background was supplied as project artwork. The flower demo is CC0 media from Mozilla/MDN; see [SAMPLE-FOOTAGE-LICENSE.txt](SAMPLE-FOOTAGE-LICENSE.txt). Model licenses are listed in [DEPLOYMENT.md](DEPLOYMENT.md).
-

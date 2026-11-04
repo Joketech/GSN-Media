@@ -1,0 +1,15 @@
+{$SITE_DOMAIN:localhost} {
+    encode zstd gzip
+    request_body {
+        max_size 30MB
+    }
+    basic_auth {
+        {$BASIC_AUTH_USER:owner} {$BASIC_AUTH_HASH}
+    }
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy same-origin
+        -Server
+    }
+    reverse_proxy app:4187
+}

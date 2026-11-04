@@ -1,0 +1,11 @@
+.git
+.github
+.env
+data
+models
+__pycache__
+*.pyc
+*.zip
+.venv
+node_modules
+Premium Lookbook.html
