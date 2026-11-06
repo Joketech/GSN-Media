@@ -19,7 +19,17 @@ jobs:
           node --check v1-api.mjs
           node --check v1.js
           node --check template-engine.mjs
-          node --test tests/v1.test.mjs
+          node --check template-kit.mjs
+          node --check designs-api.mjs
+          node --check platforms.mjs
+          node --check app.js
+          node --check kit-host.js
+          node --check library.js
+          node --check dashboard.js
+          node --check editor.js
+          node --check exporter.js
+          node --check globe.js
+          node --test tests/v1.test.mjs tests/designs.test.mjs
           python3 -m py_compile services/inference_worker.py
           python3 -m py_compile integrations/hermes/gsn.py
           python3 tests/worker_idempotency.py

@@ -5,7 +5,9 @@ import {randomUUID,randomBytes,createHash,timingSafeEqual} from 'node:crypto';
 import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {Transform} from 'node:stream';
-import {templateCatalog,renderDesign} from './template-engine.mjs';
+import {templateCatalog,renderDesign,starterSlides} from './template-engine.mjs';
+import {sanitizeDesign,summary as designSummary,DesignError} from './designs-api.mjs';
+import {PRESETS,PLATFORM_GROUPS} from './platforms.mjs';
 
 const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
@@ -18,7 +20,7 @@ async function body(req){if(!req.headers['content-type']?.startsWith('applicatio
 const text=(value,name,max,required=true)=>{if(typeof value!=='string'||value.length>max||(required&&!value.trim()))throw new InputError(`${name} must contain ${required?'1':'0'}–${max} characters.`);return value.trim();};
 const decode=(value,max)=>{if(typeof value!=='string'||!value||value.length>Math.ceil(max/3)*4||!/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))throw new InputError('Invalid or oversized base64 file.');const b=Buffer.from(value,'base64');if(b.length>max)throw new InputError('File is too large.',413);return b;};
 
-export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',fetchImpl=fetch}={}){
+export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
  const sessions=new Map(),busy=new Set();let mutation=Promise.resolve(),reconciling=false;
  const ready=mkdir(dataDir,{recursive:true,mode:0o700}).then(async()=>{
   for(const name of await readdir(dataDir))if(name.endsWith('.json')){
@@ -31,7 +33,8 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
  const serial=fn=>{const p=mutation.then(fn);mutation=p.catch(()=>{});return p;};
  async function list(type){await ready;const values=[];for(const name of await readdir(dataDir)){if(!name.endsWith('.json'))continue;try{const value=await load(name.slice(0,-5));if(value.record_type===type)values.push(value);}catch{}}return values.sort((a,b)=>b.created_at.localeCompare(a.created_at));}
  const publicJob=j=>{const {fingerprint,...value}=j;return value;};
- const auth=req=>{const bearer=req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];if(bearer&&token&&same(bearer,token))return true;const sid=req.headers.cookie?.match(/(?:^|;\s*)gsn_session=([a-f0-9]{64})(?:;|$)/)?.[1];if(sid&&sessions.get(sid)>Date.now())return true;return false;};
+ const sameSite=req=>{const f=req.headers['sec-fetch-site'];if(f)return f==='same-origin';const o=req.headers.origin||req.headers.referer;try{return !!o&&new URL(o).host===req.headers.host}catch{return false}};
+ const auth=req=>{const bearer=req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];if(bearer&&token&&same(bearer,token))return 'agent';const sid=req.headers.cookie?.match(/(?:^|;\s*)gsn_session=([a-f0-9]{64})(?:;|$)/)?.[1];if(sid&&sessions.get(sid)>Date.now())return 'owner';if(openUi&&sameSite(req))return 'owner';return false;};
  const workerUrl=j=>j.worker==='voice'?voiceUrl:visualUrl;
  async function workerFetch(j,route,options={}){const url=workerUrl(j);if(!url)throw new Error(`${j.worker} worker is not configured.`);return fetchImpl(new URL(route,url),{...options,signal:AbortSignal.timeout(20000)});}
  async function collect(j,upstream){
@@ -120,15 +123,25 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
  }
  async function handle(req,res,url){if(!url.pathname.startsWith('/api/v1/'))return false;try{await ready;
   if(url.pathname==='/api/v1/session'&&req.method==='POST'){if(!token)throw new InputError('Run deploy/setup-v1.sh to configure the access key.',503);const p=await body(req);if(typeof p.token!=='string'||!same(p.token,token))throw new InputError('Incorrect access key.',401);const sid=randomBytes(32).toString('hex');for(const [k,v] of sessions)if(v<Date.now())sessions.delete(k);if(sessions.size>1000)sessions.clear();sessions.set(sid,Date.now()+12*3600000);res.setHeader('Set-Cookie',`gsn_session=${sid}; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=43200${process.env.SITE_DOMAIN?'; Secure':''}`);json(res,200,{ok:true});return true;}
-  if(!token)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);
-  if(!auth(req))throw new InputError('Studio access key required.',401);
+  const who=auth(req);
+  if(!who){if(!token&&!openUi)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);throw new InputError(openUi?'Open the studio in your browser, or send the agent access key as a Bearer token.':'Studio access key required.',401);}
   if(url.pathname==='/api/v1/session'&&req.method==='DELETE'){const sid=req.headers.cookie?.match(/gsn_session=([a-f0-9]{64})/)?.[1];sessions.delete(sid);res.setHeader('Set-Cookie','gsn_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0');json(res,200,{ok:true});return true;}
-  if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,scheduler:'Hermes manages schedules'});return true;}
+  if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}
   if(url.pathname==='/api/v1/templates'&&req.method==='GET'){json(res,200,{templates:templateCatalog()});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=await list('job');json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='POST'){const key=req.headers['idempotency-key'];if(typeof key!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/.test(key))throw new InputError('Supply an Idempotency-Key of 1–160 letters, digits, _, ., : or -.');const j=await submit(await body(req),key);json(res,202,publicJob(j));return true;}
+  if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
+  if(url.pathname==='/api/v1/designs'&&req.method==='GET'){const all=(await list('design')).map(designSummary);json(res,200,{designs:all.slice(0,500),total:all.length});return true;}
+  if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');p.pages=starterSlides(p.template_id);}
+   const created=await serial(async()=>{const design=sanitizeDesign({title:'Untitled pack',...p},{templateCount:designTemplateCount});if((await list('design')).length>=500)throw new InputError('Maximum 500 saved designs. Delete some first.',409);const id=randomUUID(),now=new Date().toISOString();const record={...design,id,record_type:'design',revision:1,created_at:now,updated_at:now,updated_by:who};await save(id,record);return record;});json(res,201,created);return true;}
+  const dm=url.pathname.match(/^\/api\/v1\/designs\/([a-f0-9-]{36})$/);
+  if(dm&&uuid.test(dm[1])){const read=async()=>{const d=await load(dm[1]).catch(()=>null);if(d?.record_type!=='design')throw new InputError('Design not found.',404);return d;};
+   if(req.method==='GET'){json(res,200,await read());return true;}
+   if(req.method==='PUT'){const p=await body(req);const saved=await serial(async()=>{const current=await read();if(p.revision!==current.revision)throw new InputError(`This design changed since you opened it (now revision ${current.revision}). Reload it, then apply your edit again.`,409);const design=sanitizeDesign({pack_id:current.pack_id,...p},{templateCount:designTemplateCount});const record={...design,id:current.id,record_type:'design',revision:current.revision+1,created_at:current.created_at,updated_at:new Date().toISOString(),updated_by:who};await save(current.id,record);return record;});json(res,200,saved);return true;}
+   if(req.method==='DELETE'){await serial(async()=>{await read();await unlink(file(dm[1]));});json(res,200,{ok:true});return true;}
+  }
   const match=url.pathname.match(/^\/api\/v1\/jobs\/([a-f0-9-]{36})(\/asset|\/review)?$/);if(match&&uuid.test(match[1])){const j=await load(match[1]).catch(()=>null);if(j?.record_type!=='job')throw new InputError('Job not found.',404);
    if(!match[2]&&req.method==='GET'){json(res,200,publicJob(await refresh(j)));return true;}
    if(match[2]==='/asset'&&['GET','HEAD'].includes(req.method)){await asset(req,res,j);return true;}

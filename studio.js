@@ -89,6 +89,14 @@ const slideElements={
  linkedin:['LinkedIn','<path d="M5 10v9m5 0v-9m0 4a4 4 0 0 1 8 0v5"/><circle cx="5" cy="6" r="1" fill="currentColor"/>'],
  facebook:['Facebook','<path d="M14 22V10c0-3 1-4 4-4h2V2h-3c-5 0-7 3-7 7v13m-4-10h13"/>'],
  x:['X','<path d="m4 3 16 18h-4L3 3h4l14 18M20 3 4 21"/>'],
+ tiktok:['TikTok','<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3c.4 2.4 2 4 5 4.2"/>'],
+ trend:['Trending','<path d="m3 17 6-6 4 4 8-9M15 6h6v6"/>'],
+ rect:['Rectangle','<rect x="3" y="5" width="18" height="14" rx="1"/>'],
+ rounded:['Rounded box','<rect x="3" y="4" width="18" height="16" rx="5"/>'],
+ triangle:['Triangle','<path d="M12 3 22 20H2Z"/>'],
+ star:['Star','<path d="m12 2.5 2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3 1.2-6.4-4.7-4.4 6.4-.8Z"/>'],
+ heart:['Heart','<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11Z"/>'],
+ chat:['Speech bubble','<path d="M4 5h16v11H9l-5 4Z"/>'],
 };
 function layerCopy(value,bullets){
  return bullets&&value?String(value).split('\n').map(line=>`<span class="text-bullet">${esc(line)}</span>`).join(''):esc(value);
@@ -118,7 +126,8 @@ function art(t,slide={},extra=''){
  const hex=(value,fallback)=>/^#[0-9a-f]{6}$/i.test(value||'')?value:fallback;
  const clamp=(value,min,max,fallback)=>Number.isFinite(value)?Math.min(max,Math.max(min,value)):fallback;
  const image=typeof slide.image==='string'&&slide.image.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.image)?slide.image:'';
- const ratio=['1 / 1','4 / 5','9 / 16','16 / 9'].includes(slide.ratio)?slide.ratio:'1 / 1';
+ const ratioParts=/^[1-9]\d{0,3} \/ [1-9]\d{0,3}$/.test(slide.ratio||'')?slide.ratio.split(' / ').map(Number):[1,1];
+ const ratio=ratioParts.join(' / '),ratioShape=ratioParts[0]/ratioParts[1];
  const tone=({hourglass:'#ff9d36',visor:'#ff8a28',orbit:'#d49c65',portfolio:'#c2ee4e',stack:'#aa83ff',lift:'#e255ff',product:'#b879ff',audio:'#ad92ff',terminal:'#65efa7',rocket:'#ff933f'})[motif]||p[3];
  const cover=slide.catalog||role==='hook';
  const light=!cover&&[2,5,8].includes(t.palette);
@@ -142,10 +151,9 @@ function art(t,slide={},extra=''){
  const photo=customGsn?gsnLibraryPhoto(slide.motif):defaultGsn?gsnPhoto(t.cartoon?gsnOriginalPictureCount+t.id-200:(t.id+imageOffset)%200):null;
  const front=cover?'gsn-front front-'+(t.layout+t.palette)%5:'';
  const cartoonClass=t.cartoon?`cartoon-poster cartoon-style-${t.layout%5} cartoon-${cover?'hero':role==='cta'?'action':slide.deckLayout==='feature'?'feature':slide.deckLayout==='steps'?'steps':'story'}`:'';
- const ratioClass={'1 / 1':'square','4 / 5':'portrait','9 / 16':'story','16 / 9':'landscape'}[ratio];
- const heightFactor={'1 / 1':1,'4 / 5':1.25,'9 / 16':16/9,'16 / 9':9/16}[ratio];
- function textStyle(key){
-  const options=slide.textLayers?.[key];
+ const ratioClass=ratioShape>1.4?'landscape':ratioShape<.7?'story':ratioShape<.9?'portrait':'square';
+ const heightFactor=ratioParts[1]/ratioParts[0];
+ function textStyleFrom(options){
   if(!options)return '';
   const font={sans:'Arial, sans-serif',serif:'Georgia, serif',mono:'monospace'}[options.font];
   const decoration=[options.underline?'underline':'',options.strike?'line-through':''].filter(Boolean).join(' ');
@@ -153,10 +161,12 @@ function art(t,slide={},extra=''){
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
   return `${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
+ function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
  const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
  const zIndex=(...keys)=>{const ranks=keys.map(key=>order.indexOf(key));const rank=Math.max(...ranks);return rank<0?'':'position:relative;z-index:'+(10+rank)+';';};
  const stack=(...keys)=>zIndex(...keys).replace('position:relative;','');
- const elements=Array.isArray(slide.elements)?slide.elements.slice(0,6).filter(canvasElementLabel):[];
+ const elements=Array.isArray(slide.elements)?slide.elements.slice(0,24).filter(canvasElementLabel):[];
+ const freeTexts=(Array.isArray(slide.texts)?slide.texts.slice(0,24):[]).map((item,index)=>typeof item?.text==='string'?`<div class="free-text" data-canvas-text="${index}" style="left:${clamp(item.left,-50,150,10)}%;top:${clamp(item.top,-50,150,10)}%;${stack('text:'+index)}${textStyleFrom({...item,x:0,y:0})}">${layerCopy(item.text,item.bullets)}</div>`:'').join('');
  const elementStrip=elements.length?`<div class="slide-element-strip" style="${stack(...elements.map((_,index)=>"element:"+index))}">${elements.map((key,index)=>{
   const position=slide.elementPositions?.[index];
   const placement=position?`position:absolute;left:${clamp(position.x,0,100,0)}%;top:${clamp(position.y,0,100,0)}%;transform:translate(-50%,-50%);`:'';
@@ -169,7 +179,7 @@ function art(t,slide={},extra=''){
   return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
  }).join('')}</div>`:'';
  const photograph=photo?`<div class="campaign-photo gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></div>`:photoIndex===undefined?'':`<div class="campaign-photo photo-${sheet}" style="--photo-x:${(photoIndex%4)*100/3}%;--photo-y:${Math.floor(photoIndex/4)*50}%"></div>`;
- return `<div class="art premium p${t.layout} campaign-art ratio-${ratioClass} ${front} ${cartoonClass} ${role?'slide-'+role:''} motif-${motif} deck-${/^(?:hook|cta|agenda|triptych|feature|principle|steps|compare|metric|checklist|quote|example|summary|blank)$/.test(slide.deckLayout)?slide.deckLayout:"legacy"} artwork-${['front','background'].includes(slide.artLayer)?slide.artLayer:'behind'} finish${t.palette} ${extra}" style="--bg:${p[1]};--fg:${p[2]};--accent:${accent};--campaign-palette:${p[3]};--campaign-bg:${background};--campaign-ink:${ink};--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}"><div class="art-brand" data-canvas-copy="brandText" style="${stack("brandText")}${textStyle('brandText')}">${layerCopy(slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION'),slide.textLayers?.brandText?.bullets)}</div><div class="campaign-visual" aria-hidden="true" style="${stack("artwork")}">${image?`<img class="campaign-upload" src="${image}" alt="">`:photograph}</div><div class="campaign-copy" style="${stack("title","body","kicker")}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex("kicker")}${textStyle('kicker')}">${layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex("title")}${textStyle('title')}${slide.size&&!slide.textLayers?.title?.size?'font-size:'+(clamp(slide.size,5,18,8)*(ratioClass==='landscape'?.65:1))+'cqw;':''}transform:translate(${clamp(slide.x,-100,100,0)}px,${clamp(slide.y,-100,100,0)}px)">${layerCopy(slide.title??t.title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex("body")}${textStyle('body')}">${deckBodyCopy(slide.body??'A fresh idea for a more intentional tomorrow.',slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}<div class="art-foot" style="${stack("footerText")}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(slide.footerText??(slide.catalog?'GSN Technology':state.brand.handle),slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
+ return `<div class="art premium p${t.layout} campaign-art ratio-${ratioClass} ${front} ${cartoonClass} ${role?'slide-'+role:''} motif-${motif} deck-${/^(?:hook|cta|agenda|triptych|feature|principle|steps|compare|metric|checklist|quote|example|summary|blank)$/.test(slide.deckLayout)?slide.deckLayout:"legacy"} artwork-${['front','background'].includes(slide.artLayer)?slide.artLayer:'behind'} finish${t.palette} ${extra}" style="--bg:${p[1]};--fg:${p[2]};--accent:${accent};--campaign-palette:${p[3]};--campaign-bg:${background};--campaign-ink:${ink};--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}"><div class="art-brand" data-canvas-copy="brandText" style="${stack("brandText")}${textStyle('brandText')}">${layerCopy(slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION'),slide.textLayers?.brandText?.bullets)}</div><div class="campaign-visual" aria-hidden="true" style="${stack("artwork")}">${image?`<img class="campaign-upload" src="${image}" alt="">`:photograph}</div><div class="campaign-copy" style="${stack("title","body","kicker")}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex("kicker")}${textStyle('kicker')}">${layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex("title")}${textStyle('title')}${slide.size&&!slide.textLayers?.title?.size?'font-size:'+(clamp(slide.size,5,18,8)*(ratioClass==='landscape'?.65:1))+'cqw;':''}transform:translate(${clamp(slide.x,-100,100,0)}px,${clamp(slide.y,-100,100,0)}px)">${layerCopy(slide.title??t.title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex("body")}${textStyle('body')}">${deckBodyCopy(slide.body??'A fresh idea for a more intentional tomorrow.',slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack("footerText")}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(slide.footerText??(slide.catalog?'GSN Technology':state.brand.handle),slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 
 function card(t){const campaign=t.cartoon?[t.title,t.summary]:gsnCampaign(t.id);return `<article class="template-card">${art(t,{...(t.cartoon?templateStarter(t.id)[0]:{}),catalog:true,ratio:t.cartoon?'4 / 5':'1 / 1',title:campaign?.[0],body:campaign?.[1],kicker:t.cartoon?t.topic:campaign?'AI AUTOMATION FOR BUSINESS':undefined})}<div class="template-meta"><div><strong>${esc(t.cartoon?t.name:gsnPhoto(t.id).name)}</strong><small>${esc(palettes[t.palette][0])} · ${t.format} · #${String(t.id+1).padStart(3,'0')}</small></div><button data-template="${t.id}" aria-label="Use ${esc(t.name)}">Use ↗</button></div></article>`}

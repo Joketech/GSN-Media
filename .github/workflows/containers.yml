@@ -27,7 +27,7 @@ jobs:
           node --check media.js
           node --check v1-api.mjs
           node --check v1.js
-          node --test tests/v1.test.mjs
+          node --test tests/v1.test.mjs tests/designs.test.mjs
           python3 -m py_compile services/inference_worker.py
           docker compose config --quiet
       - uses: docker/setup-buildx-action@v3

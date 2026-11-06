@@ -12,6 +12,33 @@ The agent API can create static and animated HTML directly from the existing 200
 
 A handcoded content dashboard with six specialist roles: Mira, Seline, Spectra, Lyra, Flux, and Relay.
 
+## Social media pack studio
+
+Open the studio and enter through the globe. The dashboard shows your templates in motion (Hook, write-up pages, call to action). Pick a template, choose the platform sizes you need (Instagram, TikTok, LinkedIn, X, YouTube, Facebook and Trending) and the studio creates one editable design per size.
+
+- **Editor:** click to select, drag, resize and rotate; double-click to type; the toolbar appears only for the selected item and the tool dock stays closed until you press **+**. Page strip with Hook / CTA tags, add, duplicate, delete and reorder pages. Undo and redo. Download PNG, JPG, PDF, MP4 or HTML.
+- **Saved on the server:** every change is saved with a revision number. If a Hermes agent saved a newer version, you are asked whether to load theirs or keep yours; nothing is overwritten silently.
+- **Review flow:** set a design to **Ready for review** and it appears under the bell on the dashboard. Editing an approved design returns it to Draft.
+- **Older screens:** the previous workspace is still at `/v1` and the classic design studio at `/classic`.
+
+### Hermes API (designs)
+
+All routes live under `/api/v1` and take `Authorization: Bearer $GSN_AGENT_TOKEN`.
+
+| Route | Purpose |
+| --- | --- |
+| `GET /platforms` | Platform sizes and groups |
+| `GET /designs`, `POST /designs` | List designs; create one (`template_id`, `platform`, optional `title`, `pages`, `brand`, `pack_id`). Starter Hook / write-up / CTA pages are generated when `pages` is omitted. |
+| `GET /designs/{id}` | Full design JSON |
+| `PUT /designs/{id}` | Save a design. Send the `revision` you read; a stale revision returns 409. |
+| `DELETE /designs/{id}` | Remove a design |
+
+Set `status` to `review` when an agent has finished so the owner sees it. The studio page needs no key in the browser (see below); API clients always need the token.
+
+### Access control
+
+The globe no longer leads to a password page. Browser requests from the studio's own origin are accepted without a key, so protect the public address with the Caddy Basic Auth block in `DEPLOYMENT.md`, or keep it on loopback and use an SSH tunnel. Set `GSN_REQUIRE_KEY=1` to bring the access-key gate back.
+
 ## Current capabilities
 
 - Rotating globe entrance and light, colorful liquid-glass navigation.

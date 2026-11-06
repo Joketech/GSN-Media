@@ -17,6 +17,10 @@ export function templateCatalog(){
  return vm.runInNewContext(photoSource+'\n'+definitions+starterSource+
   'templates.map(t=>({id:t.id,name:t.name,format:t.format,...(t.cartoon?{slides:templateStarter(t.id),ratio:"4 / 5"}:{})}))',{}, {timeout:1000});
 }
+// Server-side starter pages (Hook, write-up pages, CTA) so agents can create a design without a browser.
+export function starterSlides(id){
+ return JSON.parse(vm.runInNewContext(photoSource+'\n'+definitions+starterSource+'JSON.stringify(templateStarter(templateId))',{templateId:id},{timeout:1000}));
+}
 export function renderDesign(p){
  const context={esc,state:{brand:{name:p.brand||'GSN Technology',handle:p.handle||'GSN Technology'}},input:p};
  let cards=vm.runInNewContext(photoSource+'\n'+definitions+artSource+'input.slides.map((s,i)=>art(templates[input.template_id],{...s,ratio:input.ratio,number:i+1,total:input.slides.length},input.kind==="animation"?"animate":"")).join("")',context,{timeout:1000});

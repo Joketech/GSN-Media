@@ -13,6 +13,7 @@ services:
       VOICE_WORKER_URL: ${VOICE_WORKER_URL:-http://voice:8091}
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
       GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
+      GSN_REQUIRE_KEY: ${GSN_REQUIRE_KEY:-}
       GSN_DATA_DIR: /data
     volumes:
       - app-data:/data
