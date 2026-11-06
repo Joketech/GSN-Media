@@ -10,7 +10,7 @@ Use the private GSN v1 API on Contabo for daily content jobs. The client is `/op
 
 ## Roles
 
-Mira coordinates and tracks jobs. Lyra researches and supplies sources. Seline writes scripts and generates narration. Spectra builds posts/carousels. Flux creates animated HTML. Veyra creates video scenes and edits footage. Relay prepares approved assets for publishing. These are responsibilities for the user's Hermes agents, not agents hosted by the studio.
+Mira coordinates and tracks jobs. Lyra researches and supplies sources. Seline writes scripts and generates narration. Spectra builds posts/carousels. Flux creates animated HTML. Relay prepares approved assets for publishing. These are responsibilities for the user's Hermes agents, not agents hosted by the studio.
 
 ## Procedure
 

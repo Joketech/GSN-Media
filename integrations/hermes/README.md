@@ -1,6 +1,6 @@
 # GSN Media v1 — Hermes handoff
 
-The handcoded studio runs on Contabo. Hermes can create the same jobs as the browser through a loopback API. Seven specialists remain Mira (orchestrator), Lyra (research), Seline (writing/voice), Spectra (design), Flux (animation), Veyra (video/editing), Relay (publishing preparation).
+The handcoded studio runs on Contabo. Hermes can create the same jobs as the browser through a loopback API. six specialists remain Mira (orchestrator), Lyra (research), Seline (writing/voice), Spectra (design), Flux (animation), Relay (publishing preparation).
 
 ## Deploy/update
 
@@ -50,7 +50,7 @@ Use the same key with identical content after a network error. Failed/interrupte
 
 ## Daily brief to give Hermes
 
-“Use GSN Media for the following daily deliverables: [topics, counts, aspect ratios, voice profile, GPU budget]. Mira coordinates; Lyra researches; Seline writes; Spectra creates posts; Flux animates; Veyra creates and edits video; Relay prepares approved outputs. Track stable job keys per date/project/revision. Return completed files for my review. Report unavailable workers and failures. Use my configured schedule in Africa/Lagos.”
+“Use GSN Media for the following daily deliverables: [topics, counts, aspect ratios, voice profile, GPU budget]. Mira coordinates; Lyra researches; Seline writes; Spectra creates posts; Flux animates; Track stable job keys per date/project/revision. Return completed files for my review. Report unavailable workers and failures. Use my configured schedule in Africa/Lagos.”
 
 Replace the brackets and choose the schedule yourself. This is a handoff template, not an installed automation. No autonomous research, publishing connector, GPU rental, or final-film rendering service is installed here.
 

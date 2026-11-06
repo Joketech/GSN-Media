@@ -2,7 +2,7 @@
 
 ## V1 daily workspace
 
-The default home page is now a focused HTML/CSS/JavaScript studio for text-to-video, image-to-video, saved voice-reference narration, social posts/carousels, and animated HTML. All seven specialists remain. The full original editor/globe/template library is retained at `/classic`.
+The default home page is now a focused HTML/CSS/JavaScript studio for text-to-video, image-to-video, saved voice-reference narration, social posts/carousels, and animated HTML. All six specialists remain. The full original editor/globe/template library is retained at `/classic`.
 
 V1 adds a protected agent API, persistent voice references, shared jobs and collected results, stable request keys, review state, and a standard-library Python client for the user's Hermes agents on Contabo. See [the Hermes handoff](integrations/hermes/README.md) and [API contract](integrations/hermes/API.md).
 
@@ -10,7 +10,7 @@ For an existing server checkout, run `bash deploy/setup-v1.sh`, then `docker com
 
 The agent API can create static and animated HTML directly from the existing 200 design combinations. GPU jobs still require a configured visual worker; no GPU has been rented or connected by this release. Voice cloning passed the owner's earlier manual test; the new saved-profile flow must still be smoke-tested on their VPS. Hermes installation and daily schedules are documented, not automatically applied to their server.
 
-A handcoded content dashboard with seven specialist roles: Mira, Seline, Spectra, Lyra, Flux, Veyra, and Relay.
+A handcoded content dashboard with six specialist roles: Mira, Seline, Spectra, Lyra, Flux, and Relay.
 
 ## Current capabilities
 

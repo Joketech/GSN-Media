@@ -20,13 +20,13 @@ All create payloads accept `title` (120 chars), `agent` (80 chars), `project` (1
 ## Text-to-video
 
 ```json
-{"kind":"text_to_video","text":"A cinematic mountain road; slow forward camera movement.","ratio":"16:9","seconds":2,"agent":"Veyra","project":"Daily story"}
+{"kind":"text_to_video","text":"A cinematic mountain road; slow forward camera movement.","ratio":"16:9","seconds":2,"agent":"Mira","project":"Daily story"}
 ```
 
 ## Image-to-video
 
 ```json
-{"kind":"image_to_video","text":"Slow camera push. Water ripples gently; preserve the architecture.","image_base64":"BASE64_PNG_JPEG_OR_WEBP","ratio":"16:9","seconds":2,"agent":"Veyra"}
+{"kind":"image_to_video","text":"Slow camera push. Water ripples gently; preserve the architecture.","image_base64":"BASE64_PNG_JPEG_OR_WEBP","ratio":"16:9","seconds":2,"agent":"Mira"}
 ```
 
 Video text limit: 1200 chars. Ratios: 16:9 or 9:16. Durations: 2 or 4 seconds. Starting image: at most 10 MB and 16 megapixels, at least 64 pixels each side, still PNG/JPEG/WebP. Worker decodes and centre-crops the first frame; a filename or URL is not accepted. Neither mode has been validated on the user's GPU yet.

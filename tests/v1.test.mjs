@@ -47,7 +47,7 @@ test('persistent agent jobs, saved voices, model forwarding, collection, review 
   const voice=await request('/jobs','POST',{kind:'voice',voice_id:profile.id,text:'New words.',agent:'Seline'},'daily-voice').then(r=>r.json());
   assert.equal(submissions[0].reference_text,'My clean voice sample.');assert.equal(submissions[0].audio_base64,Buffer.from('sample audio').toString('base64'));assert.equal(submissions[0].request_id,voice.id);
   assert.equal((await request('/jobs/'+voice.id).then(r=>r.json())).state,'complete');
-  const videoPayload={kind:'image_to_video',image_base64:Buffer.from('image bytes').toString('base64'),text:'Water ripples.',seconds:2,ratio:'16:9',agent:'Veyra'};
+  const videoPayload={kind:'image_to_video',image_base64:Buffer.from('image bytes').toString('base64'),text:'Water ripples.',seconds:2,ratio:'16:9',agent:'Mira'};
   const video=await request('/jobs','POST',videoPayload,'daily-video').then(r=>r.json());assert.equal(submissions[1].video_mode,'image');assert.equal(submissions[1].image_base64,videoPayload.image_base64);
   assert.equal(video.image_base64,undefined);await api.reconcile();
   const completed=await request('/jobs/'+video.id).then(r=>r.json());assert.equal(completed.state,'complete');assert.equal(completed.review,'pending');

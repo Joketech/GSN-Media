@@ -4,7 +4,7 @@ import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
-const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','media.js','portal.css','portal.js','robot-hand.svg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','documentaries.js','documentary-catalog.json','sample-flower.mp4','ai-studio.js'].map(f=>['/'+f,f])]);
+const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','portal.css','portal.js','robot-hand.svg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','ai-studio.js'].map(f=>['/'+f,f])]);
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const v1=createV1();
 allowed.set('/','v1.html');allowed.set('/classic','index.html');
