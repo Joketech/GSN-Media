@@ -17,20 +17,6 @@ Creation returns 202 with a recorded job even when its worker rejects it: inspec
 
 All create payloads accept `title` (120 chars), `agent` (80 chars), `project` (120 chars). Use truthful specialist names. Stable keys are 1–160 letters/digits or `_ . : -`. Identical content+key returns the existing job; changed content+key returns 409. A new key requests new work, potentially incurring GPU costs.
 
-## Text-to-video
-
-```json
-{"kind":"text_to_video","text":"A cinematic mountain road; slow forward camera movement.","ratio":"16:9","seconds":2,"agent":"Mira","project":"Daily story"}
-```
-
-## Image-to-video
-
-```json
-{"kind":"image_to_video","text":"Slow camera push. Water ripples gently; preserve the architecture.","image_base64":"BASE64_PNG_JPEG_OR_WEBP","ratio":"16:9","seconds":2,"agent":"Mira"}
-```
-
-Video text limit: 1200 chars. Ratios: 16:9 or 9:16. Durations: 2 or 4 seconds. Starting image: at most 10 MB and 16 megapixels, at least 64 pixels each side, still PNG/JPEG/WebP. Worker decodes and centre-crops the first frame; a filename or URL is not accepted. Neither mode has been validated on the user's GPU yet.
-
 ## Saved voice and narration
 
 POST `/voices`: `{"name":"My GSN voice","reference_text":"The exact words in the sample.","audio_base64":"BASE64_AUDIO"}`. Max 20 profiles, 20 MB per reference, transcript at most 2000 characters. Worker normalizes up to 30 seconds; at least 3 seconds of speech is required during inference. The profile is stored once on the app server; it is resent only to the configured private voice worker when generating.

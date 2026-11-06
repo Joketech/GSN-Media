@@ -39,8 +39,6 @@ python3 integrations/hermes/gsn.py voices
 python3 integrations/hermes/gsn.py templates
 python3 integrations/hermes/gsn.py create --json integrations/hermes/examples/post.json --key test-post-v1
 python3 integrations/hermes/gsn.py create --json integrations/hermes/examples/animation.json --key test-animation-v1
-python3 integrations/hermes/gsn.py create --json integrations/hermes/examples/text-video.json --key test-video-v1
-python3 integrations/hermes/gsn.py create --json integrations/hermes/examples/image-video.json --image /path/to/start.jpg --key test-image-video-v1
 python3 integrations/hermes/gsn.py status JOB_UUID
 python3 integrations/hermes/gsn.py wait JOB_UUID --timeout 1800
 python3 integrations/hermes/gsn.py download JOB_UUID --out /path/to/new-result.mp4
@@ -56,6 +54,3 @@ Replace the brackets and choose the schedule yourself. This is a handoff templat
 
 The existing full studio remains at `/classic`: social templates, manual design editing, animation playback/export, footage timeline, and browser narration mixing/WebM export. Its manually saved projects remain browser-local. New v1 API jobs and outputs are server-persistent. Original browser-local job history is not automatically migrated.
 
-## GPU connection
-
-`VISUAL_WORKER_URL` must point to a private, reachable worker. The app Docker container cannot reach a host SSH forward using its own `127.0.0.1`. Plan the Docker-network route with the actual GPU host/port before setting this URL. Keep worker API port 8091 private. No GPU machine has been provisioned or benchmarked by this release.

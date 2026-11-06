@@ -2,7 +2,7 @@
 
 ## V1 daily workspace
 
-The default home page is now a focused HTML/CSS/JavaScript studio for text-to-video, image-to-video, saved voice-reference narration, social posts/carousels, and animated HTML. All six specialists remain. The full original editor/globe/template library is retained at `/classic`.
+The default home page is now a focused HTML/CSS/JavaScript studio for saved voice-reference narration, social posts/carousels, and animated HTML. All six specialists remain. The full original editor/globe/template library is retained at `/classic`.
 
 V1 adds a protected agent API, persistent voice references, shared jobs and collected results, stable request keys, review state, and a standard-library Python client for the user's Hermes agents on Contabo. See [the Hermes handoff](integrations/hermes/README.md) and [API contract](integrations/hermes/API.md).
 
@@ -17,8 +17,7 @@ A handcoded content dashboard with six specialist roles: Mira, Seline, Spectra, 
 - Rotating globe entrance and light, colorful liquid-glass navigation.
 - 200 editable post-design combinations and a separate catalog of 200 documentary edit plans.
 - Real-footage editing, recorded narration, scene timing, grading, and browser WebM export.
-- Optional Docker workers for original SDXL images, short Wan 2.2 text-to-video or image-to-video clips, and Qwen3-TTS narration from your voice sample.
-- Image-to-video includes a starting-image upload/preview and motion prompt, with landscape/portrait framing and two- or four-second clip controls.
+- Optional Docker workers for original SDXL images and Qwen3-TTS narration from your voice sample.
 - Queued jobs, worker health/status, persisted model results, and import of completed assets into the editor.
 
 **The documentary catalog contains edit plans, not 200 generated films or stock clips.** One small CC0 sample is included for playback tests. AI roles are defined in the application; autonomous research/publishing and live social-network integrations are not connected.

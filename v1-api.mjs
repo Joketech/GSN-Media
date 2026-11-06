@@ -51,7 +51,7 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
  async function reconcile(){if(reconciling)return;reconciling=true;try{for(const j of await list('job'))if(j.state!=='submitting'&&!terminal.has(j.state))await refresh(j);}finally{reconciling=false;}}
  function validateJob(p){
   if(!p||typeof p!=='object'||Array.isArray(p))throw new InputError('Send a job JSON object.');
-  if(!['text_to_video','image_to_video','voice','post','animation'].includes(p.kind))throw new InputError('Choose text_to_video, image_to_video, voice, post or animation.');
+  if(!['voice','post','animation'].includes(p.kind))throw new InputError('Choose voice, post or animation.');
   const result={kind:p.kind,title:text(p.title||p.kind.replaceAll('_',' '),'Title',120),agent:text(p.agent||'Owner','Agent',80),project:text(p.project||'Daily studio','Project',120)};
   if(['post','animation'].includes(p.kind)){
    if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>199)throw new InputError('template_id must be 0–199.');
@@ -63,19 +63,17 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
   }else{
    result.text=text(p.text,'Prompt / narration',1200);
    if(p.kind==='voice'){if(!uuid.test(p.voice_id||''))throw new InputError('Select a saved voice profile.');result.voice_id=p.voice_id;}
-   else{result.ratio=p.ratio||'16:9';if(!['16:9','9:16'].includes(result.ratio))throw new InputError('Video ratio must be 16:9 or 9:16.');result.seconds=p.seconds??2;if(![2,4].includes(result.seconds))throw new InputError('Video duration must be 2 or 4 seconds.');if(p.kind==='image_to_video'){decode(p.image_base64,10*1024*1024);result.image_base64=p.image_base64;}}
   }return result;
  }
  async function submit(p,key){return serial(async()=>{
   const normalized=validateJob(p);const fingerprint=hash(JSON.stringify(normalized)).toString('hex');
   const existing=(await list('job')).find(j=>j.request_key===key);if(existing){if(existing.fingerprint!==fingerprint)throw new InputError('This Idempotency-Key was already used for different content.',409);return existing;}
   const active=(await list('job')).filter(j=>!terminal.has(j.state));if(active.length>=20)throw new InputError('Studio has 20 active jobs. Wait for completion.',429);
-  const id=randomUUID(),now=new Date().toISOString();const {image_base64,...stored}=normalized;
-  const j={...stored,id,record_type:'job',request_key:key,fingerprint,state:'submitting',review:'pending',created_at:now,updated_at:now};
+  const id=randomUUID(),now=new Date().toISOString();
+  const j={...normalized,id,record_type:'job',request_key:key,fingerprint,state:'submitting',review:'pending',created_at:now,updated_at:now};
   if(['post','animation'].includes(p.kind)){await writeFile(file(id,'html'),renderDesign(normalized),{mode:0o600});Object.assign(j,{state:'complete',output:'html',asset_url:`/api/v1/jobs/${id}/asset`,message:'HTML composition ready for review.'});await save(id,j);return j;}
-  j.worker=p.kind==='voice'?'voice':'visuals';let payload={kind:p.kind==='voice'?'voice':'video',text:normalized.text,request_id:id};
+  j.worker='voice';const payload={kind:'voice',text:normalized.text,request_id:id};
   if(j.worker==='voice'){const profile=await load(normalized.voice_id).catch(()=>null);if(profile?.record_type!=='voice')throw new InputError('Voice profile not found.',404);payload.reference_text=profile.reference_text;payload.audio_base64=(await readFile(file(profile.id,'audio'))).toString('base64');}
-  else Object.assign(payload,{video_mode:p.kind==='image_to_video'?'image':'text',image_base64,ratio:normalized.ratio,seconds:normalized.seconds,seed:Math.floor(Math.random()*2**32)});
   await save(id,j);
   try{const response=await workerFetch(j,'/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok){j.state='failed';j.message=String(data.error||`Worker HTTP ${response.status}.`).slice(0,1200);}else{if(!uuid.test(data.id||''))throw new Error('Invalid worker job ID.');j.upstream_id=data.id;j.state='queued';j.message='Queued on model worker.';}}catch(e){j.state='interrupted';j.message='Submission could not be confirmed. Inspect the worker before creating another request.';j.connection_error=e.message;}
   await save(id,j);return j;

@@ -16,7 +16,6 @@ Mira coordinates and tracks jobs. Lyra researches and supplies sources. Seline w
 
 1. Read the user's daily brief: topic, deliverables, selected voice, formats, deadlines, and any GPU budget. Inspect `health`, `voices`, and existing `jobs`.
 2. For sourced claims, let Lyra supply evidence; Seline prepares the copy. Mark generated footage as illustrative rather than presenting it as a recording of a real event.
-3. Pick `post`, `animation`, `voice`, `text_to_video`, or `image_to_video`. Read the corresponding payload in API.md. Give each job a truthful `agent` and `project`.
 4. Use a stable key such as `2026-11-05-project-scene-01-v1` for the same intended job. Reusing the same key and identical content returns that job. Never create a fresh key merely because a response was lost.
 5. Submit once; poll `status` or `wait`. GPU jobs require an available GPU worker and the user's generation authorization/budget. Do not start paid rentals from this skill.
 6. If a job is interrupted or submission is unconfirmed, inspect worker history before resubmitting. If a job fails, report the error. A changed prompt/revision gets a new explicit revision key.
