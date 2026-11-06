@@ -26,7 +26,7 @@ const Dashboard=(()=>{
     <label class="search">${icon('search')}<input id="search" type="search" placeholder="Search templates…" autocomplete="off" aria-label="Search templates"></label>
     <div class="pop-wrap"><button class="pill-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false">Filter ${icon('chevron')}</button><div class="popover glass-strong" id="filterPop" hidden></div></div>
     <div class="pop-wrap"><button class="round-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true">${icon('bell')}<i class="badge" id="bellBadge" hidden></i></button><div class="popover glass-strong" id="bellPop" hidden></div></div>
-    <div class="pop-wrap"><button class="user-btn" id="userBtn" aria-haspopup="true" aria-label="Account menu"><span class="user-avatar">GS</span>${icon('chevron')}</button><div class="popover glass-strong" id="userPop" hidden></div></div>
+    <div class="pop-wrap"><button class="user-btn" id="userBtn" aria-haspopup="true" aria-label="Account menu"><span class="user-avatar">g</span>${icon('chevron')}</button><div class="popover glass-strong" id="userPop" hidden></div></div>
    </header>
    <div class="panel-scroll" id="view" tabindex="-1"></div>
   </main>
@@ -45,7 +45,7 @@ const Dashboard=(()=>{
   const pop=$('#'+kind+'Pop'),wasOpen=!pop.hidden;closePops();if(wasOpen)return;
   if(kind==='filter')pop.innerHTML=`<label>Format<select id="fFormat">${Library.formats().map(f=>`<option ${f===ui.format?'selected':''}>${esc(f)}</option>`).join('')}</select></label><label>Style<select id="fStyle">${Library.styles().map(f=>`<option ${f===ui.style?'selected':''}>${esc(f)}</option>`).join('')}</select></label><button class="btn-light" data-act="clearfilter">Clear filters</button>`;
   if(kind==='bell')pop.innerHTML=bellHtml();
-  if(kind==='user')pop.innerHTML=`<button data-nav="dashboard">Dashboard</button><button data-act="globe">Back to the globe</button><a href="/classic#studio">Classic design studio</a><a href="/v1">Voice and jobs (v1 tools)</a><a href="https://github.com/Joketech/GSN-Media/blob/main/integrations/hermes/README.md" target="_blank" rel="noreferrer">Hermes guide</a>`;
+  if(kind==='user')pop.innerHTML=`<button data-nav="dashboard">Dashboard</button><button data-nav="designs">My designs</button><button data-act="globe">Back to the globe</button>`;
   pop.hidden=false;$('#'+kind+'Btn').setAttribute('aria-expanded','true');
   if(kind==='filter'){$('#fFormat').onchange=e=>{ui.format=e.target.value;ui.shown=12;draw()};$('#fStyle').onchange=e=>{ui.style=e.target.value;ui.shown=12;draw()}}
  }
@@ -123,17 +123,8 @@ const Dashboard=(()=>{
  }
  function agentsHtml(){
   return `<section class="hello"><h1>Agents</h1></section>
-  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>
-  <section class="hermes glass-inset"><h2>Hermes access</h2><p>Your Hermes agents build and edit packs through the studio’s protected API. Designs are saved on this server, so a person and an agent always work on the same copy. When an agent finishes, it marks the design <b>In review</b> and it appears under the bell for your approval.</p>
-   <div class="code" id="hermesInfo">Loading connection details…</div></section>`;
+  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>`;
  }
- async function hermesInfo(){
-  const el=$('#hermesInfo');if(!el)return;
-  try{const [h,jobs]=await Promise.all([api('/health'),api('/jobs')]);
-   el.innerHTML=`<p><b>Base URL</b> <code>${esc(location.origin)}/api/v1</code></p><p><b>Authorization</b> <code>Bearer &lt;GSN_AGENT_TOKEN&gt;</code> (kept in the server’s <code>.env</code>)</p><p><b>Designs</b> <code>GET/POST /designs</code> · <code>GET/PUT/DELETE /designs/{id}</code> · <code>GET /platforms</code> · <code>GET /templates</code></p><p><b>Status</b> ${state.designs.length} saved designs · ${state.designs.filter(d=>d.status==='review').length} in review · ${jobs.total} job${jobs.total===1?'':'s'} · voice worker ${h.workers?.voice?.ready?'ready':'offline'}</p>`;
-  }catch(e){el.textContent=e.message}
- }
-
  function drawDesignPreviews(){
   const grid=$('#dgrid');if(!grid)return;
   const io=new IntersectionObserver(async entries=>{for(const e of entries){if(!e.isIntersecting)continue;io.unobserve(e.target);
@@ -159,7 +150,6 @@ const Dashboard=(()=>{
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
-  if(ui.view==='agents')hermesInfo();
  }
  async function show(view){
   ui.view=view;ui.shown=12;
