@@ -2,7 +2,7 @@
 /* Rain on still water: falling drops, splash crowns and expanding ripples, drawn on a canvas behind the glass panel.
    It pauses whenever the dashboard is hidden, and stays still for people who prefer reduced motion. */
 const Water=(()=>{
- let canvas,ctx,w=0,h=0,dpr=1,ripples=[],drops=[],sparks=[],next=0,running=false,last=0,moveAt=0,still=false;
+ let light=false,canvas,ctx,w=0,h=0,dpr=1,ripples=[],drops=[],sparks=[],next=0,running=false,last=0,moveAt=0,still=false;
  const rnd=(a,b)=>a+Math.random()*(b-a);
  function size(){
   dpr=Math.min(window.devicePixelRatio||1,1.5);
@@ -33,10 +33,10 @@ const Water=(()=>{
  }
  function draw(){
   ctx.clearRect(0,0,w,h);
-  ctx.globalCompositeOperation='lighter';
+  ctx.globalCompositeOperation='source-over';
   for(const d of drops){
    const p=d.t/d.dur,y=d.top+(d.y-d.top)*p*p;
-   const g=ctx.createLinearGradient(d.x,y-26,d.x,y);g.addColorStop(0,'rgba(220,255,240,0)');g.addColorStop(1,'rgba(235,255,248,.85)');
+   const g=ctx.createLinearGradient(d.x,y-26,d.x,y);g.addColorStop(0,'rgba(220,255,240,0)');g.addColorStop(1,light?'rgba(255,255,255,.95)':'rgba(235,255,248,.85)');
    ctx.strokeStyle=g;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(d.x,y-26);ctx.lineTo(d.x,y);ctx.stroke();
   }
   for(const r of ripples){
@@ -45,11 +45,11 @@ const Water=(()=>{
    // Rings are squashed vertically, as water seen at a low angle.
    const ry=r.r*.42;
    ctx.lineWidth=r.width*1.25;
-   ctx.strokeStyle=`rgba(235,255,248,${.9*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.stroke();
-   ctx.lineWidth=r.width*.7;ctx.strokeStyle=`rgba(130,215,198,${.55*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y+2,r.r*.985,ry*.985,0,0,Math.PI*2);ctx.stroke();
-   if(r.r<r.max*.5){const g=ctx.createRadialGradient(r.x,r.y,0,r.x,r.y,r.r);g.addColorStop(0,`rgba(210,255,240,${.26*a})`);g.addColorStop(1,'rgba(210,255,240,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.fill()}
+   ctx.strokeStyle=`rgba(255,255,255,${.95*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.stroke();
+   ctx.lineWidth=r.width*.7;ctx.strokeStyle=`rgba(70,125,165,${.75*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y+2,r.r*.985,ry*.985,0,0,Math.PI*2);ctx.stroke();
+   if(r.r<r.max*.5){const g=ctx.createRadialGradient(r.x,r.y,0,r.x,r.y,r.r);g.addColorStop(0,`rgba(255,255,255,${.3*a})`);g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.fill()}
   }
-  for(const s of sparks){const a=1-s.life/s.max;ctx.fillStyle=`rgba(235,255,248,${.8*a})`;ctx.beginPath();ctx.arc(s.x,s.y,1.4,0,Math.PI*2);ctx.fill()}
+  for(const s of sparks){const a=1-s.life/s.max;ctx.fillStyle=light?`rgba(255,255,255,${1*a})`:`rgba(235,255,248,${.8*a})`;ctx.beginPath();ctx.arc(s.x,s.y,1.6,0,Math.PI*2);ctx.fill()}
   ctx.globalCompositeOperation='source-over';
  }
  function frame(now){
@@ -60,8 +60,8 @@ const Water=(()=>{
   if(canvas.clientWidth!==w||canvas.clientHeight!==h)size();
   step(dt);draw();requestAnimationFrame(frame);
  }
- function start(el){
-  canvas=el;ctx=canvas.getContext('2d');still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function start(el,opts={}){
+  light=!!opts.light;canvas=el;ctx=canvas.getContext('2d');still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   size();
   if(!canvas._wired){
    canvas._wired=true;

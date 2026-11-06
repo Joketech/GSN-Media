@@ -38,7 +38,7 @@ const Library=(()=>{
    const n=this.design.pages.length;
    // Fit any platform ratio inside the card's fixed 4:5 window.
    const [w,h]=this.ratio.split(' / ').map(Number),fit=Math.min(100,(w/h)/.8*100);
-   this.host.style.width=fit+'%';
+   this.host.style.width=fit+'%';this.host.style.aspectRatio=this.ratio;
    await KitHost.mount(this.host,KitHost.pageHtml(this.design,this.i,reduceMotion.matches?'':'animate'));
    if(this.roleEl)this.roleEl.textContent=roleLabel(this.i,n);
   }

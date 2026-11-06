@@ -4,7 +4,7 @@ const Dashboard=(()=>{
  const {$,$$,esc,icon,platformIcon,api,toast,state,preset,ago}=App;
  const ui={view:'dashboard',query:'',format:'All',style:'All',tab:'Popular',designTab:'All',shown:12,built:false};
  // Agents are shown as living orbs with their initials, not as artwork.
- const agentTone={Mira:'#b7a6ff',Seline:'#ffb3c8',Spectra:'#8ee8ee',Lyra:'#f4cf90',Flux:'#8fc0ff',Relay:'#9be6c4'};
+ const agentTone={Mira:'#8b6cf0',Seline:'#ef6f9a',Spectra:'#1fb5c4',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#2fb98a'};
  const initials=name=>name.slice(0,2).toUpperCase();
  const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
  const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['agents','agents','Agents']];
@@ -97,14 +97,14 @@ const Dashboard=(()=>{
  function dashboardHtml(){
   const list=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}).slice(0,14),p=curPreset();
   const agents=GSNKit.agents;
-  return `<section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
+  return `<div class="dash"><section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
    <article class="hero"><span class="hero-tag">Today’s pack</span><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
    <article class="agents-card"><div class="sec-head"><h2>Your agents</h2><a href="#agents">See more ${icon('chevronRight')}</a></div>
     <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
-   ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section>`;
+   ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
  function libraryHtml(){
   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,ui.shown),p=curPreset();
@@ -155,9 +155,9 @@ const Dashboard=(()=>{
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
-  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water);
+  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true});
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
-  const grid=$('#tgrid');if(grid)Library.hydrate(grid,curPreset().ratio);
+  const grid=$('#tgrid');if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
   if(ui.view==='agents')hermesInfo();
  }
