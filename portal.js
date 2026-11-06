@@ -24,7 +24,7 @@ const LandingPortal=(()=>{
   hide();
   navigate('overview');
  }
- function show(){entering=false;active=true;root.hidden=false;root.classList.remove('portal-exiting');document.body.classList.add('portal-open');document.querySelectorAll('body>.sidebar,body>.shell').forEach(e=>e.inert=true);if(location.hash!=='#home')location.hash='home';resize();cancelAnimationFrame(raf);animate(performance.now())}
+ function show(){entering=false;active=true;root.hidden=false;root.classList.remove('portal-exiting');document.body.classList.add('portal-open','glass-workspace');document.querySelectorAll('body>.sidebar,body>.shell').forEach(e=>e.inert=true);if(location.hash!=='#home')location.hash='home';resize();cancelAnimationFrame(raf);animate(performance.now())}
  launch.addEventListener('pointerenter',e=>{if(fine.matches&&e.pointerType!=='touch')hoverTimer=setTimeout(enter,450)});launch.addEventListener('pointerleave',()=>clearTimeout(hoverTimer));launch.addEventListener('click',enter);document.querySelectorAll('[data-enter-studio]').forEach(b=>b.addEventListener('click',enter));document.getElementById('returnToOrbit').addEventListener('click',()=>navigate('home'));window.addEventListener('resize',()=>{if(active)resize()});document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(raf);if(active&&!document.hidden)animate(performance.now())});reduce.addEventListener('change',()=>{if(active){cancelAnimationFrame(raf);animate(performance.now())}});
  if(!location.hash||location.hash==='#home')show();else hide(true);
  return {show,enter,hide,drawGlobe,drawCity};

@@ -256,3 +256,23 @@ body[data-workspace-view="studio"]:not(.portal-open) .canvas-quick-tools :is(but
 .canvas-quick-tools details[open] { width:min(245px,calc(100vw - 32px)); max-height:160px; overflow:auto; padding:4px; border-top:1px solid #dadce7; }
 .canvas-quick-tools details[open] summary { flex-basis:100%; }
 .canvas-quick-tools details label { font-size:11px; }
+/* Restore the original dark workspace while retaining editor controls. */
+body[data-workspace-view="studio"]:not(.portal-open) {
+  color-scheme:dark;
+  --edition-bg:#101116;
+  --edition-panel:#191c24;
+  --edition-line:#303541;
+  --edition-text:#f0f0f4;
+  --edition-muted:#a9adbb;
+  --edition-accent:#bdc8ff;
+  background:var(--edition-bg);
+}
+body[data-workspace-view="studio"]:not(.portal-open) :is(.shell header,.edition-editor-stage,.studio-drawer,.studio-tool-strip,.canvas-quick-tools:not([hidden])) {
+  background:var(--edition-panel);
+  color:var(--edition-text);
+  border-color:var(--edition-line);
+  box-shadow:none;
+}
+body[data-workspace-view="studio"]:not(.portal-open) .studio-drawer .edition-inspector { background:var(--edition-panel)!important; }
+body[data-workspace-view="studio"]:not(.portal-open) :is(.studio-tool-dock,.canvas-quick-tools) button { color:var(--edition-text); }
+body[data-workspace-view="studio"]:not(.portal-open) .studio-tool-dock button[aria-expanded="true"] { background:#292f40!important; color:var(--edition-accent)!important; }
