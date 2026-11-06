@@ -1,0 +1,129 @@
+:root {
+  --water-glass: linear-gradient(155deg, #ffffffef 4%, #e8f7fbf0 38%, #e4f2f6db 72%, #cce6eecc);
+  --water-edge: #fff;
+  --water-shadow: inset 0 2px 1px #fff, inset 0 -5px 10px #509bb12a, 0 10px 25px #366f8520;
+}
+body { background: #e9f4f7; }
+body::before {
+  background: radial-gradient(ellipse at 18% 30%, #e9fcff8c, transparent 55%),
+    repeating-radial-gradient(ellipse at 48% 34%, #fff4 0 1px, transparent 2px 29px),
+    linear-gradient(145deg, #f7fcfded, #d5edf1e8 65%, #e9f3faeb), url('landscape-bg.jpg') center / cover;
+}
+.glass-panel, .direction-card, .result, .agent-card, .worker-card, .slide-input {
+  background: var(--water-glass);
+  border-color: var(--water-edge);
+  box-shadow: var(--water-shadow);
+}
+.rail { background: linear-gradient(155deg, #f7fdfff7, #def0f4f0); }
+.rail nav button { box-shadow: inset 0 2px #fff, inset 0 -5px 6px #55a1b42d, 0 5px 9px #527c8b20; }
+.segmented, .upload { background: #e3f4f8bd; }
+input, textarea, select { background: #ffffffd9; }
+.overview-open .rail { display: none; }
+.overview-open .app { margin-left: 0; }
+.overview-open main { max-width: 1260px; }
+.overview-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin: 5px 0 28px; }
+.overview-heading h1 { margin: 12px 0; font-size: clamp(33px, 4vw, 56px); }
+.overview-heading p { color: var(--muted); margin: 0; }
+.create-menu { position: relative; z-index: 5; flex-shrink: 0; }
+.create-menu summary { cursor: pointer; list-style: none; padding: 13px 18px; border-radius: 13px; background: #174653; color: white; font-weight: 700; box-shadow: inset 0 2px #ffffff40, 0 7px 16px #244c5330; }
+.create-menu summary::-webkit-details-marker { display: none; }
+.create-menu > div { position: absolute; top: calc(100% + 7px); right: 0; width: 200px; padding: 8px; display: grid; gap: 5px; border: 1px solid #fff; border-radius: 15px; background: #eef8fc; box-shadow: var(--water-shadow); }
+.create-menu button { justify-content: flex-start; text-align: left; }
+.water-map { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr .45fr 1.55fr .45fr 1fr; grid-template-rows: auto auto auto; gap: 15px; align-items: center; padding: 24px; border: 1px solid #fff; border-radius: 28px; background: radial-gradient(ellipse at center, #bfe9f2e0, #edf9fb92 75%), repeating-radial-gradient(ellipse at center, #fff8 0 1px, transparent 3px 34px); box-shadow: var(--water-shadow); }
+.orbit-cards { display: contents; }
+.orbit-card { position: relative; display: grid; gap: 12px; color: #19343e; text-decoration: none; padding: 16px; min-width: 0; border: 1px solid #fff; border-radius: 16px; background: linear-gradient(145deg, #fff, #f1f9fbd9 66%, color-mix(in srgb, var(--card-light) 37%, white)); box-shadow: var(--water-shadow); transition: transform .2s, box-shadow .2s; }
+.orbit-card:hover { transform: translateY(-3px); box-shadow: var(--water-shadow), 0 0 18px color-mix(in srgb, var(--card-light) 75%, transparent); }
+.orbit-card-title { color: var(--card-color); font-weight: 800; text-transform: uppercase; letter-spacing: 1.4px; font-size: 11px; }
+.orbit-card-title > span { margin-right: 4px; }
+.orbit-card-content { display: flex; align-items: center; gap: 10px; }
+.orbit-card-content strong, .orbit-card-content small { display: block; }
+.orbit-card-content strong { font-size: 13px; }
+.orbit-card-content small { color: #526c75; font-size: 11px; margin-top: 4px; }
+.orbit-card-icon { display: grid; place-items: center; flex: 0 0 32px; height: 32px; font-size: 20px; color: white; border-radius: 8px; background: linear-gradient(140deg, var(--card-light), var(--card-color) 65%); box-shadow: inset 0 1px #fff9, 0 3px 6px #31576b30; }
+.orbit-arrow { position: absolute; top: 12px; right: 13px; color: var(--card-color); }
+.orbit-card-08 { grid-area: 1 / 1 / 2 / 3; }
+.orbit-card-01 { grid-area: 1 / 3; }
+.orbit-card-02 { grid-area: 1 / 4 / 2 / 6; }
+.orbit-card-07 { grid-area: 2 / 1; }
+.orbit-card-03 { grid-area: 2 / 5; }
+.orbit-card-06 { grid-area: 3 / 1 / 4 / 3; }
+.orbit-card-05 { grid-area: 3 / 3; }
+.orbit-card-04 { grid-area: 3 / 4 / 4 / 6; }
+.wheel-stage { grid-area: 2 / 2 / 3 / 5; width: min(100%, 425px); aspect-ratio: 1; position: relative; justify-self: center; margin: 6px 0 25px; }
+.ripple-rings { position: absolute; inset: -3%; border-radius: 50%; background: repeating-radial-gradient(circle, #fff0 0 20px, #ffffffa8 21px 22px, #62b4c940 23px 24px, #fff0 25px 31px); pointer-events: none; }
+#studioWheel { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(0 5px 6px #357f9660); }
+.wheel-rotor { transform-origin: 220px 220px; animation: water-wheel 70s linear infinite; }
+#studioWheel path { stroke: #eaffff; stroke-width: 2.5; stroke-linejoin: round; transition: filter .2s; }
+#studioWheel a:hover path, #studioWheel a:focus-visible path { filter: brightness(1.23); stroke: white; stroke-width: 4; }
+.wheel-label { animation: water-wheel 70s linear infinite reverse; transform-box: view-box; transform-origin: 0 0; pointer-events: none; }
+#studioWheel text { fill: #fff; text-anchor: middle; font-size: 14px; font-weight: 800; paint-order: stroke; stroke: #183e5066; stroke-width: 1.3px; }
+#studioWheel .wheel-number { font-size: 10px; }
+#studioWheel .wheel-icon { font-size: 24px; }
+.wheel-stage:hover .wheel-rotor, .wheel-stage:hover .wheel-label, .wheel-stage:focus-within .wheel-rotor, .wheel-stage:focus-within .wheel-label, .rotation-paused .wheel-rotor, .rotation-paused .wheel-label { animation-play-state: paused; }
+.wheel-center { position: absolute; inset: 33%; display: grid; place-content: center; text-align: center; border-radius: 50%; pointer-events: none; color: #fff; background: radial-gradient(circle at 30% 15%, #6fa8b7, #1c5365 48%, #123342 85%); border: 4px solid #defcff; box-shadow: inset 0 4px 9px #c7f8ff77, 0 0 18px #e5fcff, 0 5px 10px #17485570; }
+.wheel-center span { font-size: clamp(19px, 4vw, 42px); font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+.wheel-center small { font-size: clamp(7px, 1.3vw, 12px); letter-spacing: .24em; margin-top: 6px; }
+.wheel-motion { position: absolute; left: 50%; bottom: -23px; transform: translateX(-50%); white-space: nowrap; padding: 5px 11px; font-size: 10px; }
+.wheel-motion:hover { transform: translateX(-50%); }
+@keyframes water-wheel { to { transform: rotate(360deg); } }
+.water-map {
+  max-width: 1000px;
+  margin-inline: auto;
+  gap: 12px;
+  background: radial-gradient(ellipse at center, #9fd5e4a0, transparent 63%),
+    repeating-radial-gradient(ellipse at center, #fff8 0 1px, transparent 3px 35px),
+    linear-gradient(135deg, #e9f4fa, #d7e8f1 52%, #f6fbff);
+  border: 1px solid white;
+  box-shadow: inset 0 0 0 5px #ffffff55, inset 0 0 35px #f8fdff, 0 16px 40px #365e7829;
+}
+.info-panel {
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff, #edf6f9 54%, #ddebf1);
+  box-shadow: inset 0 0 0 3px #ffffff8c, inset 0 -6px 9px #9dbbc444, 0 6px 11px #264f6629;
+}
+.info-panel h2 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: #174f68; }
+.info-panel p, .info-panel ul { margin: 0; color: #375460; font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; }
+.info-panel ul { padding-left: 15px; }
+.info-panel > a { font-size: 10px; font-weight: 700; }
+.material-samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.material-samples span { display: grid; place-items: end center; min-height: 38px; padding: 4px 1px; border-radius: 5px; color: white; font-size: 7px; font-weight: 800; letter-spacing: .06em; background: linear-gradient(130deg,#152b38 9%,#b8cbd6 37%,#405666 54%,#172a38 81%); }
+.material-samples span:nth-child(2) { background: linear-gradient(130deg,#261e53,#aa83c5 45%,#334882 56%,#20283c); }
+.material-samples span:nth-child(3) { background: linear-gradient(130deg,#153d46,#8bb6bc 45%,#55758e 54%,#243846); }
+.service-state { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 20px; font-size: 10px; color: #794412; background: #fff0d7; }
+.service-state.ready { color: #19573d; background: #d7f2e4; }
+.service-state::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.worker-detail p { margin-top: 4px; }
+.overview-globe-link { justify-content: center; margin-top: 17px; font-size: 12px; }
+#studioWheel text { font-size: 10px; }
+#studioWheel .wheel-icon { font-size: 17px; }
+@media (max-width: 850px) {
+  .water-map { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 12px; padding: 16px; }
+  .wheel-stage { grid-area: 1 / 1 / 2 / -1; width: min(88%, 400px); }
+  .orbit-card { grid-area: auto; }
+}
+@media (max-width: 520px) {
+  .overview-heading { flex-wrap: wrap; }
+  .create-menu { margin-left: auto; }
+  .orbit-card { padding: 12px; }
+  .orbit-card-content { align-items: flex-start; }
+  .orbit-card-icon { display: none; }
+  footer { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wheel-rotor, .wheel-label { animation: none; }
+  .wheel-motion { display: none; }
+}
+
+/* Window glass: a fixed bead layer and a slower runoff layer. */
+body { isolation: isolate; }
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22420%22%20height%3D%22520%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22bead%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%3E%3Cstop%20stop-color%3D%22white%22%20stop-opacity%3D%22.9%22/%3E%3Cstop%20offset%3D%22.42%22%20stop-color%3D%22%23d3f4ff%22%20stop-opacity%3D%22.2%22/%3E%3Cstop%20offset%3D%22.76%22%20stop-color%3D%22%234e889f%22%20stop-opacity%3D%22.25%22/%3E%3Cstop%20offset%3D%22.93%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%22.8%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22/%3E%3C/radialGradient%3E%3ClinearGradient%20id%3D%22trail%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22/%3E%3Cstop%20offset%3D%22.84%22%20stop-color%3D%22%2399c6d7%22%20stop-opacity%3D%22.35%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22white%22%20stop-opacity%3D%22.72%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse%20cx%3D%22280%22%20cy%3D%2277%22%20rx%3D%221.9%22%20ry%3D%222.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.66%22/%3E%3Cellipse%20cx%3D%22147%22%20cy%3D%2288%22%20rx%3D%222.5%22%20ry%3D%223.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.39%22/%3E%3Cellipse%20cx%3D%22212%22%20cy%3D%2219%22%20rx%3D%224.2%22%20ry%3D%225.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.26%22/%3E%3Cellipse%20cx%3D%22227%22%20cy%3D%22230%22%20rx%3D%223.6%22%20ry%3D%225.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.25%22/%3E%3Cellipse%20cx%3D%22254%22%20cy%3D%22337%22%20rx%3D%224.0%22%20ry%3D%225.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.50%22/%3E%3Cellipse%20cx%3D%22373%22%20cy%3D%22204%22%20rx%3D%222.3%22%20ry%3D%223.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.29%22/%3E%3Cellipse%20cx%3D%22222%22%20cy%3D%22417%22%20rx%3D%223.1%22%20ry%3D%224.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.58%22/%3E%3Cellipse%20cx%3D%22268%22%20cy%3D%22201%22%20rx%3D%222.7%22%20ry%3D%223.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.43%22/%3E%3Cellipse%20cx%3D%22142%22%20cy%3D%22225%22%20rx%3D%223.6%22%20ry%3D%225.1%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.73%22/%3E%3Cellipse%20cx%3D%22241%22%20cy%3D%22147%22%20rx%3D%223.4%22%20ry%3D%224.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.62%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22482%22%20rx%3D%222.1%22%20ry%3D%223.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.54%22/%3E%3Cellipse%20cx%3D%22397%22%20cy%3D%22101%22%20rx%3D%223.3%22%20ry%3D%224.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.69%22/%3E%3Cellipse%20cx%3D%2271%22%20cy%3D%22270%22%20rx%3D%221.2%22%20ry%3D%221.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.39%22/%3E%3Cellipse%20cx%3D%2235%22%20cy%3D%22407%22%20rx%3D%221.3%22%20ry%3D%221.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.54%22/%3E%3Cellipse%20cx%3D%22218%22%20cy%3D%22477%22%20rx%3D%221.7%22%20ry%3D%222.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.54%22/%3E%3Cellipse%20cx%3D%2279%22%20cy%3D%22328%22%20rx%3D%223.4%22%20ry%3D%224.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.66%22/%3E%3Cellipse%20cx%3D%22325%22%20cy%3D%22210%22%20rx%3D%223.1%22%20ry%3D%224.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.21%22/%3E%3Cellipse%20cx%3D%22386%22%20cy%3D%2222%22%20rx%3D%222.1%22%20ry%3D%223.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.43%22/%3E%3Cellipse%20cx%3D%22280%22%20cy%3D%22139%22%20rx%3D%222.3%22%20ry%3D%223.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.36%22/%3E%3Cellipse%20cx%3D%224%22%20cy%3D%2249%22%20rx%3D%223.3%22%20ry%3D%224.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.62%22/%3E%3Cellipse%20cx%3D%22157%22%20cy%3D%22123%22%20rx%3D%220.7%22%20ry%3D%221.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.55%22/%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2239%22%20rx%3D%222.6%22%20ry%3D%223.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.20%22/%3E%3Cellipse%20cx%3D%2289%22%20cy%3D%22459%22%20rx%3D%222.0%22%20ry%3D%222.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.24%22/%3E%3Cellipse%20cx%3D%22374%22%20cy%3D%22197%22%20rx%3D%221.6%22%20ry%3D%222.3%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.21%22/%3E%3Cellipse%20cx%3D%2299%22%20cy%3D%22115%22%20rx%3D%223.4%22%20ry%3D%224.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.66%22/%3E%3Cellipse%20cx%3D%22331%22%20cy%3D%22387%22%20rx%3D%223.8%22%20ry%3D%225.3%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.31%22/%3E%3Cellipse%20cx%3D%22324%22%20cy%3D%22249%22%20rx%3D%224.1%22%20ry%3D%225.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.32%22/%3E%3Cellipse%20cx%3D%22390%22%20cy%3D%221%22%20rx%3D%222.9%22%20ry%3D%224.1%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.64%22/%3E%3Cellipse%20cx%3D%22293%22%20cy%3D%22258%22%20rx%3D%221.8%22%20ry%3D%222.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.58%22/%3E%3Cellipse%20cx%3D%22401%22%20cy%3D%2256%22%20rx%3D%223.9%22%20ry%3D%225.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.43%22/%3E%3Cellipse%20cx%3D%22294%22%20cy%3D%22167%22%20rx%3D%221.7%22%20ry%3D%222.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.57%22/%3E%3Cellipse%20cx%3D%22222%22%20cy%3D%2253%22%20rx%3D%222.1%22%20ry%3D%222.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.47%22/%3E%3Cellipse%20cx%3D%2213%22%20cy%3D%22332%22%20rx%3D%222.1%22%20ry%3D%222.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.28%22/%3E%3Cellipse%20cx%3D%22176%22%20cy%3D%22482%22%20rx%3D%222.2%22%20ry%3D%223.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.48%22/%3E%3Cellipse%20cx%3D%2244%22%20cy%3D%22332%22%20rx%3D%221.4%22%20ry%3D%222.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.46%22/%3E%3Cellipse%20cx%3D%2222%22%20cy%3D%22453%22%20rx%3D%223.7%22%20ry%3D%225.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.52%22/%3E%3Cellipse%20cx%3D%22417%22%20cy%3D%22456%22%20rx%3D%221.3%22%20ry%3D%221.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.56%22/%3E%3Cellipse%20cx%3D%22334%22%20cy%3D%22347%22%20rx%3D%221.3%22%20ry%3D%221.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.22%22/%3E%3Cellipse%20cx%3D%22326%22%20cy%3D%22466%22%20rx%3D%220.9%22%20ry%3D%221.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.50%22/%3E%3Cellipse%20cx%3D%22371%22%20cy%3D%22474%22%20rx%3D%223.2%22%20ry%3D%224.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.23%22/%3E%3Cellipse%20cx%3D%22154%22%20cy%3D%22237%22%20rx%3D%221.9%22%20ry%3D%222.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.26%22/%3E%3Cellipse%20cx%3D%22359%22%20cy%3D%22168%22%20rx%3D%223.3%22%20ry%3D%224.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.26%22/%3E%3Cellipse%20cx%3D%22128%22%20cy%3D%22325%22%20rx%3D%224.0%22%20ry%3D%225.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.20%22/%3E%3Cellipse%20cx%3D%22189%22%20cy%3D%22193%22%20rx%3D%223.6%22%20ry%3D%225.1%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.33%22/%3E%3Cellipse%20cx%3D%22112%22%20cy%3D%22256%22%20rx%3D%221.6%22%20ry%3D%222.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.38%22/%3E%3Cellipse%20cx%3D%22200%22%20cy%3D%22472%22%20rx%3D%221.8%22%20ry%3D%222.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.56%22/%3E%3Cellipse%20cx%3D%22376%22%20cy%3D%22166%22%20rx%3D%223.4%22%20ry%3D%224.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.74%22/%3E%3Cellipse%20cx%3D%2237%22%20cy%3D%22262%22%20rx%3D%221.0%22%20ry%3D%221.3%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.64%22/%3E%3Cellipse%20cx%3D%2252%22%20cy%3D%22227%22%20rx%3D%221.4%22%20ry%3D%222.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.22%22/%3E%3Cellipse%20cx%3D%22384%22%20cy%3D%22375%22%20rx%3D%223.5%22%20ry%3D%224.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.38%22/%3E%3Cellipse%20cx%3D%2234%22%20cy%3D%22293%22%20rx%3D%223.0%22%20ry%3D%224.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.55%22/%3E%3Cellipse%20cx%3D%22362%22%20cy%3D%22346%22%20rx%3D%223.6%22%20ry%3D%225.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.61%22/%3E%3Cellipse%20cx%3D%22187%22%20cy%3D%22126%22%20rx%3D%223.1%22%20ry%3D%224.3%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.40%22/%3E%3Cellipse%20cx%3D%2263%22%20cy%3D%22354%22%20rx%3D%221.2%22%20ry%3D%221.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.49%22/%3E%3Cellipse%20cx%3D%22359%22%20cy%3D%22179%22%20rx%3D%222.5%22%20ry%3D%223.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.44%22/%3E%3Cellipse%20cx%3D%22162%22%20cy%3D%22217%22%20rx%3D%223.5%22%20ry%3D%224.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.59%22/%3E%3Cellipse%20cx%3D%22107%22%20cy%3D%22217%22%20rx%3D%222.1%22%20ry%3D%223.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.41%22/%3E%3Cellipse%20cx%3D%22262%22%20cy%3D%2261%22%20rx%3D%221.4%22%20ry%3D%222.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.72%22/%3E%3Cellipse%20cx%3D%22232%22%20cy%3D%22365%22%20rx%3D%221.8%22%20ry%3D%222.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.36%22/%3E%3Cellipse%20cx%3D%22284%22%20cy%3D%22222%22%20rx%3D%221.6%22%20ry%3D%222.3%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.61%22/%3E%3Cellipse%20cx%3D%22118%22%20cy%3D%22234%22%20rx%3D%223.3%22%20ry%3D%224.6%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.33%22/%3E%3Cellipse%20cx%3D%22321%22%20cy%3D%22210%22%20rx%3D%222.4%22%20ry%3D%223.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.37%22/%3E%3Cellipse%20cx%3D%22395%22%20cy%3D%2243%22%20rx%3D%223.1%22%20ry%3D%224.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.69%22/%3E%3Cellipse%20cx%3D%22217%22%20cy%3D%22147%22%20rx%3D%220.7%22%20ry%3D%221.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.71%22/%3E%3Cellipse%20cx%3D%22296%22%20cy%3D%22347%22%20rx%3D%222.1%22%20ry%3D%223.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.52%22/%3E%3Cellipse%20cx%3D%2235%22%20cy%3D%22254%22%20rx%3D%221.0%22%20ry%3D%221.4%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.64%22/%3E%3Cellipse%20cx%3D%2256%22%20cy%3D%22306%22%20rx%3D%221.3%22%20ry%3D%221.9%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.41%22/%3E%3Cellipse%20cx%3D%22346%22%20cy%3D%22324%22%20rx%3D%223.9%22%20ry%3D%225.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.50%22/%3E%3Cellipse%20cx%3D%2282%22%20cy%3D%22115%22%20rx%3D%222.0%22%20ry%3D%222.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.28%22/%3E%3Cellipse%20cx%3D%2221%22%20cy%3D%22413%22%20rx%3D%221.3%22%20ry%3D%221.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.20%22/%3E%3Cellipse%20cx%3D%22261%22%20cy%3D%22406%22%20rx%3D%223.2%22%20ry%3D%224.5%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.62%22/%3E%3Cellipse%20cx%3D%22402%22%20cy%3D%22323%22%20rx%3D%221.4%22%20ry%3D%222.0%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.73%22/%3E%3Cellipse%20cx%3D%22128%22%20cy%3D%22280%22%20rx%3D%223.4%22%20ry%3D%224.7%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.56%22/%3E%3Cellipse%20cx%3D%2243%22%20cy%3D%22345%22%20rx%3D%223.0%22%20ry%3D%224.2%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.25%22/%3E%3Cellipse%20cx%3D%22352%22%20cy%3D%229%22%20rx%3D%222.7%22%20ry%3D%223.8%22%20fill%3D%22url%28%23bead%29%22%20opacity%3D%220.51%22/%3E%3Cpath%20d%3D%22M278%20133q-3%2020%202%2087%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.4%22/%3E%3Cpath%20d%3D%22M106%20343q-3%2020%202%2076%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.4%22/%3E%3Cpath%20d%3D%22M121%20213q-3%2020%202%2071%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.4%22/%3E%3Cpath%20d%3D%22M312%20247q-3%2020%202%2057%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.0%22/%3E%3Cpath%20d%3D%22M91%20370q-3%2020%202%2063%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.0%22/%3E%3Cpath%20d%3D%22M131%2023q-3%2020%202%2060%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.6%22/%3E%3Cpath%20d%3D%22M248%20184q-3%2020%202%2044%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.3%22/%3E%3Cpath%20d%3D%22M179%20230q-3%2020%202%2045%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.4%22/%3E%3Cpath%20d%3D%22M256%20290q-3%2020%202%2032%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.6%22/%3E%3Cpath%20d%3D%22M208%20512q-3%2020%202%2034%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.4%22/%3E%3Cpath%20d%3D%22M47%20227q-3%2020%202%2070%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.3%22/%3E%3Cpath%20d%3D%22M67%2030q-3%2020%202%2075%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.9%22/%3E%3Cpath%20d%3D%22M317%202q-3%2020%202%2035%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%222.6%22/%3E%3Cpath%20d%3D%22M380%20219q-3%2020%202%2099%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.5%22/%3E%3Cpath%20d%3D%22M264%20151q-3%2020%202%2058%22%20fill%3D%22none%22%20stroke%3D%22url%28%23trail%29%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E"),
+    repeating-linear-gradient(103deg, transparent 0 45px, #f5fcff29 47px, #8fb6c41c 50px, transparent 55px 95px);
+  background-size: 420px 520px, 300px 300px;
+  opacity: .86; animation: glass-runoff 19s linear infinite;
+}
+@keyframes glass-runoff { to { background-position: 0 520px, 0 300px; } }
+@media (prefers-reduced-motion: reduce) { body::after { animation: none; } }

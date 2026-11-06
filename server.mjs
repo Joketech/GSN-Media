@@ -7,8 +7,10 @@ import {spawn} from 'node:child_process';
 const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','portal.css','portal.js','robot-hand.svg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','ai-studio.js'].map(f=>['/'+f,f])]);
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const v1=createV1();
+allowed.set('/gsn-photo-data.js','gsn-photo-data.js');
+for(let index=0;index<48;index++)allowed.set(`/gsn-photo-${index}.png`,`gsn-photo-${index}.png`);
 allowed.set('/','v1.html');allowed.set('/classic','index.html');
-for(const name of ['v1.html','v1.css','v1.js'])allowed.set('/'+name,name);
+for(const name of ['v1.html','v1.css','v1.js','water-studio.css','workspace-edition.css','overview-wheel.js','slide-image.js','artwork-library.css','campaign-atlas.png','automation-atlas.png','automation-operations-atlas.png'])allowed.set('/'+name,name);
 export async function synthesize(payload){const voiceProgram=await readFile(new URL('local-voice.ps1',import.meta.url),'utf8');return new Promise((resolve,reject)=>{
  if(process.platform!=='win32')return reject(Error('Offline speech synthesis currently requires Windows. Record or import narration instead.'));
  const child=spawn('powershell.exe',['-NoProfile','-NonInteractive','-Command',voiceProgram],{windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,GSN_VOICE_REQUEST:JSON.stringify(payload)}});

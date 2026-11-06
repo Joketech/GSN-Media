@@ -14,7 +14,16 @@ const LandingPortal=(()=>{
  function resize(){const dpr=Math.min(window.devicePixelRatio||1,2),w=globe.clientWidth||300;globe.width=w*dpr;globe.height=w*dpr;drawCity();drawGlobe()}
  function animate(now){if(!active)return;if(now-lastFrame>30){angle+=.003;drawGlobe(now);lastFrame=now}if(!reduce.matches)raf=requestAnimationFrame(animate)}
  function hide(instant=false){active=false;cancelAnimationFrame(raf);clearTimeout(hoverTimer);document.body.classList.remove('portal-open');document.querySelectorAll('body>.sidebar,body>.shell').forEach(e=>e.inert=false);if(instant){root.hidden=true;return}root.classList.add('portal-exiting');setTimeout(()=>{root.hidden=true;root.classList.remove('portal-exiting');entering=false;document.getElementById('main').focus({preventScroll:true})},reduce.matches?0:700)}
- function enter(){if(entering||!active)return;entering=true;hide();navigate('overview')}
+ function enter(){
+  if(entering||!active)return;
+  entering=true;
+  if(location.pathname==='/classic'){
+   location.assign('/#home');
+   return;
+  }
+  hide();
+  navigate('overview');
+ }
  function show(){entering=false;active=true;root.hidden=false;root.classList.remove('portal-exiting');document.body.classList.add('portal-open');document.querySelectorAll('body>.sidebar,body>.shell').forEach(e=>e.inert=true);if(location.hash!=='#home')location.hash='home';resize();cancelAnimationFrame(raf);animate(performance.now())}
  launch.addEventListener('pointerenter',e=>{if(fine.matches&&e.pointerType!=='touch')hoverTimer=setTimeout(enter,450)});launch.addEventListener('pointerleave',()=>clearTimeout(hoverTimer));launch.addEventListener('click',enter);document.querySelectorAll('[data-enter-studio]').forEach(b=>b.addEventListener('click',enter));document.getElementById('returnToOrbit').addEventListener('click',()=>navigate('home'));window.addEventListener('resize',()=>{if(active)resize()});document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(raf);if(active&&!document.hidden)animate(performance.now())});reduce.addEventListener('change',()=>{if(active){cancelAnimationFrame(raf);animate(performance.now())}});
  if(!location.hash||location.hash==='#home')show();else hide(true);

@@ -7,6 +7,7 @@ import {pipeline} from 'node:stream/promises';
 import {Transform} from 'node:stream';
 import {templateCatalog,renderDesign} from './template-engine.mjs';
 
+const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const hash=x=>createHash('sha256').update(x).digest();
@@ -54,10 +55,42 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
   if(!['voice','post','animation'].includes(p.kind))throw new InputError('Choose voice, post or animation.');
   const result={kind:p.kind,title:text(p.title||p.kind.replaceAll('_',' '),'Title',120),agent:text(p.agent||'Owner','Agent',80),project:text(p.project||'Daily studio','Project',120)};
   if(['post','animation'].includes(p.kind)){
-   if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>199)throw new InputError('template_id must be 0–199.');
+   if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the design catalog.');
    if(!Array.isArray(p.slides)||!p.slides.length||p.slides.length>20)throw new InputError('Supply 1–20 slides.');
-   result.template_id=p.template_id;result.slides=p.slides.map(s=>({title:text(s.title,'Slide title',160),body:text(s.body??'','Slide body',600,false)}));
-   result.brand=text(p.brand||'GSN Media','Brand',80);result.handle=text(p.handle||'@gsnmedia','Handle',80);
+   result.template_id=p.template_id;
+   result.slides=p.slides.map(s=>{
+    if(!s||typeof s!=='object'||Array.isArray(s))throw new InputError('Each slide must be an object.');
+    const slide={title:text(s.title,'Slide title',160),body:text(s.body??'','Slide body',600,false)};
+    if(['hook','cta','agenda','triptych','feature','principle','steps','compare','metric','checklist','quote','example','summary'].includes(s.deckLayout))slide.deckLayout=s.deckLayout;
+    for(const key of ['kicker','brandText','footerText'])if(s[key]!==undefined)slide[key]=text(s[key],key,90,false);
+    if(s.layerOrder!==undefined){
+     const keys=['title','body','kicker','brandText','footerText','artwork'];
+     if(!Array.isArray(s.layerOrder)||s.layerOrder.length>keys.length||new Set(s.layerOrder).size!==s.layerOrder.length||s.layerOrder.some(key=>!keys.includes(key)))throw new InputError('Unsupported layer order.');
+     slide.layerOrder=s.layerOrder;
+    }
+    if(s.artLayer!==undefined){
+     if(!['behind','front','background'].includes(s.artLayer))throw new InputError('Unsupported artwork layer.');
+     slide.artLayer=s.artLayer;
+    }
+    if(s.motif!==undefined){
+     if(typeof s.motif!=='string'||(!['hourglass','visor','orbit','portfolio','stack','lift','product','audio','terminal','rocket','none'].includes(s.motif)&&!/^(?:business-(?:[0-9]|1[0-9]|2[0-3])|campaign-(?:[0-9]|1[01])|gsn-(?:0|[1-9][0-9]{0,2}|1[01][0-9]{2}))$/.test(s.motif)))throw new InputError('Unsupported artwork.');
+     slide.motif=s.motif;
+    }
+    for(const color of ['accent','background','ink'])if(s[color]!==undefined){
+     if(typeof s[color]!=='string'||!/^#[0-9a-f]{6}$/i.test(s[color]))throw new InputError('Use six-digit hex colors.');
+     slide[color]=s[color];
+    }
+    for(const [key,min,max] of [['artX',-50,50],['artY',-50,50],['artScale',35,180]])if(s[key]!==undefined){
+     if(!Number.isFinite(s[key])||s[key]<min||s[key]>max)throw new InputError(`Slide ${key} must be between ${min} and ${max}.`);
+     slide[key]=s[key];
+    }
+    if(s.image!==undefined){
+     if(typeof s.image!=='string'||s.image.length>1400000||!/^data:image\/(png|jpeg|webp);base64,([a-z0-9+/]+={0,2})$/i.test(s.image))throw new InputError('Slide image must be a PNG, JPEG or WebP data URL up to 1.4 MB.');
+     slide.image=s.image;
+    }
+    return slide;
+   });
+   result.brand=text(p.brand||'GSN Technology','Brand',80);result.handle=text(p.handle||result.brand,'Handle',80);
    result.ratio=p.ratio||'1 / 1';if(!['1 / 1','4 / 5','9 / 16','16 / 9'].includes(result.ratio))throw new InputError('Unsupported design ratio.');
    result.scene_seconds=p.scene_seconds??3;if(!Number.isInteger(result.scene_seconds)||result.scene_seconds<1||result.scene_seconds>10)throw new InputError('scene_seconds must be 1–10.');
   }else{
@@ -70,7 +103,8 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
   const existing=(await list('job')).find(j=>j.request_key===key);if(existing){if(existing.fingerprint!==fingerprint)throw new InputError('This Idempotency-Key was already used for different content.',409);return existing;}
   const active=(await list('job')).filter(j=>!terminal.has(j.state));if(active.length>=20)throw new InputError('Studio has 20 active jobs. Wait for completion.',429);
   const id=randomUUID(),now=new Date().toISOString();
-  const j={...normalized,id,record_type:'job',request_key:key,fingerprint,state:'submitting',review:'pending',created_at:now,updated_at:now};
+  const stored={...normalized}; if(stored.slides)stored.slides=stored.slides.map(({image,...slide})=>slide);
+  const j={...stored,id,record_type:'job',request_key:key,fingerprint,state:'submitting',review:'pending',created_at:now,updated_at:now};
   if(['post','animation'].includes(p.kind)){await writeFile(file(id,'html'),renderDesign(normalized),{mode:0o600});Object.assign(j,{state:'complete',output:'html',asset_url:`/api/v1/jobs/${id}/asset`,message:'HTML composition ready for review.'});await save(id,j);return j;}
   j.worker='voice';const payload={kind:'voice',text:normalized.text,request_id:id};
   if(j.worker==='voice'){const profile=await load(normalized.voice_id).catch(()=>null);if(profile?.record_type!=='voice')throw new InputError('Voice profile not found.',404);payload.reference_text=profile.reference_text;payload.audio_base64=(await readFile(file(profile.id,'audio'))).toString('base64');}
