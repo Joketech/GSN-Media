@@ -13,6 +13,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .stage-bg{position:absolute;inset:0;z-index:-2;background:radial-gradient(60% 55% at 12% 18%,#bcd9f7 0,transparent 70%),radial-gradient(50% 50% at 88% 12%,#f6c9dc 0,transparent 70%),radial-gradient(55% 60% at 80% 88%,#c4ead9 0,transparent 70%),radial-gradient(50% 50% at 18% 90%,#fbd9bd 0,transparent 70%),radial-gradient(40% 40% at 50% 50%,#ddd2f6 0,transparent 75%),#e8e3f1;background-size:140% 140%;animation:aurora 26s ease-in-out infinite alternate}
 @keyframes aurora{to{background-position:100% 60%}}
 .water{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+#stage .water{z-index:6}
 .glass,.glass-dark,.glass-strong{-webkit-backdrop-filter:blur(3px) saturate(1.3);backdrop-filter:blur(3px) saturate(1.3);border:1px solid var(--line);box-shadow:var(--shadow)}
 .glass{background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(255,246,248,.3))}
 .glass-dark{background:rgba(66,44,52,.5);color:#fff;border-color:rgba(255,255,255,.35)}
@@ -153,3 +154,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-height:820px){.hero-tag{display:none}.agents-grid{grid-template-columns:repeat(3,1fr)}.hero p{display:none}.hero-row{height:140px}.agent-row small{display:none}.agents-card{padding:10px 16px}.dash{min-height:500px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.marquee-track,.orb,.orb-ring,.orb-dot,.hero:after,.stage-bg{animation:none!important}.marquee{overflow-x:auto}}
 .portal-water{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
+
+.modal textarea{width:100%;border-radius:12px;border:1px solid rgba(0,0,0,.16);padding:10px 12px;font:inherit;background:#fff;color:var(--ink);resize:vertical}
+.idea-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.idea-tools .btn-light{height:32px;font-size:.76rem}
+.idea-tpl{flex:1;font-size:.78rem;color:var(--ink2);min-width:160px}
+
+.tcard-x{position:absolute;right:8px;top:8px;z-index:3;width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:var(--accent);font-size:1.1rem;line-height:1;display:none;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.tcard:hover .tcard-x{display:grid}.tcard-x:hover{background:var(--accent);color:#fff}
+.linklike{border:0;background:none;color:var(--accent);font-weight:700;text-decoration:underline;padding:0 4px}
+.more{color:var(--ink2);font-size:.85rem}.more[hidden]{display:none}

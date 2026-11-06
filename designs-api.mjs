@@ -84,6 +84,8 @@ export function sanitizeSlide(s, index = 0) {
     x: range(s.x, -100, 100, `${where} x`), y: range(s.y, -100, 100, `${where} y`), size: range(s.size, 5, 18, `${where} size`),
     image: image(s.image, `${where} image`),
     elementSizes: numberList(s.elementSizes, `${where} elementSizes`, 25, 500),
+    elementStretchX: numberList(s.elementStretchX, `${where} elementStretchX`, 25, 400), elementStretchY: numberList(s.elementStretchY, `${where} elementStretchY`, 25, 400),
+    artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
   if (s.motif !== undefined) {
     if (typeof s.motif !== 'string' || !MOTIF.test(s.motif)) throw new DesignError(`${where} has an unsupported artwork motif.`);
@@ -92,6 +94,13 @@ export function sanitizeSlide(s, index = 0) {
   if (s.layerOrder !== undefined) {
     if (!Array.isArray(s.layerOrder) || s.layerOrder.length > 60 || new Set(s.layerOrder).size !== s.layerOrder.length || s.layerOrder.some(k => typeof k !== 'string' || !LAYER_ORDER_KEY.test(k))) throw new DesignError(`${where} has an invalid layerOrder.`);
     slide.layerOrder = s.layerOrder;
+  }
+  if (s.groups !== undefined) {
+    if (!Array.isArray(s.groups) || s.groups.length > 12) throw new DesignError(`${where} groups must be a list of up to 12 groups.`);
+    slide.groups = s.groups.map((g, i) => {
+      if (!Array.isArray(g) || g.length < 2 || g.length > 40 || new Set(g).size !== g.length || g.some(k => typeof k !== 'string' || !LAYER_ORDER_KEY.test(k))) throw new DesignError(`${where} group ${i + 1} is not valid.`);
+      return g;
+    });
   }
   if (s.textLayers !== undefined) {
     if (!s.textLayers || typeof s.textLayers !== 'object' || Array.isArray(s.textLayers)) throw new DesignError(`${where} textLayers must be an object.`);

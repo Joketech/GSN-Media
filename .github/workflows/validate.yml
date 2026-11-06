@@ -29,6 +29,7 @@ jobs:
           node --check editor.js
           node --check exporter.js
           node --check water.js
+          node --check composer.js
           node --check globe.js
           node --test tests/v1.test.mjs tests/designs.test.mjs
           python3 -m py_compile services/inference_worker.py

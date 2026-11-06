@@ -9,7 +9,7 @@ const Editor=(()=>{
  const DEFAULT_ORDER=['artwork','brandText','kicker','title','body','footerText'];
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const round=v=>Math.round(v*100)/100;
- let design=null,page=0,sel=null,zoom=1,tool=null,dockOpen=false,editing=false,undo=[],redo=[],saveTimer=0,polling=0,saving=false,dirty=false,conflict=false,thumbTimer=0,uploads=[],raf=0,lastCoalesce='',lastCoalesceAt=0,drag=null,spaceKey='';
+ let design=null,page=0,sel=null,multi=[],zoom=1,tool=null,dockOpen=false,editing=false,undo=[],redo=[],saveTimer=0,polling=0,saving=false,dirty=false,conflict=false,thumbTimer=0,uploads=[],raf=0,lastCoalesce='',lastCoalesceAt=0,drag=null,spaceKey='';
  let el={};
  const slide=()=>design.pages[page];
  const role=i=>i===0?'Hook':i===design.pages.length-1?'CTA':`Page ${i+1}`;
@@ -152,16 +152,29 @@ const Editor=(()=>{
   return root.querySelector(q);
  }
  const pageBox=()=>el.page.getBoundingClientRect();
+ const members=()=>multi.length>1?multi:(sel?[sel]:[]);
+ const selOf=k=>k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
+ const groupFor=k=>(slide().groups||[]).find(g=>g.includes(k));
  function drawOverlay(){
   el.over.innerHTML='';el.bar.hidden=!sel;
   if(!sel||editing)return;
+  const pb=pageBox(),ms=members();
+  if(ms.length>1){
+   const rects=ms.map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
+   if(!rects.length){sel=null;multi=[];el.bar.hidden=true;return}
+   for(const r of rects){const b=document.createElement('div');b.className='ed-sel multi';Object.assign(b.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});el.over.appendChild(b)}
+   const u={left:Math.min(...rects.map(r=>r.left)),top:Math.min(...rects.map(r=>r.top)),right:Math.max(...rects.map(r=>r.right)),bottom:Math.max(...rects.map(r=>r.bottom))};
+   const box=document.createElement('div');box.className='ed-sel';Object.assign(box.style,{left:(u.left-pb.left)+'px',top:(u.top-pb.top)+'px',width:(u.right-u.left)+'px',height:(u.bottom-u.top)+'px'});el.over.appendChild(box);
+   const ur={left:u.left,top:u.top,right:u.right,bottom:u.bottom,width:u.right-u.left,height:u.bottom-u.top};
+   positionBar(ur,pb);drawBar();return;
+  }
   let node=nodeFor();
   if(!node){sel=null;el.bar.hidden=true;return}
-  const pb=pageBox(),r=node.getBoundingClientRect();
+  const r=node.getBoundingClientRect();
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
-  const handles=sel.t==='art'?['se']:['se'];
-  box.innerHTML=`<i class="h se" data-h="scale"></i>${sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h rot" data-h="rotate"></i>':''}`;
+  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h rot" data-h="rotate"></i>':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
+  box.innerHTML=`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
  }
@@ -176,7 +189,12 @@ const Editor=(()=>{
  }
 
  /* ---------- selection and pointer editing ---------- */
- function select(s){sel=s;drawOverlay();if(tool==='pages')openTool('pages')}
+ function select(s){
+  sel=s;multi=[];
+  // Picking one member of a group picks the whole group.
+  const g=s&&groupFor(layerKey(s));if(g&&g.length>1)multi=g.map(selOf);
+  drawOverlay();if(tool==='pages')openTool('pages');
+ }
  function hit(x,y){
   const root=el.host.shadowRoot;if(!root)return null;
   for(const n of root.elementsFromPoint(x,y)){
@@ -185,6 +203,9 @@ const Editor=(()=>{
    if(n.dataset?.canvasCopy)return {t:'copy',k:n.dataset.canvasCopy};
    if(n.closest?.('.campaign-visual')&&(n.matches('img,.campaign-photo,.campaign-upload,svg,svg *,[class*=photo]')))return {t:'art'};
   }
+  // The artwork is decorative (pointer-events:none in the template), so test its box directly.
+  const v=root.querySelector('.campaign-visual');
+  if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'art'}}
   return null;
  }
  function onHover(e){
@@ -198,7 +219,14 @@ const Editor=(()=>{
   const handle=e.target.dataset?.h;
   let target=handle?sel:hit(e.clientX,e.clientY);
   if(!target){select(null);return}
-  if(!sameSel(target,sel))select(target);
+  // Shift or Ctrl click adds or removes an item, so several can be moved, grouped or deleted together.
+  if(!handle&&(e.shiftKey||e.ctrlKey||e.metaKey)){
+   const k=layerKey(target);let cur=members();
+   cur=cur.some(m=>layerKey(m)===k)?cur.filter(m=>layerKey(m)!==k):[...cur,target];
+   multi=cur.length>1?cur:[];sel=cur[cur.length-1]||null;drawOverlay();return;
+  }
+  if(!handle&&!(multi.length>1&&multi.some(m=>sameSel(m,target)))&&!sameSel(target,sel))select(target);
+  else if(!handle&&!multi.length&&groupFor(layerKey(target))&&!sameSel(target,sel))select(target);
   const node=nodeFor();if(!node)return;
   e.preventDefault();el.over.setPointerCapture(e.pointerId);
   const pb=pageBox(),r=node.getBoundingClientRect(),s=slide();
@@ -210,7 +238,10 @@ const Editor=(()=>{
    dist:Math.hypot(e.clientX-cx,e.clientY-cy)||1,width:r.width/W*100,angle:Math.atan2(e.clientY-cy,e.clientX-cx),rot:layer.rotation||0,moved:false,
    pos:sel.t==='element'?(s.elementPositions?.[sel.i]||{x:(cx-pb.left)/W*100,y:(cy-pb.top)/H*100}):null,
    frameW:node.closest?.('.campaign-visual')?.getBoundingClientRect().width||r.width,frameH:node.closest?.('.campaign-visual')?.getBoundingClientRect().height||r.height,
-   elSize:s.elementSizes?.[sel.i]||100,art:s.artScale||100};
+   elSize:s.elementSizes?.[sel.i]||100,art:s.artScale||100,
+   sx:s.elementStretchX?.[sel.i]||100,sy:s.elementStretchY?.[sel.i]||100,asx:s.artStretchX||100,asy:s.artStretchY||100,
+   centers:(s.elements||[]).map((_,i)=>s.elementPositions?.[i]||elementCenter(i)),
+   frames:Object.fromEntries(members().map(m=>{const n=nodeFor(m),f=n?.closest?.('.campaign-visual')?.getBoundingClientRect()||n?.getBoundingClientRect();return [layerKey(m),{w:f?.width||1,h:f?.height||1}]}))};
   undo.push(snapshot());if(undo.length>80)undo.shift();redo=[];
   drag={start,base,pending:null};
   el.over.onpointermove=ev=>{
@@ -234,16 +265,25 @@ const Editor=(()=>{
   const set=(k,v)=>{s[k]=v};
   const x=sel&&sel.t,k=sel?.k;
   if(st.mode==='move'){
-   if(sel.t==='copy'){const p=base.textLayers?.[k]||{};s.textLayers={...s.textLayers,[k]:{...p,x:round(clamp((p.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p.y||0)+dy/st.H*100,-100,100))}}}
-   else if(sel.t==='text'){const t=base.texts[sel.i];s.texts[sel.i]={...s.texts[sel.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
-   else if(sel.t==='element'){const pos=[...(s.elementPositions||[])];pos[sel.i]={x:round(clamp(st.pos.x+dx/st.W*100,0,100)),y:round(clamp(st.pos.y+dy/st.H*100,0,100))};for(let i=0;i<s.elements.length;i++)if(!pos[i])pos[i]=elementCenter(i);s.elementPositions=pos}
-   else if(sel.t==='art'){const sc=(base.artScale||100)/100;s.artX=round(clamp((base.artX||0)+dx/st.frameW*100*sc,-100,100));s.artY=round(clamp((base.artY||0)+dy/st.frameH*100*sc,-100,100))}
+   const pos=[...(s.elementPositions||[])];let movedPos=false;
+   for(const m of members()){
+    if(m.t==='copy'){const p=base.textLayers?.[m.k]||{};s.textLayers={...s.textLayers,[m.k]:{...p,x:round(clamp((p.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p.y||0)+dy/st.H*100,-100,100))}}}
+    else if(m.t==='text'){const t=base.texts[m.i];s.texts[m.i]={...s.texts[m.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
+    else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,0,100)),y:round(clamp(c.y+dy/st.H*100,0,100))};movedPos=true}
+    else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-100,100));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-100,100))}
+   }
+   if(movedPos){for(let i=0;i<(s.elements||[]).length;i++)if(!pos[i])pos[i]=st.centers[i];s.elementPositions=pos}
   }else if(st.mode==='scale'){
    const f=clamp(Math.hypot(ev.clientX-st.cx,ev.clientY-st.cy)/st.dist,.2,6);
    if(sel.t==='copy'){const p=base.textLayers?.[k]||{};s.textLayers={...s.textLayers,[k]:{...p,size:round(clamp(st.size*f,1,30))}}}
    else if(sel.t==='text'){s.texts[sel.i]={...s.texts[sel.i],size:round(clamp(st.size*f,1,30))}}
    else if(sel.t==='element'){const a=[...(s.elementSizes||[])];a[sel.i]=Math.round(clamp(st.elSize*f,25,500));s.elementSizes=a.map(v=>v??100)}
    else if(sel.t==='art'){s.artScale=Math.round(clamp(st.art*f,35,180))}
+  }else if(st.mode==='sx'||st.mode==='sy'){
+   // Reshape: stretch one side to change the width or height of a shape or image on its own.
+   const f=clamp(st.mode==='sx'?(st.r.width+dx)/st.r.width:(st.r.height+dy)/st.r.height,.25,5);
+   if(sel.t==='element'){const n=s.elements.length,key=st.mode==='sx'?'elementStretchX':'elementStretchY',old=st.mode==='sx'?st.sx:st.sy,arr=Array.from({length:n},(_,i)=>base[key]?.[i]??100);arr[sel.i]=Math.round(clamp(old*f,25,400));s[key]=arr}
+   else if(sel.t==='art'){const key=st.mode==='sx'?'artStretchX':'artStretchY';s[key]=Math.round(clamp((st.mode==='sx'?st.asx:st.asy)*f,35,300))}
   }else if(st.mode==='width'){
    const w=round(clamp(st.width+dx/st.W*100,8,150));
    if(sel.t==='copy')s.textLayers={...s.textLayers,[k]:{...(base.textLayers?.[k]||{}),boxWidth:w}};else s.texts[sel.i]={...s.texts[sel.i],boxWidth:w};
@@ -306,6 +346,13 @@ const Editor=(()=>{
   const b=(act,ic,label,on)=>`<button class="${on?'on':''}" data-b="${act}" title="${label}" aria-label="${label}" aria-pressed="${!!on}">${icon(ic)}</button>`;
   const sep='<i class="sep"></i>';
   let html='';
+  if(multi.length>1){
+   const grouped=members().some(m=>groupFor(layerKey(m)));
+   bar.innerHTML=`<span class="count">${multi.length} selected</span>${sep}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
+   if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
+   return;
+  }
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
    html=`<select data-b="font" aria-label="Font">${[['sans','Sans'],['serif','Serif'],['mono','Mono']].map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${n}</option>`).join('')}</select>
@@ -314,13 +361,14 @@ const Editor=(()=>{
    ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<label class="swatch" title="Text colour"><input type="color" data-b="color" value="${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></label>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
-   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label><label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>${sep}`;
   }else{
-   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="clearimg" class="txt">Reset</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
   html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
-  if(sel.t==='text'||sel.t==='element'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash','Delete');
+  const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
+  if(sel.t==='text'||sel.t==='element'||sel.t==='art'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
  }
@@ -330,6 +378,8 @@ const Editor=(()=>{
   if(a==='smaller'||a==='bigger')return patchLayer({size:round(clamp(curSize()+(a==='bigger'?.5:-.5),1,30))},'size'),drawBar();
   if(['bold','italic','underline','uppercase','bullets'].includes(a))return patchLayer({[a]:!l[a]}),drawBar();
   if(a==='align'){const order=['left','center','right','justify'];return patchLayer({align:order[(order.indexOf(l.align||'left')+1)%4]}),drawBar()}
+  if(a==='group')return groupSel();
+  if(a==='ungroup')return ungroupSel();
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
   if(a==='dup')return duplicateSel();
   if(a==='del')return deleteSel();
@@ -343,6 +393,8 @@ const Editor=(()=>{
   else if(a==='effect')patchLayer({effect:v||undefined});
   else if(a==='elsize')commit(()=>{const x=[...(slide().elementSizes||[])];x[sel.i]=+v;slide().elementSizes=Array.from({length:slide().elements.length},(_,i)=>x[i]??100)},'elsize');
   else if(a==='elcolor')commit(()=>{const x=[...(slide().elementColors||[])];x[sel.i]=v;slide().elementColors=Array.from({length:slide().elements.length},(_,i)=>x[i]||'#25c8ff')},'elcolor');
+  else if(a==='elsx'||a==='elsy'){const key=a==='elsx'?'elementStretchX':'elementStretchY';commit(()=>{const n=slide().elements.length,x=slide()[key]||[];const arr=Array.from({length:n},(_,i)=>x[i]??100);arr[sel.i]=+v;slide()[key]=arr},a)}
+  else if(a==='artsx'||a==='artsy')commit(()=>{slide()[a==='artsx'?'artStretchX':'artStretchY']=+v},a);
   else if(a==='artsize')commit(()=>{slide().artScale=+v},'artsize');
   else if(a==='artlayer')commit(()=>{slide().artLayer=v});
   if(e.type==='change')drawOverlay();
@@ -363,20 +415,45 @@ const Editor=(()=>{
     s.elements=[...s.elements,s.elements[sel.i]];s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i)),{x:clamp(c.x+3,0,100),y:clamp(c.y+3,0,100)}];
     s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),s.elementSizes?.[sel.i]??100];
     if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),s.elementColors[sel.i]||'#25c8ff'];
+    for(const k of ['elementStretchX','elementStretchY'])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??100),s[k][sel.i]??100];
     sel={t:'element',i:n}}
   });
   drawOverlay();
  }
+ function deleteOne(s,m){
+  if(m.t==='text'){s.texts=s.texts.filter((_,i)=>i!==m.i);s.layerOrder=remap(s.layerOrder,'text:',m.i);remapGroups(s,'text:',m.i)}
+  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
+  else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
+  else if(m.t==='art'){delete s.image;s.motif='none'}
+ }
  function deleteSel(){
   if(!sel)return;
   commit(()=>{const s=slide();
-   if(sel.t==='text'){s.texts=s.texts.filter((_,i)=>i!==sel.i);s.layerOrder=remap(s.layerOrder,'text:',sel.i)}
-   else if(sel.t==='element'){const i=sel.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);if(s.elementPositions){s.elementPositions=f(s.elementPositions)}if(s.elementSizes)s.elementSizes=f(s.elementSizes);if(s.elementColors)s.elementColors=f(s.elementColors);s.layerOrder=remap(s.layerOrder,'element:',i)}
-   else if(sel.t==='copy'&&sel.k!=='title')s[sel.k]='';
-   else if(sel.t==='art'){delete s.image;s.motif='none'}
-   sel=null;
+   // Highest index first so earlier deletions do not shift the later ones.
+   for(const m of members().slice().sort((a,b)=>(b.i??-1)-(a.i??-1)))deleteOne(s,m);
+   sel=null;multi=[];
   });
   drawOverlay();
+ }
+ // Keeps groups correct when a numbered layer is removed.
+ function remapGroups(s,prefix,removed){
+  if(!s.groups)return;
+  s.groups=s.groups.map(g=>g.filter(k=>k!==prefix+removed).map(k=>{if(k.startsWith(prefix)){const n=+k.slice(prefix.length);return n>removed?prefix+(n-1):k}return k})).filter(g=>g.length>1);
+  if(!s.groups.length)delete s.groups;
+ }
+ function groupSel(){
+  const keys=members().map(m=>layerKey(m));if(keys.length<2)return;
+  commit(()=>{const s=slide();s.groups=[...(s.groups||[]).map(g=>g.filter(k=>!keys.includes(k))).filter(g=>g.length>1),keys].slice(-12)});
+  toast('Grouped. They now move together.');drawOverlay();
+ }
+ function ungroupSel(){
+  const keys=members().map(m=>layerKey(m));
+  commit(()=>{const s=slide();s.groups=(s.groups||[]).filter(g=>!g.some(k=>keys.includes(k)));if(!s.groups.length)delete s.groups});
+  multi=[];drawOverlay();toast('Ungrouped.');
+ }
+ function selectAll(){
+  const ks=fullOrder().filter(k=>nodeFor(selOf(k)));
+  if(ks.length>1){multi=ks.map(selOf);sel=multi[multi.length-1];drawOverlay()}
  }
  function remap(order,prefix,removed){
   if(!order)return order;
@@ -393,7 +470,9 @@ const Editor=(()=>{
   if(mod&&e.key.toLowerCase()==='s'){e.preventDefault();clearTimeout(saveTimer);return save()}
   if(inField)return;
   if(mod&&e.key.toLowerCase()==='d'){e.preventDefault();return duplicateSel()}
-  if(e.key==='Escape'){if(!el.modal.hidden)return closeModal();if(sel)return select(null);if(tool)return closeTool();if(dockOpen)return toggleDock(false)}
+  if(mod&&e.key.toLowerCase()==='g'){e.preventDefault();if(!sel)return;return e.shiftKey?ungroupSel():groupSel()}
+  if(mod&&e.key.toLowerCase()==='a'){e.preventDefault();return selectAll()}
+  if(e.key==='Escape'){if(!el.modal.hidden)return closeModal();if(multi.length)return select(null);if(sel)return select(null);if(tool)return closeTool();if(dockOpen)return toggleDock(false)}
   if(!sel)return;
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();return deleteSel()}
   if(e.key==='Enter'&&['copy','text'].includes(sel.t)){e.preventDefault();return startEdit()}
@@ -419,7 +498,7 @@ const Editor=(()=>{
   if(!el.strip)return;
   const n=design.pages.length;
   if(!only||only.length===0||el.strip.children.length!==n+1){
-   el.strip.innerHTML=design.pages.map((p,i)=>`<div class="ed-thumb ${i===page?'on':''}" data-page="${i}" draggable="${i>0&&i<n-1}" role="button" tabindex="0" aria-label="Page ${i+1}, ${role(i)}"><div class="ed-thumbpic" style="aspect-ratio:${design.ratio}"><div class="ed-thumbhost"></div></div><span class="ed-tag ${i===0?'hook':i===n-1?'cta':''}">${role(i)}</span></div>`).join('')+`<button class="ed-addpage" data-act="addpage" title="Add a page before the call to action" aria-label="Add page">${icon('plus')}<span>Add page</span></button>`;
+   el.strip.innerHTML=design.pages.map((p,i)=>`<div class="ed-thumb ${i===page?'on':''}" data-page="${i}" draggable="true" role="button" tabindex="0" aria-label="Page ${i+1}, ${role(i)}"><div class="ed-thumbpic" style="aspect-ratio:${design.ratio}"><div class="ed-thumbhost"></div></div><span class="ed-tag ${i===0?'hook':i===n-1?'cta':''}">${role(i)}</span></div>`).join('')+`<button class="ed-addpage" data-act="addpage" title="Add a page after this one" aria-label="Add page">${icon('plus')}<span>Add page</span></button>`;
    only=design.pages.map((_,i)=>i);
   }
   $$('.ed-thumb',el.strip).forEach((t,i)=>t.classList.toggle('on',i===page));
@@ -434,13 +513,13 @@ const Editor=(()=>{
  function pageOps(op){
   const n=design.pages.length;
   commit(()=>{const p=design.pages;
-   if(op==='add'){if(n>=30)return toast('A pack can have up to 30 pages.');const src=n>2?JSON.parse(JSON.stringify(p[Math.max(1,page===n-1?n-2:page)])):NEW_PAGE();if(src.deckLayout==='hook'||src.deckLayout==='cta')src.deckLayout='feature';p.splice(n-1,0,src);page=n-1}
-   else if(op==='dup'){if(n>=30)return toast('A pack can have up to 30 pages.');const c=JSON.parse(JSON.stringify(p[page]));if(page===0)return toast('The Hook stays unique. Add a page instead.');if(page===n-1)return toast('The call to action stays unique. Add a page instead.');p.splice(page+1,0,c);page++}
-   else if(op==='del'){if(page===0||page===n-1)return toast('The Hook and the call to action stay. Edit them instead.');p.splice(page,1);page=Math.min(page,p.length-2)}
-   else if(op==='left'||op==='right'){const j=page+(op==='left'?-1:1);if(page<1||page>n-2||j<1||j>n-2)return;[p[page],p[j]]=[p[j],p[page]];page=j}
-   sel=null;
+   if(op==='add'){if(n>=30)return toast('A pack can have up to 30 pages.');const base=n>2?Math.min(Math.max(page,1),n-2):0;const src=n>1?JSON.parse(JSON.stringify(p[base])):NEW_PAGE();if(src.deckLayout==='hook'||src.deckLayout==='cta')src.deckLayout='feature';p.splice(page+1,0,src);page=page+1}
+   else if(op==='dup'){if(n>=30)return toast('A pack can have up to 30 pages.');p.splice(page+1,0,JSON.parse(JSON.stringify(p[page])));page++}
+   else if(op==='del'){if(n<=1)return toast('A pack needs at least one page. Delete the design from My designs instead.');p.splice(page,1);page=Math.min(page,p.length-1)}
+   else if(op==='left'||op==='right'){const j=page+(op==='left'?-1:1);if(j<0||j>n-1)return;[p[page],p[j]]=[p[j],p[page]];page=j}
+   sel=null;multi=[];
   });
-  thumbs();
+  thumbs();render();
  }
 
  /* ---------- tools (hidden until asked for) ---------- */
@@ -530,7 +609,7 @@ const Editor=(()=>{
  function toolPages(body){
   const s=slide(),n=design.pages.length;
   const field=(k,label,rows)=>`<label class="ed-field">${label}<textarea data-f="${k}" rows="${rows}" maxlength="${k==='title'?300:1200}">${esc(s[k]??'')}</textarea></label>`;
-  body.innerHTML=`<p class="hint">${role(page)} · the words on this page. They update as you type.</p><div class="ed-actions"><button class="btn-light" data-pg="dup">Duplicate</button><button class="btn-light" data-pg="left">Move earlier</button><button class="btn-light" data-pg="right">Move later</button><button class="btn-light" data-pg="del">Delete</button></div>${field('title','Headline',2)}${field('body','Write-up',5)}${field('kicker','Label',1)}${field('footerText','Footer',1)}
+  body.innerHTML=`<p class="hint">${role(page)} · the words on this page. They update as you type.</p><div class="ed-actions"><button class="btn-light" data-pg="dup">Duplicate</button><button class="btn-light" data-pg="left">Move earlier</button><button class="btn-light" data-pg="right">Move later</button><button class="btn-light" data-pg="del">Delete page</button></div>${field('title','Headline',2)}${field('body','Write-up',5)}${field('kicker','Label',1)}${field('footerText','Footer',1)}
   <h3>Layers on this page</h3><ol class="ed-layers" id="edLayers"></ol>`;
   $$('[data-f]',body).forEach(t=>t.oninput=()=>{const k=t.dataset.f;if(k==='title'&&!t.value.trim())return;commit(()=>{slide()[k]=t.value},'f'+k)});
   const names=k=>k.startsWith('text:')?'Text: '+(s.texts[+k.slice(5)]?.text||'').slice(0,24):k.startsWith('element:')?GSNKit.canvasElementLabel(s.elements[+k.slice(8)])||'Element':k==='artwork'?'Image':COPY[k];
@@ -617,7 +696,7 @@ const Editor=(()=>{
  document.addEventListener('dragover',e=>{if(design&&e.target.closest?.('.ed-thumb'))e.preventDefault()});
  document.addEventListener('drop',e=>{const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();
   const from=+e.dataTransfer.getData('text/plain'),to=+th.dataset.page,n=design.pages.length;
-  if(!(from>0&&from<n-1&&to>0&&to<n-1)||from===to)return;
-  commit(()=>{const [m]=design.pages.splice(from,1);design.pages.splice(to,0,m);page=to;sel=null});thumbs()});
+  if(!(from>=0&&from<n&&to>=0&&to<n)||from===to)return;
+  commit(()=>{const [m]=design.pages.splice(from,1);design.pages.splice(to,0,m);page=to;sel=null;multi=[]});thumbs();render()});
  return {open,close,get design(){return design}};
 })();

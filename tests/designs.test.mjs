@@ -56,6 +56,13 @@ test('designs are stored on the server, versioned, and protected from silent ove
   // Free text boxes, uploaded-size limits and validation.
   const withText={...reviewed,pages:reviewed.pages.map((p,i)=>i===0?{...p,texts:[{text:'Hello',left:10,top:20,size:8,bold:true}]}:p)};
   assert.equal((await call('/designs/'+d.id,'PUT',withText,browser)).status,200);
+  // Groups and reshape values persist, and invalid ones are rejected.
+  const cur=await (await call('/designs/'+d.id)).json();
+  const shaped={...cur,pages:cur.pages.map((p,i)=>i===0?{...p,groups:[['title','body']],artStretchX:150,elementStretchX:[120]}:p)};
+  assert.equal((await call('/designs/'+d.id,'PUT',shaped,browser)).status,200);
+  const kept=await (await call('/designs/'+d.id)).json();assert.deepEqual(kept.pages[0].groups,[['title','body']]);assert.equal(kept.pages[0].artStretchX,150);
+  const badGroup={...kept,pages:kept.pages.map((p,i)=>i===0?{...p,groups:[['<script>','body']]}:p)};
+  assert.equal((await call('/designs/'+d.id,'PUT',badGroup,browser)).status,400);
   const bad=await call('/designs','POST',{template_id:0,platform:'not-a-size'},browser);assert.equal(bad.status,400);
   const badColor=await call('/designs','POST',{template_id:0,platform:'x-post',pages:[{title:'A',accent:'red'},{title:'B'}]},browser);assert.equal(badColor.status,400);
   const hugeImage=await call('/designs','POST',{template_id:0,platform:'x-post',pages:[{title:'A',image:'data:image/png;base64,'+'A'.repeat(1_500_000)},{title:'B'}]},browser);assert.equal(hugeImage.status,400);

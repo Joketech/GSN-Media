@@ -72,11 +72,11 @@ const App=(()=>{
  async function loadDesigns(){try{state.designs=(await api('/designs')).designs}catch(e){state.designs=[];throw e}return state.designs}
 
  // Create a design (or a whole pack of designs, one per platform size) from a template, then open the first one.
- async function createPack(templateId,presetIds,title){
+ async function createPack(templateId,presetIds,title,extra={}){
   const packId=presetIds.length>1?crypto.randomUUID():undefined;
   let first;
   for(const presetId of presetIds){
-   const design=await api('/designs',{method:'POST',body:{template_id:templateId,platform:presetId,title:presetIds.length>1?`${title} · ${preset(presetId).name}`:title,...(packId?{pack_id:packId}:{})}});
+   const design=await api('/designs',{method:'POST',body:{template_id:templateId,platform:presetId,title:presetIds.length>1?`${title} · ${preset(presetId).name}`:title,...(packId?{pack_id:packId}:{}),...(extra.pages?{pages:extra.pages}:{}),...(extra.notes?{notes:extra.notes}:{})}});
    first??=design;
   }
   location.hash='#editor/'+first.id;

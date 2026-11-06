@@ -43,7 +43,7 @@ const Dashboard=(()=>{
  function closePops(){$$('.popover').forEach(p=>p.hidden=true);$$('[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded','false'))}
  function togglePop(kind){
   const pop=$('#'+kind+'Pop'),wasOpen=!pop.hidden;closePops();if(wasOpen)return;
-  if(kind==='filter')pop.innerHTML=`<label>Format<select id="fFormat">${Library.formats().map(f=>`<option ${f===ui.format?'selected':''}>${esc(f)}</option>`).join('')}</select></label><label>Style<select id="fStyle">${Library.styles().map(f=>`<option ${f===ui.style?'selected':''}>${esc(f)}</option>`).join('')}</select></label><button class="btn-light" data-act="clearfilter">Clear filters</button>`;
+  if(kind==='filter')pop.innerHTML=`<label>Format<select id="fFormat">${Library.formats().map(f=>`<option ${f===ui.format?'selected':''}>${esc(f)}</option>`).join('')}</select></label><label>Style<select id="fStyle">${Library.styles().map(f=>`<option ${f===ui.style?'selected':''}>${esc(f)}</option>`).join('')}</select></label><button class="btn-light" data-act="clearfilter">Clear filters</button>${Library.hiddenCount()?`<button class="btn-light" data-act="restore">Restore ${Library.hiddenCount()} removed templates</button>`:''}`;
   if(kind==='bell')pop.innerHTML=bellHtml();
   if(kind==='user')pop.innerHTML=`<button data-nav="dashboard">Dashboard</button><button data-nav="designs">My designs</button><button data-act="globe">Back to the globe</button>`;
   pop.hidden=false;$('#'+kind+'Btn').setAttribute('aria-expanded','true');
@@ -62,15 +62,18 @@ const Dashboard=(()=>{
   if(os){const a=os.dataset.os;
    if(a==='home'){location.hash='#home'}else if(a==='back')history.back();else if(a==='forward')history.forward();else if(a==='reload')draw(true);
    else if(a==='share'){navigator.clipboard?.writeText(location.href).then(()=>toast('Link copied.'),()=>toast('Copy the address from your browser.'))}
-   else if(a==='new')openPackModal(Library.filter({tab:ui.tab})[0]?.id??0);return}
+   else if(a==='new')openPackModal();return}
   const act=e.target.closest('[data-act]');
   if(act){const a=act.dataset.act;
-   if(a==='newpack')openPackModal(Library.filter({tab:'Popular'})[0].id);
+   if(a==='newpack')openPackModal();
    else if(a==='globe'){closePops();location.hash='#home'}
    else if(a==='clearfilter'){ui.format='All';ui.style='All';ui.query='';$('#search').value='';closePops();draw()}
    else if(a==='more'){ui.shown+=12;draw()}
+   else if(a==='restore'){Library.restoreAll();toast('Removed templates are back.');draw()}
    else if(a==='delete'){deleteDesign(act.dataset.id)}
    return}
+  const hideBtn=e.target.closest('[data-hide]');
+  if(hideBtn){e.stopPropagation();Library.hide(Number(hideBtn.dataset.hide));hideBtn.closest('.tcard').remove();const n=$('#libCount');if(n)n.textContent=Number(n.textContent)-1;const lead=$('#libCount')?.parentElement,g=Library.hiddenCount();if(lead){let r=lead.querySelector('[data-act=restore]');if(!r){r=document.createElement('button');r.className='linklike';r.dataset.act='restore';lead.append(' ',r)}r.textContent='Restore '+g+' removed'}toast('Removed from your library. You can restore it from the Filter menu or this page.');return}
   const chip=e.target.closest('[data-platform]');
   if(chip){state.platform=chip.dataset.platform;state.presetId=App.groupOf(state.platform).defaultPreset;try{localStorage.setItem('gsn-platform',state.platform)}catch{}draw();return}
   const use=e.target.closest('[data-use]');if(use){openPackModal(Number(use.dataset.use));return}
@@ -106,12 +109,29 @@ const Dashboard=(()=>{
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
    ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
+ const PAGE=24;
  function libraryHtml(){
-  const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,ui.shown),p=curPreset();
-  return `<section class="hello"><h1>Templates</h1>${chipsHtml()}</section>
-  <p class="lead">${all.length} templates · every one starts with a Hook, continues with write-up pages and ends with a call to action. Showing the ${esc(p.name)} size (${p.w}×${p.h}).</p>
-  ${list.length?`<div class="tgrid tgrid-wide" id="tgrid">${list.map(t=>Library.cardHtml(t,p)).join('')}</div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}
-  ${all.length>list.length?`<div class="more"><button class="btn-light" data-act="more">Show more templates</button></div>`:''}`;
+  const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,Math.max(ui.shown,PAGE)),p=curPreset(),gone=Library.hiddenCount();
+  return `<section class="hello"><h1>Template library</h1>${chipsHtml()}</section>
+  <p class="lead"><b id="libCount">${all.length}</b> templates. Every one starts with a Hook, continues with write-up pages and ends with a call to action. Showing the ${esc(p.name)} size (${p.w}×${p.h}). Scroll to see them all.${gone?` <button class="linklike" data-act="restore">Restore ${gone} removed</button>`:''}</p>
+  ${list.length?`<div class="tgrid tgrid-wide" id="tgrid">${list.map(t=>Library.cardHtml(t,p,{removable:true})).join('')}</div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}
+  <div class="more" id="libMore" ${all.length>list.length?'':'hidden'}>Loading more templates…</div>`;
+ }
+ let libObserver;
+ // Infinite scroll: the library adds the next batch whenever the end of the list comes into view.
+ function wireLibrary(){
+  libObserver?.disconnect();
+  const more=$('#libMore'),grid=$('#tgrid');if(!more||!grid)return;
+  libObserver=new IntersectionObserver(entries=>{
+   if(!entries.some(e=>e.isIntersecting))return;
+   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),have=$$('.tcard',grid).length;
+   if(have>=all.length){more.hidden=true;return}
+   const next=all.slice(have,have+PAGE),p=curPreset();
+   grid.insertAdjacentHTML('beforeend',next.map(t=>Library.cardHtml(t,p,{removable:true})).join(''));
+   Library.observeMore($$('.tcard',grid).slice(have));
+   ui.shown=have+next.length;more.hidden=have+next.length>=all.length;
+  },{root:$('#view'),rootMargin:'400px'});
+  libObserver.observe(more);
  }
  function designsHtml(){
   let list=state.designs;if(ui.designTab!=='All')list=list.filter(d=>d.status===ui.designTab);
@@ -139,16 +159,16 @@ const Dashboard=(()=>{
 
  async function draw(refresh=false){
   if(!ui.built)build();
-  Library.dispose();
+  Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
   view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
-  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true});
+  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true,glass:true});
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
-  const grid=$('#tgrid');if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
+  const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
  }
  async function show(view){
@@ -160,24 +180,47 @@ const Dashboard=(()=>{
   await draw();$('#view').scrollTop=0;
  }
 
- // Create a pack: one design per chosen platform size, all from the same template.
- function openPackModal(templateId){
+ // Create a post: ask for the idea; with no idea, propose one. The best-fitting template is chosen unless one was picked.
+ function openPackModal(templateId=null){
   closeModal();
-  const t=GSNKit.templates[templateId],name=Library.nameOf(t),current=curPreset();
+  let chosen=templateId,locked=templateId!=null,skip=[];
+  const current=curPreset();
   const wrap=document.createElement('div');wrap.className='modal-back';wrap.id='packModal';
   wrap.innerHTML=`<form class="modal glass-strong" role="dialog" aria-modal="true" aria-labelledby="packTitle">
-   <h2 id="packTitle">Create a pack</h2><p class="lead">${esc(name)} · Hook, write-up pages and call to action. Choose every platform you want a size for. Each one becomes its own design you can edit.</p>
-   <label class="field">Pack name<input id="packName" maxlength="100" value="${esc(name)}" required></label>
+   <h2 id="packTitle">Create a post</h2>
+   <p class="lead">Tell us your idea in a sentence or a few lines. No idea yet? Leave it empty and we will suggest one and build it for you.</p>
+   <label class="field">Your idea<textarea id="packIdea" rows="3" maxlength="600" placeholder="For example: three ways a small bakery can win more local customers"></textarea></label>
+   <div class="idea-tools"><button type="button" class="btn-light" data-m="surprise">Surprise me</button><span class="idea-tpl" id="packTpl"></span><button type="button" class="btn-light" data-m="shuffle" id="packShuffle">Try another template</button></div>
    <div class="preset-grid">${state.groups.map(g=>`<fieldset><legend>${platformIcon(g.id==='trending'?'trend':g.id)} ${esc(g.name)}</legend>${state.presets.filter(p=>p.platform===g.id).map(p=>`<label class="check"><input type="checkbox" name="preset" value="${p.id}" ${p.id===current.id?'checked':''}><span>${esc(p.name)}<small>${p.w}×${p.h}</small></span></label>`).join('')}</fieldset>`).join('')}</div>
    <div class="modal-actions"><button type="button" class="btn-light" data-m="all">Select all sizes</button><span class="spacer"></span><button type="button" class="btn-light" data-m="cancel">Cancel</button><button class="btn-maroon" type="submit">Create and open</button></div></form>`;
   document.body.appendChild(wrap);
-  const form=wrap.firstElementChild;form.querySelector('#packName').focus();
+  const form=wrap.firstElementChild,idea=$('#packIdea',form),label=$('#packTpl',form);
+  const showTemplate=()=>{
+   if(!locked)chosen=Composer.match(idea.value,skip);
+   const t=GSNKit.templates[chosen];
+   label.textContent=(locked?'Template: ':idea.value.trim()?'Best match: ':'Template picked for you: ')+Library.nameOf(t);
+   $('#packShuffle',form).hidden=locked;
+  };
+  showTemplate();idea.focus();
+  idea.addEventListener('input',debounce(()=>{skip=[];showTemplate()},250));
   wrap.addEventListener('mousedown',e=>{if(e.target===wrap)closeModal()});
-  form.addEventListener('click',e=>{const m=e.target.closest('[data-m]')?.dataset.m;if(m==='cancel')closeModal();if(m==='all'){const boxes=$$('[name=preset]',form),all=boxes.every(b=>b.checked);boxes.forEach(b=>b.checked=!all)}});
+  form.addEventListener('click',e=>{const m=e.target.closest('[data-m]')?.dataset.m;
+   if(m==='cancel')closeModal();
+   if(m==='all'){const boxes=$$('[name=preset]',form),all=boxes.every(b=>b.checked);boxes.forEach(b=>b.checked=!all)}
+   if(m==='surprise'){const [h,b]=Composer.suggest();idea.value=`${h}. ${b}`;skip=[];showTemplate();idea.focus()}
+   if(m==='shuffle'){skip.push(chosen);if(skip.length>20)skip=[chosen];showTemplate()}
+  });
   form.addEventListener('submit',async e=>{e.preventDefault();
    const ids=$$('[name=preset]:checked',form).map(b=>b.value);if(!ids.length)return toast('Choose at least one platform size.');
-   const button=form.querySelector('[type=submit]');button.disabled=true;button.textContent='Creating…';
-   try{await App.createPack(templateId,ids,$('#packName',form).value.trim()||name);closeModal();state.designs=[]}catch(error){toast(error.message,6000);button.disabled=false;button.textContent='Create and open'}
+   const button=form.querySelector('[type=submit]');button.disabled=true;button.textContent='Building your post…';
+   try{
+    const text=idea.value.trim();
+    // A template picked from the library keeps its own starter pages unless an idea was written.
+    const plan=(text||!locked)?Composer.compose(text,chosen):null;
+    const templateChosen=plan?plan.templateId:chosen;
+    await App.createPack(templateChosen,ids,plan?plan.title:Library.nameOf(GSNKit.templates[chosen]),plan?{pages:plan.pages,notes:plan.idea}:{});
+    closeModal();state.designs=[];
+   }catch(error){toast(error.message,6000);button.disabled=false;button.textContent='Create and open'}
   });
  }
  function closeModal(){$('#packModal')?.remove()}

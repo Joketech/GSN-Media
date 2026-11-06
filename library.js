@@ -11,9 +11,16 @@ const Library=(()=>{
  const roleLabel=(i,n)=>i===0?'Hook':i===n-1?'CTA':`Page ${i+1}`;
 
  // `tab` is the pill under the dashboard (Popular / Trending / Carousels / Stories).
- function filter({query='',format='All',style='All',tab='Popular'}={}){
+ // Templates a person has removed from their library are remembered in this browser and can be restored.
+ const HIDE_KEY='gsn-hidden-templates';
+ const hidden=()=>{try{return new Set(JSON.parse(localStorage.getItem(HIDE_KEY)||'[]'))}catch{return new Set()}};
+ const saveHidden=s=>{try{localStorage.setItem(HIDE_KEY,JSON.stringify([...s]))}catch{}};
+ const hide=id=>{const s=hidden();s.add(id);saveHidden(s)};
+ const restoreAll=()=>saveHidden(new Set());
+ function filter({query='',format='All',style='All',tab='Popular',showHidden=false}={}){
+  const gone=showHidden?new Set():hidden();
   const q=query.trim().toLowerCase();
-  let list=kit().templates.filter(t=>(format==='All'||t.format===format)&&(style==='All'||styleOf(t)===style)
+  let list=kit().templates.filter(t=>!gone.has(t.id)&&(format==='All'||t.format===format)&&(style==='All'||styleOf(t)===style)
    &&(!q||`${nameOf(t)} ${t.name} ${t.format} ${styleOf(t)} ${kit().palettes[t.palette][0]}`.toLowerCase().includes(q)));
   if(tab==='Carousels')list=list.filter(t=>t.format==='Carousel');
   else if(tab==='Stories')list=list.filter(t=>t.format==='Story');
@@ -24,8 +31,8 @@ const Library=(()=>{
  const formats=()=>['All',...new Set(kit().templates.map(t=>t.format))];
  const styles=()=>['All','Photo','3D agency','Business metaphors'];
 
- function cardHtml(t,preset){
-  return `<article class="tcard" data-template="${t.id}"><div class="tcard-media"><div class="tpreview" data-preview="${t.id}" aria-label="${esc(nameOf(t))} preview"></div><span class="tcard-role" aria-hidden="true">Hook</span></div>
+ function cardHtml(t,preset,{removable=false}={}){
+  return `<article class="tcard" data-template="${t.id}"><div class="tcard-media">${removable?`<button class="tcard-x" data-hide="${t.id}" title="Remove from my library" aria-label="Remove ${esc(nameOf(t))} from my library">×</button>`:''}<div class="tpreview" data-preview="${t.id}" aria-label="${esc(nameOf(t))} preview"></div><span class="tcard-role" aria-hidden="true">Hook</span></div>
   <h3 title="${esc(nameOf(t))}">${esc(nameOf(t))}</h3><p class="tsub">${esc(subOf(t))}</p>
   <div class="tcard-foot"><span class="tfrom">${esc(preset.name)}<b>${preset.w}×${preset.h}</b></span><button class="btn-dark" data-use="${t.id}">Use</button></div></article>`;
  }
@@ -46,22 +53,30 @@ const Library=(()=>{
   stop(){clearInterval(this.timer);this.timer=0}
  }
  const previews=new WeakMap();
- let observer;
- function hydrate(container,ratio='4 / 5'){
-  observer?.disconnect();
-  observer=new IntersectionObserver(entries=>{for(const e of entries){
+ let observer,hoverBound=null;
+ function makeObserver(ratio,root){
+  return new IntersectionObserver(entries=>{for(const e of entries){
    const host=e.target.querySelector('.tpreview');if(!host)continue;
    let p=previews.get(host);
    if(e.isIntersecting){
     if(!p){p=new Preview(host,Number(host.dataset.preview),ratio,e.target.querySelector('.tcard-role'));previews.set(host,p);p.paint().then(()=>p.play())}
     else p.play();
    }else p?.stop();
-  }},{rootMargin:'120px'});
-  container.querySelectorAll('.tcard').forEach(card=>observer.observe(card));
-  // Hovering a card restarts its sequence from the hook so a person can scan quickly.
-  container.addEventListener('mouseover',e=>{const card=e.target.closest('.tcard');const host=card?.querySelector('.tpreview');const p=host&&previews.get(host);if(p&&!card._hov){card._hov=true;p.stop();p.i=0;p.paint().then(()=>p.play())}});
-  container.addEventListener('mouseout',e=>{const card=e.target.closest('.tcard');if(card&&!card.contains(e.relatedTarget))card._hov=false});
+  }},{root:root||null,rootMargin:'160px'});
  }
+ function hydrate(container,ratio='4 / 5',root=null){
+  observer?.disconnect();
+  observer=makeObserver(ratio,root);
+  container.querySelectorAll('.tcard').forEach(card=>observer.observe(card));
+  if(hoverBound!==container){
+   hoverBound=container;
+   // Hovering a card restarts its sequence from the hook so a person can scan quickly.
+   container.addEventListener('mouseover',e=>{const card=e.target.closest('.tcard');const host=card?.querySelector('.tpreview');const p=host&&previews.get(host);if(p&&!card._hov){card._hov=true;p.stop();p.i=0;p.paint().then(()=>p.play())}});
+   container.addEventListener('mouseout',e=>{const card=e.target.closest('.tcard');if(card&&!card.contains(e.relatedTarget))card._hov=false});
+  }
+ }
+ // Cards added later (infinite scroll) join the same observer.
+ function observeMore(cards){if(observer)cards.forEach(c=>observer.observe(c))}
  function dispose(){observer?.disconnect();observer=null}
- return {filter,formats,styles,cardHtml,hydrate,dispose,nameOf,subOf,styleOf,roleLabel,Preview};
+ return {filter,formats,styles,cardHtml,hydrate,observeMore,dispose,nameOf,subOf,styleOf,roleLabel,hide,restoreAll,hiddenCount:()=>hidden().size,Preview};
 })();
