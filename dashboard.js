@@ -3,22 +3,17 @@
 const Dashboard=(()=>{
  const {$,$$,esc,icon,platformIcon,api,toast,state,preset,ago}=App;
  const ui={view:'dashboard',query:'',format:'All',style:'All',tab:'Popular',designTab:'All',shown:12,built:false};
- const agentArt={
-  Mira:['#b6a5ff','<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>'],
-  Seline:['#f3b4c6','<path d="m4 17-1 4 4-1L21 6l-4-4Z M14 5l5 5M4 17l3 3"/>'],
-  Spectra:['#9ce3e8','<path d="m12 2 9 5v10l-9 5-9-5V7Zm-9 5 9 5 9-5M12 12v10"/>'],
-  Lyra:['#f0ce95','<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6M10 7v6"/>'],
-  Flux:['#8cbdf5','<path d="m5 3 14 9-14 9Z M22 5v14"/>'],
-  Relay:['#a6ddc5','<path d="m3 11 19-9-8 20-3-8-8-3Z M11 14l11-12"/>'],
- };
- const agentAvatar=name=>{const [color,path]=agentArt[name]||['#ddd',''];return `<span class="avatar-ring" style="--tone:${color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg></span>`};
+ // Agents are shown as living orbs with their initials, not as artwork.
+ const agentTone={Mira:'#b7a6ff',Seline:'#ffb3c8',Spectra:'#8ee8ee',Lyra:'#f4cf90',Flux:'#8fc0ff',Relay:'#9be6c4'};
+ const initials=name=>name.slice(0,2).toUpperCase();
+ const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
  const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['agents','agents','Agents']];
  const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  function build(){
   const stage=$('#stage');
-  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div>
+  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas>
   <header class="osbar glass" aria-label="Studio address bar">
    <div class="osgroup"><button class="osbtn" data-os="home" title="Back to the globe" aria-label="Back to the globe">${icon('globe')}</button><button class="osbtn" data-os="back" title="Back" aria-label="Back">${icon('back')}</button><button class="osbtn" data-os="forward" title="Forward" aria-label="Forward">${icon('forward')}</button></div>
    <div class="osaddress"><span class="osdot"></span><span>${esc(location.host||'gsn-media.studio')}</span><b id="osPath">/dashboard</b></div>
@@ -100,16 +95,16 @@ const Dashboard=(()=>{
  }
 
  function dashboardHtml(){
-  const list=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}).slice(0,4),p=curPreset();
+  const list=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}).slice(0,14),p=curPreset();
   const agents=GSNKit.agents;
   return `<section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
    <article class="hero"><span class="hero-tag">Today’s pack</span><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
    <article class="agents-card"><div class="sec-head"><h2>Your agents</h2><a href="#agents">See more ${icon('chevronRight')}</a></div>
-    <div class="agents-grid">${agents.map(([name,role])=>`<a class="agent-row" href="#agents">${agentAvatar(name)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
+    <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
-   ${list.length?`<div class="tgrid" id="tgrid">${list.map(t=>Library.cardHtml(t,p)).join('')}</div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section>`;
+   ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section>`;
  }
  function libraryHtml(){
   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,ui.shown),p=curPreset();
@@ -128,7 +123,7 @@ const Dashboard=(()=>{
  }
  function agentsHtml(){
   return `<section class="hello"><h1>Agents</h1></section>
-  <div class="agents-page">${GSNKit.agents.map(([name,role,text])=>`<article class="agent-card">${agentAvatar(name)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>
+  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>
   <section class="hermes glass-inset"><h2>Hermes access</h2><p>Your Hermes agents build and edit packs through the studio’s protected API. Designs are saved on this server, so a person and an agent always work on the same copy. When an agent finishes, it marks the design <b>In review</b> and it appears under the bell for your approval.</p>
    <div class="code" id="hermesInfo">Loading connection details…</div></section>`;
  }
@@ -160,7 +155,7 @@ const Dashboard=(()=>{
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
-  drawTabs();refreshBell();
+  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water);
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(grid)Library.hydrate(grid,curPreset().ratio);
   if(ui.view==='designs')drawDesignPreviews();
