@@ -2,7 +2,7 @@ import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 const source=await readFile(new URL('./studio.js',import.meta.url),'utf8');
-const photoSource=await readFile(new URL('./gsn-photo-data.js',import.meta.url),'utf8');
+const photoSource=(await readFile(new URL('./gsn-photo-data.js',import.meta.url),'utf8'))+'\n'+(await readFile(new URL('./comic-campaigns.js',import.meta.url),'utf8'));
 // Reuse the existing, trusted material layouts. No supplied code is evaluated.
 const definitions=source.slice(source.indexOf('const palettes='),source.indexOf('const agents='));
 const artSource=source.slice(source.indexOf('const slideElements='),source.indexOf('function card('));
@@ -11,7 +11,7 @@ const sheets=await Promise.all([['campaign','campaign-atlas.png'],['automation',
  const image=await readFile(new URL(file,import.meta.url));
  return {name,file,data:'data:image/png;base64,'+image.toString('base64')};
 }));
-const baseCss=(await Promise.all(['studio.css','premium.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
+const baseCss=(await Promise.all(['studio.css','premium.css','comic.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
 const starterSource=source.slice(source.indexOf('// How many pages a template carries'),source.indexOf('function ensureSlides('));
 export function templateCatalog(){
  return vm.runInNewContext(photoSource+'\n'+definitions+starterSource+

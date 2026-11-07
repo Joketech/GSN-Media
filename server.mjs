@@ -9,7 +9,9 @@ const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const v1=createV1();
 allowed.set('/gsn-photo-data.js','gsn-photo-data.js');
-for(let index=0;index<48;index++)allowed.set(`/gsn-photo-${index}.png`,`gsn-photo-${index}.png`);
+for(let index=0;index<52;index++)allowed.set(`/gsn-photo-${index}.png`,`gsn-photo-${index}.png`);
+allowed.set('/comic-campaigns.js','comic-campaigns.js');
+allowed.set('/comic.css','comic.css');
 allowed.set('/','app.html');allowed.set('/v1','v1.html');allowed.set('/classic','index.html');
 for(const name of ['app.html','app.css','app.js','globe.js','kit-host.js','water.js','schedule.js','team.js','composer.js','dashboard.js','library.js','editor.js','editor.css','exporter.js','platforms.mjs','free-layers.css'])allowed.set('/'+name,name);
 const kit=await buildKit();
