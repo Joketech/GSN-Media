@@ -15,7 +15,7 @@ const Dashboard=(()=>{
 <rect x="10" y="12" width="44" height="31" rx="15" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
 <rect x="15" y="18" width="34" height="19" rx="9.5" fill="#0d1530"/>
 <circle class="eye" cx="25" cy="27.5" r="4.4" fill="var(--tone)"/><circle class="eye" cx="39" cy="27.5" r="4.4" fill="var(--tone)"/>
-<circle cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/>
+<circle class="glint" cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle class="glint" cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/>
 <ellipse cx="11" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(14 11 54)"/><ellipse cx="53" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(-14 53 54)"/>
 <path d="M16 49 Q32 41 48 49 Q53 63 32 67 Q11 63 16 49Z" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
 <ellipse cx="32" cy="55.5" rx="9.5" ry="7.6" fill="var(--tone)"/><text x="32" y="58.8" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="8.6" letter-spacing=".3" fill="#fff">${ch}</text></svg></span>`};
