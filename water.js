@@ -14,10 +14,15 @@ const Water=(()=>{
  function ell(x,cx,cy,rx,ry,colour,stop){x.save();x.translate(cx,cy);x.scale(1,ry/rx);const g=x.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,colour);g.addColorStop(stop,colour.slice(0,7)+'00');x.fillStyle=g;x.fillRect(-rx,-rx*(rx/ry),rx*2,rx*2*(rx/ry));x.restore()}
 
  // The scene the drops look at: the pastel backdrop plus soft out-of-focus lights.
- const bgImg=new Image();bgImg.src='room-bg.jpg';bgImg.onload=()=>{if(w)size()};
+ let bgImg=new Image(),sceneEl=null,sceneSrc='room-bg.jpg';bgImg.src=sceneSrc;bgImg.onload=()=>{if(w)size()};
+ function setScene(src,elm){sceneEl=elm||null;if(src&&src!==sceneSrc){sceneSrc=src;bgImg=new Image();bgImg.onload=()=>{if(w)size()};bgImg.src=src}}
  function paintScene(x,lightsOnly){
   if(!lightsOnly){x.fillStyle='#e8e3f1';x.fillRect(0,0,w,h);
-  if(bgImg.complete&&bgImg.naturalWidth){const k=Math.max(w/bgImg.naturalWidth,h/bgImg.naturalHeight);x.drawImage(bgImg,(w-bgImg.naturalWidth*k)/2,(h-bgImg.naturalHeight*k)/2,bgImg.naturalWidth*k,bgImg.naturalHeight*k)}else{
+  if(bgImg.complete&&bgImg.naturalWidth){
+   // A page whose backdrop is a positioned picture (the entrance screen) passes that element, so the drops show exactly what is behind them.
+   const cs=sceneEl?getComputedStyle(sceneEl):null,sz=cs?.backgroundSize.match(/^([\d.]+)px\s+([\d.]+)px$/),ps=cs?.backgroundPosition.match(/^(-?[\d.]+)px\s+(-?[\d.]+)px$/);
+   if(sz&&ps)x.drawImage(bgImg,+ps[1],+ps[2],+sz[1],+sz[2]);
+   else{const k=Math.max(w/bgImg.naturalWidth,h/bgImg.naturalHeight);x.drawImage(bgImg,(w-bgImg.naturalWidth*k)/2,(h-bgImg.naturalHeight*k)/2,bgImg.naturalWidth*k,bgImg.naturalHeight*k)}}else{
   ell(x,w*.12,h*.18,w*.6*.7,h*.55*.7,'#bcd9f7',1);ell(x,w*.88,h*.12,w*.5*.7,h*.5*.7,'#f6c9dc',1);
   ell(x,w*.8,h*.88,w*.55*.7,h*.6*.7,'#c4ead9',1);ell(x,w*.18,h*.9,w*.5*.7,h*.5*.7,'#fbd9bd',1);ell(x,w*.5,h*.5,w*.4*.75,h*.4*.75,'#ddd2f6',1)}}
   seed=11;
@@ -170,7 +175,8 @@ const Water=(()=>{
   step(dt);draw();requestAnimationFrame(frame);
  }
  function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h);copyMirror()}
- function start(el){
+ function start(el,opts){
+  setScene(opts?.scene||'room-bg.jpg',opts?.sceneEl);
   back=el;front=el.parentElement.querySelector('.water-front');if(!front)return;
   bctx=back.getContext('2d');fctx=front.getContext('2d');
   size();seed0();
