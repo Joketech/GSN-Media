@@ -99,7 +99,10 @@ const Dashboard=(()=>{
  }
 
  function dashboardHtml(){
-  const list=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}).slice(0,14),p=curPreset();
+  // Home shows a mix of every style. If the chosen tab leaves nothing (3D agency and Business metaphors are all carousels), show the style anyway and say so.
+  let found=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}),note='';
+  if(!found.length&&ui.tab!=='Popular'){found=Library.filter({query:ui.query,format:ui.format,style:ui.style});if(found.length)note=`None of these are in the ${ui.tab} tab, so all of them are shown.`}
+  const list=ui.style==='All'?Library.mix(found,18):found.slice(0,18),p=curPreset();
   const agents=GSNKit.agents;
   return `<div class="dash"><section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
@@ -108,7 +111,7 @@ const Dashboard=(()=>{
     <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
-   ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
+   ${note?`<p class="hint">${esc(note)}</p>`:''}${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
  const PAGE=24;
  function libraryHtml(){

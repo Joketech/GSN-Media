@@ -22,7 +22,7 @@ async function body(req){if(!req.headers['content-type']?.startsWith('applicatio
 const text=(value,name,max,required=true)=>{if(typeof value!=='string'||value.length>max||(required&&!value.trim()))throw new InputError(`${name} must contain ${required?'1':'0'}–${max} characters.`);return value.trim();};
 const decode=(value,max)=>{if(typeof value!=='string'||!value||value.length>Math.ceil(max/3)*4||!/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))throw new InputError('Invalid or oversized base64 file.');const b=Buffer.from(value,'base64');if(b.length>max)throw new InputError('File is too large.',413);return b;};
 
-export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
+export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'http://cutout:8092',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
  const accounts=createAccounts({dataDir,now:clock});
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
