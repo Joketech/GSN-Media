@@ -210,7 +210,8 @@ function art(t,slide={},extra=''){
  const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
  const zIndex=(...keys)=>{const ranks=keys.map(key=>order.indexOf(key));const rank=Math.max(...ranks);return rank<0?'':'position:relative;z-index:'+(10+rank)+';';};
  const stack=(...keys)=>zIndex(...keys).replace('position:relative;','');
- const stretch=i=>{const x=clamp(slide.elementStretchX?.[i],25,400,100),y=clamp(slide.elementStretchY?.[i],25,400,100);return x===100&&y===100?'':`scale:${x/100} ${y/100};`;};
+ const stretch=i=>{const x=clamp(slide.elementStretchX?.[i],25,400,100),y=clamp(slide.elementStretchY?.[i],25,400,100),flip=slide.elementFlip?.[i]?-1:1,rot=clamp(slide.elementRotations?.[i],-360,360,0),rad=clamp(slide.elementRadius?.[i],0,50,0),op=clamp(slide.elementOpacity?.[i],10,100,100);
+  return `${x===100&&y===100&&flip===1?'':`scale:${flip*x/100} ${y/100};`}${rot?`rotate:${rot}deg;`:''}${rad?`border-radius:${rad}%;`:''}${op<100?`opacity:${op/100};`:''}`;};
  const artStretch=(()=>{const x=clamp(slide.artStretchX,35,300,100),y=clamp(slide.artStretchY,35,300,100);return x===100&&y===100?'':`scale:${x/100} ${y/100};`;})();
  const elements=Array.isArray(slide.elements)?slide.elements.slice(0,24).filter(canvasElementLabel):[];
  const freeTexts=(Array.isArray(slide.texts)?slide.texts.slice(0,24):[]).map((item,index)=>typeof item?.text==='string'?`<div class="free-text" data-canvas-text="${index}" style="left:${clamp(item.left,-50,150,10)}%;top:${clamp(item.top,-50,150,10)}%;${stack('text:'+index)}${textStyleFrom({...item,x:0,y:0})}">${layerCopy(item.text,item.bullets)}</div>`:'').join('');

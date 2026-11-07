@@ -362,9 +362,9 @@ const Editor=(()=>{
    ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<label class="swatch" title="Text colour"><input type="color" data-b="color" value="${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></label>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
-   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label><label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else{
-   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="clearimg" class="txt">Reset</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
   html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
@@ -372,6 +372,43 @@ const Editor=(()=>{
   if(sel.t==='text'||sel.t==='element'||sel.t==='art'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
+ }
+ const isPhotoEl=k=>typeof k==='string'&&/^data:image\//.test(k);
+ const getList=(s,k,i,d)=>(s[k]&&s[k][i]!==undefined&&s[k][i]!==null)?s[k][i]:d;
+ function setList(s,k,i,v,d){const n=s.elements.length,a=Array.from({length:n},(_,j)=>getList(s,k,j,d));a[i]=v;s[k]=a}
+ function photoTools(s,i){
+  return `<label class="rng">Turn<input type="range" min="-180" max="180" value="${getList(s,'elementRotations',i,0)}" data-b="elrot"></label><label class="rng">Corners<input type="range" min="0" max="50" value="${getList(s,'elementRadius',i,0)}" data-b="elradius"></label><label class="rng">Fade<input type="range" min="10" max="100" value="${getList(s,'elementOpacity',i,100)}" data-b="elopacity"></label><button class="txt" data-b="elflip" title="Flip left and right">Flip</button><button class="txt" data-b="rmbg" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button class="txt" data-b="elreplace">Replace</button>`;
+ }
+ // Removes a plain or near-plain background: pixels joined to the picture's edge that look like its corners become transparent.
+ async function removeBackground(url,tol){
+  const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(Error('That image could not be read.'));im.src=url});
+  const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement('canvas');c.width=w;c.height=h;
+  const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);
+  const id=ctx.getImageData(0,0,w,h),d=id.data;
+  const at=(x,y)=>{const o=(y*w+x)*4;return [d[o],d[o+1],d[o+2],d[o+3]]};
+  const ref=[at(0,0),at(w-1,0),at(0,h-1),at(w-1,h-1),at(w>>1,0),at(w>>1,h-1),at(0,h>>1),at(w-1,h>>1)].filter(p=>p[3]>200);
+  if(!ref.length)throw Error('This image already has a transparent background.');
+  const near=o=>{if(d[o+3]<8)return true;for(const r of ref){if(Math.abs(d[o]-r[0])+Math.abs(d[o+1]-r[1])+Math.abs(d[o+2]-r[2])<=tol*3)return true}return false};
+  const seen=new Uint8Array(w*h),stack=[];
+  const push=(x,y)=>{const k=y*w+x;if(seen[k])return;if(near(k*4)){seen[k]=1;stack.push(k)}};
+  for(let x=0;x<w;x++){push(x,0);push(x,h-1)}for(let y=0;y<h;y++){push(0,y);push(w-1,y)}
+  while(stack.length){const k=stack.pop(),x=k%w,y=(k/w)|0;if(x>0)push(x-1,y);if(x<w-1)push(x+1,y);if(y>0)push(x,y-1);if(y<h-1)push(x,y+1)}
+  let removed=0;for(let k=0;k<w*h;k++)if(seen[k]){d[k*4+3]=0;removed++}
+  if(removed<w*h*.02)throw Error('No plain background was found. Try Strong, or use a picture with a plain background.');
+  if(removed>w*h*.97)throw Error('That removed almost everything. Try Light.');
+  // Soften the cut edge so the outline is not jagged.
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const k=y*w+x;if(!seen[k]&&(seen[k-1]||seen[k+1]||seen[k-w]||seen[k+w]))d[k*4+3]=Math.min(d[k*4+3],150)}
+  ctx.putImageData(id,0,0);
+  let k=1,out='';for(let i=0;i<8;i++){const t=document.createElement('canvas');t.width=Math.round(w*k);t.height=Math.round(h*k);t.getContext('2d').drawImage(c,0,0,t.width,t.height);out=t.toDataURL('image/png');if(out.length<1_300_000)return out;k*=.8}
+  throw Error('The result is too large. Use a smaller image.');
+ }
+ async function runRemoveBackground(){
+  const s=slide(),tol=+(el.bar.querySelector('[data-b=rmtol]')?.value||48);
+  const url=sel.t==='art'?s.image:s.elements[sel.i];
+  if(!url||!isPhotoEl(url))return toast('Select an uploaded picture first.');
+  toast('Removing the background…');
+  try{const out=await removeBackground(url,tol);const t=sel;commit(()=>{if(t.t==='art')slide().image=out;else slide().elements[t.i]=out});toast('Background removed. Undo brings it back.')}
+  catch(e){toast(e.message)}
  }
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
@@ -385,6 +422,10 @@ const Editor=(()=>{
   if(a==='dup')return duplicateSel();
   if(a==='del')return deleteSel();
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
+  if(a==='rmbg')return runRemoveBackground();
+  if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
+  if(a==='elflip'){const t=sel;return commit(()=>{setList(slide(),'elementFlip',t.i,getList(slide(),'elementFlip',t.i,0)?0:1,0)})}
+  if(a==='elcenter'){const t=sel;return commit(()=>{const s=slide(),n=s.elements.length,pos=Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i));pos[t.i]={x:50,y:50};s.elementPositions=pos})}
   if(a==='clearimg')return commit(()=>{delete slide().image;delete slide().artX;delete slide().artY;delete slide().artScale});
  }
  function onBarInput(e){
@@ -394,6 +435,9 @@ const Editor=(()=>{
   else if(a==='effect')patchLayer({effect:v||undefined});
   else if(a==='elsize')commit(()=>{const x=[...(slide().elementSizes||[])];x[sel.i]=+v;slide().elementSizes=Array.from({length:slide().elements.length},(_,i)=>x[i]??100)},'elsize');
   else if(a==='elcolor')commit(()=>{const x=[...(slide().elementColors||[])];x[sel.i]=v;slide().elementColors=Array.from({length:slide().elements.length},(_,i)=>x[i]||'#25c8ff')},'elcolor');
+  else if(a==='elrot')commit(()=>setList(slide(),'elementRotations',sel.i,+v,0),'elrot');
+  else if(a==='elradius')commit(()=>setList(slide(),'elementRadius',sel.i,+v,0),'elradius');
+  else if(a==='elopacity')commit(()=>setList(slide(),'elementOpacity',sel.i,+v,100),'elopacity');
   else if(a==='elsx'||a==='elsy'){const key=a==='elsx'?'elementStretchX':'elementStretchY';commit(()=>{const n=slide().elements.length,x=slide()[key]||[];const arr=Array.from({length:n},(_,i)=>x[i]??100);arr[sel.i]=+v;slide()[key]=arr},a)}
   else if(a==='artsx'||a==='artsy')commit(()=>{slide()[a==='artsx'?'artStretchX':'artStretchY']=+v},a);
   else if(a==='artsize')commit(()=>{slide().artScale=+v},'artsize');
@@ -416,14 +460,14 @@ const Editor=(()=>{
     s.elements=[...s.elements,s.elements[sel.i]];s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i)),{x:clamp(c.x+3,0,100),y:clamp(c.y+3,0,100)}];
     s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),s.elementSizes?.[sel.i]??100];
     if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),s.elementColors[sel.i]||'#25c8ff'];
-    for(const k of ['elementStretchX','elementStretchY'])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??100),s[k][sel.i]??100];
+    for(const [k,d] of [['elementStretchX',100],['elementStretchY',100],['elementRotations',0],['elementRadius',0],['elementOpacity',100],['elementFlip',0]])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??d),s[k][sel.i]??d];
     sel={t:'element',i:n}}
   });
   drawOverlay();
  }
  function deleteOne(s,m){
   if(m.t==='text'){s.texts=s.texts.filter((_,i)=>i!==m.i);s.layerOrder=remap(s.layerOrder,'text:',m.i);remapGroups(s,'text:',m.i)}
-  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
+  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
  }
@@ -553,12 +597,12 @@ const Editor=(()=>{
   const keys=Object.keys(GSNKit.slideElements);
   body.innerHTML=`<p class="hint">Click to add. Drag it into place; resize from the corner.</p><div class="ed-egrid">${keys.map(k=>`<button data-el="${k}" title="${esc(GSNKit.slideElements[k][0])}" aria-label="Add ${esc(GSNKit.slideElements[k][0])}">${platformIcon(k)}<span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>`;
  }
- function addElement(key){
+ function addElement(key,at){
   const s=slide();if((s.elements||[]).length>=24)return toast('A page can hold 24 elements.');
   commit(()=>{const n=(s.elements||[]).length;
-   s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||(nodeFor({t:'element',i})?elementCenter(i):{x:50,y:50})),{x:50,y:50}];
+   s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||(nodeFor({t:'element',i})?elementCenter(i):{x:50,y:50})),at||{x:50,y:50}];
    s.elements=[...(s.elements||[]),key];
-   s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),key.length>1&&/^data:/.test(key)?60:100];
+   s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),/^data:/.test(key)?190:100];
    if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),'#25c8ff'];
    sel={t:'element',i:n}});
   drawOverlay();
@@ -574,7 +618,7 @@ const Editor=(()=>{
  }
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><div class="ed-ugrid" id="edUg"></div>`;
-  const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button></div></div>`).join('')};
+  const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button></div></div>`).join('')};
   $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
   draw();
  }
@@ -713,9 +757,19 @@ const Editor=(()=>{
  document.addEventListener('contextmenu',e=>{const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();const i=+th.dataset.page;if(i!==page)gotoPage(i);
   openModal(`<h2>Page ${i+1} · ${role(i)}</h2><div class="ed-actions"><button class="btn-light" data-pg="dup">Duplicate page</button><button class="btn-light" data-pg="left">Move earlier</button><button class="btn-light" data-pg="right">Move later</button><button class="btn-light" data-pg="del">Delete page</button><button class="btn-light" data-act="closemodal">Close</button></div>`);
   el.modal.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{pageOps(b.dataset.pg);closeModal()})});
- document.addEventListener('dragstart',e=>{const th=e.target.closest?.('.ed-thumb');if(th&&design)e.dataTransfer.setData('text/plain',th.dataset.page)});
- document.addEventListener('dragover',e=>{if(design&&e.target.closest?.('.ed-thumb'))e.preventDefault()});
- document.addEventListener('drop',e=>{const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();
+ document.addEventListener('dragstart',e=>{const du=e.target.closest?.('[data-dragup]');if(du){e.dataTransfer.setData('application/x-gsn-upload',du.dataset.dragup);e.dataTransfer.effectAllowed='copy';return}
+  const th=e.target.closest?.('.ed-thumb');if(th&&design)e.dataTransfer.setData('text/plain',th.dataset.page)});
+ document.addEventListener('dragover',e=>{if(design&&el.page?.contains(e.target)&&(e.dataTransfer.types.includes('application/x-gsn-upload')||e.dataTransfer.types.includes('Files')))e.preventDefault();
+  if(design&&e.target.closest?.('.ed-thumb'))e.preventDefault()});
+ document.addEventListener('drop',async e=>{
+  if(design&&el.page?.contains(e.target)){
+   const pb=pageBox(),at={x:Math.round(Math.min(100,Math.max(0,(e.clientX-pb.left)/pb.width*100))),y:Math.round(Math.min(100,Math.max(0,(e.clientY-pb.top)/pb.height*100)))};
+   const idx=e.dataTransfer.getData('application/x-gsn-upload');
+   if(idx!==''&&uploads[+idx]){e.preventDefault();return addElement(uploads[+idx],at)}
+   const f=[...(e.dataTransfer.files||[])].find(x=>/^image\/(png|jpeg|webp)$/.test(x.type));
+   if(f){e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u,at)}catch(err){toast(err.message)}return}
+  }
+  const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();
   const from=+e.dataTransfer.getData('text/plain'),to=+th.dataset.page,n=design.pages.length;
   if(!(from>=0&&from<n&&to>=0&&to<n)||from===to)return;
   commit(()=>{const [m]=design.pages.splice(from,1);design.pages.splice(to,0,m);page=to;sel=null;multi=[]});thumbs();render()});

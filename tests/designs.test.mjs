@@ -58,9 +58,9 @@ test('designs are stored on the server, versioned, and protected from silent ove
   assert.equal((await call('/designs/'+d.id,'PUT',withText,browser)).status,200);
   // Groups and reshape values persist, and invalid ones are rejected.
   const cur=await (await call('/designs/'+d.id)).json();
-  const shaped={...cur,pages:cur.pages.map((p,i)=>i===0?{...p,groups:[['title','body']],artStretchX:150,elementStretchX:[120]}:p)};
+  const shaped={...cur,pages:cur.pages.map((p,i)=>i===0?{...p,groups:[['title','body']],artStretchX:150,elementStretchX:[120],elementRotations:[30],elementRadius:[50],elementOpacity:[80],elementFlip:[1]}:p)};
   assert.equal((await call('/designs/'+d.id,'PUT',shaped,browser)).status,200);
-  const kept=await (await call('/designs/'+d.id)).json();assert.deepEqual(kept.pages[0].groups,[['title','body']]);assert.equal(kept.pages[0].artStretchX,150);
+  const kept=await (await call('/designs/'+d.id)).json();assert.deepEqual(kept.pages[0].groups,[['title','body']]);assert.equal(kept.pages[0].artStretchX,150);assert.deepEqual(kept.pages[0].elementRotations,[30]);
   const badGroup={...kept,pages:kept.pages.map((p,i)=>i===0?{...p,groups:[['<script>','body']]}:p)};
   assert.equal((await call('/designs/'+d.id,'PUT',badGroup,browser)).status,400);
   const bad=await call('/designs','POST',{template_id:0,platform:'not-a-size'},browser);assert.equal(bad.status,400);

@@ -85,6 +85,8 @@ export function sanitizeSlide(s, index = 0) {
     image: image(s.image, `${where} image`),
     elementSizes: numberList(s.elementSizes, `${where} elementSizes`, 25, 500),
     elementStretchX: numberList(s.elementStretchX, `${where} elementStretchX`, 25, 400), elementStretchY: numberList(s.elementStretchY, `${where} elementStretchY`, 25, 400),
+    elementRotations: numberList(s.elementRotations, `${where} elementRotations`, -360, 360), elementRadius: numberList(s.elementRadius, `${where} elementRadius`, 0, 50),
+    elementOpacity: numberList(s.elementOpacity, `${where} elementOpacity`, 10, 100), elementFlip: numberList(s.elementFlip, `${where} elementFlip`, 0, 1),
     artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
   if (s.motif !== undefined) {

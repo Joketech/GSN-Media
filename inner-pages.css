@@ -162,3 +162,8 @@
 .dk.ratio-landscape.dk-case .dk-visual .dk-ph{--z:1.1}
 .dk.ratio-story:is(.dk-steps,.dk-compare,.dk-cards,.dk-checklist,.dk-agenda,.dk-recap) .dk-copy{justify-content:center}
 .dk.ratio-story.dk-agenda .art-title{margin-top:0}
+
+/* Uploaded pictures and shapes can always be picked, moved and edited; images keep their own proportions. */
+.slide-element-strip>*,.free-text{pointer-events:auto}
+.uploaded-photo-element{height:auto!important;max-height:none!important;width:calc(22cqw*var(--element-scale,1));object-fit:fill}
+.uploaded-photo-element[style*="border-radius"]{overflow:hidden}
