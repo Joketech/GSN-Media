@@ -384,7 +384,7 @@ const Editor=(()=>{
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
-   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
@@ -491,6 +491,7 @@ const Editor=(()=>{
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
   if(a==='dup')return duplicateSel();
   if(a==='del')return deleteSel();
+  if(a==='slotlib'){const t=sel;return libraryPick(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreplace'){const t=sel;return pickImage(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100})),drawBar()}
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
@@ -702,10 +703,29 @@ const Editor=(()=>{
   People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();if(sel?.t==='slot')setSlot(sel.k,{src:p.image,x:0,y:0,z:100});else{s.image=p.image;if(slotDefs()[0])setSlot(slotDefs()[0][0],{src:p.image,x:0,y:0,z:100});delete s.artX;delete s.artY;delete s.artScale}});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
  }
  function toolUploads(body){
-  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><div class="ed-ugrid" id="edUg"></div>`;
+  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
   const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button></div></div>`).join('')};
   $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
+  $('#edLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);draw()});
   draw();
+ }
+ // GSN picture library: every picture (photos, 3D agency, metaphors, comic characters) can be placed on a page or in a slot. A picked cell is cropped to its own
+ // picture, so it behaves like any upload: replaceable, movable and zoomable.
+ function libraryPick(done){
+  const all=[];for(let i=0;i<1400;i++){const p=GSNKit.gsnLibraryPhoto('gsn-'+i);if(!p)break;all.push({...p,i})}
+  const d=document.createElement('dialog');d.className='ed-lib';
+  d.innerHTML=`<header><h2>GSN pictures</h2><form method="dialog"><button aria-label="Close">×</button></form></header><input type="search" placeholder="Search, e.g. panda, comic, laptop" aria-label="Search pictures"><div class="ed-lib-grid"></div><footer><button class="btn-light" data-p>Previous</button><span></span><button class="btn-light" data-n>Next</button></footer>`;
+  const q=d.querySelector('input'),grid=d.querySelector('.ed-lib-grid'),info=d.querySelector('span');let pg=0;const N=24;
+  const draw=()=>{const f=all.filter(p=>(p.name+' '+(p.sector||'')).toLowerCase().includes(q.value.toLowerCase().trim()));
+   const max=Math.max(1,Math.ceil(f.length/N));pg=Math.min(pg,max-1);info.textContent=`${f.length} pictures · page ${pg+1} of ${max}`;
+   grid.innerHTML=f.slice(pg*N,pg*N+N).map(p=>`<button data-i="${p.i}" title="${esc(p.name)}"><span style="background-image:url('${p.file}');background-position:${p.position};background-size:${p.size}"></span><b>${esc(p.name)}</b></button>`).join('')||'No pictures match.';
+   d.querySelector('[data-p]').disabled=pg===0;d.querySelector('[data-n]').disabled=pg>=max-1};
+  q.oninput=()=>{pg=0;draw()};d.querySelector('[data-p]').onclick=()=>{pg--;draw()};d.querySelector('[data-n]').onclick=()=>{pg++;draw()};
+  grid.onclick=async e=>{const b=e.target.closest('button[data-i]');if(!b)return;const p=all[+b.dataset.i];
+   try{const img=new Image();img.src=p.file;await img.decode();const cell=img.naturalWidth*100/parseFloat(p.size);const [px,py]=p.position.split(' ').map(parseFloat);
+    const sx=px/100*(img.naturalWidth-cell),sy=py/100*(img.naturalHeight-cell),c=document.createElement('canvas');c.width=c.height=900;
+    c.getContext('2d').drawImage(img,sx,sy,cell,cell,0,0,900,900);d.close();done(c.toDataURL('image/jpeg',.9))}catch(err){toast('That picture could not be loaded.')}};
+  d.addEventListener('close',()=>d.remove());document.body.append(d);draw();d.showModal();
  }
  async function compress(file){
   if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw Error('Use a PNG, JPG or WebP image.');
