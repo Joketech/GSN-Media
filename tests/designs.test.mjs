@@ -79,7 +79,7 @@ test('agents pick a template and send only wording; the design stays',async()=>{
   const agent={Authorization:'Bearer agent-test-token','Content-Type':'application/json'};
   const call=(route,method='GET',data)=>fetch(s.base+route,{method,headers:agent,body:data===undefined?undefined:JSON.stringify(data)});
   const all=await (await call('/templates')).json();
-  assert.equal(all.templates.length,624);
+  assert.equal(all.templates.length,524);
   assert.ok(all.templates.every(t=>t.pages>=5&&t.pages<=10&&t.layouts[0]==='hook'&&t.layouts.at(-1)==='cta'));
   const roomy=await (await call('/templates?pages=9')).json();
   assert.ok(roomy.templates.length>0&&roomy.templates.every(t=>t.pages>=9));
@@ -109,7 +109,7 @@ test('the access-key gate can be restored for public servers',async()=>{
 test('the 12 photo layouts have starter pages and named picture slots',async()=>{
  const {templateCatalog,starterSlides}=await import('../template-engine.mjs');
  const all=templateCatalog();const layouts=all.filter(t=>t.id>=400&&t.id<412);
- assert.equal(layouts.length,12);assert.equal(all.length,624);
+ assert.equal(layouts.length,12);assert.equal(all.length,524);
  for(const t of layouts){
   assert.ok(t.slots?.length>=1&&t.slots.every(x=>/^[a-z][a-z0-9]*$/.test(x.key)&&x.label),`${t.name} lists its slots`);
   assert.ok([5,7,10].includes(t.pages),`${t.name} has ${t.pages} pages`);
