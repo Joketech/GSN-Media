@@ -66,7 +66,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .sec-head h2{margin:0;font:600 1.45rem var(--serif);color:#4a2431}
 .sec-head a{display:flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em}.sec-head .ic{width:13px;height:13px}
-.hero-row{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;height:clamp(210px,33vh,330px);flex:none}
+.hero-row{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;flex:1 1 0;min-height:260px}
 .hero{position:relative;border-radius:22px;padding:30px 34px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 35%/cover;border:1px solid var(--line)}
 .hero:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
 @keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
@@ -89,7 +89,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @keyframes orbit{from{transform:rotate(0) translateX(23px)}to{transform:rotate(360deg) translateX(23px)}}
 @keyframes orbpulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.07);transform:scale(1.05)}}
 /* The templates sit in view and drift left without stopping; they rest while you point at them. */
-.tpass{flex:1;min-height:270px;display:flex;flex-direction:column}
+.tpass{flex:none;height:clamp(215px,27vh,270px);display:flex;flex-direction:column}
 .marquee{flex:1;min-height:0;overflow:hidden;margin:0 -28px;container-type:size;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .marquee-track{display:flex;gap:16px;width:max-content;height:100%;padding:4px 0 6px 16px;animation:scrollleft calc(var(--n,12)*4.5s) linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
