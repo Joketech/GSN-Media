@@ -99,7 +99,7 @@ export function sanitizeSlide(s, index = 0) {
     for (const [key, v] of Object.entries(s.slots)) {
       if (!SLOT_KEY.test(key)) throw new DesignError(`${where} has an invalid slot name "${key}".`);
       if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} slot ${key} must be an object.`);
-      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`) });
+      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`) });
     }
   }
   if (s.motif !== undefined) {
