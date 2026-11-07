@@ -39,7 +39,7 @@ const Dashboard=(()=>{
  const Motion={
   on:true,
   init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='off'?false:true:true;this.apply()},
-  apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
+  apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')typeof Ripples!=='undefined'&&Ripples.resume();Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
   set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
  };
  function build(){
