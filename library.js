@@ -5,7 +5,7 @@ const Library=(()=>{
  const {esc,icon}=App;
  const kit=()=>window.GSNKit;
  const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
- const styleOf=t=>t.slotKey?'Photo layouts':t.metaphor?'Business metaphors':t.cartoon?'3D agency':'Photo';
+ const styleOf=t=>t.month?'Monthly':t.slotKey?'Photo layouts':t.metaphor?'Business metaphors':t.cartoon?'3D agency':'Photo';
  const nameOf=t=>t.cartoon||t.slotKey?t.name:kit().gsnPhoto(t.id).name;
  const subOf=t=>`${t.slotKey?t.look:kit().palettes[t.palette][0]} · ${t.format}`;
  const roleLabel=(i,n)=>i===0?'Hook':i===n-1?'CTA':`Page ${i+1}`;
@@ -31,7 +31,7 @@ const Library=(()=>{
  // Takes templates in turn from each style so a short strip shows the whole range, not only the first style.
  const mix=(list,n)=>{const by=new Map();for(const t of list){const k=styleOf(t);(by.get(k)||by.set(k,[]).get(k)).push(t)}const q=[...by.values()],out=[];for(let i=0;out.length<n&&q.some(a=>i<a.length);i++)for(const a of q)if(i<a.length&&out.length<n)out.push(a[i]);return out};
  const formats=()=>['All',...new Set(kit().templates.map(t=>t.format))];
- const styles=()=>['All','Photo','3D agency','Business metaphors','Photo layouts'];
+ const styles=()=>['All','Photo','3D agency','Business metaphors','Photo layouts','Monthly'];
 
  function cardHtml(t,preset,{removable=false}={}){
   return `<article class="tcard" data-template="${t.id}"><div class="tcard-media">${removable?`<button class="tcard-x" data-hide="${t.id}" title="Remove from my library" aria-label="Remove ${esc(nameOf(t))} from my library">×</button>`:''}<div class="tpreview" data-preview="${t.id}" aria-label="${esc(nameOf(t))} preview"></div><span class="tcard-role" aria-hidden="true">Hook</span></div>

@@ -1,7 +1,7 @@
 /* Photo layouts: twelve designs built from named picture slots (.slot). A slot always fills its frame (cropped, never stretched);
    --z zooms the picture and --px/--py choose which part stays in view, so pictures can be moved inside their frame.
    Sizes use cqw (a share of the page width); positions are shares of the page and designed for 4:5. */
-.art.slt{padding:0;display:block;position:relative;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;--grot:'Arial Black','Helvetica Neue',Arial,sans-serif;container-type:inline-size}
+:where(.art.slt){padding:0;display:block;position:relative;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;--grot:'Arial Black','Helvetica Neue',Arial,sans-serif;container-type:inline-size}
 .slt .slt-deco{position:absolute;inset:0;pointer-events:none;z-index:1;display:block}
 .slt .slt-slots{position:absolute;inset:0;pointer-events:none;z-index:3}
 .slt .slot{position:absolute;overflow:hidden;container-type:size;pointer-events:auto;cursor:pointer;background:#80808033}
@@ -224,3 +224,73 @@
 .slt-frames.ratio-landscape .art-title{bottom:8%;font-size:min(var(--fit),4cqw)}.slt-frames.ratio-landscape .art-sub{display:none}
 .slt-frames.ratio-landscape .art-kicker{display:none}
 .slt-split.ratio-landscape .art-sub{display:none}
+
+/* ================= Monthly templates (January to December) =================
+   Four designs in twelve colourways. Cut-out PNGs of people sit in front of the month word; any picture is cropped to its frame. */
+.slt-mblock .slot,.slt-mscript .slot,.slt-mstage .slot,.slt-mchar .slot{background:none}
+:is(.slt-mblock,.slt-mscript) .art-foot{left:5%;right:auto;bottom:9%;width:auto;background:#ffc928;color:#16161a;padding:1.1cqw 2.4cqw;transform:rotate(-6deg);font:900 2.5cqw/1 Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;border-radius:.6cqw;box-shadow:0 .8cqw 2cqw #0005;opacity:1;z-index:8}
+:is(.slt-mblock,.slt-mscript) .art-foot span:last-child{display:none}
+
+/* A. Giant word behind a person, with an orbit ring and two badges */
+.slt-mblock{background:radial-gradient(90% 60% at 50% 38%,color-mix(in srgb,var(--ac) 38%,var(--bg)),var(--bg) 78%)}
+.slt-mblock .slt-deco::before{content:'';position:absolute;left:5%;top:52%;width:90%;height:19%;border:.5cqw solid #ffffffd0;border-radius:50%;transform:rotate(-9deg);box-shadow:0 0 3cqw var(--ac),inset 0 0 3cqw var(--ac)}
+.slt-mblock .slt-deco::after{content:'';position:absolute;left:0;right:0;bottom:0;height:24%;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--ac) 65%,transparent),transparent 70%)}
+.slt-mblock .slt-slots{z-index:auto}.slt-mblock .campaign-copy{z-index:auto}
+.slt-mblock [data-slot=main]{left:25%;top:31%;width:50%;height:62%;border-radius:25cqw 25cqw 0 0;z-index:4;box-shadow:0 0 6cqw color-mix(in srgb,var(--ac) 55%,transparent)}
+.slt-mblock [data-slot=badge1]{left:8%;top:27%;width:14%;height:11.2%;border-radius:2.6cqw;z-index:5;box-shadow:0 0 0 .35cqw #ffffff66,0 1.4cqw 3cqw #0007}
+.slt-mblock [data-slot=badge2]{right:8%;top:35%;width:14%;height:11.2%;border-radius:2.6cqw;z-index:5;box-shadow:0 0 0 .35cqw #ffffff66,0 1.4cqw 3cqw #0007}
+.slt-mblock .art-title{left:0;right:0;top:9%;text-align:center;font:900 var(--fit-big)/.92 'Arial Black',Impact,sans-serif;letter-spacing:-.03em;text-transform:uppercase;color:color-mix(in srgb,var(--ac) 70%,#fff);filter:drop-shadow(0 1.2cqw 2.2cqw #0008);z-index:2}
+.slt-mblock .art-kicker{left:0;right:0;top:4.2%;text-align:center;color:var(--ink);opacity:.85;letter-spacing:.42em;font-size:2.2cqw}
+.slt-mblock .art-sub{right:3.5%;bottom:12%;width:22%;text-align:right;font-size:2.4cqw;z-index:7}
+.slt-mblock .art-brand{display:none}
+
+/* B. Script month above a seated person on a light page */
+.slt-mscript{background:radial-gradient(100% 70% at 50% 18%,#ffffff,var(--bg) 70%)}
+.slt-mscript .slt-deco::before{content:'';position:absolute;left:-6%;top:48%;width:70%;height:26%;border:.6cqw solid color-mix(in srgb,var(--ac) 35%,#fff);border-radius:50%;transform:rotate(-14deg);box-shadow:0 0 2.4cqw #fff}
+.slt-mscript .slt-deco::after{content:'';position:absolute;left:-18%;bottom:-8%;width:46%;height:46%;border:2.2cqw solid var(--ac);border-radius:50%;border-bottom-color:transparent;border-left-color:transparent;transform:rotate(-30deg)}
+.slt-mscript .slt-slots{z-index:auto}.slt-mscript .campaign-copy{z-index:auto}
+.slt-mscript [data-slot=main]{left:24%;top:33%;width:52%;height:60%;border-radius:4cqw 4cqw 0 0;z-index:4}
+.slt-mscript [data-slot=badge1]{left:8%;top:24%;width:13%;height:10.4%;border-radius:2.4cqw;z-index:5;box-shadow:0 1.4cqw 3cqw #0004}
+.slt-mscript [data-slot=badge2]{right:8%;top:26%;width:13%;height:10.4%;border-radius:2.4cqw;z-index:5;box-shadow:0 1.4cqw 3cqw #0004}
+.slt-mscript .art-title{left:0;right:0;top:11%;text-align:center;font:italic 700 min(calc(var(--fit-big)*1.2),24cqw)/1 'Brush Script MT','Segoe Script','Snell Roundhand',cursive;color:var(--ac);z-index:2;white-space:nowrap}
+.slt-mscript .art-kicker{left:50%;top:11.5%;background:#ffc928;color:#16161a;padding:.9cqw 1.8cqw;border-radius:1.2cqw;font:800 2.6cqw/1 Arial,sans-serif;letter-spacing:0;text-transform:none;transform:rotate(-4deg);z-index:7}
+.slt-mscript .art-sub{right:3.5%;bottom:20%;width:21%;color:var(--ac);font:600 2.3cqw/1.35 Arial,sans-serif;z-index:7}
+.slt-mscript .art-brand{left:auto;right:7%;top:4.5%;color:var(--ac);font-size:2cqw}
+
+/* C. 3D stage: block word, a seated person, a corner tagline */
+.slt-mstage{background:linear-gradient(115deg,color-mix(in srgb,var(--ac) 70%,#000) 0 17%,#e9edf9 17% 100%)}
+.slt-mstage .slt-deco::before{content:'';position:absolute;right:-18%;top:34%;width:46%;height:30%;border:2.4cqw solid color-mix(in srgb,var(--ac) 40%,#37d8ff);border-radius:50%;opacity:.9}
+.slt-mstage .slt-deco::after{content:'';position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,transparent,#c7cfee 60%,#aab3dd)}
+.slt-mstage .slt-slots{z-index:auto}.slt-mstage .campaign-copy{z-index:auto}
+.slt-mstage [data-slot=main]{left:27%;top:48%;width:46%;height:47%;border-radius:23cqw 23cqw 0 0;z-index:4;box-shadow:0 1.4cqw 3.4cqw #0004}
+.slt-mstage .art-title{left:0;right:0;top:27%;text-align:center;font:900 var(--fit-big)/.9 'Arial Black',Impact,sans-serif;letter-spacing:-.02em;text-transform:uppercase;color:var(--ac);text-shadow:.3cqw .3cqw 0 color-mix(in srgb,var(--ac) 80%,#000),.7cqw .7cqw 0 color-mix(in srgb,var(--ac) 65%,#000),1.1cqw 1.1cqw 0 color-mix(in srgb,var(--ac) 50%,#000),1.5cqw 1.5cqw 0 color-mix(in srgb,var(--ac) 40%,#000);z-index:2}
+.slt-mstage .art-kicker{left:0;right:0;top:22.5%;text-align:center;color:var(--ink);letter-spacing:.5em;font:400 2.6cqw/1 Arial,sans-serif}
+.slt-mstage .art-sub{right:6%;top:9%;width:42%;color:var(--ink);font:500 3.4cqw/1.35 Arial,sans-serif;z-index:7}
+.slt-mstage .art-brand{left:6%;top:6%;color:#fff;font-size:2.4cqw}
+.slt-mstage .art-foot{color:var(--ink)}
+
+/* D. Mascot: vertical line of text, a character, an italic month and a pill */
+.slt-mchar{background:linear-gradient(165deg,color-mix(in srgb,var(--ac) 55%,#fff),var(--ac) 52%,color-mix(in srgb,var(--ac) 78%,#000))}
+.slt-mchar .slt-deco{background:radial-gradient(circle at 70% 8%,#ffffff55,transparent 45%),repeating-linear-gradient(60deg,#ffffff0d 0 6cqw,transparent 6cqw 12cqw)}
+.slt-mchar .slt-slots{z-index:auto}.slt-mchar .campaign-copy{z-index:auto}
+.slt-mchar [data-slot=main]{left:16%;top:3%;width:72%;height:62%;border-radius:5cqw;z-index:4}
+.slt-mchar .art-kicker{left:6%;top:8%;height:70%;writing-mode:vertical-rl;color:#fff;font:italic 900 4.4cqw/1 Arial,sans-serif;letter-spacing:.02em;white-space:normal;z-index:7}
+.slt-mchar .art-title{left:0;right:0;bottom:15%;text-align:center;font:italic 900 var(--fit-big)/.9 Arial,sans-serif;letter-spacing:-.03em;color:#fff;opacity:.95;text-transform:uppercase;z-index:2}
+.slt-mchar .art-sub{left:50%;bottom:6.5%;transform:translateX(-50%) rotate(-5deg);background:#fff;color:var(--ac);padding:1.4cqw 4cqw;border-radius:4cqw;font:italic 700 5cqw/1 Arial,sans-serif;white-space:nowrap;box-shadow:0 1cqw 3cqw #0004;z-index:7}
+.slt-mchar .art-brand{left:auto;right:7%;top:4%;font-size:2cqw}
+.slt-mchar .art-foot{display:none}
+
+/* Wide pages */
+.slt-mblock.ratio-landscape .art-title{top:6%;font-size:min(var(--fit-big),20cqw)}.slt-mblock.ratio-landscape [data-slot=main]{left:36%;top:34%;width:28%;height:66%}
+.slt-mblock.ratio-landscape [data-slot=badge1]{left:20%;top:32%;width:9%;height:16%}.slt-mblock.ratio-landscape [data-slot=badge2]{right:20%;top:40%;width:9%;height:16%}
+.slt-mblock.ratio-landscape .art-sub{right:5%;bottom:10%;width:24%;font-size:1.5cqw}.slt-mblock.ratio-landscape .art-foot{font-size:1.4cqw;bottom:8%}.slt-mblock.ratio-landscape .slt-deco::before{top:56%;height:26%}
+.slt-mscript.ratio-landscape [data-slot=main]{left:36%;top:36%;width:28%;height:64%}.slt-mscript.ratio-landscape .art-title{top:6%;font-size:calc(min(var(--fit-big),20cqw)*1.2)}
+.slt-mscript.ratio-landscape [data-slot=badge1]{left:20%;top:30%;width:9%;height:16%}.slt-mscript.ratio-landscape [data-slot=badge2]{right:20%;top:30%;width:9%;height:16%}
+.slt-mscript.ratio-landscape .art-kicker{top:8%;font-size:1.6cqw}.slt-mscript.ratio-landscape .art-sub{right:4%;bottom:14%;width:24%;font-size:1.5cqw}.slt-mscript.ratio-landscape .art-foot{font-size:1.4cqw}
+.slt-mstage.ratio-landscape [data-slot=main]{left:34%;top:46%;width:32%;height:54%}.slt-mstage.ratio-landscape .art-title{top:22%;font-size:min(var(--fit-big),20cqw)}.slt-mstage.ratio-landscape .art-kicker{top:15%;font-size:1.6cqw}
+.slt-mstage.ratio-landscape .art-sub{width:30%;font-size:1.8cqw}
+.slt-mchar.ratio-landscape [data-slot=main]{left:34%;width:34%;height:90%;top:2%}.slt-mchar.ratio-landscape .art-kicker{font-size:2.6cqw}.slt-mchar.ratio-landscape .art-title{font-size:min(var(--fit-big),22cqw);bottom:6%}
+.slt-mchar.ratio-landscape .art-sub{font-size:3cqw;bottom:4%}
+.slt-mchar.ratio-landscape [data-slot=main]{left:58%;width:34%;height:92%;top:4%}
+.slt-mchar.ratio-landscape .art-title{left:12%;right:auto;width:44%;text-align:left;bottom:24%;font-size:min(var(--fit-big),15cqw)}
+.slt-mchar.ratio-landscape .art-sub{left:12%;transform:rotate(-5deg);bottom:9%;font-size:3cqw}

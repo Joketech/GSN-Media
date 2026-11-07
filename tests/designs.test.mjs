@@ -79,7 +79,7 @@ test('agents pick a template and send only wording; the design stays',async()=>{
   const agent={Authorization:'Bearer agent-test-token','Content-Type':'application/json'};
   const call=(route,method='GET',data)=>fetch(s.base+route,{method,headers:agent,body:data===undefined?undefined:JSON.stringify(data)});
   const all=await (await call('/templates')).json();
-  assert.equal(all.templates.length,412);
+  assert.equal(all.templates.length,424);
   assert.ok(all.templates.every(t=>t.pages>=5&&t.pages<=10&&t.layouts[0]==='hook'&&t.layouts.at(-1)==='cta'));
   const roomy=await (await call('/templates?pages=9')).json();
   assert.ok(roomy.templates.length>0&&roomy.templates.every(t=>t.pages>=9));
@@ -109,7 +109,7 @@ test('the access-key gate can be restored for public servers',async()=>{
 test('the 12 photo layouts have starter pages and named picture slots',async()=>{
  const {templateCatalog,starterSlides}=await import('../template-engine.mjs');
  const all=templateCatalog();const layouts=all.filter(t=>t.id>=400&&t.id<412);
- assert.equal(layouts.length,12);assert.equal(all.length,412);
+ assert.equal(layouts.length,12);assert.equal(all.length,424);
  for(const t of layouts){
   assert.ok(t.slots?.length>=1&&t.slots.every(x=>/^[a-z][a-z0-9]*$/.test(x.key)&&x.label),`${t.name} lists its slots`);
   assert.ok([5,7,10].includes(t.pages),`${t.name} has ${t.pages} pages`);
@@ -130,4 +130,11 @@ test('a design stores, validates and rejects picture slots',async()=>{
   for(const bad of [{Main:{src:PNG}},{main:{z:50}},{main:{x:500}},{main:{src:'data:text/html;base64,AAAA'}}])
    assert.equal((await call('/designs','POST',{template_id:400,platform:'instagram-post',title:'x',pages:[{title:'A',slots:bad},{title:'B'}]})).status,400);
  }finally{await s.close()}
+});
+
+test('January to December templates exist with their month names and slots',async()=>{
+ const {templateCatalog,starterSlides}=await import('../template-engine.mjs');
+ const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+ const all=templateCatalog();
+ months.forEach((m,i)=>{const t=all[412+i];assert.equal(t.name,m);assert.ok(t.slots.some(x=>x.key==='main'));assert.equal(starterSlides(t.id)[0].deckLayout,'hook')});
 });

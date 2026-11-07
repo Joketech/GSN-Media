@@ -84,6 +84,32 @@ slotLayouts.forEach((layout,i)=>{
  templates.push({id:400+i,name:layout.name,layout:i%20,palette:i%10,format:'Carousel',title:layout.title,summary:layout.summary,kicker:layout.kicker,topic:layout.topic,
   slotKey:layout.key,slots:layout.slots,look:'Photo layout',colors:layout.colors,limit:110});
 });
+// Monthly templates: January to December. Four designs (giant word behind a person, script month, 3D stage, mascot) in twelve colourways.
+// d(sheet, cell) names a studio photo for each slot until a creator uploads their own.
+const monthFamilies={
+ mblock:[['main','Person'],['badge1','Badge 1'],['badge2','Badge 2']],
+ mscript:[['main','Person'],['badge1','Badge 1'],['badge2','Badge 2']],
+ mstage:[['main','Person']],
+ mchar:[['main','Character']],
+};
+const monthly=[
+ ['January','mblock',{background:'#0a1a3a',ink:'#ffffff',accent:'#f5c542'},'WELCOME TO','New year. New goals. Same hustle, bigger vision.','HAPPY NEW YEAR',[[35,1],[33,5],[33,21]]],
+ ['February','mscript',{background:'#fde7ef',ink:'#4a1230',accent:'#d6336c'},'Happy new month','May this month bring love, wins and bold moves.','NEW BEGINNINGS',[[35,7],[33,3],[33,11]]],
+ ['March','mchar',{background:'#12b36b',ink:'#ffffff',accent:'#12b36b'},'MARCH HITS DIFFERENT','New month','',[[33,1]]],
+ ['April','mstage',{background:'#1a3fa8',ink:'#14213d',accent:'#1a3fa8'},'WELCOME TO','My month to create louder, think deeper and design better.','',[[21,11]]],
+ ['May','mblock',{background:'#4b1fa8',ink:'#ffffff',accent:'#b79bff'},'WELCOME TO','Create. Innovate. Automate.','HAPPY NEW MONTH',[[33,0],[33,5],[33,7]]],
+ ['June','mchar',{background:'#1fa7f0',ink:'#ffffff',accent:'#1fa7f0'},'JUNE HITS DIFFERENT','New month','',[[35,2]]],
+ ['July','mscript',{background:'#ece3fb',ink:'#2f1a6b',accent:'#5b2bd1'},'Happy new month','May this month bring new wins, bold moves and bigger blessings.','NEW BEGINNINGS',[[33,24],[33,5],[33,21]]],
+ ['August','mstage',{background:'#0b7f86',ink:'#0c2a2e',accent:'#0b7f86'},'WELCOME TO','Slow down, aim higher and build something that lasts.','',[[21,8]]],
+ ['September','mblock',{background:'#0b3d33',ink:'#f2fff9',accent:'#5ee0b0'},'WELCOME TO','A fresh start. A stronger finish.','HAPPY NEW MONTH',[[35,9],[33,13],[33,17]]],
+ ['October','mchar',{background:'#f07a1a',ink:'#ffffff',accent:'#f07a1a'},'OCTOBER HITS DIFFERENT','New month','',[[35,12]]],
+ ['November','mscript',{background:'#fdeadb',ink:'#5a2a10',accent:'#e5601c'},'Happy new month','Gratitude, growth and good news all month long.','NEW POSSIBILITIES',[[35,15],[33,3],[33,11]]],
+ ['December','mstage',{background:'#a3162a',ink:'#2a0c12',accent:'#a3162a'},'WELCOME TO','Finish strong. Celebrate everything you built this year.','',[[21,3]]],
+];
+monthly.forEach(([month,fam,colors,kicker,body,tag,demos],i)=>{
+ templates.push({id:412+i,name:month,layout:i%20,palette:i%10,format:'Social post',title:fam==='mscript'?month:month.toUpperCase(),summary:body,kicker,topic:'Monthly',tag,month:true,
+  slotKey:fam,slots:monthFamilies[fam].map(([key,label],n)=>[key,label,demoPicture(demos[n][0],demos[n][1])]),look:'Monthly',colors,limit:110});
+});
 const agents=[['Lyra','Researcher','Research direction and source gathering. Live research not connected.','L'],['Seline','Writer','Writes hooks, slides, captions and calls to action.','S'],['Spectra','Builder','Builds editable HTML materials and layouts.','S'],['Flux','Animator','Animates materials, typography and design compositions.','F'],['Relay','Publisher','Plans approved content; live publishing not connected.','R'],['Mira','Orchestrator','Routes jobs and enforces approval gates.','◎']];
 const initial={brand:{name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',color:'#ed6843'},ideas:[],activity:[],projects:[],schedule:[],template:0,slides:[],selected:0,copyApproved:false,finalApproved:false,ratio:'1 / 1',duration:3};
 let state;try{state={...initial,...JSON.parse(localStorage.getItem('gsn-studio-v1')||'null')};}catch{state=structuredClone(initial)}
@@ -215,10 +241,10 @@ function slotPage(t,slide,o){
  const fit=(max,span=88)=>Math.round(Math.min(max,span/(.62*longest))*10)/10;
  const lineMax=Math.max(3,...String(title).split('\n').map(l=>l.trim().length));
  const fitLine=(max,usable)=>Math.round(Math.min(max,usable/(.66*lineMax))*10)/10;
- const brand=slide.brandText??String(state.brand.name||'').toUpperCase(),foot=slide.footerText??state.brand.handle;
+ const brand=slide.brandText??String(state.brand.name||'').toUpperCase(),foot=slide.footerText??(t.tag||state.brand.handle);
  const slots=t.slots.map(x=>slotBox(t,slide,x[0],image)).join('');
  const lines=String(body).split('\n').filter(Boolean);
- return `<div class="art slt slt-${t.slotKey} ratio-${ratioClass} ${extra}" style="--bg:${background};--ink:${ink};--ac:${accent};--fit:${fit(30)}cqw;--fit-half:${fit(15,80)}cqw;--fit-v:${fitLine(20,96)}cqw;--fit-l:${fitLine(42,88)}cqw;aspect-ratio:${ratio}">
+ return `<div class="art slt slt-${t.slotKey} ratio-${ratioClass} ${extra}" style="--bg:${background};--ink:${ink};--ac:${accent};--fit:${fit(30)}cqw;--fit-half:${fit(15,80)}cqw;--fit-v:${fitLine(20,96)}cqw;--fit-l:${fitLine(42,88)}cqw;--fit-big:${Math.round(Math.min(56,92/(.68*longest))*10)/10}cqw;aspect-ratio:${ratio}">
 <i class="slt-deco" aria-hidden="true"></i><div class="slt-slots">${slots}</div>
 <div class="art-brand" data-canvas-copy="brandText" style="${stack('brandText')}${textStyle('brandText')}">${layerCopy(brand,slide.textLayers?.brandText?.bullets)}</div>
 <div class="campaign-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${layerCopy(kicker,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${layerCopy(title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${layerCopy(body,slide.textLayers?.body?.bullets)}</div></div>
