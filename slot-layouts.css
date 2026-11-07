@@ -294,3 +294,121 @@
 .slt-mchar.ratio-landscape [data-slot=main]{left:58%;width:34%;height:92%;top:4%}
 .slt-mchar.ratio-landscape .art-title{left:12%;right:auto;width:44%;text-align:left;bottom:24%;font-size:min(var(--fit-big),15cqw)}
 .slt-mchar.ratio-landscape .art-sub{left:12%;transform:rotate(-5deg);bottom:9%;font-size:3cqw}
+
+/* ================= Comic templates: ten funny designs in ten colourways =================
+   Bold outlines, stickers and speech bubbles. [data-slot=main] is the funny picture; [data-slot=sticker] is the brand's mascot. */
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10){--k:#111;font-family:'Comic Sans MS','Chalkboard SE','Marker Felt',Arial,sans-serif}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .art-title{font-family:Bangers,Impact,'Arial Black','Comic Sans MS',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.01em;line-height:1.02}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .art-kicker{font-family:Bangers,Impact,'Comic Sans MS',sans-serif;letter-spacing:.06em}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .art-sub{font-family:'Comic Sans MS','Chalkboard SE',Arial,sans-serif;font-weight:700}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .slot{background:none}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .art-brand{font-size:1.9cqw;letter-spacing:.16em}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .slt-slots{z-index:auto}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c4,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10) .campaign-copy{z-index:auto}
+
+/* 1. Pop art: halftone dots, a tilted framed picture, a starburst */
+.slt-c1{background:radial-gradient(circle,color-mix(in srgb,var(--bg) 70%,#000) 14%,transparent 16%) 0 0/3.2cqw 3.2cqw,var(--bg)}
+.slt-c1 .art-title{left:6%;top:5%;width:88%;font-size:var(--fit-c);color:var(--ink);-webkit-text-stroke:.45cqw var(--k);paint-order:stroke fill;text-shadow:.8cqw .8cqw 0 var(--k);z-index:6}
+.slt-c1 [data-slot=main]{left:12%;top:38%;width:70%;height:46%;border:1.1cqw solid var(--k);box-shadow:1.4cqw 1.4cqw 0 var(--k);transform:rotate(-3deg);z-index:3}
+.slt-c1 [data-slot=sticker]{right:3%;top:58%;width:25%;height:20%;border-radius:50%;border:1cqw solid var(--k);box-shadow:.9cqw .9cqw 0 var(--k);background:#fff;transform:rotate(7deg);z-index:5}
+.slt-c1 .art-kicker{left:3%;top:31%;width:22cqw;height:22cqw;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--ac);color:var(--k);font-size:4.4cqw;clip-path:polygon(50% 0,61% 18%,80% 8%,78% 30%,98% 33%,84% 50%,98% 67%,78% 70%,80% 92%,61% 82%,50% 100%,39% 82%,20% 92%,22% 70%,2% 67%,16% 50%,2% 33%,22% 30%,20% 8%,39% 18%);transform:rotate(-12deg);z-index:7}
+.slt-c1 .art-sub{left:6%;bottom:5%;width:60%;background:#fff;color:var(--k);border:.6cqw solid var(--k);padding:1.2cqw 2cqw;font-size:2.5cqw;box-shadow:.8cqw .8cqw 0 var(--k);z-index:6}
+.slt-c1 .art-foot{display:none}
+
+/* 2. Speech bubble: the hook is spoken by the picture */
+.slt-c2{background:repeating-conic-gradient(color-mix(in srgb,var(--bg) 82%,#fff) 0 7.5deg,var(--bg) 7.5deg 15deg)}
+.slt-c2 .art-title{left:6%;top:9%;width:88%;padding:3cqw 3cqw 3.4cqw;background:#fff;color:var(--k);border:.8cqw solid var(--k);border-radius:5cqw;text-align:center;font-size:var(--fit-c);box-shadow:1cqw 1cqw 0 var(--k);z-index:6}
+.slt-c2 .art-title::after{content:'';position:absolute;left:24%;bottom:-5.6cqw;width:7cqw;height:6cqw;background:#fff;border-right:.8cqw solid var(--k);border-bottom:.8cqw solid var(--k);transform:skewX(32deg) rotate(18deg);clip-path:polygon(0 0,100% 0,100% 100%)}
+.slt-c2 [data-slot=main]{left:14%;top:50%;width:66%;height:36%;border:1cqw solid var(--k);border-radius:4cqw;box-shadow:1cqw 1cqw 0 var(--k);z-index:3}
+.slt-c2 [data-slot=sticker]{left:4%;top:62%;width:24%;height:19%;border-radius:50%;border:1cqw solid var(--k);background:#fff;z-index:5;box-shadow:.8cqw .8cqw 0 var(--k)}
+.slt-c2 .art-kicker{left:6%;top:3.4%;background:var(--ac);color:var(--k);padding:.8cqw 2cqw;border:.5cqw solid var(--k);font-size:3.4cqw;transform:rotate(-4deg);z-index:7}
+.slt-c2 .art-sub{left:10%;right:10%;bottom:6.5%;text-align:center;color:var(--ink);font-size:2.6cqw;text-shadow:.2cqw .2cqw 0 color-mix(in srgb,var(--bg) 40%,#000)}
+
+/* 3. Comic panel: a framed panel with a caption box and a POW burst */
+.slt-c3{background:var(--bg)}
+.slt-c3 .slt-deco{inset:2.6%;border:.8cqw solid var(--k);background:#fffaf0}
+.slt-c3 [data-slot=main]{left:8%;top:22%;width:84%;height:48%;border:.9cqw solid var(--k);clip-path:polygon(0 0,100% 2.5%,98% 100%,2% 96%);z-index:3}
+.slt-c3 [data-slot=sticker]{right:8%;top:62%;width:22%;height:17.6%;border:.9cqw solid var(--k);background:#fff;transform:rotate(5deg);z-index:5}
+.slt-c3 .art-title{left:8%;top:6%;width:70%;background:var(--ac);color:var(--k);border:.7cqw solid var(--k);padding:1.6cqw 2cqw;font-size:calc(var(--fit-c)*.82);box-shadow:.9cqw .9cqw 0 var(--k);z-index:6}
+.slt-c3 .art-kicker{right:5%;top:4%;width:17cqw;height:17cqw;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--bg);color:var(--ink);font-size:3.2cqw;clip-path:polygon(50% 0,61% 18%,80% 8%,78% 30%,98% 33%,84% 50%,98% 67%,78% 70%,80% 92%,61% 82%,50% 100%,39% 82%,20% 92%,22% 70%,2% 67%,16% 50%,2% 33%,22% 30%,20% 8%,39% 18%);transform:rotate(10deg);z-index:7}
+.slt-c3 .art-sub{left:8%;bottom:6%;width:58%;background:#fff;color:var(--k);border:.6cqw solid var(--k);padding:1.2cqw 1.8cqw;font-size:2.4cqw;z-index:6}
+.slt-c3 .art-foot{display:none}
+
+/* 4. Meme: full-bleed picture, big outlined caption top and bottom */
+.slt-c4{background:#000}
+.slt-c4 [data-slot=main]{left:0;top:0;width:100%;height:100%;z-index:1}
+.slt-c4 [data-slot=sticker]{left:4%;bottom:15%;width:22%;height:17.6%;border-radius:50%;border:.9cqw solid #fff;box-shadow:0 .6cqw 2cqw #000a;z-index:5}
+.slt-c4 .art-title{left:4%;top:4%;width:92%;text-align:center;font-size:var(--fit-c);color:#fff;-webkit-text-stroke:.5cqw #000;paint-order:stroke fill;text-shadow:0 .6cqw 1.6cqw #000;z-index:6}
+.slt-c4 .art-sub{left:8%;right:8%;bottom:5%;text-align:center;color:#fff;font-size:3cqw;-webkit-text-stroke:.3cqw #000;paint-order:stroke fill;text-shadow:0 .4cqw 1.2cqw #000;z-index:6}
+.slt-c4 .art-kicker{right:4%;bottom:15%;background:var(--ac);color:var(--k);padding:.8cqw 2cqw;border:.5cqw solid var(--k);font-size:3.2cqw;transform:rotate(-5deg);z-index:7}
+.slt-c4 .art-brand{top:auto;bottom:2.4%;left:auto;right:5%;color:#fff;z-index:7}
+.slt-c4 .art-foot{display:none}
+
+/* 5. Sticky notes: notebook page, taped polaroid, marker headline */
+.slt-c5{background:repeating-linear-gradient(0deg,transparent 0 4.4cqw,#00000014 4.4cqw 4.6cqw),repeating-linear-gradient(90deg,transparent 0 4.4cqw,#00000010 4.4cqw 4.6cqw),color-mix(in srgb,var(--bg) 55%,#fff)}
+.slt-c5 .art-title{left:7%;top:6%;width:86%;font-size:calc(var(--fit-c)*.92);color:var(--k);font-family:'Comic Sans MS','Marker Felt',Impact,sans-serif;font-weight:900;text-transform:none;line-height:1.28;z-index:6}
+.slt-c5 .art-title span,.slt-c5 .art-title{background:linear-gradient(transparent 58%,var(--ac) 58% 92%,transparent 92%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.slt-c5 [data-slot=main]{left:16%;top:36%;width:60%;height:44%;border:2.2cqw solid #fff;border-bottom-width:7cqw;box-shadow:0 1.4cqw 3cqw #0005;transform:rotate(3deg);z-index:3}
+.slt-c5 .slt-deco::before{content:'';position:absolute;left:38%;top:33.4%;width:20cqw;height:5cqw;background:#ffe9a8aa;transform:rotate(-4deg);box-shadow:0 .3cqw .8cqw #0003}
+.slt-c5 [data-slot=sticker]{right:4%;top:62%;width:23%;height:18.4%;border-radius:50%;border:.9cqw solid #fff;box-shadow:0 .8cqw 2cqw #0005;transform:rotate(-8deg);z-index:5}
+.slt-c5 .art-sub{left:5%;bottom:5%;width:46%;background:#fff17a;color:var(--k);padding:2cqw 2cqw 2.4cqw;font-size:2.4cqw;transform:rotate(-3deg);box-shadow:.6cqw 1cqw 1.6cqw #0004;z-index:6}
+.slt-c5 .art-kicker{right:6%;top:30%;color:var(--k);font-size:3cqw;transform:rotate(6deg);z-index:7}
+.slt-c5 .art-foot{display:none}
+
+/* 6. Burst: a giant starburst behind a round picture */
+.slt-c6{background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 70%,#000))}
+.slt-c6 .slt-deco::before{content:'';position:absolute;left:-6%;top:22%;width:112%;height:62%;background:var(--ac);clip-path:polygon(50% 0,56% 12%,66% 3%,68% 16%,80% 9%,79% 23%,92% 20%,87% 33%,100% 34%,91% 45%,100% 55%,88% 59%,94% 71%,81% 71%,83% 84%,70% 80%,66% 94%,57% 85%,50% 100%,43% 85%,34% 94%,30% 80%,17% 84%,19% 71%,6% 71%,12% 59%,0 55%,9% 45%,0 34%,13% 33%,8% 20%,21% 23%,20% 9%,32% 16%,34% 3%,44% 12%)}
+.slt-c6 [data-slot=main]{left:23%;top:31%;width:54%;height:43.2%;border-radius:50%;border:1.2cqw solid var(--k);box-shadow:1cqw 1cqw 0 var(--k);z-index:3}
+.slt-c6 [data-slot=sticker]{right:6%;top:66%;width:24%;height:19.2%;border-radius:50%;border:1cqw solid var(--k);background:#fff;transform:rotate(8deg);z-index:5}
+.slt-c6 .art-title{left:4%;top:5%;width:92%;text-align:center;font-size:var(--fit-c);color:var(--ink);-webkit-text-stroke:.4cqw var(--k);paint-order:stroke fill;text-shadow:.7cqw .7cqw 0 var(--k);z-index:6}
+.slt-c6 .art-kicker{left:50%;top:21%;transform:translateX(-50%) rotate(-3deg);background:var(--k);color:var(--ac);padding:.8cqw 3cqw;font-size:3.6cqw;z-index:7;white-space:nowrap}
+.slt-c6 .art-sub{left:8%;right:8%;bottom:5%;text-align:center;color:var(--ink);font-size:2.7cqw;text-shadow:.2cqw .2cqw 0 var(--k)}
+.slt-c6 .art-foot{display:none}
+
+/* 7. Wanted poster: parchment, sepia picture, reward line */
+.slt-c7{background:radial-gradient(120% 90% at 50% 40%,color-mix(in srgb,var(--bg) 22%,#f1dfb8),color-mix(in srgb,var(--bg) 35%,#c9a971));font-family:Georgia,'Times New Roman',serif}
+.slt-c7 .slt-deco{inset:3%;border:1cqw double #3a2812;pointer-events:none}
+.slt-c7 .art-kicker{left:6%;right:6%;top:6%;text-align:center;font:900 7.4cqw/1 Impact,'Arial Black',sans-serif;letter-spacing:.03em;color:#3a2812;z-index:6}
+.slt-c7 [data-slot=main]{left:17%;top:22%;width:66%;height:40%;border:1cqw solid #3a2812;outline:.4cqw solid #3a2812;outline-offset:.8cqw;z-index:3}
+.slt-c7 [data-slot=main] .slot-fill{filter:sepia(.55) contrast(1.05)}
+.slt-c7 [data-slot=sticker]{right:8%;top:44%;width:22%;height:17.6%;border-radius:50%;border:.9cqw solid #3a2812;background:#f1dfb8;transform:rotate(8deg);z-index:5}
+.slt-c7 .art-title{left:8%;top:65%;width:84%;text-align:center;font-size:calc(var(--fit-c)*.8);color:var(--ac);-webkit-text-stroke:.3cqw #3a2812;paint-order:stroke fill;text-shadow:.5cqw .5cqw 0 #3a2812;z-index:6}
+.slt-c7 .art-sub{left:10%;right:10%;bottom:6.5%;text-align:center;color:#3a2812;font:700 2.6cqw/1.4 Georgia,serif}
+.slt-c7 .art-brand,.slt-c7 .art-foot{display:none}
+
+/* 8. Receipt: the hook printed on a paper receipt */
+.slt-c8{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--bg) 88%,#fff) 0 3cqw,var(--bg) 3cqw 6cqw)}
+.slt-c8 .slt-deco::before{content:'';position:absolute;left:11%;right:11%;top:3.5%;bottom:3.5%;background:#fff;box-shadow:0 1.2cqw 3cqw #0005;clip-path:polygon(0 0,100% 0,100% 98%,96% 100%,92% 98%,88% 100%,84% 98%,80% 100%,76% 98%,72% 100%,68% 98%,64% 100%,60% 98%,56% 100%,52% 98%,48% 100%,44% 98%,40% 100%,36% 98%,32% 100%,28% 98%,24% 100%,20% 98%,16% 100%,12% 98%,8% 100%,4% 98%,0 100%)}
+.slt-c8 .art-kicker{left:15%;right:15%;top:6%;text-align:center;color:var(--k);font:700 3.4cqw/1 'Courier New',monospace;letter-spacing:.3em;z-index:6}
+.slt-c8 [data-slot=main]{left:17%;top:13.5%;width:66%;height:34%;border:.6cqw dashed var(--k);padding:0;z-index:3}
+.slt-c8 [data-slot=sticker]{right:12%;top:36%;width:20%;height:16%;border-radius:50%;border:.8cqw solid var(--k);background:#fff;transform:rotate(8deg);z-index:5}
+.slt-c8 .art-title{left:15%;top:52%;width:70%;text-align:center;color:var(--k);font:900 calc(var(--fit-c)*.78)/1.08 'Courier New',monospace;text-transform:uppercase;z-index:6}
+.slt-c8 .art-sub{left:15%;right:15%;bottom:8%;text-align:center;color:var(--k);font:700 2.2cqw/1.4 'Courier New',monospace;border-top:.4cqw dashed var(--k);padding-top:1.4cqw}
+.slt-c8 .art-brand,.slt-c8 .art-foot{display:none}
+
+/* 9. Neon sign: dark wall, glowing words and a glowing frame */
+.slt-c9{background:radial-gradient(90% 70% at 50% 40%,color-mix(in srgb,var(--bg) 30%,#0a0a14),#050509);--glow:var(--ac)}
+.slt-c9 .art-title{left:6%;top:6%;width:88%;text-align:center;font-size:var(--fit-c);color:#fff;text-shadow:0 0 .6cqw #fff,0 0 1.8cqw var(--glow),0 0 4cqw var(--glow),0 0 8cqw var(--glow);z-index:6}
+.slt-c9 [data-slot=main]{left:14%;top:38%;width:72%;height:44%;border:.7cqw solid var(--glow);box-shadow:0 0 2cqw var(--glow),inset 0 0 2cqw var(--glow);border-radius:2cqw;z-index:3}
+.slt-c9 [data-slot=sticker]{right:4%;top:62%;width:23%;height:18.4%;border-radius:50%;border:.7cqw solid var(--glow);box-shadow:0 0 2cqw var(--glow);z-index:5}
+.slt-c9 .art-kicker{left:6%;top:31%;color:var(--glow);font-size:3.6cqw;text-shadow:0 0 1.4cqw var(--glow);z-index:7}
+.slt-c9 .art-sub{left:8%;right:8%;bottom:5.5%;text-align:center;color:#fff;font-size:2.7cqw;text-shadow:0 0 1cqw var(--glow)}
+.slt-c9 .art-foot{display:none}
+
+/* 10. Award: a gold medal ring, ribbons and confetti */
+.slt-c10{background:radial-gradient(circle at 20% 15%,#fff8,transparent 3cqw) 0 0/9cqw 9cqw,radial-gradient(circle at 70% 60%,var(--ac) 0 .7cqw,transparent .8cqw) 0 0/7cqw 7cqw,var(--bg)}
+.slt-c10 .art-kicker{left:50%;top:5%;transform:translateX(-50%);background:var(--k);color:#ffd44d;padding:1cqw 6cqw;border-radius:.6cqw;font-size:4cqw;white-space:nowrap;z-index:7;box-shadow:0 .8cqw 0 #0006}
+.slt-c10 [data-slot=main]{left:21%;top:15%;width:58%;height:46.4%;border-radius:50%;border:1.8cqw solid #e9b824;box-shadow:0 0 0 .6cqw #8a5f00,0 1.6cqw 3cqw #0006;z-index:3}
+.slt-c10 [data-slot=sticker]{right:6%;top:45%;width:23%;height:18.4%;border-radius:50%;border:1cqw solid #e9b824;background:#fff;z-index:5;transform:rotate(8deg)}
+.slt-c10 .art-title{left:6%;top:65%;width:88%;text-align:center;font-size:calc(var(--fit-c)*.8);color:var(--ink);-webkit-text-stroke:.35cqw var(--k);paint-order:stroke fill;text-shadow:.6cqw .6cqw 0 var(--k);z-index:6}
+.slt-c10 .art-sub{left:10%;right:10%;bottom:5.5%;text-align:center;color:var(--ink);font-size:2.6cqw;text-shadow:.2cqw .2cqw 0 var(--k)}
+.slt-c10 .art-foot{display:none}
+
+/* Wide pages: picture on the right, words on the left */
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape .art-title{left:5%;right:auto;top:8%;width:46%;font-size:min(var(--fit-c),5.2cqw);text-align:left}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape [data-slot=main]{left:54%;top:10%;width:40%;height:78%;border-radius:2cqw;transform:none;clip-path:none}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape [data-slot=sticker]{left:44%;right:auto;top:56%;width:14%;height:25%}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape .art-sub{left:5%;right:auto;bottom:8%;width:40%;font-size:1.6cqw;text-align:left}
+:is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape .art-kicker{left:5%;right:auto;top:auto;bottom:34%;transform:none;font-size:2.2cqw;clip-path:none;width:auto;height:auto;display:block;background:var(--ac);color:var(--k);padding:.6cqw 1.6cqw;white-space:nowrap}
+.slt-c3.ratio-landscape .slt-deco{inset:2%}
+.slt-c4.ratio-landscape .art-title{font-size:min(var(--fit-c),5.6cqw)}

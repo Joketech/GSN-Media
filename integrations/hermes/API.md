@@ -87,3 +87,7 @@ When the owner turns on accounts (Team page), the studio is split into workspace
 - Agents prepare; they never approve, post now, retry, or change live/paused/platform switches. Editors (people) have the same limits; only managers approve.
 - The original shared `GSN_AGENT_TOKEN` keeps working and reaches the Main workspace only.
 - Postiz addresses and API keys are per workspace, set by a manager. They are never returned by the API.
+
+### Monthly and comic templates
+
+Ids 412–423 are the twelve monthly templates (`month: true`). Ids 424–523 are 100 comic business-humour templates (`funny: true`): ten designs in ten colourways, each with a `main` picture slot and a `sticker` mascot slot that can be replaced through `slots.<key>.src`.
