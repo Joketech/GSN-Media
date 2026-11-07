@@ -97,7 +97,7 @@ const App=(()=>{
   const hash=location.hash||'#home';
   if(current.startsWith('#editor')&&!hash.startsWith('#editor'))Editor.close();
   current=hash;
-  if(hash==='#home'){show('portal');$('#stage').hidden=true;$('#editorRoot').hidden=true;if(typeof LandingPortal!=='undefined'&&$('#landingPortal').hidden)LandingPortal.show();requestAnimationFrame(()=>Water.start($('.portal-water'),{scene:'hero-realistic.png',sceneEl:$('.portal-sky')}));return}
+  if(hash==='#home'){show('portal');$('#stage').hidden=true;$('#editorRoot').hidden=true;if(typeof LandingPortal!=='undefined'&&$('#landingPortal').hidden)LandingPortal.show();requestAnimationFrame(()=>Water.start($('.portal-water'),{scene:'hero-realistic.png',sceneEl:$('.portal-sky'),sparse:true}));return}
   if(typeof LandingPortal!=='undefined'&&!$('#landingPortal').hidden)LandingPortal.hide(true);
   document.body.classList.remove('portal-open');
   const editor=hash.match(/^#editor\/([a-f0-9-]{36})$/),fresh=hash.match(/^#new\/(\d+)\/([a-z0-9-]+)$/);

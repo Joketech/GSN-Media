@@ -202,7 +202,7 @@ const Dashboard=(()=>{
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
-  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true,glass:true});
+  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true,glass:true,sparse:false});
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();

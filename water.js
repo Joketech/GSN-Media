@@ -5,6 +5,7 @@
    The beads sample an off-screen copy of the same scene, so what shows inside a drop is what is really behind it.
    Everything pauses when the dashboard is hidden and stops when motion is switched off. */
 const Water=(()=>{
+ let sparse=false;const DENSITY=()=>sparse?15000:2700;
  let mirror=null,mctx=null,back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
  const rnd=(a,b)=>a+Math.random()*(b-a);
  const rand=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
@@ -42,17 +43,17 @@ const Water=(()=>{
   [scene,sceneCtx]=mk();paintScene(sceneCtx);
   [layer,layerCtx]=mk();
   // Back canvas: only the lights, so the pastel backdrop under it keeps drifting.
-  const [lc,lx]=mk();paintScene(lx,true);bctx.clearRect(0,0,w,h);bctx.save();bctx.globalAlpha=.55;bctx.drawImage(lc,0,0,w,h);bctx.restore();
+  const [lc,lx]=mk();paintScene(lx,true);bctx.clearRect(0,0,w,h);bctx.save();bctx.globalAlpha=sparse?0:.55;bctx.drawImage(lc,0,0,w,h);bctx.restore();
  }
 
  // A bead is placed so it does not sit on top of another; small ones are many, large ones few.
  function newBead(y){
-  const roll=Math.random(),r=roll<.5?rnd(1.2,2.6):roll<.8?rnd(2.6,5.5):roll<.95?rnd(5.5,9):rnd(9,14);
+  const roll=Math.random(),r=sparse?(roll<.85?rnd(1.8,4):rnd(4.5,7.5)):roll<.5?rnd(1.2,2.6):roll<.8?rnd(2.6,5.5):roll<.95?rnd(5.5,9):rnd(9,14);
   return {x:rnd(0,w),y:y??rnd(0,h),r,vy:0,run:false,wait:rnd(3,16),trail:null,ph:rnd(0,6.3)};
  }
  function fits(b){for(const o of beads){const d=Math.hypot(o.x-b.x,o.y-b.y);if(d<(o.r+b.r)*.85)return false}return true}
  function place(y){for(let i=0;i<14;i++){const b=newBead(y);if(fits(b))return b}return null}
- function seed0(){beads=[];trails=[];const n=Math.round(w*h/2700);for(let i=0;i<n*3&&beads.length<n;i++){const b=place();if(b)beads.push(b)}dirty=true}
+ function seed0(){beads=[];trails=[];const n=Math.round(w*h/DENSITY());for(let i=0;i<n*3&&beads.length<n;i++){const b=place();if(b)beads.push(b)}dirty=true}
 
  function step(dt){
   let changed=false,runners=beads.reduce((n,b)=>n+(b.run?1:0),0);
@@ -60,7 +61,7 @@ const Water=(()=>{
    if(!b.run){
     // Resting beads swell very slowly as more mist settles; the heavy ones begin to run.
     b.r+=dt*(b.r<9?.045:.02);b.wait-=dt;
-    if(b.r>6.4&&b.wait<0&&runners<5&&Math.random()<dt*.25){runners++;b.run=true;b.vy=rnd(10,22);b.trail={pts:[[b.x,b.y]],age:0,r:b.r,bits:[]};changed=true}
+    if(b.r>6.4&&b.wait<0&&runners<(sparse?1:5)&&Math.random()<dt*(sparse?.06:.25)){runners++;b.run=true;b.vy=rnd(10,22);b.trail={pts:[[b.x,b.y]],age:0,r:b.r,bits:[]};changed=true}
    }else{
     // A running drop stutters: it speeds up, catches on the glass, speeds up again.
     b.stick=(b.stick||0)-dt;
@@ -77,7 +78,7 @@ const Water=(()=>{
     if(b.y>h+30){b.dead=true;if(b.trail)trails.push(b.trail);changed=true}
    }
   }
-  if(beads.some(b=>b.dead)){beads=beads.filter(b=>!b.dead);const need=Math.round(w*h/2700)-beads.length;for(let i=0;i<Math.min(need,4);i++){const b=place(Math.random()<.6?rnd(-10,h*.25):undefined);if(b)beads.push(b)}changed=true}
+  if(beads.some(b=>b.dead)){beads=beads.filter(b=>!b.dead);const need=Math.round(w*h/DENSITY())-beads.length;for(let i=0;i<Math.min(need,4);i++){const b=place(Math.random()<.6?rnd(-10,h*.25):undefined);if(b)beads.push(b)}changed=true}
   for(const t of trails)t.age+=dt;
   trails=trails.filter(t=>t.age<12);if(trails.length>20)trails.splice(0,trails.length-20);
   if(changed)dirty=true;
@@ -176,7 +177,7 @@ const Water=(()=>{
  }
  function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h);copyMirror()}
  function start(el,opts){
-  setScene(opts?.scene||'room-bg.jpg',opts?.sceneEl);
+  sparse=!!opts?.sparse;setScene(opts?.scene||'room-bg.jpg',opts?.sceneEl);
   back=el;front=el.parentElement.querySelector('.water-front');if(!front)return;
   bctx=back.getContext('2d');fctx=front.getContext('2d');
   size();seed0();
