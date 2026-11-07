@@ -22,15 +22,18 @@ async function inlineGsnPhotos(cards,direct=false){
 async function campaignExportCss(cards){
  const files=[['campaign','campaign-atlas.png'],['automation','automation-atlas.png'],['automation-operations','automation-operations-atlas.png']];
  const read=async(path)=>{const response=await fetch(path);if(!response.ok)throw new Error(`Missing export asset: ${path}`);return response;};
- const [base, premium, ...images]=await Promise.all([
+ // The export must use every stylesheet the editor shows the page with, or designed pages come out flat and without their pictures.
+ const [base, premium, library, layers, inner, ...images]=await Promise.all([
   read('studio.css').then(response=>response.text()), read('premium.css').then(response=>response.text()),
+  read('artwork-library.css').then(response=>response.text()), read('free-layers.css').then(response=>response.text()), read('inner-pages.css').then(response=>response.text()),
   ...files.map(async([sheet,path])=>{
-   if(!cards.includes(`photo-${sheet}"`))return 'data:,';
+   if(!cards.includes(`photo-${sheet}"`)&&!cards.includes(`picture-${sheet}`))return 'data:,';
    const blob=await read(path).then(response=>response.blob());
    return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});
   }),
  ]);
- return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),premium)}`;
+ const all=[premium,library].join('\n').replace(/@import[^;]+;/g,'');
+ return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}`;
 }
 function loadDesignImage(source){
  return new Promise((resolve,reject)=>{
@@ -106,7 +109,7 @@ async function designVideoBlob(images){
 async function downloadDesignVideo(images){download(await designVideoBlob(images),'gsn-design.mp4','video/mp4')}
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  const safe=s=>String(s||'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'design';
- async function css(cards){return `${await campaignExportCss(cards)}\n${await fetch('free-layers.css').then(r=>r.text())}`}
+ async function css(cards){return campaignExportCss(cards)}
  // opts: {pages:[indices], type:'png'|'jpeg'|'pdf'|'mp4'|'html', scale:1|2, onProgress}
  async function run(design,{pages,type,scale=1,onProgress=()=>{}}){
   const [rw,rh]=design.ratio.split(' / ').map(Number);
