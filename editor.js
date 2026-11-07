@@ -406,7 +406,7 @@ const Editor=(()=>{
    html=`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
-   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
+   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}<button class="txt" data-b="spacing" title="Letter and line spacing">Spacing</button>${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
@@ -520,6 +520,7 @@ const Editor=(()=>{
   if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
   if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
   if(a==='slotpan'){slotPan=!slotPan;return drawBar()}
+  if(a==='spacing')return spacingPanel(t);
   if(a==='edit'){return startEdit()}
   if(a==='group')return groupSel();
   if(a==='ungroup')return ungroupSel();
@@ -713,6 +714,24 @@ const Editor=(()=>{
   };
   $('#edTq').oninput=e=>{q=e.target.value;shown=18;draw()};$('#edTm').onclick=()=>{shown+=18;draw()};draw();
  }
+ // Spacing panel: letter spacing and line spacing for the selected text.
+ function spacingPanel(anchor){
+  document.querySelector('.ed-cpanel')?.remove();
+  const l=layerOf();
+  const box=document.createElement('div');box.className='ed-cpanel ed-spacing';
+  box.innerHTML=`<label class="sp-row">Letter spacing <output id="spLv">${l.spacing??0}</output><input type="range" id="spL" min="-10" max="40" step="1" value="${l.spacing??0}"></label>
+  <label class="sp-row">Line spacing <output id="spHv">${l.lineHeight??100}</output><input type="range" id="spH" min="70" max="250" step="5" value="${l.lineHeight??100}"></label>
+  <button class="btn-light" id="spReset">Reset spacing</button>`;
+  document.body.appendChild(box);
+  const r=anchor.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;
+  box.style.left=Math.max(8,Math.min(innerWidth-bw-8,r.left))+'px';
+  box.style.top=(r.bottom+8+bh<innerHeight?r.bottom+8:Math.max(8,r.top-bh-8))+'px';
+  $('#spL',box).oninput=ev=>{$('#spLv',box).textContent=ev.target.value;patchLayer({spacing:+ev.target.value},'spacingL')};
+  $('#spH',box).oninput=ev=>{$('#spHv',box).textContent=ev.target.value;patchLayer({lineHeight:+ev.target.value},'spacingH')};
+  $('#spReset',box).onclick=()=>{patchLayer({spacing:undefined,lineHeight:undefined},'spacingR');box.remove()};
+  const away=ev=>{if(!box.contains(ev.target)&&!anchor.contains(ev.target)){box.remove();document.removeEventListener('pointerdown',away,true)}};
+  setTimeout(()=>document.addEventListener('pointerdown',away,true),0);
+ }
  // Colour panel (like Canva's): hex box, eyedropper, colours already in this design, your saved brand colours, standard colours.
  function designColours(){
   const set=new Set(),add=c=>{if(/^#[0-9a-f]{6}$/i.test(c||''))set.add(c.toLowerCase())};
@@ -775,7 +794,7 @@ const Editor=(()=>{
   People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();if(sel?.t==='slot')setSlot(sel.k,{src:p.image,x:0,y:0,z:100});else{s.image=p.image;if(slotDefs()[0])setSlot(slotDefs()[0][0],{src:p.image,x:0,y:0,z:100});delete s.artX;delete s.artY;delete s.artScale}});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
  }
  function toolUploads(body){
-  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
+  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/*,.jfif,.avif,.webp,.svg" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG, WebP, GIF, SVG or AVIF</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
   const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button><button data-up="del" data-i="${i}">Delete</button></div></div>`).join('')+(uploads.length?'<button class="btn-light" data-up="clear" style="grid-column:1/3">Delete all uploads</button>':'')};
   $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
   $('#edLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);draw()});
@@ -802,19 +821,31 @@ const Editor=(()=>{
    try{const url=await libraryCell(p);d.close();done(url)}catch(err){toast('That picture could not be loaded.')}};
   d.addEventListener('close',()=>d.remove());document.body.append(d);draw();d.showModal();
  }
+ // Any picture the browser can open (PNG, JPG, WebP, AVIF, GIF, BMP, SVG, JFIF...) is turned into a PNG or JPG that fits the design.
+ const IMG_OK=f=>!f.type||/^image\//.test(f.type)||/\.(png|jpe?g|jfif|webp|avif|gif|bmp|svg|heic|heif)$/i.test(f.name||'');
+ async function decodeImage(file){
+  try{return await createImageBitmap(file)}catch{}
+  const url=URL.createObjectURL(file);
+  try{const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(Error('x'));i.src=url});
+   const w=im.naturalWidth||1000,h=im.naturalHeight||1000;return {width:w,height:h,draw:(ctx,cw,ch)=>ctx.drawImage(im,0,0,cw,ch),el:im}}
+  catch{throw Error(/\.(heic|heif)$/i.test(file.name||'')?'This browser cannot open HEIC photos. Save it as JPG or PNG first.':'This file could not be opened as a picture. Try a PNG, JPG or WebP.')}
+  finally{setTimeout(()=>URL.revokeObjectURL(url),4000)}
+ }
  async function compress(file){
-  if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw Error('Use a PNG, JPG or WebP image.');
-  const bitmap=await createImageBitmap(file);let max=1600,q=.86;
+  if(!IMG_OK(file))throw Error('Choose a picture file (PNG, JPG, WebP, GIF, AVIF or SVG).');
+  const bitmap=await decodeImage(file);let max=1600,q=.86;
+  const jpeg=/jpe?g|jfif/i.test(file.type+(file.name||''));
   for(let i=0;i<8;i++){
-   const k=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.round(bitmap.width*k);c.height=Math.round(bitmap.height*k);
-   const ctx=c.getContext('2d');const alpha=file.type==='image/png';if(!alpha){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)}ctx.drawImage(bitmap,0,0,c.width,c.height);
-   const url=c.toDataURL(alpha&&i<3?'image/png':'image/jpeg',q);
+   const k=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(bitmap.width*k));c.height=Math.max(1,Math.round(bitmap.height*k));
+   const ctx=c.getContext('2d');if(jpeg){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)}
+   if(bitmap.draw)bitmap.draw(ctx,c.width,c.height);else ctx.drawImage(bitmap,0,0,c.width,c.height);
+   const url=c.toDataURL(!jpeg&&i<3?'image/png':'image/jpeg',q);
    if(url.length<1_300_000)return url;max*=.8;q=Math.max(.5,q-.06);
   }
   throw Error('That image is too large. Try a smaller one.');
  }
  function pickImage(done){
-  const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';
+  const input=document.createElement('input');input.type='file';input.accept='image/*,.jfif,.avif,.webp,.svg';
   input.onchange=async()=>{try{const u=await compress(input.files[0]);uploads.unshift(u);done(u)}catch(e){toast(e.message)}};input.click();
  }
 
@@ -988,12 +1019,17 @@ const Editor=(()=>{
   const th=e.target.closest?.('.ed-thumb');if(th&&design)e.dataTransfer.setData('text/plain',th.dataset.page)});
  document.addEventListener('dragover',e=>{if(design&&el.page?.contains(e.target)&&(e.dataTransfer.types.includes('application/x-gsn-upload')||e.dataTransfer.types.includes('Files')))e.preventDefault();
   if(design&&e.target.closest?.('.ed-thumb'))e.preventDefault()});
+ document.addEventListener('paste',async e=>{
+  if(!design||editing||e.target.closest?.('input,textarea,[contenteditable]'))return;
+  const f=[...(e.clipboardData?.files||[])].find(IMG_OK);if(!f)return;
+  e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u);toast('Picture pasted onto the page.')}catch(err){toast(err.message)}
+ });
  document.addEventListener('drop',async e=>{
   if(design&&el.page?.contains(e.target)){
    const pb=pageBox(),at={x:Math.round(Math.min(100,Math.max(0,(e.clientX-pb.left)/pb.width*100))),y:Math.round(Math.min(100,Math.max(0,(e.clientY-pb.top)/pb.height*100)))};
    const idx=e.dataTransfer.getData('application/x-gsn-upload');
    if(idx!==''&&uploads[+idx]){e.preventDefault();return addElement(uploads[+idx],at)}
-   const f=[...(e.dataTransfer.files||[])].find(x=>/^image\/(png|jpeg|webp)$/.test(x.type));
+   const f=[...(e.dataTransfer.files||[])].find(IMG_OK);
    if(f){e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u,at)}catch(err){toast(err.message)}return}
   }
   const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();
