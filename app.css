@@ -7,10 +7,10 @@ body:not(.portal-open){margin:0;background:#e9e4f2;color:var(--ink);font-family:
 .ic{width:20px;height:20px;flex:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #8a2236;outline-offset:2px}
-.stage{position:fixed;inset:0;display:grid;grid-template-columns:84px 1fr;grid-template-rows:auto 1fr auto;gap:14px;padding:14px 18px 18px;overflow:hidden;color:var(--ink)}
+.stage{position:fixed;inset:0;display:grid;grid-template-columns:60px 1fr;grid-template-rows:auto 1fr auto;gap:14px;padding:max(14px,calc((100vh - 860px)/2)) max(18px,calc((100vw - 1100px)/2)) max(18px,calc((100vh - 860px)/2));overflow:hidden;color:var(--ink)}
 .stage[hidden],.editor-root[hidden]{display:none}
 /* A slowly drifting pastel aurora, calm and cool, so the water ripples have something soft to move across. */
-.stage-bg{position:absolute;inset:0;z-index:-2;background:radial-gradient(60% 55% at 12% 18%,#bcd9f7 0,transparent 70%),radial-gradient(50% 50% at 88% 12%,#f6c9dc 0,transparent 70%),radial-gradient(55% 60% at 80% 88%,#c4ead9 0,transparent 70%),radial-gradient(50% 50% at 18% 90%,#fbd9bd 0,transparent 70%),radial-gradient(40% 40% at 50% 50%,#ddd2f6 0,transparent 75%),#e8e3f1;background-size:140% 140%;animation:aurora 26s ease-in-out infinite alternate}
+.stage-bg{position:absolute;inset:0;z-index:-2;background:url(room-bg.jpg) center/cover no-repeat}
 @keyframes aurora{to{background-position:100% 60%}}
 .water{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 #stage .water{z-index:-1}
@@ -19,31 +19,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .glass-dark{background:rgba(66,44,52,.5);color:#fff;border-color:rgba(255,255,255,.35)}
 .glass-strong{background:var(--glass-strong);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 .glass-inset{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
-.osbar{grid-column:1/3;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
+.osbar{grid-column:1/3;margin-right:-34px;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
 .osgroup{display:flex;gap:4px}
 .osbtn{width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
 .osbtn:hover{background:#fff}
 .osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:3px 14px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.74rem;min-width:0;overflow:hidden;white-space:nowrap}
 .osaddress b{font-weight:700;color:var(--accent)}.osdot{width:8px;height:8px;border-radius:50%;background:#5cc79a;box-shadow:0 0 8px #8ee0bd}
-.rail{grid-row:2/4;align-self:center;display:flex;flex-direction:column;gap:8px;padding:10px 8px;border-radius:36px;margin-top:0}
-.rail button{width:52px;height:52px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.85);display:grid;place-items:center;transition:.25s}
-.rail button .ic{width:22px;height:22px}
+.rail{grid-row:2/4;align-self:center;display:flex;flex-direction:column;gap:12px;padding:16px 5px;border-radius:28px;margin-top:0}
+.rail button{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.85);display:grid;place-items:center;transition:.25s}
+.rail button .ic{width:18px;height:18px}
 .rail button:hover{background:rgba(255,255,255,.22);color:#fff}
 .rail button.on{background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;box-shadow:0 6px 18px rgba(138,34,54,.4)}
 .panel{grid-column:2;grid-row:2;display:flex;flex-direction:column;border-radius:var(--r);min-height:0;overflow:hidden;position:relative}
-.panel-top{display:flex;align-items:center;gap:12px;padding:14px 26px;position:relative;z-index:2}
+.panel-top{display:flex;align-items:center;gap:10px;padding:8px 26px 10px;position:relative;z-index:2}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);margin-right:auto}
-.brand-mark{width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;display:grid;place-items:center;font:700 1.45rem var(--serif);box-shadow:0 6px 16px rgba(138,34,54,.32)}
+.brand-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;display:grid;place-items:center;font:700 1.45rem var(--serif);box-shadow:0 6px 16px rgba(138,34,54,.32)}
 .brand-text{display:flex;flex-direction:column;line-height:1.15}.brand-text b{letter-spacing:.2em;font-size:.8rem;font-weight:800}.brand-text small{color:var(--ink2);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase}
-.search{display:flex;align-items:center;gap:8px;padding:0 16px;height:40px;width:min(320px,34vw);border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--line);color:var(--ink2)}
+.search{display:flex;align-items:center;gap:6px;padding:0 12px;height:30px;font-size:.78rem;width:min(300px,32vw);border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--line);color:var(--ink2)}
 .search input{flex:1;border:0;background:transparent;font:inherit;color:var(--ink);min-width:0;outline:0}.search input::placeholder{color:var(--ink2)}
 .pill-btn,.round-btn,.user-btn{border:1px solid var(--line);background:rgba(255,255,255,.6);color:var(--ink);transition:.2s}
 .pill-btn:hover,.round-btn:hover,.user-btn:hover{background:#fff}
-.pill-btn{height:40px;padding:0 18px;border-radius:999px;display:flex;align-items:center;gap:6px}
-.round-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;position:relative}
+.pill-btn{height:30px;padding:0 12px;font-size:.78rem;border-radius:999px;display:flex;align-items:center;gap:5px}.pill-btn .ic,.round-btn .ic,.user-btn .ic,.search .ic{width:14px;height:14px}
+.round-btn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;position:relative}
 .badge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--accent);color:#fff;font:800 .68rem/18px sans-serif;text-align:center;font-style:normal}
-.user-btn{height:40px;padding:0 10px 0 4px;border-radius:999px;display:flex;align-items:center;gap:4px}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;display:grid;place-items:center;font:700 1.3rem/1 var(--serif);padding-bottom:3px}
+.user-btn{height:30px;padding:0 8px 0 3px;border-radius:999px;display:flex;align-items:center;gap:4px}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;display:grid;place-items:center;font:700 1.05rem/1 var(--serif);padding-bottom:2px}
 .pop-wrap{position:relative}
 .popover{position:absolute;right:0;top:calc(100% + 8px);z-index:30;min-width:240px;max-width:320px;padding:10px;border-radius:18px;display:flex;flex-direction:column;gap:6px}
 .popover[hidden]{display:none}
@@ -66,12 +66,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .sec-head h2{margin:0;font:600 1.45rem var(--serif);color:#4a2431}
 .sec-head a{display:flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em}.sec-head .ic{width:13px;height:13px}
-.hero-row{display:grid;grid-template-columns:1.9fr 1fr;gap:16px;flex:1 1 0;min-height:260px}
-.hero{position:relative;border-radius:22px;padding:30px 34px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 55%/cover;border:1px solid var(--line)}
+.hero-row{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;flex:1 1 0;min-height:260px}
+.hero{position:relative;border-radius:22px;padding:22px 24px 24px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 55%/cover;border:1px solid var(--line)}
 .hero:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
 @keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-.hero h2{margin:0;font:600 clamp(2rem,4vw,3.4rem)/.95 var(--serif);letter-spacing:.01em}
-.hero p{margin:0;max-width:40ch;font-size:.9rem;line-height:1.35;opacity:.92}.hero .btn-maroon{align-self:flex-start;flex:none;height:30px;font-size:.74rem;margin-top:2px}.hero>*{flex:none}
+.hero h2{margin:0;font:600 clamp(1.6rem,2.7vw,2.3rem)/.95 var(--serif);letter-spacing:.01em}
+.hero p{margin:0 0 auto;max-width:28ch;font-size:.82rem;line-height:1.35;opacity:.92}.hero .btn-maroon{align-self:flex-start;flex:none;height:30px;font-size:.74rem;margin-top:2px}.hero>*{flex:none}
 .hero-tag{align-self:flex-start;padding:3px 11px;border-radius:999px;background:rgba(255,255,255,.28);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(255,255,255,.5)}
 .agents-card{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:22px;padding:14px 18px;overflow:hidden;display:flex;flex-direction:column}
 .agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;flex:1;align-content:space-around}
@@ -89,7 +89,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @keyframes orbit{from{transform:rotate(0) translateX(23px)}to{transform:rotate(360deg) translateX(23px)}}
 @keyframes orbpulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.07);transform:scale(1.05)}}
 /* The templates sit in view and drift left without stopping; they rest while you point at them. */
-.tpass{flex:none;height:clamp(215px,26vh,262px);display:flex;flex-direction:column}
+.tpass{flex:none;height:clamp(236px,31vh,300px);display:flex;flex-direction:column}
 .marquee{flex:1;min-height:0;overflow:hidden;margin:0 -28px;container-type:size;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .marquee-track{display:flex;gap:16px;width:max-content;height:100%;padding:4px 0 6px 16px;animation:scrollleft calc(var(--n,12)*4.5s) linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
@@ -116,9 +116,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .btn-maroon[disabled]{opacity:.6}
 .more{display:flex;justify-content:center;margin-top:22px}
 .empty{padding:40px 10px;color:var(--ink2);text-align:center}
-.tabs{grid-column:2;grid-row:3;justify-self:center;display:flex;gap:3px;padding:3px;border-radius:999px}
+.tabs{grid-column:2;grid-row:3;justify-self:center;display:flex;gap:6px;padding:4px;border-radius:999px}
 .tabs[hidden]{display:none}
-.tabs button{height:26px;padding:0 15px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.7rem;color:var(--ink2);transition:.2s}
+.tabs button{height:30px;padding:0 30px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.7rem;color:var(--ink2);transition:.2s}
 .tabs button:hover{color:var(--ink)}
 .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 4px 12px rgba(90,70,120,.18)}
 .agents-page{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-bottom:20px}
@@ -141,7 +141,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .editor-root{position:fixed;inset:0}
 @media(max-width:900px){
  .stage{grid-template-columns:1fr;padding:10px;gap:10px;grid-template-rows:auto auto 1fr auto}
- .osbar{grid-column:1}.osaddress{display:none}
+ .osbar{grid-column:1;margin-right:0}.osaddress{display:none}
  .rail{grid-row:2;flex-direction:row;margin:0;justify-content:center;padding:6px;border-radius:999px;align-self:auto}
  .rail button{width:42px;height:42px}
  .panel,.tabs{grid-column:1;grid-row:auto}.tabs{overflow-x:auto;max-width:100%}
@@ -152,7 +152,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .brand-text small{display:none}
 }
 @media(max-height:820px){.hero-tag{display:none}.agents-grid{grid-template-columns:repeat(2,1fr);gap:2px 8px}.hero p{display:none}.hero-row{height:140px}.agent-row small{display:none}.agent-row{padding:0 8px}.agent-row .bot{width:46px;height:52px}.agents-card{padding:8px 14px}.dash{min-height:500px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}.marquee-track,.orb,.orb-ring,.orb-dot,.hero:after,.stage-bg{animation:none!important}.marquee{overflow-x:auto}}
+
 .portal-water{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
 
 .modal textarea{width:100%;border-radius:12px;border:1px solid rgba(0,0,0,.16);padding:10px 12px;font:inherit;background:#fff;color:var(--ink);resize:vertical}
@@ -292,3 +292,7 @@ body[data-role=editor] .pp-del{display:none}
 /* Turning Earth on the pack card: sits over the picture's own globe, under the words. */
 .hero-globe{position:absolute;z-index:0;pointer-events:none;border-radius:50%}
 .hero>*:not(.hero-globe){position:relative;z-index:1}
+
+.agents-card{min-width:0}.agent-row{gap:8px;padding:4px 6px;min-width:0}.agent-row .bot{width:48px;height:54px}.agent-row .chev{display:none}.agent-row b{font-size:.95rem}
+.stage>.tabs.glass{background:rgba(255,250,252,.8)}.tabs button{color:#5d4a54}.tabs button.on{color:var(--ink)}
+.stage>.panel.glass{background:linear-gradient(160deg,rgba(255,252,253,.6),rgba(255,246,250,.52))}

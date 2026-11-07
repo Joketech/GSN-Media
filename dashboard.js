@@ -31,14 +31,14 @@ const Dashboard=(()=>{
    working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
   pollTimer=setTimeout(pollJobs,6000);
  }
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','user','People'],['team','user','Team']];
+ const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team']];
  const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
- // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. First visit follows the system's reduced-motion setting.
+ // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
  const Motion={
   on:true,
-  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='on':!matchMedia('(prefers-reduced-motion: reduce)').matches;this.apply()},
+  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='off'?false:true:true;this.apply()},
   apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
   set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
  };
@@ -138,7 +138,7 @@ const Dashboard=(()=>{
   const agents=GSNKit.agents;
   return `<div class="dash"><section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
-   <article class="hero"><canvas class="hero-globe" aria-hidden="true"></canvas><span class="hero-tag">Today’s pack</span><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
+   <article class="hero"><canvas class="hero-globe" aria-hidden="true"></canvas><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
    <article class="agents-card"><div class="sec-head"><h2>Your agents</h2><a href="#agents">See more ${icon('chevronRight')}</a></div>
     <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>

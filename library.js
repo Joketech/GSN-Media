@@ -48,11 +48,11 @@ const Library=(()=>{
    // Fit any platform ratio inside the card's fixed 4:5 window.
    const [w,h]=this.ratio.split(' / ').map(Number),fit=Math.min(100,(w/h)/.8*100);
    this.host.style.width=fit+'%';this.host.style.aspectRatio=this.ratio;
-   await KitHost.mount(this.host,KitHost.pageHtml(this.design,this.i,reduceMotion.matches?'':'animate'));
+   await KitHost.mount(this.host,KitHost.pageHtml(this.design,this.i,document.documentElement.dataset.motion==='off'?'':'animate'));
    if(this.roleEl)this.roleEl.textContent=roleLabel(this.i,n);
   }
   // The Hook (first page) always shows first and is held longer, so a card is understood before it moves on.
-  play(){if(this.timer||reduceMotion.matches||document.documentElement.dataset.motion==='off')return;
+  play(){if(this.timer||document.documentElement.dataset.motion==='off')return;
    const tick=()=>{this.timer=setTimeout(()=>{this.i=(this.i+1)%this.design.pages.length;this.paint();tick()},this.i===0?5500:2400)};tick()}
   stop(){clearTimeout(this.timer);this.timer=0;if(this.i!==0&&this.design){this.i=0;this.paint()}}
  }

@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
-const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','portal.css','portal.js','robot-hand.svg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','ai-studio.js'].map(f=>['/'+f,f])]);
+const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium.css','studio.js','portal.css','portal.js','robot-hand.svg','room-bg.jpg','realism.css','realism.js','landscape-bg.jpg','hero-realistic.png','aqua.css','ai-studio.js'].map(f=>['/'+f,f])]);
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const v1=createV1();
 allowed.set('/gsn-photo-data.js','gsn-photo-data.js');
