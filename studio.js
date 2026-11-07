@@ -126,6 +126,19 @@ greetingDesigns.forEach((spec,index)=>{
  const label=spec.monthly?`${spec.name} · Happy New Month`:spec.name==='Friday'?'TGIF · Thank God it’s Friday':spec.name;
  templates.push({id:524+index,name:`Seasonal / ${spec.collection} / ${label}`,title,summary:spec.wish,topic:spec.name,format:'Carousel',layout:index%20,palette:spec.set*3,cartoon:true,greeting:true,greetingSet:spec.set,headingSize:Math.min(spec.set===0?19:17,125/Math.max(...title.split(' ').map(word=>word.length))),limit:110});
 });
+// Fonts a text layer can use. The last value is the Google Fonts family (loaded in the app and embedded when a design is exported).
+const gsnFonts=[
+ ['sans','Sans (Arial)','Arial, sans-serif',''],['serif','Serif (Georgia)','Georgia, serif',''],['mono','Mono','monospace',''],
+ ['inter','Inter',"'Inter', Arial, sans-serif",'Inter:wght@400;700'],['poppins','Poppins',"'Poppins', Arial, sans-serif",'Poppins:wght@400;700'],
+ ['montserrat','Montserrat',"'Montserrat', Arial, sans-serif",'Montserrat:wght@400;700'],['playfair','Playfair Display',"'Playfair Display', Georgia, serif",'Playfair+Display:wght@400;700'],
+ ['lora','Lora',"'Lora', Georgia, serif",'Lora:wght@400;700'],['oswald','Oswald',"'Oswald', Arial, sans-serif",'Oswald:wght@400;700'],
+ ['bebas','Bebas Neue',"'Bebas Neue', Arial, sans-serif",'Bebas+Neue'],['dmserif','DM Serif Display',"'DM Serif Display', Georgia, serif",'DM+Serif+Display'],
+ ['pacifico','Pacifico (script)',"'Pacifico', cursive",'Pacifico'],['caveat','Caveat (handwriting)',"'Caveat', cursive",'Caveat:wght@400;700'],
+ ['arabic','العربية · Arabic',"'Cairo', Arial, sans-serif",'Cairo:wght@400;700'],['hebrew','עברית · Hebrew',"'Heebo', Arial, sans-serif",'Heebo:wght@400;700'],
+ ['devanagari','हिन्दी · Hindi',"'Noto Sans Devanagari', Arial, sans-serif",'Noto+Sans+Devanagari:wght@400;700'],['bengali','বাংলা · Bengali',"'Noto Sans Bengali', Arial, sans-serif",'Noto+Sans+Bengali:wght@400;700'],
+ ['thai','ไทย · Thai',"'Noto Sans Thai', Arial, sans-serif",'Noto+Sans+Thai:wght@400;700'],['chinese','中文 · Chinese',"'Noto Sans SC', Arial, sans-serif",'Noto+Sans+SC:wght@400;700'],
+ ['japanese','日本語 · Japanese',"'Noto Sans JP', Arial, sans-serif",'Noto+Sans+JP:wght@400;700'],['korean','한국어 · Korean',"'Noto Sans KR', Arial, sans-serif",'Noto+Sans+KR:wght@400;700'],
+];
 const agents=[['Lyra','Researcher','Research direction and source gathering. Live research not connected.','L'],['Seline','Writer','Writes hooks, slides, captions and calls to action.','S'],['Spectra','Builder','Builds editable HTML materials and layouts.','S'],['Flux','Animator','Animates materials, typography and design compositions.','F'],['Relay','Publisher','Plans approved content; live publishing not connected.','R'],['Mira','Orchestrator','Routes jobs and enforces approval gates.','◎']];
 const initial={brand:{name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',color:'#ed6843'},ideas:[],activity:[],projects:[],schedule:[],template:0,slides:[],selected:0,copyApproved:false,finalApproved:false,ratio:'1 / 1',duration:3};
 let state;try{state={...initial,...JSON.parse(localStorage.getItem('gsn-studio-v1')||'null')};}catch{state=structuredClone(initial)}
@@ -266,7 +279,7 @@ function slotPage(t,slide,o){
 <div class="campaign-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${layerCopy(kicker,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${layerCopy(title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${layerCopy(body,slide.textLayers?.body?.bullets)}</div></div>
 <div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(foot,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
-function art(t,slide={},extra=''){
+function artBase(t,slide={},extra=''){
  const p=palettes[t.palette];
  const role=slide.total>1?(Number(slide.number)===1?'hook':Number(slide.number)===slide.total?'cta':'content'):'';
  const choices=role==='hook'?['hourglass','visor','orbit']:role==='cta'?['portfolio','stack','lift','hourglass']:['product','audio','terminal','rocket'];
@@ -308,7 +321,7 @@ function art(t,slide={},extra=''){
  const heightFactor=ratioParts[1]/ratioParts[0];
  function textStyleFrom(options){
   if(!options)return '';
-  const font={sans:'Arial, sans-serif',serif:'Georgia, serif',mono:'monospace'}[options.font];
+  const font=gsnFonts.find(f=>f[0]===options.font)?.[2];
   const decoration=[options.underline?'underline':'',options.strike?'line-through':''].filter(Boolean).join(' ');
   const effect={shadow:'0 .09em .18em #0009',glow:'0 0 .35em currentColor',outline:'1px 1px #000,-1px -1px #000'}[options.effect];
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
@@ -332,6 +345,11 @@ function art(t,slide={},extra=''){
    const picture=gsnLibraryPhoto(key);
    return `<span class="photo-element" data-canvas-element="${index}" role="img" aria-label="${esc(picture.name)}" style="${placement||"position:relative;"}${stack("element:"+index)}${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],25,500,100)/100};--photo-source:url('${picture.file}');--photo-position:${picture.position};--photo-size:${picture.size}"></span>`;
   }
+  const fillSrc=slide.elementFills?.[index];
+  if(isUploadedPhoto(fillSrc)){
+   const cid='efill-'+(slide.number||0)+'-'+index;
+   return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]} with picture" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><defs><clipPath id="${cid}">${slideElements[key][1]}</clipPath></defs><image href="${fillSrc}" x="0" y="0" width="24" height="24" preserveAspectRatio="xMidYMid slice" clip-path="url(#${cid})"/>${slideElements[key][1]}</svg>`;
+  }
   return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
  }).join('')}</div>`:'';
  const photograph=photo?`<div class="campaign-photo gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></div>`:photoIndex===undefined?'':`<div class="campaign-photo photo-${sheet}" style="--photo-x:${(photoIndex%4)*100/3}%;--photo-y:${Math.floor(photoIndex/4)*50}%"></div>`;
@@ -345,6 +363,17 @@ function art(t,slide={},extra=''){
  return `<div class="art premium p${t.layout} campaign-art ratio-${ratioClass} ${front} ${cartoonClass}${t.greeting?" greeting-poster greeting-set-"+t.greetingSet:""}${t.comic?" comic-poster comic-composition-"+(t.id%5):""} ${role?'slide-'+role:''} motif-${motif} deck-${/^(?:hook|cta|agenda|triptych|feature|principle|steps|compare|metric|checklist|quote|example|summary|blank)$/.test(slide.deckLayout)?slide.deckLayout:"legacy"} artwork-${['front','background'].includes(slide.artLayer)?slide.artLayer:'behind'} finish${t.palette} ${extra}" style="--bg:${p[1]};--fg:${p[2]};--accent:${accent};--campaign-palette:${p[3]};--campaign-bg:${background};--campaign-ink:${ink};--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}${t.greeting?";--greeting-heading:"+t.headingSize+"cqw":""}"><div class="art-brand" data-canvas-copy="brandText" style="${stack("brandText")}${textStyle('brandText')}">${layerCopy(slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION'),slide.textLayers?.brandText?.bullets)}</div><div class="campaign-visual" aria-hidden="true" style="${stack("artwork")}${artStretch}">${image?`<img class="campaign-upload" src="${image}" alt="">`:photograph}</div><div class="campaign-copy" style="${stack("title","body","kicker")}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex("kicker")}${textStyle('kicker')}">${layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex("title")}${textStyle('title')}${slide.size&&!slide.textLayers?.title?.size?'font-size:'+(clamp(slide.size,5,18,8)*(ratioClass==='landscape'?.65:1))+'cqw;':''}transform:translate(${clamp(slide.x,-100,100,0)}px,${clamp(slide.y,-100,100,0)}px)">${layerCopy(slide.title??t.title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex("body")}${textStyle('body')}">${deckBodyCopy(slide.body??'A fresh idea for a more intentional tomorrow.',slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack("footerText")}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(slide.footerText??(slide.catalog?'GSN Technology':state.brand.handle),slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 
+// Page-level overrides that work on every template: a solid colour or own picture behind the page, and hiding the template's main picture.
+function art(t,slide={},extra=''){
+ const html=artBase(t,slide,extra);
+ const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';
+ const bg=typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)?slide.pageImage:'';
+ if(!fill&&!bg&&!slide.hideArt)return html;
+ const end=html.indexOf('>');if(end<0||html.slice(0,end).indexOf('class="')<0)return html;
+ const open=html.slice(0,end).replace('class="','class="page-custom '+(slide.hideArt?'page-hide-art ':'')+(fill||bg?'page-has-bg ':''));
+ const layer=`<div class="page-bg" style="${fill?'background-color:'+fill+';':''}${bg?"background-image:url('"+bg+"');":''}"></div>`;
+ return open+'>'+layer+html.slice(end+1);
+}
 function card(t){const campaign=t.cartoon?[t.title,t.summary]:gsnCampaign(t.id);return `<article class="template-card">${art(t,{...(t.cartoon?templateStarter(t.id)[0]:{}),catalog:true,ratio:t.cartoon?'4 / 5':'1 / 1',title:campaign?.[0],body:campaign?.[1],kicker:t.cartoon?t.topic:campaign?'AI AUTOMATION FOR BUSINESS':undefined})}<div class="template-meta"><div><strong>${esc(t.cartoon?t.name:gsnPhoto(t.id).name)}</strong><small>${esc(palettes[t.palette][0])} · ${t.format} · #${String(t.id+1).padStart(3,'0')}</small></div><button data-template="${t.id}" aria-label="Use ${esc(t.name)}">Use ↗</button></div></article>`}
 const nav=[['overview','◫','Overview'],['ideas','✧','Ideas & copy'],['templates','▦','Post templates'],['studio','▧','Design studio'],['motion','✧','Animation studio'],['creation','✦','AI creation'],['calendar','▤','Calendar'],['archive','▣','Saved archive'],['agents','⌘','The agents'],['settings','⚙','Brand & settings']];
 function navigate(v){if(v==='home'&&typeof LandingPortal!=='undefined'){LandingPortal.show();return}clearInterval(playTimer);playing=false;view=nav.some(n=>n[0]===v)?v:'overview';location.hash=view;render();window.scrollTo(0,0)}

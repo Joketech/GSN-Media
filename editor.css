@@ -15,8 +15,8 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 #edStatus{height:40px;border-radius:999px;border:1px solid rgba(0,0,0,.12);padding:0 12px;background:rgba(255,255,255,.7);font:600 .85rem 'DM Sans',sans-serif}
 .ed-banner{position:absolute;z-index:20;top:74px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;padding:10px 16px;border-radius:18px;background:#fff3d6;border:1px solid #e0b24a;box-shadow:var(--shadow)}
 .ed-banner[hidden]{display:none}
-.ed-area{position:relative;grid-row:2;min-height:0;overflow:auto;display:grid;place-items:center}
-.ed-stagewrap{display:grid;place-items:center;min-width:100%;min-height:100%;padding:34px 40px 60px}
+.ed-area{position:relative;grid-row:2;min-height:0;overflow:auto;display:block}
+.ed-stagewrap{display:grid;place-items:center;box-sizing:border-box;width:max-content;min-width:100%;min-height:100%;padding:34px 40px 60px}
 .ed-stagewrap.zoomed{place-items:start center}
 .ed-page{position:relative;flex:none;box-shadow:0 24px 70px rgba(0,0,0,.55);background:#111;user-select:none;-webkit-user-select:none}
 .ed-host{position:absolute;inset:0}
