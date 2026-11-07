@@ -141,3 +141,5 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-lib-grid button span{display:block;aspect-ratio:1;border-radius:6px;background-repeat:no-repeat}
 .ed-lib-grid b{font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ed-lib footer{display:flex;justify-content:space-between;align-items:center;font-size:.8rem}
+
+.ed-kit{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.ed-kitc{display:inline-flex;align-items:center;gap:4px}.ed-kitc>button:first-child{width:26px;height:26px;border-radius:50%;padding:0;border:2px solid #fff;box-shadow:0 0 0 1px #0003}.ed-kitc>button:last-child{border:0;background:none;padding:0 3px;font-size:14px}

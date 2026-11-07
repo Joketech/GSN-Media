@@ -776,9 +776,10 @@ const Editor=(()=>{
  }
 
  // Page background: a colour, your own picture, or no template picture. Works on every template.
+ let applyAll=true;
  function toolBackground(body){
   const s=slide(),hex=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
-  body.innerHTML=`<label class="ed-check"><input type="checkbox" id="edBgAll"> Apply to all pages</label>
+  body.innerHTML=`<label class="ed-check"><input type="checkbox" id="edBgAll" ${applyAll?'checked':''}> Apply to all pages <small>(untick to style only this page)</small></label>
   <h3>Page colour</h3>
   <label class="ed-colour">Fill the whole page<span><input type="color" id="edBgCol" value="${hex(s.pageFill,'#ffffff')}"><input type="text" id="edBgHex" value="${hex(s.pageFill,'#ffffff')}" maxlength="7" aria-label="Page colour hex"></span></label>
   <div class="ed-pal">${['#ffffff','#f8f1e7','#fbe3e8','#e4ecff','#e3f6ec','#101323','#1f2a44','#8a2236','#ffd84d','#00a86b','#25c8ff','#000000'].map(c=>`<button data-c="${c}" title="${c}" aria-label="${c}"><i style="background:${c};width:100%"></i></button>`).join('')}</div>
@@ -788,7 +789,8 @@ const Editor=(()=>{
   ${uploads.length?`<div class="ed-ugrid">${uploads.slice(0,8).map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" data-bgup="${i}" title="Use as page background"></div>`).join('')}</div>`:''}
   <label class="ed-check"><input type="checkbox" id="edHide" ${s.hideArt?'checked':''}> Hide the template's picture</label>
   <button class="btn-light" id="edBgClear">Remove page colour and picture</button>`;
-  const targets=()=>$('#edBgAll').checked?design.pages:[slide()];
+  $('#edBgAll').onchange=e=>{applyAll=e.target.checked};
+  const targets=()=>applyAll?design.pages:[slide()];
   const set=(patch,key)=>commit(()=>{for(const t of targets())for(const [k,v] of Object.entries(patch)){if(v===undefined)delete t[k];else t[k]=v}},key||'bg');
   const colour=v=>{$('#edBgHex').value=v;$('#edBgCol').value=v;set({pageFill:v},'bgcol')};
   $('#edBgCol').oninput=e=>colour(e.target.value);
@@ -800,20 +802,37 @@ const Editor=(()=>{
   $('#edHide').onchange=e=>set({hideArt:e.target.checked||undefined});
   $('#edBgClear').onclick=()=>{set({pageFill:undefined,pageImage:undefined,hideArt:undefined});toolBackground(body)};
  }
+ const kit=()=>{try{return JSON.parse(localStorage.getItem('gsn-brand-kit')||'[]').filter(c=>/^#[0-9a-f]{6}$/.test(c))}catch{return[]}};
+ const saveKit=a=>{try{localStorage.setItem('gsn-brand-kit',JSON.stringify(a))}catch{}};
  function toolBrand(body){
   const s=slide(),pal=GSNKit.palettes,hex=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
   body.innerHTML=`<p class="hint">Your brand colours. They apply to every page unless you untick the box.</p>
-  <label class="ed-check"><input type="checkbox" id="edAll" checked> Apply to all pages</label>
+  <label class="ed-check"><input type="checkbox" id="edAll" ${applyAll?'checked':''}> Apply to all pages <small>(untick to style only this page)</small></label>
   ${[['accent','Accent','#ac82f4'],['background','Background','#101323'],['ink','Text','#f8faff']].map(([k,l,f])=>`<label class="ed-colour">${l}<span><input type="color" data-col="${k}" value="${hex(s[k],f)}"><input type="text" data-hex="${k}" value="${hex(s[k],f)}" maxlength="7" aria-label="${l} hex"></span></label>`).join('')}
   <h3>Palettes</h3><div class="ed-pal">${pal.map(p=>`<button data-pal="${p[0]}" title="${p[0]}" aria-label="${p[0]} palette"><i style="background:${p[1]}"></i><i style="background:${p[2]}"></i><i style="background:${p[3]}"></i></button>`).join('')}</div>
+  <h3>My brand colours</h3><p class="hint">Save your exact brand colours once. Click one to use it as the accent; use the buttons to send it to the background or text.</p>
+  <div class="ed-row"><input type="color" id="edKitNew" value="${hex(s.accent,'#ac82f4')}" aria-label="New brand colour"><input type="text" id="edKitHex" maxlength="7" placeholder="#ac82f4" aria-label="Brand colour hex"><button class="btn-light" id="edKitAdd">Save colour</button>${window.EyeDropper?'<button class="btn-light" id="edKitPick">Pick from screen</button>':''}</div>
+  <div class="ed-kit">${kit().map((c,i)=>`<span class="ed-kitc"><button data-kit="${i}" title="${c}" aria-label="Use ${c}" style="background:${c}"></button><small>${c}</small><button data-kitrm="${i}" aria-label="Remove ${c}">×</button></span>`).join('')||'<small>No saved colours yet.</small>'}</div>
+  <div class="ed-row"><button class="btn-light" id="edKitBg">Set as background</button><button class="btn-light" id="edKitInk">Set as text</button></div>
+  <button class="btn-light" id="edRecolour">Recolour all shapes with the accent</button>
   <h3>Brand</h3><label class="ed-colour">Brand name<input id="edBn" maxlength="80" value="${esc(design.brand.name)}"></label><label class="ed-colour">Handle<input id="edBh" maxlength="80" value="${esc(design.brand.handle)}"></label><button class="btn-light" id="edInkAll">Use the text colour on every text</button><button class="btn-light" data-act="resetcolors">Reset page colours</button>`;
-  const apply=(patch)=>commit(()=>{const targets=$('#edAll').checked?design.pages:[slide()];for(const t of targets)Object.assign(t,patch)},'colour');
+  $('#edAll').onchange=e=>{applyAll=e.target.checked};
+  const apply=(patch)=>commit(()=>{const targets=applyAll?design.pages:[slide()];for(const t of targets)Object.assign(t,patch)},'colour');
   $$('[data-col]',body).forEach(i=>i.oninput=()=>{apply({[i.dataset.col]:i.value});$(`[data-hex=${i.dataset.col}]`,body).value=i.value});
   $$('[data-hex]',body).forEach(i=>i.onchange=()=>{if(/^#[0-9a-f]{6}$/i.test(i.value))apply({[i.dataset.hex]:i.value.toLowerCase()});else toast('Use a hex colour such as #ac82f4.')});
   $$('[data-pal]',body).forEach(b=>b.onclick=()=>{const p=pal.find(x=>x[0]===b.dataset.pal);apply({background:p[1],ink:p[2],accent:p[3]});toolBrand(body)});
+  let kitSel=kit()[0]||null;
+  const kadd=v=>{v=(v||'').trim().toLowerCase();if(!/^#[0-9a-f]{6}$/.test(v)){toast('Use a hex colour such as #ac82f4.');return}saveKit([v,...kit().filter(c=>c!==v)].slice(0,12));toolBrand(body)};
+  $('#edKitAdd').onclick=()=>kadd($('#edKitHex').value||$('#edKitNew').value);
+  $('#edKitPick')&&($('#edKitPick').onclick=async()=>{try{kadd((await new EyeDropper().open()).sRGBHex)}catch{}});
+  $$('[data-kit]',body).forEach(b=>b.onclick=()=>{kitSel=kit()[+b.dataset.kit];apply({accent:kitSel});toolBrand(body)});
+  $$('[data-kitrm]',body).forEach(b=>b.onclick=()=>{saveKit(kit().filter((_,i)=>i!==+b.dataset.kitrm));toolBrand(body)});
+  $('#edKitBg').onclick=()=>{kitSel=kitSel||kit()[0];if(kitSel){apply({background:kitSel});toolBrand(body)}else toast('Save a colour first.')};
+  $('#edKitInk').onclick=()=>{kitSel=kitSel||kit()[0];if(kitSel){apply({ink:kitSel});toolBrand(body)}else toast('Save a colour first.')};
+  $('#edRecolour').onclick=()=>commit(()=>{for(const t of (applyAll?design.pages:[slide()])){const a=hex(t.accent,'#ac82f4');t.elementColors=(t.elements||[]).map(()=>a)}},'recolour');
   const brand=()=>commit(()=>{design.brand={name:$('#edBn').value.trim()||design.brand.name,handle:$('#edBh').value.trim()||design.brand.handle}},'brand');
   $('#edBn').oninput=brand;$('#edBh').oninput=brand;
-  $('#edInkAll').onclick=()=>commit(()=>{for(const t of ($('#edAll').checked?design.pages:[slide()])){const ink=hex(t.ink,'#f8faff');for(const k of Object.keys(t.textLayers||{}))if(t.textLayers[k].color)t.textLayers[k].color=ink;for(const x of (t.texts||[]))if(x.color)x.color=ink}},'inkall');
+  $('#edInkAll').onclick=()=>commit(()=>{for(const t of (applyAll?design.pages:[slide()])){const ink=hex(t.ink,'#f8faff');for(const k of Object.keys(t.textLayers||{}))if(t.textLayers[k].color)t.textLayers[k].color=ink;for(const x of (t.texts||[]))if(x.color)x.color=ink}},'inkall');
  }
  // Adding a page: pick a designed layout (or copy this page). New pages inherit the pack's colours and photo.
  const LAYOUT_NAMES={agenda:'Agenda',feature:'Photo and points',steps:'Steps timeline',metric:'Big number',triptych:'Three cards',quote:'Quote',compare:'Before and after',checklist:'Checklist',principle:'Big statement',summary:'Recap',example:'Photo and text panel',cta:'Call to action'};
