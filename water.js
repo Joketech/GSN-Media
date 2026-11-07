@@ -5,7 +5,7 @@
    The beads sample an off-screen copy of the same scene, so what shows inside a drop is what is really behind it.
    Everything pauses when the dashboard is hidden and stops when motion is switched off. */
 const Water=(()=>{
- let back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
+ let mirror=null,mctx=null,back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
  const rnd=(a,b)=>a+Math.random()*(b-a);
  const rand=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
  const motionOn=()=>document.documentElement.dataset.motion!=='off';
@@ -80,7 +80,7 @@ const Water=(()=>{
 
  // One bead as a lens. Big enough beads show the scene behind them turned upside down.
  function lens(c,x,y,r,tall=1){
-  const crisp=c===layerCtx;
+  const crisp=c===layerCtx||c===mlCtx;
   const rx=r,ry=r*tall;
   // contact shadow
   c.fillStyle='rgba(40,40,90,.13)';c.beginPath();c.ellipse(x+r*.22,y+ry*.42,rx*1.04,ry*.98,0,0,Math.PI*2);c.fill();
@@ -121,7 +121,7 @@ const Water=(()=>{
  function paintLayer(){
   layerCtx.clearRect(0,0,w,h);
   for(const b of beads)if(!b.run)lens(layerCtx,b.x,b.y,b.r);
-  dirty=false;layerAt=performance.now();
+  dirty=false;layerAt=performance.now();mStale=true;
  }
  function draw(){
   if(dirty&&performance.now()-layerAt>700)paintLayer();
@@ -129,7 +129,39 @@ const Water=(()=>{
   fctx.drawImage(layer,0,0,w,h);
   for(const t of trails)drawTrail(fctx,t);
   for(const b of beads){if(!b.run)continue;drawTrail(fctx,b.trail);lens(fctx,b.x,b.y,b.r,1.28)}
+  copyMirror();
  }
+ // Drops also run over the globe card. That card is opaque, so its drops are drawn here and show the card's own picture
+ // (the globe and the hand) upside down, instead of the room behind the window.
+ let heroImg=null,heroScene=null,mLayer=null,mlCtx=null,mKey='',mStale=true;
+ function loadHero(){if(heroImg)return;heroImg=new Image();heroImg.src='hero-realistic.png';heroImg.onload=()=>{mKey=''}}
+ function copyMirror(){
+  if(!mirror||!mirror.isConnected||!front)return;
+  loadHero();
+  const fr=front.getBoundingClientRect(),hr=mirror.parentElement.getBoundingClientRect(),W=Math.round(hr.width),H=Math.round(hr.height);
+  if(!W||!H||!heroImg.complete||!heroImg.naturalWidth)return;
+  const ox=hr.left-fr.left,oy=hr.top-fr.top,key=[Math.round(ox),Math.round(oy),W,H,w,h,dpr].join();
+  if(key!==mKey){
+   mKey=key;mStale=true;
+   mirror.width=Math.round(W*dpr);mirror.height=Math.round(H*dpr);mctx.setTransform(dpr,0,0,dpr,0,0);
+   [heroScene]=mk();const sx=heroScene.getContext('2d');sx.setTransform(dpr,0,0,dpr,0,0);
+   const k=Math.max(W/heroImg.naturalWidth,H/heroImg.naturalHeight),iw=heroImg.naturalWidth*k,ih=heroImg.naturalHeight*k;
+   sx.save();sx.beginPath();sx.rect(ox,oy,W,H);sx.clip();sx.drawImage(heroImg,ox+(W-iw)/2,oy+(H-ih)*.55,iw,ih);sx.restore();
+   mLayer=document.createElement('canvas');mLayer.width=Math.round(W*dpr);mLayer.height=Math.round(H*dpr);mlCtx=mLayer.getContext('2d');mlCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  const keep=scene;scene=heroScene;
+  if(mStale){
+   mlCtx.clearRect(0,0,W,H);mlCtx.save();mlCtx.translate(-ox,-oy);
+   for(const b of beads)if(!b.run&&b.x>ox-20&&b.x<ox+W+20&&b.y>oy-20&&b.y<oy+H+20)lens(mlCtx,b.x,b.y,b.r);
+   mlCtx.restore();mStale=false;
+  }
+  mctx.clearRect(0,0,W,H);mctx.drawImage(mLayer,0,0,W,H);
+  mctx.save();mctx.translate(-ox,-oy);
+  for(const t of trails)drawTrail(mctx,t);
+  for(const b of beads){if(!b.run)continue;drawTrail(mctx,b.trail);lens(mctx,b.x,b.y,b.r,1.28)}
+  mctx.restore();scene=keep;
+ }
+ function setMirror(c){mirror=c||null;mctx=c?c.getContext('2d'):null;if(c&&front)copyMirror()}
  function frame(now){
   if(!running)return;
   if(!front.isConnected||front.offsetParent===null||document.hidden||!motionOn()){running=false;return}
@@ -137,7 +169,7 @@ const Water=(()=>{
   if(front.clientWidth!==w||front.clientHeight!==h){size();seed0()}
   step(dt);draw();requestAnimationFrame(frame);
  }
- function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h)}
+ function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h);copyMirror()}
  function start(el){
   back=el;front=el.parentElement.querySelector('.water-front');if(!front)return;
   bctx=back.getContext('2d');fctx=front.getContext('2d');
@@ -152,5 +184,5 @@ const Water=(()=>{
  }
  // Called by the motion switch.
  function setMotion(){if(!front)return;if(motionOn())resume();else{running=false;still1()}}
- return {start,resume,setMotion};
+ return {start,resume,setMotion,setMirror};
 })();
