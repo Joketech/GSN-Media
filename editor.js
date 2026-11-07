@@ -226,6 +226,7 @@ const Editor=(()=>{
    cur=cur.some(m=>layerKey(m)===k)?cur.filter(m=>layerKey(m)!==k):[...cur,target];
    multi=cur.length>1?cur:[];sel=cur[cur.length-1]||null;drawOverlay();return;
   }
+  const again=!handle&&!multi.length&&sameSel(target,sel)&&['copy','text'].includes(target.t)&&!(e.shiftKey||e.ctrlKey||e.metaKey||e.altKey);
   if(!handle&&!(multi.length>1&&multi.some(m=>sameSel(m,target)))&&!sameSel(target,sel))select(target);
   else if(!handle&&!multi.length&&groupFor(layerKey(target))&&!sameSel(target,sel))select(target);
   const node=nodeFor();if(!node)return;
@@ -235,7 +236,7 @@ const Editor=(()=>{
   const base=JSON.parse(JSON.stringify(s));
   const layer=sel.t==='copy'?(s.textLayers?.[sel.k]||{}):sel.t==='text'?s.texts[sel.i]:{};
   const fontPx=parseFloat(getComputedStyle(node).fontSize)||0;
-  const start={x:e.clientX,y:e.clientY,W,H,cx,cy,r,mode:handle||'move',size:fontPx/W*100,
+  const start={x:e.clientX,y:e.clientY,W,H,cx,cy,r,mode:handle||'move',size:fontPx/unitPx(node),
    unit:unitPx(node),dist:Math.hypot(e.clientX-cx,e.clientY-cy)||1,width:r.width/unitPx(node),height:r.height/unitPx(node),angle:Math.atan2(e.clientY-cy,e.clientX-cx),rot:layer.rotation||0,moved:false,
    pos:sel.t==='element'?(s.elementPositions?.[sel.i]||{x:(cx-pb.left)/W*100,y:(cy-pb.top)/H*100}):null,
    frameW:node.closest?.('.campaign-visual')?.getBoundingClientRect().width||r.width,frameH:node.closest?.('.campaign-visual')?.getBoundingClientRect().height||r.height,
@@ -255,7 +256,7 @@ const Editor=(()=>{
    el.over.onpointermove=el.over.onpointerup=el.over.onpointercancel=null;
    cancelAnimationFrame(raf);raf=0;if(drag.pending)applyDrag();
    const moved=drag.start.moved,wasSel=sel&&sel.t==='element'&&!multi.length?{...sel}:null;drag=null;
-   if(!moved){undo.pop();return}
+   if(!moved){undo.pop();if(again&&ev?.type==='pointerup')setTimeout(startEdit,0);return}
    if(wasSel&&ev?.type==='pointerup')dropIntoTarget(wasSel,ev.clientX,ev.clientY);
    if(design.status==='approved')design.status='draft';
    markDirty();queueThumbs([page]);render();
@@ -301,6 +302,7 @@ const Editor=(()=>{
     if(m.t==='copy'){const p=base.textLayers?.[m.k]||{};s.textLayers={...s.textLayers,[m.k]:{...p,x:round(clamp((p.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p.y||0)+dy/st.H*100,-100,100))}}}
     else if(m.t==='text'){const t=base.texts[m.i];s.texts[m.i]={...s.texts[m.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
+    else if(m.t==='slot'&&!slotPan){const b0=base.slots?.[m.k]||{};s.slots={...(s.slots||{}),[m.k]:{...b0,fx:round(clamp((b0.fx||0)+dx/st.W*100,-100,100)),fy:round(clamp((b0.fy||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
    }
@@ -311,6 +313,7 @@ const Editor=(()=>{
    else if(sel.t==='text'){s.texts[sel.i]={...s.texts[sel.i],size:round(clamp(st.size*f,1,30))}}
    else if(sel.t==='element'){const a=[...(s.elementSizes||[])];a[sel.i]=Math.round(clamp(st.elSize*f,25,500));s.elementSizes=a.map(v=>v??100)}
    else if(sel.t==='art'){s.artScale=Math.round(clamp(st.art*f,35,180))}
+   else if(sel.t==='slot'&&!slotPan){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,fs:Math.round(clamp((b0.fs||100)*f,30,300))}}}
    else if(sel.t==='slot'){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,z:Math.round(clamp((b0.z||100)*f,100,400))}}}
   }else if(st.mode==='sx'||st.mode==='sy'){
    // Reshape: stretch one side to change the width or height of a shape or image on its own.
@@ -383,7 +386,7 @@ const Editor=(()=>{
  }
  function curSize(){
   const l=layerOf();if(Number.isFinite(l.size))return l.size;
-  const n=nodeFor();return n?Math.round(parseFloat(getComputedStyle(n).fontSize)/pageBox().width*1000)/10:6;
+  const n=nodeFor();return n?Math.round(parseFloat(getComputedStyle(n).fontSize)/unitPx(n)*10)/10:6;
  }
  function drawBar(){
   const bar=el.bar,s=slide();
@@ -400,16 +403,16 @@ const Editor=(()=>{
   }
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
-   html=`<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
+   html=`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
-   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
+   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}<button class="txt" data-b="spacing" title="Letter and line spacing">Spacing</button>${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
-   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${isPhotoEl(photoOf(sel))?'<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>':''}${sep}`;
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotpan" class="txt ${slotPan?'on':''}" title="When on, dragging moves the picture inside its frame. When off, dragging moves the whole frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button data-b="slotreset" class="txt" title="Centre the picture, reset zoom, and put the frame back">Reset position</button>${isPhotoEl(photoOf(sel))?'<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>':''}${sep}`;
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
@@ -520,6 +523,9 @@ const Editor=(()=>{
   if(a==='hlpop')return colourPanel(t,l.bg||'',c=>{patchLayer({bg:c||undefined},'hl');drawBar()},{none:'No highlight'});
   if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
   if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
+  if(a==='slotpan'){slotPan=!slotPan;return drawBar()}
+  if(a==='spacing')return spacingPanel(t);
+  if(a==='edit'){return startEdit()}
   if(a==='group')return groupSel();
   if(a==='ungroup')return ungroupSel();
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
@@ -527,7 +533,7 @@ const Editor=(()=>{
   if(a==='del')return deleteSel();
   if(a==='slotlib'){const t=sel;return libraryPick(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreplace'){const t=sel;return pickImage(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
-  if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100})),drawBar()}
+  if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100,fx:0,fy:0,fs:100})),drawBar()}
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
   if(a==='rmbg')return runRemoveBackground();
   if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
@@ -558,6 +564,7 @@ const Editor=(()=>{
  // Photo layouts: a slot is one named picture frame. The first slot is also the page's main picture (slide.image).
  const slotDefs=()=>GSNKit.templates[design.template_id]?.slots||[];
  const slotLabel=k=>slotDefs().find(x=>x[0]===k)?.[1]||'Picture';
+ let slotPan=false;
  function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
  function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
  function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:'artwork'}
@@ -711,6 +718,24 @@ const Editor=(()=>{
   };
   $('#edTq').oninput=e=>{q=e.target.value;shown=18;draw()};$('#edTm').onclick=()=>{shown+=18;draw()};draw();
  }
+ // Spacing panel: letter spacing and line spacing for the selected text.
+ function spacingPanel(anchor){
+  document.querySelector('.ed-cpanel')?.remove();
+  const l=layerOf();
+  const box=document.createElement('div');box.className='ed-cpanel ed-spacing';
+  box.innerHTML=`<label class="sp-row">Letter spacing <output id="spLv">${l.spacing??0}</output><input type="range" id="spL" min="-10" max="40" step="1" value="${l.spacing??0}"></label>
+  <label class="sp-row">Line spacing <output id="spHv">${l.lineHeight??100}</output><input type="range" id="spH" min="70" max="250" step="5" value="${l.lineHeight??100}"></label>
+  <button class="btn-light" id="spReset">Reset spacing</button>`;
+  document.body.appendChild(box);
+  const r=anchor.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;
+  box.style.left=Math.max(8,Math.min(innerWidth-bw-8,r.left))+'px';
+  box.style.top=(r.bottom+8+bh<innerHeight?r.bottom+8:Math.max(8,r.top-bh-8))+'px';
+  $('#spL',box).oninput=ev=>{$('#spLv',box).textContent=ev.target.value;patchLayer({spacing:+ev.target.value},'spacingL')};
+  $('#spH',box).oninput=ev=>{$('#spHv',box).textContent=ev.target.value;patchLayer({lineHeight:+ev.target.value},'spacingH')};
+  $('#spReset',box).onclick=()=>{patchLayer({spacing:undefined,lineHeight:undefined},'spacingR');box.remove()};
+  const away=ev=>{if(!box.contains(ev.target)&&!anchor.contains(ev.target)){box.remove();document.removeEventListener('pointerdown',away,true)}};
+  setTimeout(()=>document.addEventListener('pointerdown',away,true),0);
+ }
  // Colour panel (like Canva's): hex box, eyedropper, colours already in this design, your saved brand colours, standard colours.
  function designColours(){
   const set=new Set(),add=c=>{if(/^#[0-9a-f]{6}$/i.test(c||''))set.add(c.toLowerCase())};
@@ -773,7 +798,7 @@ const Editor=(()=>{
   People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();if(sel?.t==='slot')setSlot(sel.k,{src:p.image,x:0,y:0,z:100});else{s.image=p.image;if(slotDefs()[0])setSlot(slotDefs()[0][0],{src:p.image,x:0,y:0,z:100});delete s.artX;delete s.artY;delete s.artScale}});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
  }
  function toolUploads(body){
-  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
+  body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/*,.jfif,.avif,.webp,.svg" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG, WebP, GIF, SVG or AVIF</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
   const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button><button data-up="del" data-i="${i}">Delete</button></div></div>`).join('')+(uploads.length?'<button class="btn-light" data-up="clear" style="grid-column:1/3">Delete all uploads</button>':'')};
   $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
   $('#edLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);draw()});
@@ -800,19 +825,31 @@ const Editor=(()=>{
    try{const url=await libraryCell(p);d.close();done(url)}catch(err){toast('That picture could not be loaded.')}};
   d.addEventListener('close',()=>d.remove());document.body.append(d);draw();d.showModal();
  }
+ // Any picture the browser can open (PNG, JPG, WebP, AVIF, GIF, BMP, SVG, JFIF...) is turned into a PNG or JPG that fits the design.
+ const IMG_OK=f=>!f.type||/^image\//.test(f.type)||/\.(png|jpe?g|jfif|webp|avif|gif|bmp|svg|heic|heif)$/i.test(f.name||'');
+ async function decodeImage(file){
+  try{return await createImageBitmap(file)}catch{}
+  const url=URL.createObjectURL(file);
+  try{const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(Error('x'));i.src=url});
+   const w=im.naturalWidth||1000,h=im.naturalHeight||1000;return {width:w,height:h,draw:(ctx,cw,ch)=>ctx.drawImage(im,0,0,cw,ch),el:im}}
+  catch{throw Error(/\.(heic|heif)$/i.test(file.name||'')?'This browser cannot open HEIC photos. Save it as JPG or PNG first.':'This file could not be opened as a picture. Try a PNG, JPG or WebP.')}
+  finally{setTimeout(()=>URL.revokeObjectURL(url),4000)}
+ }
  async function compress(file){
-  if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw Error('Use a PNG, JPG or WebP image.');
-  const bitmap=await createImageBitmap(file);let max=1600,q=.86;
+  if(!IMG_OK(file))throw Error('Choose a picture file (PNG, JPG, WebP, GIF, AVIF or SVG).');
+  const bitmap=await decodeImage(file);let max=1600,q=.86;
+  const jpeg=/jpe?g|jfif/i.test(file.type+(file.name||''));
   for(let i=0;i<8;i++){
-   const k=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.round(bitmap.width*k);c.height=Math.round(bitmap.height*k);
-   const ctx=c.getContext('2d');const alpha=file.type==='image/png';if(!alpha){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)}ctx.drawImage(bitmap,0,0,c.width,c.height);
-   const url=c.toDataURL(alpha&&i<3?'image/png':'image/jpeg',q);
+   const k=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(bitmap.width*k));c.height=Math.max(1,Math.round(bitmap.height*k));
+   const ctx=c.getContext('2d');if(jpeg){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)}
+   if(bitmap.draw)bitmap.draw(ctx,c.width,c.height);else ctx.drawImage(bitmap,0,0,c.width,c.height);
+   const url=c.toDataURL(!jpeg&&i<3?'image/png':'image/jpeg',q);
    if(url.length<1_300_000)return url;max*=.8;q=Math.max(.5,q-.06);
   }
   throw Error('That image is too large. Try a smaller one.');
  }
  function pickImage(done){
-  const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';
+  const input=document.createElement('input');input.type='file';input.accept='image/*,.jfif,.avif,.webp,.svg';
   input.onchange=async()=>{try{const u=await compress(input.files[0]);uploads.unshift(u);done(u)}catch(e){toast(e.message)}};input.click();
  }
 
@@ -986,12 +1023,17 @@ const Editor=(()=>{
   const th=e.target.closest?.('.ed-thumb');if(th&&design)e.dataTransfer.setData('text/plain',th.dataset.page)});
  document.addEventListener('dragover',e=>{if(design&&el.page?.contains(e.target)&&(e.dataTransfer.types.includes('application/x-gsn-upload')||e.dataTransfer.types.includes('Files')))e.preventDefault();
   if(design&&e.target.closest?.('.ed-thumb'))e.preventDefault()});
+ document.addEventListener('paste',async e=>{
+  if(!design||editing||e.target.closest?.('input,textarea,[contenteditable]'))return;
+  const f=[...(e.clipboardData?.files||[])].find(IMG_OK);if(!f)return;
+  e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u);toast('Picture pasted onto the page.')}catch(err){toast(err.message)}
+ });
  document.addEventListener('drop',async e=>{
   if(design&&el.page?.contains(e.target)){
    const pb=pageBox(),at={x:Math.round(Math.min(100,Math.max(0,(e.clientX-pb.left)/pb.width*100))),y:Math.round(Math.min(100,Math.max(0,(e.clientY-pb.top)/pb.height*100)))};
    const idx=e.dataTransfer.getData('application/x-gsn-upload');
    if(idx!==''&&uploads[+idx]){e.preventDefault();return addElement(uploads[+idx],at)}
-   const f=[...(e.dataTransfer.files||[])].find(x=>/^image\/(png|jpeg|webp)$/.test(x.type));
+   const f=[...(e.dataTransfer.files||[])].find(IMG_OK);
    if(f){e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u,at)}catch(err){toast(err.message)}return}
   }
   const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();

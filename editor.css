@@ -153,3 +153,5 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .cp-native{width:38px;height:34px;padding:0;border:1px solid #d9d0d6;border-radius:8px;background:#fff}.cp-eye{width:34px;height:34px;border-radius:8px;border:1px solid #d9d0d6;background:#fff;font-size:18px;padding:0}
 .cp-grid{display:flex;flex-wrap:wrap;gap:6px}.cp-grid .sw{width:28px;height:28px;border-radius:50%;padding:0;border:2px solid #fff;box-shadow:0 0 0 1px #0003;cursor:pointer}
 .cp-none{margin-top:8px;width:100%;height:30px;border:1px dashed #b9a9b4;border-radius:8px;background:#fff;cursor:pointer}
+
+.ed-spacing{width:250px;display:grid;gap:10px}.sp-row{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:.8rem;font-weight:600;color:#4a2f3b}.sp-row input{grid-column:1/-1;width:100%}
