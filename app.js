@@ -102,7 +102,7 @@ const App=(()=>{
   try{
    if(editor){show('editor');await Editor.open(editor[1]);return}
    if(fresh){const t=Number(fresh[1]),p=fresh[2];if(!GSNKit.templates[t]||!preset(p)){location.replace('#templates');return}
-    await createPack(t,[p],GSNKit.templates[t].cartoon||GSNKit.templates[t].poster?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
+    await createPack(t,[p],GSNKit.templates[t].cartoon||GSNKit.templates[t].slotKey?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
    const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents','schedule','team','people'].includes(view)?view:'dashboard');
   }catch(error){toast(error.message,6000);if(editor||fresh)location.replace('#designs')}
  }

@@ -50,6 +50,8 @@ test('a design page can name a person and receives that picture',async()=>{
   const d=await t.agent('/designs','POST',{template_id:400,platform:'instagram-post',title:'With a person',person_id:made.id});
   assert.equal(d.status,201);const design=await d.json();
   assert.equal(design.pages[0].image,PNG);assert.equal(design.pages[0].person_id,undefined);
+  const slot=await (await t.agent('/designs','POST',{template_id:400,platform:'instagram-post',title:'Slot person',pages:[{title:'A',slots:{screen2:{person_id:made.id}}},{title:'B'}]})).json();
+  assert.equal(slot.pages[0].slots.screen2.src,PNG);
   const bad=await t.agent('/designs','POST',{template_id:400,platform:'instagram-post',title:'x',person_id:'00000000-0000-4000-8000-000000000000'});
   assert.equal(bad.status,404);
  }finally{await t.close()}

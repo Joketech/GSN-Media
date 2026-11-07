@@ -11,9 +11,11 @@ const allowed=new Map([['/','index.html'],...['index.html','studio.css','premium
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const v1=createV1();
 allowed.set('/gsn-photo-data.js','gsn-photo-data.js');
-for(let index=0;index<48;index++)allowed.set(`/gsn-photo-${index}.png`,`gsn-photo-${index}.png`);
+for(let index=0;index<52;index++)allowed.set(`/gsn-photo-${index}.png`,`gsn-photo-${index}.png`);
+allowed.set('/comic-campaigns.js','comic-campaigns.js');
+allowed.set('/comic.css','comic.css');
 allowed.set('/','app.html');allowed.set('/v1','v1.html');allowed.set('/classic','index.html');
-for(const name of ['app.html','app.css','app.js','globe.js','kit-host.js','water.js','schedule.js','team.js','people.js','composer.js','dashboard.js','library.js','editor.js','editor.css','exporter.js','platforms.mjs','free-layers.css','inner-pages.css','poster-templates.css','artwork-library.css'])allowed.set('/'+name,name);
+for(const name of ['app.html','app.css','app.js','globe.js','kit-host.js','water.js','schedule.js','team.js','people.js','composer.js','dashboard.js','library.js','editor.js','editor.css','exporter.js','platforms.mjs','free-layers.css','inner-pages.css','slot-layouts.css','artwork-library.css'])allowed.set('/'+name,name);
 const kit=await buildKit();
 for(const name of ['v1.html','v1.css','v1.js','water-studio.css','workspace-edition.css','overview-wheel.js','slide-image.js','artwork-library.css','campaign-atlas.png','automation-atlas.png','automation-operations-atlas.png'])allowed.set('/'+name,name);
 export async function synthesize(payload){const voiceProgram=await readFile(new URL('local-voice.ps1',import.meta.url),'utf8');return new Promise((resolve,reject)=>{

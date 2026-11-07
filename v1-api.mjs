@@ -140,6 +140,18 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
    if(person?.record_type!=='person'||!inWs(person,ws))throw new InputError('That person is not in this workspace library.',404);
    page.image=person.image;
   }
+  // A person can also be named for one slot: slots: { portrait: { person_id } }.
+  for(const page of p.pages){
+   if(!page||typeof page!=='object'||!page.slots||typeof page.slots!=='object'||Array.isArray(page.slots))continue;
+   for(const [key,slot] of Object.entries(page.slots)){
+    if(!slot||typeof slot!=='object'||slot.person_id===undefined)continue;
+    const id=slot.person_id;delete slot.person_id;
+    if(typeof id!=='string'||!uuid.test(id))throw new InputError('person_id must be an id from GET /api/v1/people.');
+    const person=await load(id).catch(()=>null);
+    if(person?.record_type!=='person'||!inWs(person,ws))throw new InputError('That person is not in this workspace library.',404);
+    slot.src=person.image;
+   }
+  }
  }
  async function handle(req,res,url){if(!url.pathname.startsWith('/api/v1/'))return false;try{await ready;
   if(url.pathname==='/api/v1/session'&&req.method==='POST'){if(accounts.enabled())throw new InputError('This studio uses accounts. Sign in with your username and password.',409);if(!token)throw new InputError('Run deploy/setup-v1.sh to configure the access key.',503);const p=await body(req);if(typeof p.token!=='string'||!same(p.token,token))throw new InputError('Incorrect access key.',401);const sid=randomBytes(32).toString('hex');for(const [k,v] of sessions)if(v<Date.now())sessions.delete(k);if(sessions.size>1000)sessions.clear();sessions.set(sid,Date.now()+12*3600000);res.setHeader('Set-Cookie',`gsn_session=${sid}; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=43200${process.env.SITE_DOMAIN?'; Secure':''}`);json(res,200,{ok:true});return true;}

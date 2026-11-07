@@ -35,7 +35,7 @@ async function campaignExportCss(cards){
  // The export must use every stylesheet the editor shows the page with, or designed pages come out flat and without their pictures.
  const [base, premium, library, layers, inner, poster, ...images]=await Promise.all([
   sheetText('studio.css'), sheetText('premium.css'),
-  sheetText('artwork-library.css'), sheetText('free-layers.css'), sheetText('inner-pages.css'), sheetText('poster-templates.css'),
+  sheetText('artwork-library.css'), sheetText('free-layers.css'), sheetText('inner-pages.css'), sheetText('slot-layouts.css'),
   ...files.map(async([sheet,path])=>{
    if(!cards.includes(`photo-${sheet}"`)&&!cards.includes(`picture-${sheet}`))return 'data:,';
    if(!atlasData.has(path))atlasData.set(path,read(path).then(response=>response.blob()).then(blob=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);})).catch(error=>{atlasData.delete(path);throw error}));

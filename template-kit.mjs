@@ -11,7 +11,7 @@ const between = (source, from, to, label) => {
 };
 
 export async function buildKit() {
-  const [studio, photos] = await Promise.all([read('studio.js'), read('gsn-photo-data.js')]);
+  const [studio, photos, comics] = await Promise.all([read('studio.js'), read('gsn-photo-data.js'), read('comic-campaigns.js')]);
   const definitions = between(studio, 'const palettes=', 'const agents=', 'palettes and templates');
   const agents = between(studio, 'const agents=', '];', 'agents') + '];';
   const art = between(studio, 'const slideElements=', 'function card(', 'the art renderer');
@@ -20,6 +20,7 @@ export async function buildKit() {
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const state={brand:{name:'GSN Technology',handle:'GSN Technology'}};
 ${photos}
+${comics}
 ${definitions}
 ${agents}
 ${art}
@@ -28,7 +29,7 @@ window.GSNKit={LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,
 })();`;
 
   // CSS for the shadow roots that host each page. :root/body rules are retargeted to the shadow host.
-  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'free-layers.css', 'inner-pages.css', 'poster-templates.css'].map(read));
+  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'free-layers.css', 'inner-pages.css', 'slot-layouts.css', 'comic.css'].map(read));
   const css = parts.join('\n')
     .replace(/@import[^;]+;/g, '')
     .replace(/:root\s*\{/g, ':host{')
