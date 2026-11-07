@@ -57,7 +57,7 @@ function textOptions(o, name) {
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
     font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
-    color: hex(o.color, `${name}.color`),
+    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
       if (o[flag] !== undefined && typeof o[flag] !== 'boolean') throw new DesignError(`${name}.${flag} must be true or false.`);
       return [flag, o[flag]];
@@ -147,6 +147,10 @@ export function sanitizeSlide(s, index = 0) {
     if (s.elementFills !== undefined) {
       if (!Array.isArray(s.elementFills) || s.elementFills.length > MAX_LAYERS) throw new DesignError(`${where} elementFills is invalid.`);
       slide.elementFills = s.elementFills.map((f, i) => (f == null ? null : image(f, `${where} elementFills[${i}]`)));
+    }
+    if (s.elementSolid !== undefined) {
+      if (!Array.isArray(s.elementSolid) || s.elementSolid.length > MAX_LAYERS) throw new DesignError(`${where} elementSolid is invalid.`);
+      slide.elementSolid = s.elementSolid.map(v => !!v);
     }
     if (s.elementColors !== undefined) {
       if (!Array.isArray(s.elementColors) || s.elementColors.length > MAX_LAYERS) throw new DesignError(`${where} elementColors is invalid.`);
