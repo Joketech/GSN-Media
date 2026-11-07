@@ -80,7 +80,7 @@ const Water=(()=>{
 
  // One bead as a lens. Big enough beads show the scene behind them turned upside down.
  function lens(c,x,y,r,tall=1){
-  const crisp=c===layerCtx;
+  const crisp=c===layerCtx||c===mlCtx;
   const rx=r,ry=r*tall;
   // contact shadow
   c.fillStyle='rgba(40,40,90,.13)';c.beginPath();c.ellipse(x+r*.22,y+ry*.42,rx*1.04,ry*.98,0,0,Math.PI*2);c.fill();
@@ -121,7 +121,7 @@ const Water=(()=>{
  function paintLayer(){
   layerCtx.clearRect(0,0,w,h);
   for(const b of beads)if(!b.run)lens(layerCtx,b.x,b.y,b.r);
-  dirty=false;layerAt=performance.now();
+  dirty=false;layerAt=performance.now();mStale=true;
  }
  function draw(){
   if(dirty&&performance.now()-layerAt>700)paintLayer();
@@ -131,15 +131,35 @@ const Water=(()=>{
   for(const b of beads){if(!b.run)continue;drawTrail(fctx,b.trail);lens(fctx,b.x,b.y,b.r,1.28)}
   copyMirror();
  }
- // Drops also run over the globe card: that card is opaque, so the same drops are copied onto a canvas laid on top of it.
+ // Drops also run over the globe card. That card is opaque, so its drops are drawn here and show the card's own picture
+ // (the globe and the hand) upside down, instead of the room behind the window.
+ let heroImg=null,heroScene=null,mLayer=null,mlCtx=null,mKey='',mStale=true;
+ function loadHero(){if(heroImg)return;heroImg=new Image();heroImg.src='hero-realistic.png';heroImg.onload=()=>{mKey=''}}
  function copyMirror(){
   if(!mirror||!mirror.isConnected||!front)return;
+  loadHero();
   const fr=front.getBoundingClientRect(),hr=mirror.parentElement.getBoundingClientRect(),W=Math.round(hr.width),H=Math.round(hr.height);
-  if(!W||!H)return;
-  if(mirror.width!==W||mirror.height!==H){mirror.width=W;mirror.height=H}
-  const k=front.width/(fr.width||1);
-  mctx.clearRect(0,0,W,H);
-  mctx.drawImage(front,(hr.left-fr.left)*k,(hr.top-fr.top)*k,W*k,H*k,0,0,W,H);
+  if(!W||!H||!heroImg.complete||!heroImg.naturalWidth)return;
+  const ox=hr.left-fr.left,oy=hr.top-fr.top,key=[Math.round(ox),Math.round(oy),W,H,w,h,dpr].join();
+  if(key!==mKey){
+   mKey=key;mStale=true;
+   mirror.width=Math.round(W*dpr);mirror.height=Math.round(H*dpr);mctx.setTransform(dpr,0,0,dpr,0,0);
+   [heroScene]=mk();const sx=heroScene.getContext('2d');sx.setTransform(dpr,0,0,dpr,0,0);
+   const k=Math.max(W/heroImg.naturalWidth,H/heroImg.naturalHeight),iw=heroImg.naturalWidth*k,ih=heroImg.naturalHeight*k;
+   sx.save();sx.beginPath();sx.rect(ox,oy,W,H);sx.clip();sx.drawImage(heroImg,ox+(W-iw)/2,oy+(H-ih)*.55,iw,ih);sx.restore();
+   mLayer=document.createElement('canvas');mLayer.width=Math.round(W*dpr);mLayer.height=Math.round(H*dpr);mlCtx=mLayer.getContext('2d');mlCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  const keep=scene;scene=heroScene;
+  if(mStale){
+   mlCtx.clearRect(0,0,W,H);mlCtx.save();mlCtx.translate(-ox,-oy);
+   for(const b of beads)if(!b.run&&b.x>ox-20&&b.x<ox+W+20&&b.y>oy-20&&b.y<oy+H+20)lens(mlCtx,b.x,b.y,b.r);
+   mlCtx.restore();mStale=false;
+  }
+  mctx.clearRect(0,0,W,H);mctx.drawImage(mLayer,0,0,W,H);
+  mctx.save();mctx.translate(-ox,-oy);
+  for(const t of trails)drawTrail(mctx,t);
+  for(const b of beads){if(!b.run)continue;drawTrail(mctx,b.trail);lens(mctx,b.x,b.y,b.r,1.28)}
+  mctx.restore();scene=keep;
  }
  function setMirror(c){mirror=c||null;mctx=c?c.getContext('2d'):null;if(c&&front)copyMirror()}
  function frame(now){
