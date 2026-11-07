@@ -7,7 +7,7 @@ body:not(.portal-open){margin:0;background:#e9e4f2;color:var(--ink);font-family:
 .ic{width:20px;height:20px;flex:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #8a2236;outline-offset:2px}
-.stage{position:fixed;inset:0;display:grid;grid-template-columns:84px 1fr;grid-template-rows:auto 1fr auto;gap:14px;padding:14px 18px 18px;overflow:hidden;color:var(--ink)}
+.stage{position:fixed;inset:0;display:grid;grid-template-columns:84px 1fr;grid-template-rows:auto 1fr auto;gap:14px;padding:max(14px,calc((100vh - 860px)/2)) max(18px,calc((100vw - 1100px)/2)) max(18px,calc((100vh - 860px)/2));overflow:hidden;color:var(--ink)}
 .stage[hidden],.editor-root[hidden]{display:none}
 /* A slowly drifting pastel aurora, calm and cool, so the water ripples have something soft to move across. */
 .stage-bg{position:absolute;inset:0;z-index:-2;background:radial-gradient(60% 55% at 12% 18%,#bcd9f7 0,transparent 70%),radial-gradient(50% 50% at 88% 12%,#f6c9dc 0,transparent 70%),radial-gradient(55% 60% at 80% 88%,#c4ead9 0,transparent 70%),radial-gradient(50% 50% at 18% 90%,#fbd9bd 0,transparent 70%),radial-gradient(40% 40% at 50% 50%,#ddd2f6 0,transparent 75%),#e8e3f1;background-size:140% 140%;animation:aurora 26s ease-in-out infinite alternate}
@@ -66,12 +66,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .sec-head h2{margin:0;font:600 1.45rem var(--serif);color:#4a2431}
 .sec-head a{display:flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em}.sec-head .ic{width:13px;height:13px}
-.hero-row{display:grid;grid-template-columns:1.9fr 1fr;gap:16px;flex:1 1 0;min-height:260px}
+.hero-row{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;flex:1 1 0;min-height:260px}
 .hero{position:relative;border-radius:22px;padding:30px 34px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 55%/cover;border:1px solid var(--line)}
 .hero:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
 @keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-.hero h2{margin:0;font:600 clamp(2rem,4vw,3.4rem)/.95 var(--serif);letter-spacing:.01em}
-.hero p{margin:0;max-width:40ch;font-size:.9rem;line-height:1.35;opacity:.92}.hero .btn-maroon{align-self:flex-start;flex:none;height:30px;font-size:.74rem;margin-top:2px}.hero>*{flex:none}
+.hero h2{margin:0;font:600 clamp(1.6rem,2.7vw,2.3rem)/.95 var(--serif);letter-spacing:.01em}
+.hero p{margin:0;max-width:28ch;font-size:.82rem;line-height:1.35;opacity:.92}.hero .btn-maroon{align-self:flex-start;flex:none;height:30px;font-size:.74rem;margin-top:2px}.hero>*{flex:none}
 .hero-tag{align-self:flex-start;padding:3px 11px;border-radius:999px;background:rgba(255,255,255,.28);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(255,255,255,.5)}
 .agents-card{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:22px;padding:14px 18px;overflow:hidden;display:flex;flex-direction:column}
 .agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;flex:1;align-content:space-around}
@@ -89,7 +89,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @keyframes orbit{from{transform:rotate(0) translateX(23px)}to{transform:rotate(360deg) translateX(23px)}}
 @keyframes orbpulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.07);transform:scale(1.05)}}
 /* The templates sit in view and drift left without stopping; they rest while you point at them. */
-.tpass{flex:none;height:clamp(215px,26vh,262px);display:flex;flex-direction:column}
+.tpass{flex:none;height:clamp(236px,31vh,300px);display:flex;flex-direction:column}
 .marquee{flex:1;min-height:0;overflow:hidden;margin:0 -28px;container-type:size;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .marquee-track{display:flex;gap:16px;width:max-content;height:100%;padding:4px 0 6px 16px;animation:scrollleft calc(var(--n,12)*4.5s) linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
@@ -292,3 +292,5 @@ body[data-role=editor] .pp-del{display:none}
 /* Turning Earth on the pack card: sits over the picture's own globe, under the words. */
 .hero-globe{position:absolute;z-index:0;pointer-events:none;border-radius:50%}
 .hero>*:not(.hero-globe){position:relative;z-index:1}
+
+.agents-card{min-width:0}.agent-row{gap:8px;padding:4px 6px;min-width:0}.agent-row .bot{width:48px;height:54px}.agent-row .chev{display:none}.agent-row b{font-size:.95rem}
