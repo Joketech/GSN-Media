@@ -5,7 +5,7 @@
    The beads sample an off-screen copy of the same scene, so what shows inside a drop is what is really behind it.
    Everything pauses when the dashboard is hidden and stops when motion is switched off. */
 const Water=(()=>{
- let back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
+ let mirror=null,mctx=null,back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
  const rnd=(a,b)=>a+Math.random()*(b-a);
  const rand=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
  const motionOn=()=>document.documentElement.dataset.motion!=='off';
@@ -129,7 +129,19 @@ const Water=(()=>{
   fctx.drawImage(layer,0,0,w,h);
   for(const t of trails)drawTrail(fctx,t);
   for(const b of beads){if(!b.run)continue;drawTrail(fctx,b.trail);lens(fctx,b.x,b.y,b.r,1.28)}
+  copyMirror();
  }
+ // Drops also run over the globe card: that card is opaque, so the same drops are copied onto a canvas laid on top of it.
+ function copyMirror(){
+  if(!mirror||!mirror.isConnected||!front)return;
+  const fr=front.getBoundingClientRect(),hr=mirror.parentElement.getBoundingClientRect(),W=Math.round(hr.width),H=Math.round(hr.height);
+  if(!W||!H)return;
+  if(mirror.width!==W||mirror.height!==H){mirror.width=W;mirror.height=H}
+  const k=front.width/(fr.width||1);
+  mctx.clearRect(0,0,W,H);
+  mctx.drawImage(front,(hr.left-fr.left)*k,(hr.top-fr.top)*k,W*k,H*k,0,0,W,H);
+ }
+ function setMirror(c){mirror=c||null;mctx=c?c.getContext('2d'):null;if(c&&front)copyMirror()}
  function frame(now){
   if(!running)return;
   if(!front.isConnected||front.offsetParent===null||document.hidden||!motionOn()){running=false;return}
@@ -137,7 +149,7 @@ const Water=(()=>{
   if(front.clientWidth!==w||front.clientHeight!==h){size();seed0()}
   step(dt);draw();requestAnimationFrame(frame);
  }
- function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h)}
+ function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h);copyMirror()}
  function start(el){
   back=el;front=el.parentElement.querySelector('.water-front');if(!front)return;
   bctx=back.getContext('2d');fctx=front.getContext('2d');
@@ -152,5 +164,5 @@ const Water=(()=>{
  }
  // Called by the motion switch.
  function setMotion(){if(!front)return;if(motionOn())resume();else{running=false;still1()}}
- return {start,resume,setMotion};
+ return {start,resume,setMotion,setMirror};
 })();
