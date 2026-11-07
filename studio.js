@@ -259,7 +259,9 @@ function slotBox(t,slide,key,image,cls=''){
  const px=50+lim(st.x,-100,100,0)/2,py=50+lim(st.y,-100,100,0)/2,z=lim(st.z,100,400,100)/100;
  const demo=gsnPhoto(def[2]);
  const inner=src?`<img class="slot-img" src="${src}" alt="">`:`<i class="slot-demo gsn-photo" style="--photo-source:url('${demo.file}');--photo-position:${demo.position};--photo-size:${demo.size}"></i>`;
- return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z}"><div class="slot-fill">${inner}</div></div>`;
+ const fx=lim(st.fx,-100,100,0),fy=lim(st.fy,-100,100,0),fs=lim(st.fs,30,300,100);
+ const place=fx||fy||fs!==100?`translate:${fx}cqw ${fy}cqw;scale:${fs/100};`:'';
+ return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z};${place}"><div class="slot-fill">${inner}</div></div>`;
 }
 // The cover of a photo layout. It uses the same parts as every other page (brand, kicker, title, text, footer), so selecting, moving and resizing text work as usual.
 function slotPage(t,slide,o){
