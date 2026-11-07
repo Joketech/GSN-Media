@@ -86,7 +86,7 @@ const Dashboard=(()=>{
 
  function tabsFor(view){
   if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories']];
-  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Portrait posters','Posters']];
+  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Photo layouts','Layouts']];
   if(view==='schedule')return [['Calendar','Calendar'],['Review',`Needs review${Schedule.needsReview().length?' ('+Schedule.needsReview().length+')':''}`],['Setup','Setup']];
   if(view==='designs')return [['All','All'],['draft','Draft'],['review','In review'],['approved','Approved']];
   return [];

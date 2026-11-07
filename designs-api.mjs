@@ -15,6 +15,7 @@ const TEXT_KEYS = ['title', 'body', 'kicker', 'brandText', 'footerText'];
 const HEX = /^#[0-9a-f]{6}$/i;
 const IMAGE = /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
 const MOTIF = /^(?:hourglass|visor|orbit|portfolio|stack|lift|product|audio|terminal|rocket|none|business-(?:[0-9]|1[0-9]|2[0-3])|campaign-(?:[0-9]|1[01])|gsn-\d{1,4})$/;
+const SLOT_KEY = /^[a-z][a-z0-9]{0,23}$/;
 const SHAPE = /^[a-z][a-z0-9-]{1,24}$/;
 const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2})$/;
 
@@ -89,6 +90,16 @@ export function sanitizeSlide(s, index = 0) {
     elementOpacity: numberList(s.elementOpacity, `${where} elementOpacity`, 10, 100), elementFlip: numberList(s.elementFlip, `${where} elementFlip`, 0, 1),
     artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
+  if (s.slots !== undefined) {
+    // Named picture slots of a photo layout: an uploaded picture plus where it sits inside its frame (x, y) and how far it is zoomed (z, 100 to 400).
+    if (!s.slots || typeof s.slots !== 'object' || Array.isArray(s.slots) || Object.keys(s.slots).length > 10) throw new DesignError(`${where} slots must be an object with up to 10 slots.`);
+    slide.slots = {};
+    for (const [key, v] of Object.entries(s.slots)) {
+      if (!SLOT_KEY.test(key)) throw new DesignError(`${where} has an invalid slot name "${key}".`);
+      if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} slot ${key} must be an object.`);
+      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`) });
+    }
+  }
   if (s.motif !== undefined) {
     if (typeof s.motif !== 'string' || !MOTIF.test(s.motif)) throw new DesignError(`${where} has an unsupported artwork motif.`);
     slide.motif = s.motif;

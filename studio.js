@@ -51,24 +51,39 @@ metaphorCampaigns.forEach(([topic,verb,metric,hooks],group)=>hooks.forEach((titl
  templates.push({id,name:title,layout:index%20,palette:(group*2+index)%10,format:"Carousel",title,summary:["Find the handoff that slows everyday work.","Give buyers a clear path from interest to action.","Catch small exceptions before they become expensive.","Test the plan on a small scale before you commit."][group],topic,verb,metric,cartoon:true,metaphor:true,limit:110});
 }));
 
-// Portrait posters: original layouts built around one person's (or one mascot's) picture. Ten styles, three looks each.
-// A look is [name, background, ink, accent]. The picture slot is the page's main image, so Replace, move and resize all work.
-const posterStyles=[
- {key:'window',name:'Frosted window',title:'The unseen',summary:'Show the people behind the work.',kicker:'THE FEATURE',topic:'People',looks:[['Smoke','#3a3530','#f4ede4','#d8b896'],['Ink','#11161f','#edf2f8','#8fb2e6'],['Blush','#5b3a40','#fff0ec','#ffb7a6']]},
- {key:'cover',name:'Cover story',title:'Bold',summary:'A cover line with real personality.',kicker:'ISSUE 01',topic:'Stories',looks:[['Stone','#b9b9bb','#ffffff','#111111'],['Sand','#d9cbb7','#fffaf1','#2a1d12'],['Slate','#7f8995','#ffffff','#0f1720']]},
- {key:'vertical',name:'Vertical word',title:'Refresh',summary:'Practice makes progress.',kicker:'PRACTICE\nMAKES PERFECT',topic:'Ideas',looks:[['Paper','#c9c9c9','#161616','#c40000'],['Bone','#d8d3c8','#1a1713','#b8460f'],['Fog','#b7bec6','#101820','#1769c9']]},
- {key:'numeral',name:'Look up',title:'09',summary:'A fresh month. A fresh start.',kicker:'HAPPY NEW MONTH',topic:'Moments',looks:[['Asphalt','#17171a','#f0f0f2','#ffffff'],['Navy','#0e1a30','#eaf0ff','#9bbcff'],['Forest','#0f2a20','#eaf7ee','#9be0b4']]},
- {key:'split',name:'Split sepia',title:'Friday sessions',summary:'Hosted by your team.\nMusic. Food. Good company.',kicker:'20 DEC\n2026',topic:'Events',looks:[['Amber','#17120e','#f4e4c8','#d4573a'],['Plum','#1a1020','#f3e6f5','#e08a52'],['Teal','#0d1d1f','#e6f4f1','#e0a84b']]},
- {key:'letters',name:'Giant letters',title:'Stop',summary:'Dream big. Work hard. Stay focused.',kicker:'EVERY GREAT DREAM\nBEGINS WITH A DREAMER',topic:'Quotes',looks:[['Mono','#efefef','#111111','#111111'],['Cream','#f3ead9','#1d1a15','#1d1a15'],['Rose','#f2dfe0','#2a1317','#2a1317']]},
- {key:'speaker',name:'Speaker poster',title:'Sunday service',summary:'Doors open at 10.00\nVision Building, first floor\nAll are welcome',kicker:'10 MAR 2026',topic:'Announcements',looks:[['Maroon','#e8e8ea','#1a1013','#8a1424'],['Cobalt','#e9edf6','#0f1424','#1f4fd1'],['Pine','#e9efe9','#0f1a13','#1d6b42']]},
- {key:'stripe',name:'Agency stripe',title:'Ideas that inspire.\nResults that matter.',summary:'Clear goals\nSmart ideas\nTargeted action\nYour growth',kicker:'LET’S GROW TOGETHER',topic:'Services',looks:[['Sunny','#fbf1e4','#16161a','#f4b000'],['Coral','#fdeee9','#1a1216','#e8553a'],['Mint','#eaf6f0','#0f1a16','#13a37a']]},
- {key:'glow',name:'Mascot glow',title:'Your AI assistant, at work',summary:'Little jobs done quietly, all day.',kicker:'MEET THE MASCOT',topic:'Mascots',looks:[['Aurora','#6e5bd0','#ffffff','#7ef0ff'],['Sunrise','#ff8a5b','#ffffff','#ffe27a'],['Lagoon','#0f8fa6','#ffffff','#c9ff7a']]},
- {key:'chalk',name:'Mascot chalkboard',title:'Learn something\nnew today',summary:'Elevate your journey',kicker:'FRIENDLY GUIDE',topic:'Learning',looks:[['Slate','#15161a','#f4f4f6','#7ed321'],['Midnight','#10172a','#eef2ff','#62b0ff'],['Cocoa','#1d1410','#fbeee4','#ffb35c']]},
+// Photo layouts: twelve designs built from named picture slots. Every slot fills its frame (cropped, never stretched), can be replaced
+// by an upload and can be panned and zoomed inside its frame. A slot is [key, label, demo picture]; the first slot is the page's main picture.
+const demoPicture=(sheet,cell)=>500+(sheet-20)*25+cell;
+const slotLayouts=[
+ {key:'ring',name:'Screen ring',title:'Visuals that\ncapture attention',summary:'Show the work your people make.',kicker:'BRAND STUDIO',topic:'Design',colors:{background:'#050507',ink:'#ffffff',accent:'#e0203a'},
+  slots:[['main','Main portrait',demoPicture(36,13)],['screen1','Screen 1',demoPicture(35,3)],['screen2','Screen 2',demoPicture(35,13)],['screen3','Screen 3',demoPicture(35,9)],['screen4','Screen 4',demoPicture(35,22)],['screen5','Screen 5',demoPicture(35,5)],['screen6','Screen 6',demoPicture(35,15)]]},
+ {key:'phone',name:'Profile and person',title:'Meet the person behind the brand',summary:'Real people. Real results.',kicker:'AI CREATOR · INNOVATOR',topic:'People',colors:{background:'#04121c',ink:'#e8fbff',accent:'#27d3e6'},
+  slots:[['main','Main person',demoPicture(36,5)],['avatar','Profile picture',demoPicture(36,7)]]},
+ {key:'stage',name:'Stage and spotlight',title:'Just step in.',summary:'One clear way forward.',kicker:'CREATIVE DIGITAL HUB',topic:'Services',colors:{background:'#e8321e',ink:'#ffffff',accent:'#ffc46b'},
+  slots:[['main','Main picture',demoPicture(36,19)]]},
+ {key:'road',name:'Brand road',title:'Don’t just run a business.\nBuild a brand.',summary:'Business is what you do.\nBranding is how you’re remembered.',kicker:'AI DIGITAL MARKETING',topic:'Branding',colors:{background:'#08090a',ink:'#ffffff',accent:'#e4f21c'},
+  slots:[['main','Main picture',demoPicture(35,2)]]},
+ {key:'window',name:'Frosted window',title:'The unseen',summary:'Show the people behind the work.',kicker:'REVEAL',topic:'People',colors:{background:'#4a443d',ink:'#f7efe6',accent:'#d9b99a'},
+  slots:[['main','Window picture',demoPicture(36,13)]]},
+ {key:'cover',name:'Magazine cover',title:'BLACK',summary:'A reflection of strength, culture and grace that speaks without words.',kicker:'BLACK IS BEAUTIFUL',topic:'Stories',colors:{background:'#9a9a9c',ink:'#ffffff',accent:'#111111'},
+  slots:[['main','Framed picture',demoPicture(36,20)],['backdrop','Backdrop',demoPicture(36,18)]]},
+ {key:'outline',name:'Outline word',title:'REFRESH',summary:'Practice makes perfect.',kicker:'PRACTICE MAKES PERFECT',topic:'Ideas',colors:{background:'#c8c8c8',ink:'#161616',accent:'#c40000'},
+  slots:[['main','Portrait',demoPicture(36,7)]]},
+ {key:'lookup',name:'Look up',title:'09',summary:'Happy new month.',kicker:'SEPTEMBER',topic:'Moments',colors:{background:'#151517',ink:'#f0f0f2',accent:'#ffffff'},
+  slots:[['main','Person',demoPicture(36,5)],['object','Small object',demoPicture(35,0)]]},
+ {key:'split',name:'Sepia split',title:'Friday sessions',summary:'Hosted by your team.\nMusic. Food. Good company.',kicker:'20 DEC\n2026',topic:'Events',colors:{background:'#17120e',ink:'#f4e4c8',accent:'#d9583a'},
+  slots:[['main','Portrait',demoPicture(36,11)]]},
+ {key:'letters',name:'Giant letters',title:'STOP',summary:'Dream big. Work hard. Stay focused.',kicker:'EVERY GREAT DREAM BEGINS WITH A DREAMER',topic:'Quotes',colors:{background:'#ededed',ink:'#111111',accent:'#111111'},
+  slots:[['main','Figure',demoPicture(36,2)]]},
+ {key:'stripe',name:'Agency stripe',title:'Ideas that inspire.\nResults that matter.',summary:'Clear goals\nSmart ideas\nTargeted action\nYour growth',kicker:'LET’S GROW TOGETHER',topic:'Services',colors:{background:'#fbf1e4',ink:'#16161a',accent:'#f4b000'},
+  slots:[['main','Main picture',demoPicture(35,1)]]},
+ {key:'frames',name:'Two frames',title:'Design better.\nDeliver faster.',summary:'Tools in the right hands create magic.',kicker:'YOUR BRAND',topic:'Creative',colors:{background:'#f7bd1f',ink:'#ffffff',accent:'#2b7bd8'},
+  slots:[['top','Top frame',demoPicture(35,8)],['bottom','Bottom frame',demoPicture(35,17)]]},
 ];
-posterStyles.forEach((style,s)=>style.looks.forEach(([look,background,ink,accent],l)=>{
- templates.push({id:400+s*3+l,name:`${style.name} / ${look}`,layout:(s*3+l)%20,palette:(s*3+l)%10,format:'Carousel',title:style.title,summary:style.summary,kicker:style.kicker,topic:style.topic,
-  poster:true,posterStyle:style.key,look,colors:{background,ink,accent},limit:110});
-}));
+slotLayouts.forEach((layout,i)=>{
+ templates.push({id:400+i,name:layout.name,layout:i%20,palette:i%10,format:'Carousel',title:layout.title,summary:layout.summary,kicker:layout.kicker,topic:layout.topic,
+  slotKey:layout.key,slots:layout.slots,look:'Photo layout',colors:layout.colors,limit:110});
+});
 const agents=[['Lyra','Researcher','Research direction and source gathering. Live research not connected.','L'],['Seline','Writer','Writes hooks, slides, captions and calls to action.','S'],['Spectra','Builder','Builds editable HTML materials and layouts.','S'],['Flux','Animator','Animates materials, typography and design compositions.','F'],['Relay','Publisher','Plans approved content; live publishing not connected.','R'],['Mira','Orchestrator','Routes jobs and enforces approval gates.','◎']];
 const initial={brand:{name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',color:'#ed6843'},ideas:[],activity:[],projects:[],schedule:[],template:0,slides:[],selected:0,copyApproved:false,finalApproved:false,ratio:'1 / 1',duration:3};
 let state;try{state={...initial,...JSON.parse(localStorage.getItem('gsn-studio-v1')||'null')};}catch{state=structuredClone(initial)}
@@ -165,7 +180,7 @@ function dkPage(t,slide,o){
  const c=dkColors(accent,p[3]);
  const mode={agenda:'dark',steps:'light',compare:'light',checklist:'light',quote:'dark',stat:'solid',cards:'dark',split:'light',statement:'dark',recap:'dark',case:'dark',cta:'solid'}[layout]||'dark';
  const flip=t.id%2?' dk-flip':'';
- const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:t.poster&&!photo?`<div class="pst-inner-ph">${posterPlaceholder(t.posterStyle,'#445',accent)}</div>`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
+ const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
  const num=String(slide.number??1).padStart(2,'0'),total=slide.total?String(slide.total).padStart(2,'0'):'';
  const titleText=slide.title??t.title;
  const style=`--a:${accent};--a2:${c.a2};--on-a:${c.onAccent};--hue:${c.hue};aspect-ratio:${ratio}`;
@@ -178,28 +193,35 @@ function dkPage(t,slide,o){
 <div class="campaign-copy dk-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${o.layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${o.layerCopy(titleText,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${slide.textLayers?.body?.bullets?o.layerCopy(slide.body,true):dkBody(layout,slide.body??'')}</div>${cta}</div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${o.layerCopy(slide.footerText??handle,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 
-// Stand-in artwork shown until a person's picture is added: a plain silhouette, or an original little robot for the mascot styles.
-function posterPlaceholder(style,ink,accent){
- if(style==='glow'||style==='chalk')return `<svg viewBox="0 0 100 110" role="img" aria-label="Mascot placeholder"><line x1="50" y1="6" x2="50" y2="16" stroke="${ink}" stroke-width="2" opacity=".7"/><circle cx="50" cy="5" r="3.4" fill="${accent}"/><rect x="24" y="14" width="52" height="40" rx="15" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><rect x="30" y="22" width="40" height="24" rx="11" fill="#14161c"/><circle cx="42" cy="34" r="4.2" fill="${accent}"/><circle cx="58" cy="34" r="4.2" fill="${accent}"/><path d="M44 41q6 4 12 0" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round"/><rect x="31" y="58" width="38" height="32" rx="12" fill="#e4e8f2" stroke="#bcc4d8" stroke-width="1.4"/><circle cx="50" cy="74" r="5" fill="${accent}" opacity=".9"/><ellipse cx="24" cy="70" rx="6" ry="11" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><ellipse cx="76" cy="70" rx="6" ry="11" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><rect x="34" y="92" width="14" height="12" rx="5" fill="#14161c"/><rect x="52" y="92" width="14" height="12" rx="5" fill="#14161c"/></svg>`;
- return `<svg viewBox="0 0 100 125" role="img" aria-label="Person placeholder"><defs><linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ink}" stop-opacity=".42"/><stop offset="1" stop-color="${accent}" stop-opacity=".55"/></linearGradient></defs><path d="M8 125C9 92 28 78 50 78s41 14 42 47Z" fill="url(#pp)"/><rect x="41" y="62" width="18" height="20" rx="8" fill="url(#pp)"/><ellipse cx="50" cy="40" rx="18" ry="22" fill="url(#pp)"/></svg>`;
+// One picture slot. Uploads fill the frame (object-fit: cover) and can be panned and zoomed inside it; with no upload the slot shows a studio photo.
+const SLOT_IMAGE=/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
+function slotBox(t,slide,key,image,cls=''){
+ const def=t.slots.find(x=>x[0]===key);if(!def)return '';
+ const st=slide.slots&&typeof slide.slots[key]==='object'&&slide.slots[key]||{};
+ const lim=(v,lo,hi,d)=>Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):d;
+ let src=typeof st.src==='string'&&st.src.length<=1400000&&SLOT_IMAGE.test(st.src)?st.src:'';
+ if(!src&&key===t.slots[0][0])src=image;
+ const px=50+lim(st.x,-100,100,0)/2,py=50+lim(st.y,-100,100,0)/2,z=lim(st.z,100,400,100)/100;
+ const demo=gsnPhoto(def[2]);
+ const inner=src?`<img class="slot-img" src="${src}" alt="">`:`<i class="slot-demo gsn-photo" style="--photo-source:url('${demo.file}');--photo-position:${demo.position};--photo-size:${demo.size}"></i>`;
+ return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z}"><div class="slot-fill">${inner}</div></div>`;
 }
-// The cover of a poster template. It uses the same parts as every other page (brand, picture, kicker, title, text, footer)
-// so selecting, moving, resizing and replacing work exactly as they do elsewhere.
-function posterPage(t,slide,o){
- const {ratioClass,ratio,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,extra,clamp}=o;
+// The cover of a photo layout. It uses the same parts as every other page (brand, kicker, title, text, footer), so selecting, moving and resizing text work as usual.
+function slotPage(t,slide,o){
+ const {ratioClass,ratio,hex,textStyle,zIndex,stack,image,extra}=o;
  const c=t.colors,background=hex(slide.background,c.background),ink=hex(slide.ink,c.ink),accent=hex(slide.accent,c.accent);
  const title=slide.title??t.title,body=slide.body??t.summary,kicker=slide.kicker??t.kicker;
  const longest=Math.max(3,...String(title).split(/[\s\n]+/).map(w=>w.length));
  const fit=(max,span=88)=>Math.round(Math.min(max,span/(.62*longest))*10)/10;
  const lineMax=Math.max(3,...String(title).split('\n').map(l=>l.trim().length));
  const fitLine=(max,usable)=>Math.round(Math.min(max,usable/(.66*lineMax))*10)/10;
- const person=image?`<img class="campaign-upload" src="${image}" alt="">`:posterPlaceholder(t.posterStyle,ink,accent);
  const brand=slide.brandText??String(state.brand.name||'').toUpperCase(),foot=slide.footerText??state.brand.handle;
- return `<div class="art pst pst-${t.posterStyle} ratio-${ratioClass} ${extra}" style="--bg:${background};--ink:${ink};--ac:${accent};--fit:${fit(30)}cqw;--fit-half:${fit(15,80)}cqw;--fit-v:${fitLine(20,96)}cqw;--fit-l:${fitLine(42,88)}cqw;--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}">
-<i class="pst-deco" aria-hidden="true"></i>
+ const slots=t.slots.map(x=>slotBox(t,slide,x[0],image)).join('');
+ const lines=String(body).split('\n').filter(Boolean);
+ return `<div class="art slt slt-${t.slotKey} ratio-${ratioClass} ${extra}" style="--bg:${background};--ink:${ink};--ac:${accent};--fit:${fit(30)}cqw;--fit-half:${fit(15,80)}cqw;--fit-v:${fitLine(20,96)}cqw;--fit-l:${fitLine(42,88)}cqw;aspect-ratio:${ratio}">
+<i class="slt-deco" aria-hidden="true"></i><div class="slt-slots">${slots}</div>
 <div class="art-brand" data-canvas-copy="brandText" style="${stack('brandText')}${textStyle('brandText')}">${layerCopy(brand,slide.textLayers?.brandText?.bullets)}</div>
-<div class="campaign-visual" aria-hidden="true" style="${stack('artwork')}${artStretch}">${person}</div>
-<div class="campaign-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${layerCopy(kicker,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${layerCopy(title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${deckBodyCopy(body,slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}${freeTexts}
+<div class="campaign-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${layerCopy(kicker,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${layerCopy(title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${layerCopy(body,slide.textLayers?.body?.bullets)}</div></div>
 <div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(foot,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 function art(t,slide={},extra=''){
@@ -271,10 +293,10 @@ function art(t,slide={},extra=''){
   return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
  }).join('')}</div>`:'';
  const photograph=photo?`<div class="campaign-photo gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></div>`:photoIndex===undefined?'':`<div class="campaign-photo photo-${sheet}" style="--photo-x:${(photoIndex%4)*100/3}%;--photo-y:${Math.floor(photoIndex/4)*50}%"></div>`;
- if(t.poster&&cover)return posterPage(t,slide,{ratioClass,ratio,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,extra,clamp});
+ if(t.slotKey&&cover)return slotPage(t,slide,{ratioClass,ratio,hex,textStyle,zIndex,stack,image,extra});
  const dkLayout=role&&role!=='hook'&&!slide.catalog?DK_LAYOUTS[slide.deckLayout||(role==='cta'?'cta':'feature')]:null;
  if(dkLayout){
-  const cp=t.poster?null:t.cartoon?gsnPhoto(gsnOriginalPictureCount+t.id-200):gsnPhoto(t.id%200);
+  const cp=t.slotKey?gsnPhoto(t.slots[0][2]):t.cartoon?gsnPhoto(gsnOriginalPictureCount+t.id-200):gsnPhoto(t.id%200);
   const brandName=slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION');
   return dkPage(t,slide,{layout:role==='cta'?'cta':dkLayout,accent:hex(slide.accent,coverAccent),cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo:customGsn?photo:cp,caption,handle:slide.catalog?'GSN Technology':state.brand.handle,brand:brandName,extra,layerCopy});
  }
@@ -389,14 +411,14 @@ function templateStarter(template){
   for(const p of cartoonPages)if(p.deckLayout==='steps'&&!p.body.includes('\n'))p.body=p.body.split(/(?<=[.!?])\s+/).filter(Boolean).join('\n');
   return cartoonPages;
  }
- if(design?.poster){
+ if(design?.slotKey){
   const accent=design.colors.accent,motif='none';
   const pages=[
    ['hook',design.title,design.summary,design.kicker],
-   ['feature','Start with a real face','Show the person behind the brand.\nPeople stop for people.\nKeep the message short and the face large.','01 / THE IDEA'],
-   ['steps','Make it in three steps','Choose · Pick a person from your library.\nPlace · Drop them into the template.\nPublish · Send it for review and schedule it.','02 / HOW IT WORKS'],
-   ['principle','Faces earn attention','Pair one clear message with one clear face, then measure what people do next.','03 / THE RULE'],
-   ['cta','Ready to feature your people?','Add your own team to the library and start your next post.','YOUR NEXT POST'],
+   ['feature','Lead with a strong picture','One clear picture says more than a paragraph.\nPeople stop for people.\nKeep the message short and the picture large.','01 / THE IDEA'],
+   ['steps','Make it in three steps','Choose · Pick a layout and a picture.\nPlace · Click a picture frame, upload yours and move it into place.\nPublish · Send it for review and schedule it.','02 / HOW IT WORKS'],
+   ['principle','Pictures earn attention','Pair one clear message with one clear picture, then measure what people do next.','03 / THE RULE'],
+   ['cta','Ready to make it yours?','Replace any picture with your own and start your next post.','YOUR NEXT POST'],
   ].map(([deckLayout,title,body,kicker])=>({deckLayout,title,body,kicker,motif,accent}));
   const extra=templatePageCount(template)-pages.length;
   if(extra>0){
@@ -551,6 +573,7 @@ function bindView(){
     for(const key of ['deckLayout','kicker','brandText','footerText','background','ink','accent','artLayer'])if(typeof slide[key]==='string')next[key]=slide[key];
     if(typeof slide.motif==='string'&&(['hourglass','visor','orbit','portfolio','stack','lift','product','audio','terminal','rocket','none'].includes(slide.motif)||canvasElementLabel(slide.motif)||/^(?:business|campaign)-[0-9]+$/.test(slide.motif)))next.motif=slide.motif;
     if(typeof slide.image==='string'&&isUploadedPhoto(slide.image))next.image=slide.image;
+    if(slide.slots&&typeof slide.slots==='object')next.slots=slide.slots;
     for(const key of ['artX','artY','artScale'])if(Number.isFinite(slide[key]))next[key]=slide[key];
     const layerKeys=['title','body','kicker','brandText','footerText','artwork'];
     const cleanKeys=keys=>Array.isArray(keys)?[...new Set(keys.filter(key=>layerKeys.includes(key)))]:[];

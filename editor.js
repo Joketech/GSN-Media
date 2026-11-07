@@ -148,12 +148,12 @@ const Editor=(()=>{
  }
  function nodeFor(s=sel){
   const root=el.host.shadowRoot;if(!root||!s)return null;
-  const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:'.campaign-visual';
+  const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:'.campaign-visual';
   return root.querySelector(q);
  }
  const pageBox=()=>el.page.getBoundingClientRect();
  const members=()=>multi.length>1?multi:(sel?[sel]:[]);
- const selOf=k=>k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
+ const selOf=k=>k.startsWith('slot:')?{t:'slot',k:k.slice(5)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
  const groupFor=k=>(slide().groups||[]).find(g=>g.includes(k));
  function drawOverlay(){
   el.over.innerHTML='';el.bar.hidden=!sel;
@@ -173,7 +173,7 @@ const Editor=(()=>{
   const r=node.getBoundingClientRect();
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
-  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
+  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
   box.innerHTML=`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
@@ -201,6 +201,7 @@ const Editor=(()=>{
    if(n.dataset?.canvasText!==undefined)return {t:'text',i:+n.dataset.canvasText};
    if(n.dataset?.canvasElement!==undefined)return {t:'element',i:+n.dataset.canvasElement};
    if(n.dataset?.canvasCopy)return {t:'copy',k:n.dataset.canvasCopy};
+   const slotNode=n.closest?.('[data-slot]');if(slotNode)return {t:'slot',k:slotNode.dataset.slot};
    if(n.closest?.('.campaign-visual')&&(n.matches('img,.campaign-photo,.campaign-upload,svg,svg *,[class*=photo]')))return {t:'art'};
   }
   // The artwork is decorative (pointer-events:none in the template), so test its box directly.
@@ -276,6 +277,7 @@ const Editor=(()=>{
     if(m.t==='copy'){const p=base.textLayers?.[m.k]||{};s.textLayers={...s.textLayers,[m.k]:{...p,x:round(clamp((p.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p.y||0)+dy/st.H*100,-100,100))}}}
     else if(m.t==='text'){const t=base.texts[m.i];s.texts[m.i]={...s.texts[m.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,0,100)),y:round(clamp(c.y+dy/st.H*100,0,100))};movedPos=true}
+    else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-100,100));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-100,100))}
    }
    if(movedPos){for(let i=0;i<(s.elements||[]).length;i++)if(!pos[i])pos[i]=st.centers[i];s.elementPositions=pos}
@@ -285,6 +287,7 @@ const Editor=(()=>{
    else if(sel.t==='text'){s.texts[sel.i]={...s.texts[sel.i],size:round(clamp(st.size*f,1,30))}}
    else if(sel.t==='element'){const a=[...(s.elementSizes||[])];a[sel.i]=Math.round(clamp(st.elSize*f,25,500));s.elementSizes=a.map(v=>v??100)}
    else if(sel.t==='art'){s.artScale=Math.round(clamp(st.art*f,35,180))}
+   else if(sel.t==='slot'){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,z:Math.round(clamp((b0.z||100)*f,100,400))}}}
   }else if(st.mode==='sx'||st.mode==='sy'){
    // Reshape: stretch one side to change the width or height of a shape or image on its own.
    const f=clamp(st.mode==='sx'?(st.r.width+dx)/st.r.width:(st.r.height+dy)/st.r.height,.25,5);
@@ -379,13 +382,16 @@ const Editor=(()=>{
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
+  }else if(sel.t==='slot'){
+   const st=s.slots?.[sel.k]||{};
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
-  html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
+  if(sel.t!=='slot')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
-  if(sel.t==='text'||sel.t==='element'||sel.t==='art'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':'Delete');
+  if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
  }
@@ -485,6 +491,8 @@ const Editor=(()=>{
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
   if(a==='dup')return duplicateSel();
   if(a==='del')return deleteSel();
+  if(a==='slotreplace'){const t=sel;return pickImage(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
+  if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100})),drawBar()}
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
   if(a==='rmbg')return runRemoveBackground();
   if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
@@ -497,6 +505,7 @@ const Editor=(()=>{
   if(a==='font')patchLayer({font:v});
   else if(a==='color')patchLayer({color:v},'color');
   else if(a==='effect')patchLayer({effect:v||undefined});
+  else if(a==='slotzoom')commit(()=>setSlot(sel.k,{z:+v}),'slotzoom');
   else if(a==='elsize')commit(()=>{const x=[...(slide().elementSizes||[])];x[sel.i]=+v;slide().elementSizes=Array.from({length:slide().elements.length},(_,i)=>x[i]??100)},'elsize');
   else if(a==='elcolor')commit(()=>{const x=[...(slide().elementColors||[])];x[sel.i]=v;slide().elementColors=Array.from({length:slide().elements.length},(_,i)=>x[i]||'#25c8ff')},'elcolor');
   else if(a==='elrot')commit(()=>setList(slide(),'elementRotations',sel.i,+v,0),'elrot');
@@ -508,7 +517,12 @@ const Editor=(()=>{
   else if(a==='artlayer')commit(()=>{slide().artLayer=v});
   if(e.type==='change')drawOverlay();
  }
- function layerKey(s=sel){return s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:'artwork'}
+ // Photo layouts: a slot is one named picture frame. The first slot is also the page's main picture (slide.image).
+ const slotDefs=()=>GSNKit.templates[design.template_id]?.slots||[];
+ const slotLabel=k=>slotDefs().find(x=>x[0]===k)?.[1]||'Picture';
+ function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
+ function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
+ function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:'artwork'}
  function fullOrder(){
   const s=slide(),keys=[...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
   const own=(s.layerOrder||[]).filter(k=>keys.includes(k));return [...own,...keys.filter(k=>!own.includes(k))];
@@ -534,6 +548,7 @@ const Editor=(()=>{
   else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
+  else if(m.t==='slot')clearSlot(m.k);
  }
  function deleteSel(){
   if(!sel)return;
@@ -593,6 +608,7 @@ const Editor=(()=>{
    if(sel.t==='copy'){const p=s.textLayers?.[sel.k]||{};s.textLayers={...s.textLayers,[sel.k]:{...p,x:round(clamp((p.x||0)+dx,-100,100)),y:round(clamp((p.y||0)+dy,-100,100))}}}
    else if(sel.t==='text'){const t=s.texts[sel.i];s.texts[sel.i]={...t,left:round(t.left+dx),top:round(t.top+dy)}}
    else if(sel.t==='element'){const pos=Array.from({length:s.elements.length},(_,i)=>s.elementPositions?.[i]||elementCenter(i));pos[sel.i]={x:round(clamp(pos[sel.i].x+dx,0,100)),y:round(clamp(pos[sel.i].y+dy,0,100))};s.elementPositions=pos}
+   else if(sel.t==='slot'){const b0=s.slots?.[sel.k]||{};setSlot(sel.k,{x:round(clamp((b0.x||0)-dx*2,-100,100)),y:round(clamp((b0.y||0)-dy*2,-100,100))})}
    else{s.artX=round(clamp((s.artX||0)+dx,-100,100));s.artY=round(clamp((s.artY||0)+dy,-100,100))}
   },'nudge');
   drawOverlay();
@@ -683,7 +699,7 @@ const Editor=(()=>{
  // Saved faces and mascots: one click puts the person into this page's picture, replacing whatever picture the template had.
  function toolPeople(body){
   body.innerHTML='<div class="pp-editor"></div>';
-  People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();s.image=p.image;delete s.artX;delete s.artY;delete s.artScale});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
+  People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();if(sel?.t==='slot')setSlot(sel.k,{src:p.image,x:0,y:0,z:100});else{s.image=p.image;if(slotDefs()[0])setSlot(slotDefs()[0][0],{src:p.image,x:0,y:0,z:100});delete s.artX;delete s.artY;delete s.artScale}});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
  }
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><div class="ed-ugrid" id="edUg"></div>`;
