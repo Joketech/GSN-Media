@@ -173,7 +173,7 @@ const Editor=(()=>{
   const r=node.getBoundingClientRect();
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
-  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h rot" data-h="rotate"></i>':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
+  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
   box.innerHTML=`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
@@ -235,7 +235,7 @@ const Editor=(()=>{
   const layer=sel.t==='copy'?(s.textLayers?.[sel.k]||{}):sel.t==='text'?s.texts[sel.i]:{};
   const fontPx=parseFloat(getComputedStyle(node).fontSize)||0;
   const start={x:e.clientX,y:e.clientY,W,H,cx,cy,r,mode:handle||'move',size:fontPx/W*100,
-   dist:Math.hypot(e.clientX-cx,e.clientY-cy)||1,width:r.width/W*100,angle:Math.atan2(e.clientY-cy,e.clientX-cx),rot:layer.rotation||0,moved:false,
+   unit:unitPx(node),dist:Math.hypot(e.clientX-cx,e.clientY-cy)||1,width:r.width/unitPx(node),height:r.height/unitPx(node),angle:Math.atan2(e.clientY-cy,e.clientX-cx),rot:layer.rotation||0,moved:false,
    pos:sel.t==='element'?(s.elementPositions?.[sel.i]||{x:(cx-pb.left)/W*100,y:(cy-pb.top)/H*100}):null,
    frameW:node.closest?.('.campaign-visual')?.getBoundingClientRect().width||r.width,frameH:node.closest?.('.campaign-visual')?.getBoundingClientRect().height||r.height,
    elSize:s.elementSizes?.[sel.i]||100,art:s.artScale||100,
@@ -258,6 +258,12 @@ const Editor=(()=>{
    if(design.status==='approved')design.status='draft';
    markDirty();queueThumbs([page]);render();
   };
+ }
+ // Text box sizes are in the template's own container units (cqw), which are not always the page width. Measure what one unit is on screen.
+ function unitPx(node){
+  const par=node?.parentElement;if(!par)return pageBox().width/100;
+  const t=document.createElement('div');t.style.cssText='position:absolute;visibility:hidden;pointer-events:none;height:0;width:100cqw';par.appendChild(t);
+  const w=t.getBoundingClientRect().width;t.remove();return (w>1?w:pageBox().width)/100;
  }
  function applyDrag(){
   raf=0;if(!drag?.pending)return;
@@ -284,9 +290,19 @@ const Editor=(()=>{
    const f=clamp(st.mode==='sx'?(st.r.width+dx)/st.r.width:(st.r.height+dy)/st.r.height,.25,5);
    if(sel.t==='element'){const n=s.elements.length,key=st.mode==='sx'?'elementStretchX':'elementStretchY',old=st.mode==='sx'?st.sx:st.sy,arr=Array.from({length:n},(_,i)=>base[key]?.[i]??100);arr[sel.i]=Math.round(clamp(old*f,25,400));s[key]=arr}
    else if(sel.t==='art'){const key=st.mode==='sx'?'artStretchX':'artStretchY';s[key]=Math.round(clamp((st.mode==='sx'?st.asx:st.asy)*f,35,300))}
-  }else if(st.mode==='width'){
-   const w=round(clamp(st.width+dx/st.W*100,8,150));
-   if(sel.t==='copy')s.textLayers={...s.textLayers,[k]:{...(base.textLayers?.[k]||{}),boxWidth:w}};else s.texts[sel.i]={...s.texts[sel.i],boxWidth:w};
+  }else if(st.mode==='width'||st.mode==='widthW'||st.mode==='height'){
+   // Text boxes: the right handle widens to the right, the left handle widens to the left (the right edge stays put), the bottom handle makes the box taller.
+   const west=st.mode==='widthW',pct=dx/st.unit;
+   const w=round(clamp(st.width+(west?-pct:pct),8,150));
+   const h=round(clamp(st.height+dy/st.unit,1,180));
+   const apply=(cur,base0)=>{
+    if(st.mode==='height')return {...base0,boxHeight:h};
+    const out={...base0,boxWidth:w};
+    // The box grows from its left edge, so widening from the left also slides it left by the same amount.
+    if(west){const grown=w-st.width;if(sel.t==='copy')out.x=round((base0.x||0)-grown);else out.left=round((base0.left||0)-grown*st.unit/st.W*100)}
+    return out;
+   };
+   if(sel.t==='copy')s.textLayers={...s.textLayers,[k]:apply(null,base.textLayers?.[k]||{})};else s.texts[sel.i]=apply(null,base.texts[sel.i]);
   }else if(st.mode==='rotate'){
    let deg=(Math.atan2(ev.clientY-st.cy,ev.clientX-st.cx)-st.angle)*180/Math.PI+st.rot;
    deg=Math.round(clamp(((deg+540)%360)-180,-360,360));if(shift||Math.abs(deg%15)<3)deg=Math.round(deg/15)*15;
