@@ -50,6 +50,25 @@ metaphorCampaigns.forEach(([topic,verb,metric,hooks],group)=>hooks.forEach((titl
  const id=300+group*25+index;
  templates.push({id,name:title,layout:index%20,palette:(group*2+index)%10,format:"Carousel",title,summary:["Find the handoff that slows everyday work.","Give buyers a clear path from interest to action.","Catch small exceptions before they become expensive.","Test the plan on a small scale before you commit."][group],topic,verb,metric,cartoon:true,metaphor:true,limit:110});
 }));
+
+// Portrait posters: original layouts built around one person's (or one mascot's) picture. Ten styles, three looks each.
+// A look is [name, background, ink, accent]. The picture slot is the page's main image, so Replace, move and resize all work.
+const posterStyles=[
+ {key:'window',name:'Frosted window',title:'The unseen',summary:'Show the people behind the work.',kicker:'THE FEATURE',topic:'People',looks:[['Smoke','#3a3530','#f4ede4','#d8b896'],['Ink','#11161f','#edf2f8','#8fb2e6'],['Blush','#5b3a40','#fff0ec','#ffb7a6']]},
+ {key:'cover',name:'Cover story',title:'Bold',summary:'A cover line with real personality.',kicker:'ISSUE 01',topic:'Stories',looks:[['Stone','#b9b9bb','#ffffff','#111111'],['Sand','#d9cbb7','#fffaf1','#2a1d12'],['Slate','#7f8995','#ffffff','#0f1720']]},
+ {key:'vertical',name:'Vertical word',title:'Refresh',summary:'Practice makes progress.',kicker:'PRACTICE\nMAKES PERFECT',topic:'Ideas',looks:[['Paper','#c9c9c9','#161616','#c40000'],['Bone','#d8d3c8','#1a1713','#b8460f'],['Fog','#b7bec6','#101820','#1769c9']]},
+ {key:'numeral',name:'Look up',title:'09',summary:'A fresh month. A fresh start.',kicker:'HAPPY NEW MONTH',topic:'Moments',looks:[['Asphalt','#17171a','#f0f0f2','#ffffff'],['Navy','#0e1a30','#eaf0ff','#9bbcff'],['Forest','#0f2a20','#eaf7ee','#9be0b4']]},
+ {key:'split',name:'Split sepia',title:'Friday sessions',summary:'Hosted by your team.\nMusic. Food. Good company.',kicker:'20 DEC\n2026',topic:'Events',looks:[['Amber','#17120e','#f4e4c8','#d4573a'],['Plum','#1a1020','#f3e6f5','#e08a52'],['Teal','#0d1d1f','#e6f4f1','#e0a84b']]},
+ {key:'letters',name:'Giant letters',title:'Stop',summary:'Dream big. Work hard. Stay focused.',kicker:'EVERY GREAT DREAM\nBEGINS WITH A DREAMER',topic:'Quotes',looks:[['Mono','#efefef','#111111','#111111'],['Cream','#f3ead9','#1d1a15','#1d1a15'],['Rose','#f2dfe0','#2a1317','#2a1317']]},
+ {key:'speaker',name:'Speaker poster',title:'Sunday service',summary:'Doors open at 10.00\nVision Building, first floor\nAll are welcome',kicker:'10 MAR 2026',topic:'Announcements',looks:[['Maroon','#e8e8ea','#1a1013','#8a1424'],['Cobalt','#e9edf6','#0f1424','#1f4fd1'],['Pine','#e9efe9','#0f1a13','#1d6b42']]},
+ {key:'stripe',name:'Agency stripe',title:'Ideas that inspire.\nResults that matter.',summary:'Clear goals\nSmart ideas\nTargeted action\nYour growth',kicker:'LET’S GROW TOGETHER',topic:'Services',looks:[['Sunny','#fbf1e4','#16161a','#f4b000'],['Coral','#fdeee9','#1a1216','#e8553a'],['Mint','#eaf6f0','#0f1a16','#13a37a']]},
+ {key:'glow',name:'Mascot glow',title:'Your AI assistant, at work',summary:'Little jobs done quietly, all day.',kicker:'MEET THE MASCOT',topic:'Mascots',looks:[['Aurora','#6e5bd0','#ffffff','#7ef0ff'],['Sunrise','#ff8a5b','#ffffff','#ffe27a'],['Lagoon','#0f8fa6','#ffffff','#c9ff7a']]},
+ {key:'chalk',name:'Mascot chalkboard',title:'Learn something\nnew today',summary:'Elevate your journey',kicker:'FRIENDLY GUIDE',topic:'Learning',looks:[['Slate','#15161a','#f4f4f6','#7ed321'],['Midnight','#10172a','#eef2ff','#62b0ff'],['Cocoa','#1d1410','#fbeee4','#ffb35c']]},
+];
+posterStyles.forEach((style,s)=>style.looks.forEach(([look,background,ink,accent],l)=>{
+ templates.push({id:400+s*3+l,name:`${style.name} / ${look}`,layout:(s*3+l)%20,palette:(s*3+l)%10,format:'Carousel',title:style.title,summary:style.summary,kicker:style.kicker,topic:style.topic,
+  poster:true,posterStyle:style.key,look,colors:{background,ink,accent},limit:110});
+}));
 const agents=[['Lyra','Researcher','Research direction and source gathering. Live research not connected.','L'],['Seline','Writer','Writes hooks, slides, captions and calls to action.','S'],['Spectra','Builder','Builds editable HTML materials and layouts.','S'],['Flux','Animator','Animates materials, typography and design compositions.','F'],['Relay','Publisher','Plans approved content; live publishing not connected.','R'],['Mira','Orchestrator','Routes jobs and enforces approval gates.','◎']];
 const initial={brand:{name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',color:'#ed6843'},ideas:[],activity:[],projects:[],schedule:[],template:0,slides:[],selected:0,copyApproved:false,finalApproved:false,ratio:'1 / 1',duration:3};
 let state;try{state={...initial,...JSON.parse(localStorage.getItem('gsn-studio-v1')||'null')};}catch{state=structuredClone(initial)}
@@ -146,7 +165,7 @@ function dkPage(t,slide,o){
  const c=dkColors(accent,p[3]);
  const mode={agenda:'dark',steps:'light',compare:'light',checklist:'light',quote:'dark',stat:'solid',cards:'dark',split:'light',statement:'dark',recap:'dark',case:'dark',cta:'solid'}[layout]||'dark';
  const flip=t.id%2?' dk-flip':'';
- const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
+ const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:t.poster&&!photo?`<div class="pst-inner-ph">${posterPlaceholder(t.posterStyle,'#445',accent)}</div>`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
  const num=String(slide.number??1).padStart(2,'0'),total=slide.total?String(slide.total).padStart(2,'0'):'';
  const titleText=slide.title??t.title;
  const style=`--a:${accent};--a2:${c.a2};--on-a:${c.onAccent};--hue:${c.hue};aspect-ratio:${ratio}`;
@@ -157,6 +176,31 @@ function dkPage(t,slide,o){
 <div class="art-brand" data-canvas-copy="brandText" style="${stack('brandText')}${textStyle('brandText')}">${o.layerCopy(slide.brandText??brand,slide.textLayers?.brandText?.bullets)}</div><div class="dk-count" aria-hidden="true">${num}${total?' / '+total:''}</div>
 <div class="campaign-visual dk-visual" aria-hidden="true" style="${stack('artwork')}${artStretch}">${pic}</div>
 <div class="campaign-copy dk-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${o.layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${o.layerCopy(titleText,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${slide.textLayers?.body?.bullets?o.layerCopy(slide.body,true):dkBody(layout,slide.body??'')}</div>${cta}</div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${o.layerCopy(slide.footerText??handle,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
+}
+
+// Stand-in artwork shown until a person's picture is added: a plain silhouette, or an original little robot for the mascot styles.
+function posterPlaceholder(style,ink,accent){
+ if(style==='glow'||style==='chalk')return `<svg viewBox="0 0 100 110" role="img" aria-label="Mascot placeholder"><line x1="50" y1="6" x2="50" y2="16" stroke="${ink}" stroke-width="2" opacity=".7"/><circle cx="50" cy="5" r="3.4" fill="${accent}"/><rect x="24" y="14" width="52" height="40" rx="15" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><rect x="30" y="22" width="40" height="24" rx="11" fill="#14161c"/><circle cx="42" cy="34" r="4.2" fill="${accent}"/><circle cx="58" cy="34" r="4.2" fill="${accent}"/><path d="M44 41q6 4 12 0" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round"/><rect x="31" y="58" width="38" height="32" rx="12" fill="#e4e8f2" stroke="#bcc4d8" stroke-width="1.4"/><circle cx="50" cy="74" r="5" fill="${accent}" opacity=".9"/><ellipse cx="24" cy="70" rx="6" ry="11" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><ellipse cx="76" cy="70" rx="6" ry="11" fill="#f3f5fb" stroke="#bcc4d8" stroke-width="1.4"/><rect x="34" y="92" width="14" height="12" rx="5" fill="#14161c"/><rect x="52" y="92" width="14" height="12" rx="5" fill="#14161c"/></svg>`;
+ return `<svg viewBox="0 0 100 125" role="img" aria-label="Person placeholder"><defs><linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ink}" stop-opacity=".42"/><stop offset="1" stop-color="${accent}" stop-opacity=".55"/></linearGradient></defs><path d="M8 125C9 92 28 78 50 78s41 14 42 47Z" fill="url(#pp)"/><rect x="41" y="62" width="18" height="20" rx="8" fill="url(#pp)"/><ellipse cx="50" cy="40" rx="18" ry="22" fill="url(#pp)"/></svg>`;
+}
+// The cover of a poster template. It uses the same parts as every other page (brand, picture, kicker, title, text, footer)
+// so selecting, moving, resizing and replacing work exactly as they do elsewhere.
+function posterPage(t,slide,o){
+ const {ratioClass,ratio,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,extra,clamp}=o;
+ const c=t.colors,background=hex(slide.background,c.background),ink=hex(slide.ink,c.ink),accent=hex(slide.accent,c.accent);
+ const title=slide.title??t.title,body=slide.body??t.summary,kicker=slide.kicker??t.kicker;
+ const longest=Math.max(3,...String(title).split(/[\s\n]+/).map(w=>w.length));
+ const fit=(max,span=88)=>Math.round(Math.min(max,span/(.62*longest))*10)/10;
+ const lineMax=Math.max(3,...String(title).split('\n').map(l=>l.trim().length));
+ const fitLine=(max,usable)=>Math.round(Math.min(max,usable/(.66*lineMax))*10)/10;
+ const person=image?`<img class="campaign-upload" src="${image}" alt="">`:posterPlaceholder(t.posterStyle,ink,accent);
+ const brand=slide.brandText??String(state.brand.name||'').toUpperCase(),foot=slide.footerText??state.brand.handle;
+ return `<div class="art pst pst-${t.posterStyle} ratio-${ratioClass} ${extra}" style="--bg:${background};--ink:${ink};--ac:${accent};--fit:${fit(30)}cqw;--fit-half:${fit(15,80)}cqw;--fit-v:${fitLine(20,96)}cqw;--fit-l:${fitLine(42,88)}cqw;--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}">
+<i class="pst-deco" aria-hidden="true"></i>
+<div class="art-brand" data-canvas-copy="brandText" style="${stack('brandText')}${textStyle('brandText')}">${layerCopy(brand,slide.textLayers?.brandText?.bullets)}</div>
+<div class="campaign-visual" aria-hidden="true" style="${stack('artwork')}${artStretch}">${person}</div>
+<div class="campaign-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${layerCopy(kicker,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${layerCopy(title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${deckBodyCopy(body,slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}${freeTexts}
+<div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(foot,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 function art(t,slide={},extra=''){
  const p=palettes[t.palette];
@@ -227,9 +271,10 @@ function art(t,slide={},extra=''){
   return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
  }).join('')}</div>`:'';
  const photograph=photo?`<div class="campaign-photo gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></div>`:photoIndex===undefined?'':`<div class="campaign-photo photo-${sheet}" style="--photo-x:${(photoIndex%4)*100/3}%;--photo-y:${Math.floor(photoIndex/4)*50}%"></div>`;
+ if(t.poster&&cover)return posterPage(t,slide,{ratioClass,ratio,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,extra,clamp});
  const dkLayout=role&&role!=='hook'&&!slide.catalog?DK_LAYOUTS[slide.deckLayout||(role==='cta'?'cta':'feature')]:null;
  if(dkLayout){
-  const cp=t.cartoon?gsnPhoto(gsnOriginalPictureCount+t.id-200):gsnPhoto(t.id%200);
+  const cp=t.poster?null:t.cartoon?gsnPhoto(gsnOriginalPictureCount+t.id-200):gsnPhoto(t.id%200);
   const brandName=slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION');
   return dkPage(t,slide,{layout:role==='cta'?'cta':dkLayout,accent:hex(slide.accent,coverAccent),cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo:customGsn?photo:cp,caption,handle:slide.catalog?'GSN Technology':state.brand.handle,brand:brandName,extra,layerCopy});
  }
@@ -343,6 +388,23 @@ function templateStarter(template){
   // Cartoon steps carry one sentence per step so the designed timeline shows real steps.
   for(const p of cartoonPages)if(p.deckLayout==='steps'&&!p.body.includes('\n'))p.body=p.body.split(/(?<=[.!?])\s+/).filter(Boolean).join('\n');
   return cartoonPages;
+ }
+ if(design?.poster){
+  const accent=design.colors.accent,motif='none';
+  const pages=[
+   ['hook',design.title,design.summary,design.kicker],
+   ['feature','Start with a real face','Show the person behind the brand.\nPeople stop for people.\nKeep the message short and the face large.','01 / THE IDEA'],
+   ['steps','Make it in three steps','Choose · Pick a person from your library.\nPlace · Drop them into the template.\nPublish · Send it for review and schedule it.','02 / HOW IT WORKS'],
+   ['principle','Faces earn attention','Pair one clear message with one clear face, then measure what people do next.','03 / THE RULE'],
+   ['cta','Ready to feature your people?','Add your own team to the library and start your next post.','YOUR NEXT POST'],
+  ].map(([deckLayout,title,body,kicker])=>({deckLayout,title,body,kicker,motif,accent}));
+  const extra=templatePageCount(template)-pages.length;
+  if(extra>0){
+   const have=new Set(pages.map(p=>p.deckLayout));
+   const order=['metric','triptych','quote','compare','summary','checklist','example'].filter(l=>!have.has(l)).slice(0,extra);
+   pages.splice(pages.length-1,0,...innerPages(template,design.topic,design.title,order,pages.length).map(p=>({...p,motif,accent})));
+  }
+  return pages;
  }
  const [title,body]=gsnCampaign(template);
  const topic=gsnPhoto(template).sector;

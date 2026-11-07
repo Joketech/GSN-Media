@@ -33,9 +33,9 @@ async function campaignExportCss(cards){
  const read=async(path)=>{const response=await fetch(path);if(!response.ok)throw new Error(`Missing export asset: ${path}`);return response;};
  const sheetText=path=>{if(!sheetTexts.has(path))sheetTexts.set(path,read(path).then(response=>response.text()).catch(error=>{sheetTexts.delete(path);throw error}));return sheetTexts.get(path)};
  // The export must use every stylesheet the editor shows the page with, or designed pages come out flat and without their pictures.
- const [base, premium, library, layers, inner, ...images]=await Promise.all([
+ const [base, premium, library, layers, inner, poster, ...images]=await Promise.all([
   sheetText('studio.css'), sheetText('premium.css'),
-  sheetText('artwork-library.css'), sheetText('free-layers.css'), sheetText('inner-pages.css'),
+  sheetText('artwork-library.css'), sheetText('free-layers.css'), sheetText('inner-pages.css'), sheetText('poster-templates.css'),
   ...files.map(async([sheet,path])=>{
    if(!cards.includes(`photo-${sheet}"`)&&!cards.includes(`picture-${sheet}`))return 'data:,';
    if(!atlasData.has(path))atlasData.set(path,read(path).then(response=>response.blob()).then(blob=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);})).catch(error=>{atlasData.delete(path);throw error}));
@@ -43,7 +43,7 @@ async function campaignExportCss(cards){
   }),
  ]);
  const all=[premium,library].join('\n').replace(/@import[^;]+;/g,'');
- return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}`;
+ return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}\n${poster}`;
 }
 function loadDesignImage(source){
  return new Promise((resolve,reject)=>{

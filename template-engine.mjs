@@ -11,7 +11,7 @@ const sheets=await Promise.all([['campaign','campaign-atlas.png'],['automation',
  const image=await readFile(new URL(file,import.meta.url));
  return {name,file,data:'data:image/png;base64,'+image.toString('base64')};
 }));
-const baseCss=(await Promise.all(['studio.css','premium.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
+const baseCss=(await Promise.all(['studio.css','premium.css','poster-templates.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
 const starterSource=source.slice(source.indexOf('// How many pages a template carries'),source.indexOf('function ensureSlides('));
 export function templateCatalog(){
  return vm.runInNewContext(photoSource+'\n'+definitions+starterSource+

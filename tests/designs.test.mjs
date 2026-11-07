@@ -79,7 +79,7 @@ test('agents pick a template and send only wording; the design stays',async()=>{
   const agent={Authorization:'Bearer agent-test-token','Content-Type':'application/json'};
   const call=(route,method='GET',data)=>fetch(s.base+route,{method,headers:agent,body:data===undefined?undefined:JSON.stringify(data)});
   const all=await (await call('/templates')).json();
-  assert.equal(all.templates.length,400);
+  assert.equal(all.templates.length,430);
   assert.ok(all.templates.every(t=>t.pages>=5&&t.pages<=10&&t.layouts[0]==='hook'&&t.layouts.at(-1)==='cta'));
   const roomy=await (await call('/templates?pages=9')).json();
   assert.ok(roomy.templates.length>0&&roomy.templates.every(t=>t.pages>=9));
@@ -104,4 +104,17 @@ test('the access-key gate can be restored for public servers',async()=>{
   assert.equal((await fetch(s.base+'/designs',{headers:{'Sec-Fetch-Site':'same-origin'}})).status,401);
   assert.equal((await fetch(s.base+'/designs',{headers:{Authorization:'Bearer agent-test-token'}})).status,200);
  }finally{await s.close()}
+});
+
+test('the 30 portrait poster templates have complete starter pages, accents and cover art',async()=>{
+ const {templateCatalog,starterSlides}=await import('../template-engine.mjs');
+ const all=templateCatalog();const posters=all.filter(t=>t.id>=400&&t.id<430);
+ assert.equal(posters.length,30);
+ for(const t of posters){
+  assert.ok([5,7,10].includes(t.pages),`${t.name} has ${t.pages} pages`);
+  assert.equal(t.layouts[0],'hook');assert.equal(t.layouts.at(-1),'cta');
+  const pages=starterSlides(t.id);
+  assert.equal(pages.length,t.pages);
+  for(const p of pages){assert.match(p.accent,/^#[0-9a-f]{6}$/i);assert.ok(p.title&&p.title.length<=80,`${t.name}: ${p.deckLayout} title`)}
+ }
 });

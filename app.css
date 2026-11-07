@@ -210,3 +210,26 @@ body[data-role=editor] [data-m=approve],body[data-role=editor] [data-m=now],body
 .pop-title{margin:6px 12px;font-size:12px;opacity:.7}
 .team select,.login-card input,.team input{padding:10px 12px;border-radius:12px;border:1px solid rgba(60,30,40,.14);background:rgba(255,255,255,.75);font:inherit;color:inherit}
 .team .field{display:flex;flex-direction:column;gap:4px;font-weight:600}
+
+/* Brand people: saved faces and mascots */
+.people-view{display:flex;flex-direction:column;gap:16px;padding:6px 4px 30px;max-width:980px}
+.people-view h1{margin:0;font-family:'Cormorant Garamond',serif;font-size:40px;color:#4a1425}
+.pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pp-editor .pp-grid{grid-template-columns:1fr 1fr;gap:8px}
+.pp-card{display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:16px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8)}
+.pp-checker{display:block;border-radius:12px;overflow:hidden;background:repeating-conic-gradient(#d9d9e2 0 25%,#f4f4f8 0 50%) 0 0/16px 16px;aspect-ratio:4/5}
+.pp-checker img{width:100%;height:100%;object-fit:contain;display:block}
+.pp-big{max-width:280px;aspect-ratio:1}
+.pp-meta{display:grid;gap:1px;min-width:0}.pp-meta b{font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pp-meta small{color:var(--ink2);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp-actions{display:flex;gap:6px;flex-wrap:wrap}.pp-actions button{border:0;border-radius:10px;padding:7px 10px;font-size:.75rem;background:rgba(0,0,0,.07)}.pp-actions .btn-dark{background:#3a2a30;color:#fff}
+.pp-del{color:#8a2236}
+.pp-add{border-radius:16px;background:rgba(255,255,255,.5);padding:12px 14px;display:grid;gap:10px}.pp-add>summary{cursor:pointer;font-weight:700}
+.pp-stage{display:grid;gap:8px}
+.pp-cands{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.pp-cand{border:2px solid transparent;border-radius:12px;background:#fff;padding:4px;display:grid;gap:3px;text-align:center;font-size:.72rem}.pp-cand.on{border-color:#8a2236}
+.pp-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.pp-form .field{display:grid;gap:3px;font-size:.78rem;font-weight:600}.pp-form input,.pp-form select{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.18);background:#fff}
+.pp-consent{display:flex;gap:8px;align-items:flex-start;font-size:.8rem}
+#ppSave:disabled{opacity:.45;cursor:not-allowed}
+body[data-role=editor] .pp-del{display:none}
+.pp-stage[hidden],.pp-cands:empty{display:none}

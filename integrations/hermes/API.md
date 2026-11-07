@@ -57,6 +57,15 @@ Agents cannot approve, post now, retry, cancel approved posts, or change live/pa
 
 POST `/cutout` with `{"image":"<base64 or data URL>","engine":"all"}` runs the studio's private cutout worker and returns `{width,height,candidates:[{engine,label,foreground,centre,ok,suggested,png_base64}]}`. Engines: `detail` (general objects, fine edges), `people` (people and what they hold), `scene` (whole subject groups) and `all` (default, runs each). `suggested` marks the candidate an automatic heuristic prefers: it keeps most of the middle of the picture without keeping the whole photo. Models disagree on hard photos, so an agent that cares should compare `foreground`/`centre` or leave the choice to a human in the editor. Images up to 16 megapixels; about 2 to 6 seconds per model on CPU. Use the returned PNG as an uploaded photo element in a design.
 
+## Brand people and portrait posters
+
+Brand people are faces and mascots the brand owns or has permission to use, saved per workspace. Humans add them on the People screen; agents can only read them.
+
+- `GET /people` lists `{id,name,kind,role,permission_note,consent,image_url}` (no image bytes). `GET /people/:id` returns the full record; `GET /people/:id/image` returns the picture.
+- `POST /people` (humans only) needs `name`, `kind` (`team`, `mascot` or `release`), `image` (PNG/JPEG/WebP data URL, up to 1.4 MB) and `consent: true`. A `release` also needs `permission_note`. Up to 200 people per workspace. `DELETE /people/:id` is owner only.
+- To put a person on a design, send `person_id` on the design (cover page), on a page (`pages[].person_id`) or on a copy item (`copy[].person_id`) when creating or updating it. Unknown ids are rejected. Never use a face that is not in this library.
+- Templates 400-429 are the 30 "Portrait posters" (10 styles x 3 looks). Their cover is built around one cut-out person; pick a person with a transparent PNG for best results.
+
 ## Workspaces and agent keys
 
 When the owner turns on accounts (Team page), the studio is split into workspaces. Each workspace has its own designs, voices, jobs, review queue, Postiz account, live switches and agent keys, so one person's or team's work is never visible to another.

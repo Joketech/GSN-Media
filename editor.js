@@ -5,7 +5,7 @@
 const Editor=(()=>{
  const {$,$$,esc,icon,api,toast,state:app,preset,platformIcon}=App;
  const COPY={title:'Headline',body:'Write-up',kicker:'Label',brandText:'Brand line',footerText:'Footer'};
- const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
+ const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['people','user','People'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
  const DEFAULT_ORDER=['artwork','brandText','kicker','title','body','footerText'];
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const round=v=>Math.round(v*100)/100;
@@ -642,7 +642,7 @@ const Editor=(()=>{
   const label=TOOLS.find(t=>t[0]===id)[2];
   el.root.classList.add('has-fly');el.fly.hidden=false;el.fly.innerHTML=`<header><h2>${label}</h2><button class="ed-icon" data-act="closetool" aria-label="Close ${label}">${icon('close')}</button></header><div class="ed-flybody" id="edFlyBody"></div>`;
   const body=$('#edFlyBody');
-  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,brand:toolBrand,pages:toolPages,resize:toolResize})[id](body);
+  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,people:toolPeople,brand:toolBrand,pages:toolPages,resize:toolResize})[id](body);
   requestAnimationFrame(fit);
  }
  function toolTemplates(body){
@@ -679,6 +679,11 @@ const Editor=(()=>{
   const spec={heading:{text:'Add a heading',size:9,bold:true},sub:{text:'Add a subheading',size:5.5,bold:true},body:{text:'Add a little bit of body text',size:3.6}}[kind];
   commit(()=>{s.texts=[...(s.texts||[]),{...spec,left:12,top:42,boxWidth:70}];sel={t:'text',i:s.texts.length-1}});
   drawOverlay();requestAnimationFrame(startEdit);
+ }
+ // Saved faces and mascots: one click puts the person into this page's picture, replacing whatever picture the template had.
+ function toolPeople(body){
+  body.innerHTML='<div class="pp-editor"></div>';
+  People.mount(body.firstChild,{onUse:async p=>{commit(()=>{const s=slide();s.image=p.image;delete s.artX;delete s.artY;delete s.artScale});toast(`${p.name} is on this page. Undo brings the old picture back.`)}});
  }
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><div class="ed-ugrid" id="edUg"></div>`;
