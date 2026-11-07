@@ -403,10 +403,10 @@ const Editor=(()=>{
    html=`<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
-   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<label class="swatch" title="Text colour"><input type="color" data-b="color" value="${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></label>
+   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
-   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
    html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
@@ -512,6 +512,10 @@ const Editor=(()=>{
   if(a==='smaller'||a==='bigger')return patchLayer({size:round(clamp(curSize()+(a==='bigger'?.5:-.5),1,30))},'size'),drawBar();
   if(['bold','italic','underline','uppercase','bullets'].includes(a))return patchLayer({[a]:!l[a]}),drawBar();
   if(a==='align'){const order=['left','center','right','justify'];return patchLayer({align:order[(order.indexOf(l.align||'left')+1)%4]}),drawBar()}
+  if(a==='colorpop')return colourPanel(t,l.color||slide().ink||'#ffffff',c=>{patchLayer({color:c},'color');drawBar()});
+  if(a==='hlpop')return colourPanel(t,l.bg||'',c=>{patchLayer({bg:c||undefined},'hl');drawBar()},{none:'No highlight'});
+  if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
+  if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
   if(a==='group')return groupSel();
   if(a==='ungroup')return ungroupSel();
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
@@ -568,14 +572,14 @@ const Editor=(()=>{
     s.elements=[...s.elements,s.elements[sel.i]];s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i)),{x:clamp(c.x+3,0,100),y:clamp(c.y+3,0,100)}];
     s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),s.elementSizes?.[sel.i]??100];
     if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),s.elementColors[sel.i]||'#25c8ff'];
-    for(const [k,d] of [['elementStretchX',100],['elementStretchY',100],['elementRotations',0],['elementRadius',0],['elementOpacity',100],['elementFlip',0],['elementFills',null]])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??d),s[k][sel.i]??d];
+    for(const [k,d] of [['elementStretchX',100],['elementStretchY',100],['elementRotations',0],['elementRadius',0],['elementOpacity',100],['elementFlip',0],['elementFills',null],['elementSolid',false]])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??d),s[k][sel.i]??d];
     sel={t:'element',i:n}}
   });
   drawOverlay();
  }
  function deleteOne(s,m){
   if(m.t==='text'){s.texts=s.texts.filter((_,i)=>i!==m.i);s.layerOrder=remap(s.layerOrder,'text:',m.i);remapGroups(s,'text:',m.i)}
-  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip','elementFills'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
+  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementSolid','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip','elementFills'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
   else if(m.t==='slot')clearSlot(m.k);
@@ -703,9 +707,42 @@ const Editor=(()=>{
   };
   $('#edTq').oninput=e=>{q=e.target.value;shown=18;draw()};$('#edTm').onclick=()=>{shown+=18;draw()};draw();
  }
+ // Colour panel (like Canva's): hex box, eyedropper, colours already in this design, your saved brand colours, standard colours.
+ function designColours(){
+  const set=new Set(),add=c=>{if(/^#[0-9a-f]{6}$/i.test(c||''))set.add(c.toLowerCase())};
+  for(const p of design.pages){add(p.background);add(p.ink);add(p.accent);add(p.pageFill);(p.elementColors||[]).forEach(add);for(const l of Object.values(p.textLayers||{})){add(l.color);add(l.bg)}for(const t of p.texts||[]){add(t.color);add(t.bg)}}
+  return [...set].slice(0,14);
+ }
+ function colourPanel(anchor,current,done,opt={}){
+  document.querySelector('.ed-cpanel')?.remove();
+  const std=['#000000','#444444','#888888','#cccccc','#ffffff','#e53935','#fb48b5','#ff9b27','#ffd84d','#70eb8e','#00a86b','#25c8ff','#1e63e9','#7a3cff','#8a2236','#101323'];
+  const sw=a=>a.map(c=>`<button class="sw" data-cp="${c}" title="${c}" aria-label="${c}" style="background:${c}"></button>`).join('');
+  const box=document.createElement('div');box.className='ed-cpanel';
+  const cur=/^#[0-9a-f]{6}$/i.test(current)?current:'#ac82f4';
+  box.innerHTML=`<div class="cp-row"><input type="text" class="cp-hex" maxlength="7" value="${/^#[0-9a-f]{6}$/i.test(current)?current:''}" placeholder="Try #00c4cc" aria-label="Hex colour"><input type="color" class="cp-native" value="${cur}" aria-label="Pick any colour">${window.EyeDropper?'<button class="cp-eye" title="Pick a colour from the screen" aria-label="Eyedropper">⌖</button>':''}</div>
+  ${opt.none?`<button class="cp-none" data-cp="">${esc(opt.none)}</button>`:''}
+  ${designColours().length?`<h4>Colours in this design</h4><div class="cp-grid">${sw(designColours())}</div>`:''}
+  ${kit().length?`<h4>Brand colours</h4><div class="cp-grid">${sw(kit())}</div>`:''}
+  <h4>Standard colours</h4><div class="cp-grid">${sw(std)}</div>`;
+  document.body.appendChild(box);
+  const r=anchor.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;
+  box.style.left=Math.max(8,Math.min(innerWidth-bw-8,r.left))+'px';
+  const below=r.bottom+8+bh<innerHeight;box.style.top=(below?r.bottom+8:Math.max(8,r.top-bh-8))+'px';
+  const pick=c=>{done(c)};
+  const hexIn=$('.cp-hex',box);
+  hexIn.onchange=()=>{let v=hexIn.value.trim().toLowerCase();if(/^[0-9a-f]{6}$/.test(v))v='#'+v;if(/^#[0-9a-f]{6}$/.test(v))pick(v);else toast('Use a hex colour such as #00c4cc.')};
+  $('.cp-native',box).oninput=ev=>{hexIn.value=ev.target.value;pick(ev.target.value)};
+  $('.cp-eye',box)&&($('.cp-eye',box).onclick=async()=>{try{pick((await new EyeDropper().open()).sRGBHex)}catch{}});
+  box.onclick=ev=>{const b=ev.target.closest('[data-cp]');if(b){pick(b.dataset.cp);if(!b.classList.contains('cp-none')||true){}}};
+  const away=ev=>{if(!box.contains(ev.target)&&!anchor.contains(ev.target)){box.remove();document.removeEventListener('pointerdown',away,true)}};
+  setTimeout(()=>document.addEventListener('pointerdown',away,true),0);
+  hexIn.focus();hexIn.select();
+ }
  function toolElements(body){
   const keys=Object.keys(GSNKit.slideElements);
-  body.innerHTML=`<p class="hint">Click to add. Drag it into place; resize from the corner.</p><div class="ed-egrid">${keys.map(k=>`<button data-el="${k}" title="${esc(GSNKit.slideElements[k][0])}" aria-label="Add ${esc(GSNKit.slideElements[k][0])}">${platformIcon(k)}<span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>`;
+  body.innerHTML=`<p class="hint">Click to add. Drag it into place; resize from the corner. Click the colour dot above the shape to change its colour.</p>
+  <h3>Colour shapes</h3><div class="ed-egrid">${['rect','rounded','circle','triangle','diamond','star','heart','chat'].map(k=>`<button data-elsolid="${k}" title="Solid ${esc(GSNKit.slideElements[k][0])}" aria-label="Add solid ${esc(GSNKit.slideElements[k][0])}"><svg viewBox="0 0 24 24" class="solid-ic" fill="${slide().accent&&/^#[0-9a-f]{6}$/i.test(slide().accent)?slide().accent:'#ac82f4'}" stroke="none">${GSNKit.slideElements[k][1]}</svg><span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>
+  <h3>Lines, icons and illustrations</h3><div class="ed-egrid">${keys.map(k=>`<button data-el="${k}" title="${esc(GSNKit.slideElements[k][0])}" aria-label="Add ${esc(GSNKit.slideElements[k][0])}">${platformIcon(k)}<span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>`;
  }
  function addElement(key,at){
   const s=slide();if((s.elements||[]).length>=24)return toast('A page can hold 24 elements.');
@@ -924,6 +961,7 @@ const Editor=(()=>{
   if(e.target.closest('#edBar'))return onBar(e);
   const toolBtn=e.target.closest('[data-tool]');if(toolBtn){return tool===toolBtn.dataset.tool?closeTool():openTool(toolBtn.dataset.tool)}
   const tpl=e.target.closest('[data-tpl]');if(tpl){commit(()=>{design.template_id=+tpl.dataset.tpl});$$('.ed-tpl',el.fly).forEach(b=>b.classList.toggle('on',b===tpl));thumbs();return}
+  const sob=e.target.closest('[data-elsolid]');if(sob){addElement(sob.dataset.elsolid);const i=sel.i,s=slide(),acc=/^#[0-9a-f]{6}$/i.test(s.accent||'')?s.accent:'#ac82f4';commit(()=>{setList(s,'elementSolid',i,true,false);const x=[...(s.elementColors||[])];x[i]=acc;s.elementColors=Array.from({length:s.elements.length},(_,k)=>x[k]||'#25c8ff');setList(s,'elementSizes',i,160,100)},'solid');drawOverlay();return}
   const elb=e.target.closest('[data-el]');if(elb)return addElement(elb.dataset.el);
   const at=e.target.closest('[data-addtext]');if(at)return addText(at.dataset.addtext);
   const up=e.target.closest('[data-up]');if(up){if(up.dataset.up==='del'){uploads.splice(+up.dataset.i,1);return tool==='uploads'&&openTool('uploads')}if(up.dataset.up==='clear'){uploads.length=0;return tool==='uploads'&&openTool('uploads')}const u=uploads[+up.dataset.i];if(up.dataset.up==='el')addElement(u);else commit(()=>{slide().image=u});return}
