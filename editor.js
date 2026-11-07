@@ -409,7 +409,7 @@ const Editor=(()=>{
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
-   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${isPhotoEl(photoOf(sel))?'<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>':''}${sep}`;
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
@@ -456,10 +456,14 @@ const Editor=(()=>{
   throw Error('The result is too large. Use a smaller image.');
  }
  const loadImg=u=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(Error('That image could not be read.'));im.src=u});
- function applyPhoto(target,out){commit(()=>{if(target.t==='art')slide().image=out;else slide().elements[target.i]=out})}
+ function applyPhoto(target,out,cut){commit(()=>{
+  if(target.t==='art'){slide().image=out;if(cut)slide().hideArt=true}
+  else if(target.t==='slot'){setSlot(target.k,{src:out});if(cut)slide().hideArt=true}
+  else slide().elements[target.i]=out})}
+ const photoOf=t=>{const s=slide();return t.t==='art'?s.image:t.t==='slot'?(s.slots?.[t.k]?.src||(slotDefs()[0]?.[0]===t.k?s.image:'')):s.elements?.[t.i]}
  // AI cutout: the studio's private worker returns several models' results; the person picks the best, then can touch it up.
  async function runRemoveBackground(){
-  const s=slide(),target=sel,url=target.t==='art'?s.image:s.elements[target.i];
+  const s=slide(),target=sel,url=photoOf(target);
   if(!url||!isPhotoEl(url))return toast('Select an uploaded picture first.');
   openModal(`<h2>Remove background</h2><p class="hint" id="cutMsg">Cutting the picture out with AI. This takes a few seconds…</p><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
   const token=Symbol();cutToken=token;
@@ -469,14 +473,14 @@ const Editor=(()=>{
   const cands=r.candidates;
   openModal(`<h2>Pick the best cutout</h2><p class="hint">Each model sees the picture differently. Choose the one that kept what you want, then touch it up if needed.</p><div class="cut-grid">${cands.map((c,i)=>`<button class="cut-cell${c.suggested?' on':''}" data-cut="${i}" title="Use this cutout"><span class="cut-checker"><img alt="${esc(c.label)} cutout" src="data:image/png;base64,${c.png_base64}"></span><b>${esc(c.label)}</b>${c.suggested?'<i>Suggested</i>':''}</button>`).join('')}</div><div class="ed-actions"><button class="btn-light" data-cut="plain">Plain background tool</button><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
   el.modal.onclick=async e=>{const b=e.target.closest('[data-cut]');if(!b)return;
-   if(b.dataset.cut==='plain'){closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message)}return}
+   if(b.dataset.cut==='plain'){closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out,true);toast('Background removed. The template picture behind it is hidden so the removed area stays clear. Undo brings it back.')}catch(err){toast(err.message)}return}
    const c=cands[+b.dataset.cut];refineCutout(target,url,'data:image/png;base64,'+c.png_base64)};
  }
  let cutToken=null;
  // The plain-background tool only works on flat backgrounds, so it is offered, never applied without being asked.
  function cutFallback(target,url,why){
   openModal(`<h2>AI cutout isn’t available</h2><p class="hint">${esc(why)}</p><p class="hint">The plain-background tool still works, but only on pictures with a flat background. On a busy photo it will damage the subject.</p><div class="ed-actions"><button class="btn-light" data-cut="plain">Try the plain-background tool</button><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
-  el.modal.onclick=async e=>{if(!e.target.closest('[data-cut=plain]'))return;closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message,6000)}};
+  el.modal.onclick=async e=>{if(!e.target.closest('[data-cut=plain]'))return;closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out,true);toast('Background removed. The template picture behind it is hidden so the removed area stays clear. Undo brings it back.')}catch(err){toast(err.message,6000)}};
  }
  // Touch-up: paint away leftovers or bring back parts the model removed.
  async function refineCutout(target,origUrl,cutUrl){
@@ -504,7 +508,7 @@ const Editor=(()=>{
    if(t==='erase'||t==='restore'){mode=t;el.modal.querySelectorAll('[data-t=erase],[data-t=restore]').forEach(x=>x.className=x.dataset.t===t?'btn-maroon':'btn-light')}
    else if(t==='undo'){const p=history.pop();if(p){wx.clearRect(0,0,w,h);wx.drawImage(p,0,0);draw()}}
    else if(t==='cancel')closeModal();
-   else if(t==='apply'){try{const out=fitPng(work);closeModal();applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message,6000)}}};
+   else if(t==='apply'){try{const out=fitPng(work);closeModal();applyPhoto(target,out,true);toast('Background removed. The template picture behind it is hidden so the removed area stays clear. Undo brings it back.')}catch(err){toast(err.message,6000)}}};
  }
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
