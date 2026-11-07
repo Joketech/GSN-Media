@@ -1,137 +1,154 @@
 'use strict';
-/* Rain on still water: falling drops, splash crowns and expanding ripples, drawn on a canvas behind the glass panel.
-   It pauses whenever the dashboard is hidden, and stays still for people who prefer reduced motion. */
+/* Rain on a window. Round beads of water cling to the glass, each one a small lens that shows the scene behind it upside down;
+   now and then a bead grows heavy, runs down the glass in a wobbling line, gathers the beads it meets and leaves a thin wet trail.
+   Two canvases: .water (behind the panel) paints soft bokeh lights; .water-front (above everything, never catches clicks) paints the drops.
+   The beads sample an off-screen copy of the same scene, so what shows inside a drop is what is really behind it.
+   Everything pauses when the dashboard is hidden and stops when motion is switched off. */
 const Water=(()=>{
- let glass=false,beads=[],trails=[],light=false,canvas,ctx,w=0,h=0,dpr=1,ripples=[],drops=[],sparks=[],next=0,running=false,last=0,moveAt=0,still=false;
+ let back,front,bctx,fctx,w=0,h=0,dpr=1,scene,sceneCtx,layer,layerCtx,beads=[],trails=[],running=false,last=0,dirty=true,layerAt=0,still=false,seed=7;
  const rnd=(a,b)=>a+Math.random()*(b-a);
+ const rand=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ const motionOn=()=>document.documentElement.dataset.motion!=='off';
+
+ function mk(){const c=document.createElement('canvas');c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return [c,x]}
+ function ell(x,cx,cy,rx,ry,colour,stop){x.save();x.translate(cx,cy);x.scale(1,ry/rx);const g=x.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,colour);g.addColorStop(stop,colour.slice(0,7)+'00');x.fillStyle=g;x.fillRect(-rx,-rx*(rx/ry),rx*2,rx*2*(rx/ry));x.restore()}
+
+ // The scene the drops look at: the pastel backdrop plus soft out-of-focus lights.
+ function paintScene(x){
+  x.fillStyle='#e8e3f1';x.fillRect(0,0,w,h);
+  ell(x,w*.12,h*.18,w*.6*.7,h*.55*.7,'#bcd9f7',1);ell(x,w*.88,h*.12,w*.5*.7,h*.5*.7,'#f6c9dc',1);
+  ell(x,w*.8,h*.88,w*.55*.7,h*.6*.7,'#c4ead9',1);ell(x,w*.18,h*.9,w*.5*.7,h*.5*.7,'#fbd9bd',1);ell(x,w*.5,h*.5,w*.4*.75,h*.4*.75,'#ddd2f6',1);
+  seed=11;
+  const lights=['#ffd18a','#ff9fc0','#8fd3ff','#ffe9a8','#b9a6ff','#9ff0d0','#ffb3a0'];
+  const n=Math.round(w*h/26000);
+  for(let i=0;i<n;i++){
+   const r=14+rand()*rand()*52,cx=rand()*w,cy=rand()*h,c=lights[Math.floor(rand()*lights.length)];
+   const g=x.createRadialGradient(cx,cy,r*.1,cx,cy,r);g.addColorStop(0,c+'cc');g.addColorStop(.78,c+'88');g.addColorStop(.93,c+'bb');g.addColorStop(1,c+'00');
+   x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fill();
+  }
+ }
  function size(){
   dpr=Math.min(window.devicePixelRatio||1,1.5);
-  w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
- }
- function ripple(x,y,power=1){
-  const max=rnd(120,230)*power;
-  for(let i=0;i<3;i++)ripples.push({x,y,r:0,max:max*(1-i*.22),speed:rnd(55,75)*power,delay:i*.16,age:-i*.16,width:2.2-i*.5});
- }
- function drop(x,y,power=1,fall=true){
-  if(!fall){ripple(x,y,power);splash(x,y,power);return}
-  drops.push({x,y,top:y-rnd(120,220),t:0,dur:rnd(.18,.28),power});
- }
- function splash(x,y,power){
-  const n=Math.round(rnd(6,10)*power);
-  for(let i=0;i<n;i++){const a=rnd(-Math.PI*.85,-Math.PI*.15);const v=rnd(40,110)*power;sparks.push({x,y,vx:Math.cos(a)*v*.7,vy:Math.sin(a)*v,life:0,max:rnd(.35,.7)})}
- }
- function step(dt){
-  next-=dt;
-  if(next<=0){next=rnd(.3,1.05);drop(rnd(w*.04,w*.96),rnd(h*.12,h*.92),rnd(.7,1.25))}
-  for(const d of drops){d.t+=dt}
-  drops=drops.filter(d=>{if(d.t>=d.dur){ripple(d.x,d.y,d.power);splash(d.x,d.y,d.power);return false}return true});
-  for(const r of ripples){r.age+=dt;if(r.age>0)r.r=r.age*r.speed*(1-Math.min(.55,r.age*.18))}
-  ripples=ripples.filter(r=>r.r<r.max);
-  for(const s of sparks){s.life+=dt;s.vy+=320*dt;s.x+=s.vx*dt;s.y+=s.vy*dt}
-  sparks=sparks.filter(s=>s.life<s.max);
- }
- function draw(){
-  ctx.clearRect(0,0,w,h);
-  ctx.globalCompositeOperation='source-over';
-  for(const d of drops){
-   const p=d.t/d.dur,y=d.top+(d.y-d.top)*p*p;
-   const g=ctx.createLinearGradient(d.x,y-26,d.x,y);g.addColorStop(0,'rgba(220,255,240,0)');g.addColorStop(1,light?'rgba(255,255,255,.95)':'rgba(235,255,248,.85)');
-   ctx.strokeStyle=g;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(d.x,y-26);ctx.lineTo(d.x,y);ctx.stroke();
-  }
-  for(const r of ripples){
-   if(r.age<=0||r.r<1)continue;
-   const life=1-r.r/r.max,a=Math.pow(life,1.6);
-   // Rings are squashed vertically, as water seen at a low angle.
-   const ry=r.r*.42;
-   ctx.lineWidth=r.width*1.25;
-   ctx.strokeStyle=`rgba(255,255,255,${.95*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.stroke();
-   ctx.lineWidth=r.width*.7;ctx.strokeStyle=`rgba(70,125,165,${.75*a})`;ctx.beginPath();ctx.ellipse(r.x,r.y+2,r.r*.985,ry*.985,0,0,Math.PI*2);ctx.stroke();
-   if(r.r<r.max*.5){const g=ctx.createRadialGradient(r.x,r.y,0,r.x,r.y,r.r);g.addColorStop(0,`rgba(255,255,255,${.3*a})`);g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(r.x,r.y,r.r,ry,0,0,Math.PI*2);ctx.fill()}
-  }
-  for(const s of sparks){const a=1-s.life/s.max;ctx.fillStyle=light?`rgba(255,255,255,${1*a})`:`rgba(235,255,248,${.8*a})`;ctx.beginPath();ctx.arc(s.x,s.y,1.6,0,Math.PI*2);ctx.fill()}
-  ctx.globalCompositeOperation='source-over';
+  w=front.clientWidth;h=front.clientHeight;
+  for(const c of [front,back]){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}
+  fctx.setTransform(dpr,0,0,dpr,0,0);bctx.setTransform(dpr,0,0,dpr,0,0);
+  [scene,sceneCtx]=mk();paintScene(sceneCtx);
+  [layer,layerCtx]=mk();
+  // Back canvas: only the lights, so the pastel backdrop under it keeps drifting.
+  bctx.clearRect(0,0,w,h);bctx.save();bctx.globalAlpha=.55;bctx.drawImage(scene,0,0,w,h);bctx.restore();
  }
 
- /* Rain on a window: beads of water that cling, grow, then run down the glass leaving a trail. */
- function bead(y){
-  const roll=Math.random(),r=roll<.74?rnd(1.4,4.2):roll<.95?rnd(4.5,9):rnd(9.5,15);
-  return {x:rnd(0,w),y:y??rnd(0,h),r,vy:0,run:false,wait:rnd(2,14),trail:null,hue:rnd(0,1)};
+ // A bead is placed so it does not sit on top of another; small ones are many, large ones few.
+ function newBead(y){
+  const roll=Math.random(),r=roll<.5?rnd(1.2,2.6):roll<.8?rnd(2.6,5.5):roll<.95?rnd(5.5,9):rnd(9,14);
+  return {x:rnd(0,w),y:y??rnd(0,h),r,vy:0,run:false,wait:rnd(3,16),trail:null,ph:rnd(0,6.3)};
  }
- function seedGlass(){beads=[];const n=Math.round(w*h/3200);for(let i=0;i<n;i++)beads.push(bead());trails=[]}
- function stepGlass(dt){
+ function fits(b){for(const o of beads){const d=Math.hypot(o.x-b.x,o.y-b.y);if(d<(o.r+b.r)*.85)return false}return true}
+ function place(y){for(let i=0;i<14;i++){const b=newBead(y);if(fits(b))return b}return null}
+ function seed0(){beads=[];trails=[];const n=Math.round(w*h/2700);for(let i=0;i<n*3&&beads.length<n;i++){const b=place();if(b)beads.push(b)}dirty=true}
+
+ function step(dt){
+  let changed=false,runners=beads.reduce((n,b)=>n+(b.run?1:0),0);
   for(const b of beads){
    if(!b.run){
-    b.r+=dt*.05*(b.r<9?1:.4);b.wait-=dt;
-    if(b.r>10.5&&b.wait<0&&Math.random()<dt*.5){b.run=true;b.vy=rnd(14,28);b.trail={pts:[[b.x,b.y]],age:0,r:b.r}}
+    // Resting beads swell very slowly as more mist settles; the heavy ones begin to run.
+    b.r+=dt*(b.r<9?.045:.02);b.wait-=dt;
+    if(b.r>6.4&&b.wait<0&&runners<5&&Math.random()<dt*.25){runners++;b.run=true;b.vy=rnd(10,22);b.trail={pts:[[b.x,b.y]],age:0,r:b.r,bits:[]};changed=true}
    }else{
-    b.vy=Math.min(b.vy+dt*(60+b.r*8),230);b.y+=b.vy*dt;b.x+=Math.sin(b.y*.05+b.hue*6)*dt*5;
-    b.r=Math.max(4.5,b.r-dt*.35);
-    const t=b.trail,last=t.pts[t.pts.length-1];if(Math.hypot(b.x-last[0],b.y-last[1])>3)t.pts.push([b.x,b.y]);
-    // The running drop gathers the small beads it passes.
-    for(const o of beads){if(o!==b&&!o.run&&Math.abs(o.y-b.y)<b.r+o.r&&Math.abs(o.x-b.x)<b.r*.8+o.r&&o.r<b.r){o.dead=true;b.r=Math.min(18,Math.sqrt(b.r*b.r+o.r*o.r*.35))}}
-    if(b.vy>140&&Math.random()<dt*.55){b.run=false;b.wait=rnd(4,10);b.vy=0;trails.push(b.trail);b.trail=null}
-    if(b.y>h+30){b.dead=true;if(b.trail)trails.push(b.trail)}
+    // A running drop stutters: it speeds up, catches on the glass, speeds up again.
+    b.stick=(b.stick||0)-dt;
+    if(b.stick<=0&&Math.random()<dt*1.1){b.stick=rnd(.12,.5);b.vy*=.25}
+    b.vy=Math.min(b.vy+dt*(70+b.r*9),210);b.y+=b.vy*dt*(b.stick>0?.2:1);b.x+=Math.sin(b.y*.045+b.ph)*dt*4.5;
+    b.r=Math.max(2.8,b.r-dt*.28);
+    const t=b.trail,lastP=t.pts[t.pts.length-1];
+    if(Math.hypot(b.x-lastP[0],b.y-lastP[1])>6)t.pts.push([b.x,b.y]);
+    // It leaves a few tiny beads behind in its wake.
+    if(Math.random()<dt*2){const nb={x:b.x+rnd(-b.r*.6,b.r*.6),y:b.y-b.r-rnd(2,14),r:rnd(.9,1.9),vy:0,run:false,wait:rnd(6,20),trail:null,ph:rnd(0,6)};beads.push(nb);lens(layerCtx,nb.x,nb.y,nb.r)}
+    // ...and swallows the resting beads it touches.
+    for(const o of beads){if(o!==b&&!o.run&&!o.dead&&o.r<b.r&&Math.abs(o.y-b.y)<b.r+o.r&&Math.abs(o.x-b.x)<b.r*.9+o.r){o.dead=true;b.r=Math.min(14,Math.sqrt(b.r*b.r+o.r*o.r*.5));changed=true}}
+    if(b.vy>120&&Math.random()<dt*.5){b.run=false;b.wait=rnd(6,16);b.vy=0;trails.push(b.trail);b.trail=null;lens(layerCtx,b.x,b.y,b.r)}
+    if(b.y>h+30){b.dead=true;if(b.trail)trails.push(b.trail);changed=true}
    }
   }
-  const fresh=beads.filter(b=>b.dead).length;
-  beads=beads.filter(b=>!b.dead);
-  for(let i=0;i<fresh;i++)beads.push(bead(Math.random()<.5?rnd(-10,h*.3):undefined));
+  if(beads.some(b=>b.dead)){beads=beads.filter(b=>!b.dead);const need=Math.round(w*h/2700)-beads.length;for(let i=0;i<Math.min(need,4);i++){const b=place(Math.random()<.6?rnd(-10,h*.25):undefined);if(b)beads.push(b)}changed=true}
   for(const t of trails)t.age+=dt;
-  trails=trails.filter(t=>t.age<16);
+  trails=trails.filter(t=>t.age<12);if(trails.length>20)trails.splice(0,trails.length-20);
+  if(changed)dirty=true;
  }
- function drawBead(b){
-  const {x,y,r}=b;
-  // Soft contact shadow, then the lens: clear in the middle, darker rim below, bright rim above, tiny specular.
-  ctx.fillStyle='rgba(60,60,110,.10)';ctx.beginPath();ctx.ellipse(x+r*.25,y+r*.5,r*1.02,r*.95,0,0,Math.PI*2);ctx.fill();
-  const g=ctx.createRadialGradient(x-r*.25,y-r*.35,r*.1,x,y,r);
-  g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.55,'rgba(210,225,245,.16)');g.addColorStop(1,'rgba(70,90,150,.34)');
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
-  if(r>3){
-   // Refraction: the scene appears upside-down and warmer in the lower half of the bead.
-   const lg=ctx.createLinearGradient(x,y-r,x,y+r);lg.addColorStop(0,'rgba(120,150,215,.0)');lg.addColorStop(.55,'rgba(255,205,170,.18)');lg.addColorStop(1,'rgba(255,190,200,.36)');
-   ctx.fillStyle=lg;ctx.beginPath();ctx.arc(x,y,r*.92,0,Math.PI*2);ctx.fill();
+
+ // One bead as a lens. Big enough beads show the scene behind them turned upside down.
+ function lens(c,x,y,r,tall=1){
+  const crisp=c===layerCtx;
+  const rx=r,ry=r*tall;
+  // contact shadow
+  c.fillStyle='rgba(40,40,90,.13)';c.beginPath();c.ellipse(x+r*.22,y+ry*.42,rx*1.04,ry*.98,0,0,Math.PI*2);c.fill();
+  if(r>=2.2){
+   c.save();c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.clip();
+   const R=r*2.3;let sx=Math.max(0,Math.min(w-2*R,x-R)),sy=Math.max(0,Math.min(h-2*R,y-R*tall));
+   c.translate(x,y);c.rotate(Math.PI);c.globalAlpha=.97;
+   if(crisp)c.filter='saturate(1.7) contrast(1.25) brightness(.92)';c.drawImage(scene,sx*dpr,sy*dpr,2*R*dpr,2*R*tall*dpr,-rx,-ry,2*rx,2*ry);if(crisp)c.filter='none';c.globalAlpha=1;c.rotate(-Math.PI);c.translate(-x,-y);
+   // the glass edge darkens, the lower edge catches light
+   const g=c.createRadialGradient(x,y-ry*.15,Math.min(rx,ry)*.45,x,y,Math.max(rx,ry));
+   g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.72,'rgba(60,70,120,.08)');g.addColorStop(1,'rgba(30,40,95,.55)');
+   c.fillStyle=g;c.fillRect(x-rx,y-ry,2*rx,2*ry);
+   // the upper half reads darker (it shows the dim lower scene), like a real bead
+   const tg=c.createLinearGradient(x,y-ry,x,y+ry*.2);tg.addColorStop(0,'rgba(20,30,75,.34)');tg.addColorStop(1,'rgba(20,30,75,0)');c.fillStyle=tg;c.fillRect(x-rx,y-ry,2*rx,ry*1.2);
+   const lg=c.createLinearGradient(x,y+ry*.25,x,y+ry);lg.addColorStop(0,'rgba(255,255,255,0)');lg.addColorStop(1,'rgba(255,255,255,.55)');
+   c.fillStyle=lg;c.fillRect(x-rx,y+ry*.25,2*rx,ry*.75);
+   c.restore();
+  }else{
+   c.fillStyle='rgba(205,220,245,.55)';c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();
   }
-  ctx.lineWidth=Math.max(.7,r*.12);ctx.strokeStyle='rgba(60,75,130,.42)';ctx.beginPath();ctx.arc(x,y,r-.4,Math.PI*.05,Math.PI*.95);ctx.stroke();
-  ctx.strokeStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(x,y,r-.4,Math.PI*1.1,Math.PI*1.85);ctx.stroke();
-  ctx.fillStyle='rgba(255,255,255,.95)';ctx.beginPath();ctx.ellipse(x-r*.38,y-r*.42,Math.max(.6,r*.2),Math.max(.5,r*.13),-.6,0,Math.PI*2);ctx.fill();
+  // rim: dark below-right, bright above-left, then a sharp highlight
+  c.lineWidth=Math.max(.6,r*.1);
+  c.strokeStyle='rgba(40,55,110,.55)';c.beginPath();c.ellipse(x,y,rx-.3,ry-.3,0,Math.PI*.05,Math.PI*.95);c.stroke();
+  c.strokeStyle='rgba(255,255,255,.95)';c.beginPath();c.ellipse(x,y,rx-.3,ry-.3,0,Math.PI*1.12,Math.PI*1.82);c.stroke();
+  c.fillStyle='rgba(255,255,255,.97)';c.beginPath();c.ellipse(x-rx*.4,y-ry*.42,Math.max(.6,rx*.2),Math.max(.45,ry*.12),-.65,0,Math.PI*2);c.fill();
+  if(r>5){c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.arc(x+rx*.42,y+ry*.5,Math.max(.7,r*.08),0,Math.PI*2);c.fill()}
  }
- function drawGlass(){
-  ctx.clearRect(0,0,w,h);
-  for(const t of [...trails,...beads.filter(b=>b.trail).map(b=>b.trail)]){
-   if(t.pts.length<2)continue;
-   const fade=Math.max(0,1-t.age/16);
-   ctx.lineCap='round';ctx.lineJoin='round';
-   const wd=Math.max(1.2,t.r*.34);
-   ctx.beginPath();ctx.moveTo(t.pts[0][0],t.pts[0][1]);for(const p of t.pts)ctx.lineTo(p[0],p[1]);
-   ctx.lineWidth=wd+1.6;ctx.strokeStyle=`rgba(70,85,140,${.16*fade})`;ctx.stroke();
-   ctx.lineWidth=wd;ctx.strokeStyle=`rgba(235,242,255,${.38*fade})`;ctx.stroke();
-   ctx.lineWidth=Math.max(.6,wd*.3);ctx.strokeStyle=`rgba(255,255,255,${.7*fade})`;ctx.beginPath();ctx.moveTo(t.pts[0][0]-wd*.2,t.pts[0][1]);for(const p of t.pts)ctx.lineTo(p[0]-wd*.2,p[1]);ctx.stroke();
-  }
-  for(const b of beads)drawBead(b);
+ function drawTrail(c,t){
+  if(t.pts.length<2)return;
+  const fade=Math.max(0,1-t.age/12),wd=Math.max(1,t.r*.2);
+  c.lineCap='round';c.lineJoin='round';
+  c.beginPath();c.moveTo(t.pts[0][0],t.pts[0][1]);for(const p of t.pts)c.lineTo(p[0],p[1]);
+  c.lineWidth=wd+1.4;c.strokeStyle=`rgba(50,65,120,${.1*fade})`;c.stroke();
+  c.lineWidth=wd;c.strokeStyle=`rgba(225,236,255,${.32*fade})`;c.stroke();
+  c.beginPath();c.moveTo(t.pts[0][0]-wd*.22,t.pts[0][1]);for(const p of t.pts)c.lineTo(p[0]-wd*.22,p[1]);
+  c.lineWidth=Math.max(.5,wd*.28);c.strokeStyle=`rgba(255,255,255,${.78*fade})`;c.stroke();
+ }
+ function paintLayer(){
+  layerCtx.clearRect(0,0,w,h);
+  for(const b of beads)if(!b.run)lens(layerCtx,b.x,b.y,b.r);
+  dirty=false;layerAt=performance.now();
+ }
+ function draw(){
+  if(dirty&&performance.now()-layerAt>700)paintLayer();
+  fctx.clearRect(0,0,w,h);
+  fctx.drawImage(layer,0,0,w,h);
+  for(const t of trails)drawTrail(fctx,t);
+  for(const b of beads){if(!b.run)continue;drawTrail(fctx,b.trail);lens(fctx,b.x,b.y,b.r,1.28)}
  }
  function frame(now){
   if(!running)return;
-  // Stop quietly when the dashboard is not on screen.
-  if(!canvas.isConnected||canvas.offsetParent===null||document.hidden){running=false;return}
+  if(!front.isConnected||front.offsetParent===null||document.hidden||!motionOn()){running=false;return}
   const dt=Math.min(.05,(now-last)/1000||0);last=now;
-  if(canvas.clientWidth!==w||canvas.clientHeight!==h){size();if(glass)seedGlass()}
-  if(glass){stepGlass(dt);drawGlass()}else{step(dt);draw()}requestAnimationFrame(frame);
+  if(front.clientWidth!==w||front.clientHeight!==h){size();seed0()}
+  step(dt);draw();requestAnimationFrame(frame);
  }
- function start(el,opts={}){
-  light=!!opts.light;glass=!!opts.glass;canvas=el;ctx=canvas.getContext('2d');still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  size();if(glass)seedGlass();
-  if(!canvas._wired){
-   canvas._wired=true;
-   const stage=canvas.parentElement;
-   stage.addEventListener('pointermove',e=>{const now=performance.now();if(now-moveAt<140||still||glass)return;moveAt=now;const r=canvas.getBoundingClientRect();if(Math.random()<.5)drop(e.clientX-r.left,e.clientY-r.top,.45,false)});
-   stage.addEventListener('pointerdown',e=>{if(still||glass||e.target.closest('button,a,input,select,textarea,.popover,.tcard'))return;const r=canvas.getBoundingClientRect();drop(e.clientX-r.left,e.clientY-r.top,1.2,true)});
-   document.addEventListener('visibilitychange',()=>{if(!document.hidden)resume()});
-  }
-  if(still&&glass){drawGlass();return}
-  if(still){for(let i=0;i<7;i++)ripples.push({x:rnd(w*.1,w*.9),y:rnd(h*.2,h*.9),r:rnd(30,110),max:200,speed:0,age:1,width:1.6});draw();return}
+ function still1(){paintLayer();fctx.clearRect(0,0,w,h);fctx.drawImage(layer,0,0,w,h)}
+ function start(el){
+  back=el;front=el.parentElement.querySelector('.water-front');if(!front)return;
+  bctx=back.getContext('2d');fctx=front.getContext('2d');
+  size();seed0();
+  if(!front._wired){front._wired=true;document.addEventListener('visibilitychange',()=>{if(!document.hidden)resume()})}
   resume();
  }
- function resume(){if(running||still||!canvas)return;running=true;last=performance.now();requestAnimationFrame(frame)}
- return {start,resume};
+ function resume(){
+  if(!front)return;
+  if(!motionOn()||matchMedia('(prefers-reduced-motion: reduce)').matches&&document.documentElement.dataset.motion!=='on'){still1();return}
+  if(running)return;running=true;last=performance.now();requestAnimationFrame(frame);
+ }
+ // Called by the motion switch.
+ function setMotion(){if(!front)return;if(motionOn())resume();else{running=false;still1()}}
+ return {start,resume,setMotion};
 })();

@@ -234,23 +234,54 @@ body[data-role=editor] [data-m=approve],body[data-role=editor] [data-m=now],body
 body[data-role=editor] .pp-del{display:none}
 .pp-stage[hidden],.pp-cands:empty{display:none}
 
-/* Agent robots: idle eyes are dimly lit; while the agent works the robot glows in its own colour. */
+/* Agent robots. At rest each one breathes, nods, glances about and sways its antenna, with a soft glow in its own colour.
+   While its agent has a job running the arms work, the head bobs and both eyes flash very bright red on and off. */
 .bot{position:relative;flex:none;width:58px;height:66px;display:grid;place-items:center}
-.bot svg{width:100%;height:100%;overflow:visible;transition:filter .4s}
-.bot svg{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tone) 70%,#fff)) drop-shadow(0 0 9px var(--tone))}
-.bot .eye{opacity:.8}
-.bot .halo,.bot .tip{opacity:.55}
-.bot.working svg{animation:botglow 1.9s ease-in-out infinite,botfloat 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
-/* Working: both eyes go very bright red and flash on and off, whatever the agent's own colour. */
-.bot.working .eye{fill:#ff1010;opacity:1;animation:eyered 1s steps(1,end) infinite}
+.bot svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tone) 70%,#fff)) drop-shadow(0 0 9px var(--tone))}
+.bot svg *{transform-box:fill-box}
+.bot .eye{opacity:.85}
+.bot .body{transform-origin:50% 100%;animation:bbreathe 4s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .head{transform-origin:50% 90%;animation:bnod 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .ant{transform-origin:50% 100%;animation:bsway 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .eyes{animation:bglance 7s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .arm.l{transform-origin:70% 12%;animation:barml 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .arm.r{transform-origin:30% 12%;animation:barmr 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot.working svg{animation:botglow 1.9s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot.working .head{animation:bbob .7s ease-in-out infinite}
+.bot.working .arm.l{animation:barmwork .42s ease-in-out infinite}
+.bot.working .arm.r{animation:barmwork .42s ease-in-out infinite reverse}
+.bot.working .eyes{animation:none}
 .bot.working .glint{opacity:0}
-.bot.working .halo,.bot.working .tip{opacity:1}
+.bot.working .eye{fill:#ff1010;opacity:1;animation:eyered 1s steps(1,end) infinite}
 @keyframes botglow{0%,100%{filter:drop-shadow(0 0 3px var(--tone)) drop-shadow(0 0 9px var(--tone))}50%{filter:drop-shadow(0 0 7px var(--tone)) drop-shadow(0 0 20px var(--tone))}}
-@keyframes botfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 @keyframes eyered{0%{fill:#ff0a0a;filter:drop-shadow(0 0 3px #ff0000) drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 14px #ff2a2a)}50%{fill:#4a0707;filter:none}}
-.bot .eye{transform-box:fill-box;transform-origin:center}
-.agent-row{padding:4px 10px}
-@media (prefers-reduced-motion:reduce){.bot.working .eye{animation:none;fill:#ff1010;filter:drop-shadow(0 0 4px #f00) drop-shadow(0 0 10px #f00)}.bot.working svg{animation:none}.bot.working svg{filter:drop-shadow(0 0 6px var(--tone)) drop-shadow(0 0 14px var(--tone))}}
+@keyframes bbreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.025,1.03)}}
+@keyframes bnod{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-1.2px) rotate(-2.5deg)}65%{transform:translateY(-.4px) rotate(2deg)}}
+@keyframes bbob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-2px) rotate(1.5deg)}}
+@keyframes bsway{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes bglance{0%,18%,100%{transform:translateX(0)}28%,44%{transform:translateX(-2.4px)}56%,76%{transform:translateX(2.4px)}86%{transform:translateX(0)}}
+@keyframes barml{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
+@keyframes barmr{0%,100%{transform:rotate(0)}50%{transform:rotate(-9deg)}}
+@keyframes barmwork{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(16deg)}}
+
+/* Motion switch (top bar): a small on/off toggle for animation and light. */
+.motion-switch{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px 0 8px;border-radius:999px;border:0;background:rgba(255,255,255,.55);color:var(--ink);font:700 .7rem/1 'Manrope',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.motion-switch:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.ms-track{position:relative;width:34px;height:20px;border-radius:999px;background:#c9c3d6;transition:background .2s}
+.ms-track i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.motion-switch[aria-checked="true"] .ms-track{background:#7c1d3c}
+.motion-switch[aria-checked="true"] .ms-track i{transform:translateX(14px)}
+@media (max-width:700px){.ms-label{display:none}.motion-switch{padding:0 8px}}
+
+/* Front rain layer: sits above the panel and never takes clicks. */
+.water-front{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+
+/* Motion off: no animation and no light anywhere. A working agent still shows steady red eyes so its state can be read. */
+[data-motion="off"] .bot svg,[data-motion="off"] .bot svg *,[data-motion="off"] .marquee-track,[data-motion="off"] .hero:after,[data-motion="off"] .stage-bg,[data-motion="off"] .orb,[data-motion="off"] .orb *{animation:none!important}
+[data-motion="off"] .bot svg{filter:none}
+[data-motion="off"] .bot.working .eye{fill:#d41919;filter:none;opacity:1}
+[data-motion="off"] .marquee{overflow-x:auto}
+[data-motion="off"] .halo{display:none}
 /* Agents tab: larger robots */
 .agents-page{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
 .agent-card{align-items:center;gap:20px;padding:22px}

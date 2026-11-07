@@ -10,15 +10,17 @@ const Dashboard=(()=>{
   return `<span class="bot" data-agent="${esc(name)}" style="--tone:${tone};--d:${(i*-.6).toFixed(1)}s" role="img" aria-label="${esc(name)}, agent"><svg viewBox="0 0 64 74" aria-hidden="true">
 <defs><linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e9eef8"/><stop offset="1" stop-color="#c9d4ea"/></linearGradient><radialGradient id="${id}h"><stop offset="0" stop-color="var(--tone)" stop-opacity=".55"/><stop offset="1" stop-color="var(--tone)" stop-opacity="0"/></radialGradient></defs>
 <ellipse class="halo" cx="32" cy="68" rx="22" ry="5" fill="url(#${id}h)"/>
-<line x1="32" y1="5" x2="32" y2="13" stroke="#c4cde0" stroke-width="2" stroke-linecap="round"/><circle class="tip" cx="32" cy="4.5" r="3" fill="var(--tone)"/>
+<g class="body"><path d="M16 49 Q32 41 48 49 Q53 63 32 67 Q11 63 16 49Z" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
+<ellipse cx="32" cy="55.5" rx="9.5" ry="7.6" fill="var(--tone)"/><text x="32" y="58.8" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="8.6" letter-spacing=".3" fill="#fff">${ch}</text></g>
+<g class="arm l"><ellipse cx="11" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(14 11 54)"/></g>
+<g class="arm r"><ellipse cx="53" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(-14 53 54)"/></g>
+<g class="head"><g class="ant"><line x1="32" y1="5" x2="32" y2="13" stroke="#c4cde0" stroke-width="2" stroke-linecap="round"/><circle class="tip" cx="32" cy="4.5" r="3" fill="var(--tone)"/></g>
 <circle cx="8.5" cy="27" r="4.5" fill="var(--tone)"/><circle cx="55.5" cy="27" r="4.5" fill="var(--tone)"/>
 <rect x="10" y="12" width="44" height="31" rx="15" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
 <rect x="15" y="18" width="34" height="19" rx="9.5" fill="#0d1530"/>
-<circle class="eye" cx="25" cy="27.5" r="4.4" fill="var(--tone)"/><circle class="eye" cx="39" cy="27.5" r="4.4" fill="var(--tone)"/>
-<circle class="glint" cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle class="glint" cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/>
-<ellipse cx="11" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(14 11 54)"/><ellipse cx="53" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(-14 53 54)"/>
-<path d="M16 49 Q32 41 48 49 Q53 63 32 67 Q11 63 16 49Z" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
-<ellipse cx="32" cy="55.5" rx="9.5" ry="7.6" fill="var(--tone)"/><text x="32" y="58.8" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="8.6" letter-spacing=".3" fill="#fff">${ch}</text></svg></span>`};
+<g class="eyes"><circle class="eye" cx="25" cy="27.5" r="4.4" fill="var(--tone)"/><circle class="eye" cx="39" cy="27.5" r="4.4" fill="var(--tone)"/>
+<circle class="glint" cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle class="glint" cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/></g></g>
+</svg></span>`};
  // Which agents have a job running now. A job counts while it is not finished and was touched in the last 15 minutes.
  let working=new Set(),pollTimer=0;
  function applyWorking(){$$('.bot').forEach(b=>b.classList.toggle('working',working.has(b.dataset.agent.toLowerCase())))}
@@ -33,13 +35,20 @@ const Dashboard=(()=>{
  const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
+ // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. First visit follows the system's reduced-motion setting.
+ const Motion={
+  on:true,
+  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='on':!matchMedia('(prefers-reduced-motion: reduce)').matches;this.apply()},
+  apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')Water.setMotion()},
+  set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
+ };
  function build(){
   const stage=$('#stage');
-  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas>
+  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas><canvas class="water-front" aria-hidden="true"></canvas>
   <header class="osbar glass" aria-label="Studio address bar">
    <div class="osgroup"><button class="osbtn" data-os="home" title="Back to the globe" aria-label="Back to the globe">${icon('globe')}</button><button class="osbtn" data-os="back" title="Back" aria-label="Back">${icon('back')}</button><button class="osbtn" data-os="forward" title="Forward" aria-label="Forward">${icon('forward')}</button></div>
    <div class="osaddress"><span class="osdot"></span><span>${esc(location.host||'gsn-media.studio')}</span><b id="osPath">/dashboard</b></div>
-   <div class="osgroup"><button class="osbtn" data-os="reload" title="Refresh" aria-label="Refresh">${icon('reload')}</button><button class="osbtn" data-os="share" title="Copy link" aria-label="Copy link">${icon('share')}</button><button class="osbtn" data-os="new" title="New pack" aria-label="New pack">${icon('plus')}</button><button class="osbtn" data-nav="designs" title="My designs" aria-label="My designs">${icon('layers')}</button></div>
+   <div class="osgroup"><button class="motion-switch" id="motionSwitch" role="switch" aria-checked="true" title="Animation and light: on"><span class="ms-track" aria-hidden="true"><i></i></span><span class="ms-label">Motion</span></button><button class="osbtn" data-os="reload" title="Refresh" aria-label="Refresh">${icon('reload')}</button><button class="osbtn" data-os="share" title="Copy link" aria-label="Copy link">${icon('share')}</button><button class="osbtn" data-os="new" title="New pack" aria-label="New pack">${icon('plus')}</button><button class="osbtn" data-nav="designs" title="My designs" aria-label="My designs">${icon('layers')}</button></div>
   </header>
   <aside class="rail glass-dark" aria-label="Studio navigation">${navItems.map(([id,ic,label])=>`<button data-nav="${id}" title="${label}" aria-label="${label}">${icon(ic)}</button>`).join('')}</aside>
   <main class="panel glass">
@@ -58,6 +67,7 @@ const Dashboard=(()=>{
   $('#filterBtn').addEventListener('click',()=>togglePop('filter'));$('#bellBtn').addEventListener('click',()=>togglePop('bell'));$('#userBtn').addEventListener('click',()=>togglePop('user'));
   document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))closePops()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePops();closeModal()}});
+  Motion.init();$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
   ui.built=true;
  }
  const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
