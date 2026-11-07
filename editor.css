@@ -132,3 +132,12 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 
 .ed-sel .w{left:-8px;top:calc(50% - 10px);border-radius:5px;width:12px;height:20px;cursor:ew-resize}
 .ed-sel .rot~.s,.ed-sel .s{cursor:ns-resize}
+
+.ed-lib{width:min(760px,94vw);max-height:90vh;border:1px solid var(--line,#ddd);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;background:#fff;color:#222}
+.ed-lib[open]{display:flex}.ed-lib header{display:flex;justify-content:space-between;align-items:center}.ed-lib h2{margin:0;font-size:1.1rem}
+.ed-lib header button{border:0;background:none;font-size:1.4rem;cursor:pointer}.ed-lib input{padding:8px 12px;border:1px solid #ccc;border-radius:10px;font:inherit}
+.ed-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;overflow:auto;min-height:120px}
+.ed-lib-grid button{border:1px solid #e2e2e2;border-radius:10px;padding:6px;background:#fafafa;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ed-lib-grid button span{display:block;aspect-ratio:1;border-radius:6px;background-repeat:no-repeat}
+.ed-lib-grid b{font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed-lib footer{display:flex;justify-content:space-between;align-items:center;font-size:.8rem}
