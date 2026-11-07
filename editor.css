@@ -155,3 +155,4 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .cp-none{margin-top:8px;width:100%;height:30px;border:1px dashed #b9a9b4;border-radius:8px;background:#fff;cursor:pointer}
 
 .ed-bar .hint-s{font-size:.72rem;color:#7a6872;margin:0 4px}
+.ed-spacing{width:250px;display:grid;gap:10px}.sp-row{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:.8rem;font-weight:600;color:#4a2f3b}.sp-row input{grid-column:1/-1;width:100%}
