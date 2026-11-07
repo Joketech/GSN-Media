@@ -34,7 +34,7 @@ test('persistent agent jobs, saved voices, model forwarding, collection, review 
   const login=await request('/session','POST',{token});assert.equal(login.status,200);
   const cookie=login.headers.get('set-cookie').split(';')[0];assert.match(login.headers.get('set-cookie'),/HttpOnly/);
   assert.equal((await fetch(base+'/jobs',{headers:{Cookie:cookie}})).status,200);
-  assert.equal((await request('/templates').then(r=>r.json())).templates.length,500);
+  assert.equal((await request('/templates').then(r=>r.json())).templates.length,575);
   const post={kind:'post',template_id:24,slides:[{title:'<script>danger</script>',body:'GSN daily design'}],agent:'Spectra'};
   const [r1,r2]=await Promise.all([request('/jobs','POST',post,'daily-post'),request('/jobs','POST',post,'daily-post')]);
   const first=await r1.json(),second=await r2.json();assert.equal(first.id,second.id);assert.equal(first.state,'complete');

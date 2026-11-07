@@ -16,9 +16,10 @@ const gsnCartoonAtlases = [
 ];
 gsnCartoonAtlases.push(...[{"width":1261,"height":1247,"label":"3D Business Metaphors · Operations"},{"width":1254,"height":1254,"label":"3D Business Metaphors · Sales"},{"width":1254,"height":1254,"label":"3D Business Metaphors · Finance and fulfilment"},{"width":1254,"height":1254,"label":"3D Business Metaphors · Strategy"}]);
 gsnCartoonAtlases.push(...['Animal mascots','Young business characters','Business props','Talking objects'].map(label=>({width:1254,height:1254,label:'3D Comic · '+label})));
+gsnCartoonAtlases.push(...['Creative Glow','Executive Editorial','Playful 3D'].map(label=>({width:1254,height:1254,label:'Seasonal · '+label})));
 const gsnOriginalPictureCount = 500 + gsnEditorialAtlases.length * 25;
 const gsnPictureCount = gsnOriginalPictureCount + gsnCartoonAtlases.length * 25;
-const gsnPicturePattern = /^gsn-(?:0|[1-9][0-9]{0,2}|1[0-2][0-9]{2})$/;
+const gsnPicturePattern = /^gsn-(?:0|[1-9][0-9]{0,2}|1[0-3][0-9]{2})$/;
 
 function gsnLibraryPhoto(value) {
   const id = Number(value.slice(4));
@@ -42,7 +43,7 @@ function gsnPhoto(index) {
       file:`gsn-photo-${20+sheet}.png`,
       position:`${left*100/(width-size)}% ${top*100/(height-size)}%`,
       size:`${width*100/size}% ${height*100/size}%`,
-      name:index>=1200?`${label} · ${gsnComicConcepts[index-1200]}`:`${label} ${cell+1}`,
+      name:index>=1300?`${label} · ${greetingDesigns[index-1300].name}`:index>=1200?`${label} · ${gsnComicConcepts[index-1200]}`:`${label} ${cell+1}`,
       sector:label,
     };
   }

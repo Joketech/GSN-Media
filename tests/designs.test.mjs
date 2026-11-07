@@ -79,7 +79,7 @@ test('agents pick a template and send only wording; the design stays',async()=>{
   const agent={Authorization:'Bearer agent-test-token','Content-Type':'application/json'};
   const call=(route,method='GET',data)=>fetch(s.base+route,{method,headers:agent,body:data===undefined?undefined:JSON.stringify(data)});
   const all=await (await call('/templates')).json();
-  assert.equal(all.templates.length,500);
+  assert.equal(all.templates.length,575);
   assert.ok(all.templates.every(t=>t.pages>=5&&t.pages<=10&&t.layouts[0]==='hook'&&t.layouts.at(-1)==='cta'));
   const roomy=await (await call('/templates?pages=9')).json();
   assert.ok(roomy.templates.length>0&&roomy.templates.every(t=>t.pages>=9));

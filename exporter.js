@@ -11,7 +11,9 @@ async function inlineGsnPhotos(cards,direct=false){
   const blob=await response.blob();
   // The photo sheets are opaque; re-encoding them as JPEG keeps the embedded export small enough for browsers to render reliably.
   const bitmap=await createImageBitmap(blob),sheet=document.createElement('canvas');sheet.width=bitmap.width;sheet.height=bitmap.height;
-  sheet.getContext('2d').drawImage(bitmap,0,0);const data=sheet.toDataURL('image/jpeg',.92);
+  sheet.getContext('2d').drawImage(bitmap,0,0);
+  const transparentPortrait=Number(file.match(/\d+/)[0])>=52;
+  const data=sheet.toDataURL(transparentPortrait?'image/png':'image/jpeg',.92);
   if(direct){cards=cards.replaceAll(`--photo-source:url('${file}')`,`--photo-source:url('${data}')`);continue}
   const variable=`--gsn-sheet-${properties.length}`;
   properties.push(`${variable}:url('${data}');`);
@@ -30,7 +32,8 @@ async function campaignExportCss(cards){
    return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});
   }),
  ]);
- return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),premium)}`;
+ const seasonal=cards.includes('greeting-poster')?await read('greetings.css').then(response=>response.text()):'';
+ return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),premium)}\n${seasonal}`;
 }
 function loadDesignImage(source){
  return new Promise((resolve,reject)=>{

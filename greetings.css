@@ -1,0 +1,85 @@
+/* Styles apply only to the new seasonal designs, never to the dashboard or older templates. */
+.art.premium.campaign-art.cartoon-poster.greeting-poster {
+  background:radial-gradient(ellipse at 85% 70%,color-mix(in srgb,var(--accent) 25%,transparent),transparent 65%),var(--campaign-bg)!important;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster::before {
+  content:''; inset:auto -20% -25%; height:60%; opacity:.4;
+  border:1.5cqw solid color-mix(in srgb,var(--accent) 40%,transparent);
+  border-radius:50%; background:none; transform:rotate(-18deg);
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .art-brand {
+  top:5%; left:7%; font-size:1.5cqw; letter-spacing:.15em; color:var(--accent); z-index:4;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .art-foot {
+  background:var(--accent); color:#ffffff; padding:2% 7%; font-size:1.6cqw; z-index:5;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .campaign-copy {
+  display:contents; position:static; background:none; border:0; padding:0;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .art-kicker {
+  position:absolute; top:10%; left:8%; width:84%; margin:0; padding:0;
+  border:0; background:none; color:var(--campaign-ink); text-align:center;
+  font-size:2cqw; font-weight:600; letter-spacing:.26em; z-index:4;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .art-title {
+  position:absolute; top:15%; left:7%; width:86%; margin:0;
+  font-family:Impact,'Arial Black',Arial,sans-serif; font-weight:900;
+  font-size:var(--greeting-heading,16cqw); line-height:.95; letter-spacing:-.065em;
+  text-align:center; color:var(--campaign-ink); text-shadow:0 .2cqw 0 #ffffff55, .35cqw .4cqw 0 #0001;
+  overflow-wrap:normal; z-index:1;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .art-sub {
+  position:absolute; top:65%; left:7%; width:34%; max-width:none; margin:0;
+  font-size:2.8cqw; line-height:1.4; text-align:left; color:var(--campaign-ink);
+  background:color-mix(in srgb,var(--campaign-bg) 92%,transparent);
+  border-radius:1.2cqw; padding:1.5cqw; z-index:4;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .campaign-visual {
+  inset:22% 3% 7%; display:grid; place-items:center; rotate:0deg; z-index:2;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .gsn-photo {
+  width:100%; height:auto; aspect-ratio:1; border-radius:0; box-shadow:none; mask-image:none;
+  filter:drop-shadow(0 1cqw 1.8cqw #0002);
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .free-text {
+  z-index:5; padding:.65em 1em; background:#ffe15e; border-radius:.2em;
+  letter-spacing:.03em; text-align:center; color:#13213f;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster .free-text[data-canvas-text="1"] {
+  background:var(--accent); color:var(--campaign-bg); rotate:-8deg;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-set-0 .art-title {
+  font-family:Georgia,'Times New Roman',serif; font-style:italic; letter-spacing:-.08em;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-set-0::after {
+  content:''; position:absolute; inset:49% -7% 24%; border-bottom:1cqw solid #fff;
+  border-radius:50%; rotate:-16deg; box-shadow:0 .8cqw 2cqw #bca0ff; pointer-events:none; z-index:3;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-set-1::before {
+  inset:0; height:auto; border:0; border-radius:0; transform:none; opacity:.25;
+  background:linear-gradient(90deg,var(--accent) 1px,transparent 1px),linear-gradient(var(--accent) 1px,transparent 1px);
+  background-size:6cqw 6cqw;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-set-1 .art-title { text-transform:uppercase; font-style:normal; }
+.art.premium.campaign-art.cartoon-poster.greeting-set-2 .art-title { font-family:'Arial Black',Arial,sans-serif; font-style:italic; letter-spacing:-.035em; text-shadow:.4cqw .6cqw 0 #075f9a; }
+.art.premium.campaign-art.cartoon-poster.greeting-set-2 .art-sub { background:#ffffffea; color:#073168; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster:not(.deck-hook) .art-kicker { top:10%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster:not(.deck-hook) .art-title {
+  top:16%; font-size:6.6cqw; line-height:1.08; text-transform:none; letter-spacing:-.04em; z-index:4;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster:not(.deck-hook) .art-sub {
+  top:29%; left:9%; width:82%; font-size:3.1cqw; line-height:1.45; background:transparent; padding:0; white-space:pre-line;
+}
+.art.premium.campaign-art.cartoon-poster.greeting-poster:not(.deck-hook) .campaign-visual { inset:46% 15% 7%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster:not(.deck-hook)::after { display:none; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.deck-steps .campaign-visual { inset:8% 20% 49%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.deck-steps .art-kicker { top:54%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.deck-steps .art-title { top:60%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.deck-steps .art-sub { top:71%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape .art-title { top:18%; left:5%; width:52%; font-size:8cqw; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape .art-kicker { top:12%; left:5%; width:52%; font-size:1.5cqw; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape .campaign-visual { inset:9% 2% 4% 48%; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape .art-sub { top:59%; left:7%; width:38%; font-size:1.8cqw; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape .free-text { font-size:1.3cqw!important; top:83%!important; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape:not(.deck-hook) .art-title { font-size:4.1cqw; }
+.art.premium.campaign-art.cartoon-poster.greeting-poster.ratio-landscape:not(.deck-hook) .art-sub { top:47%; width:41%; }
