@@ -117,3 +117,15 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-layout:hover{background:#fff;border-color:var(--maroon)}
 .ed-layout b{font:700 .9rem 'DM Sans',sans-serif}.ed-layout span{font-size:.74rem;color:#555;line-height:1.3}
 .ed-field select{width:100%;height:38px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:#fff;padding:0 8px}
+
+/* AI cutout picker and touch-up */
+.cut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
+.cut-cell{position:relative;display:flex;flex-direction:column;gap:6px;padding:8px;border:2px solid transparent;border-radius:16px;background:rgba(255,255,255,.55);cursor:pointer;font:inherit;color:inherit;text-align:center}
+.cut-cell:hover,.cut-cell:focus-visible{border-color:rgba(122,31,54,.45)}
+.cut-cell.on{border-color:#7a1f36}
+.cut-cell i{position:absolute;top:14px;left:14px;padding:2px 9px;border-radius:99px;background:#7a1f36;color:#fff;font-style:normal;font-size:11px}
+.cut-checker{display:block;border-radius:12px;overflow:hidden;background:conic-gradient(#e9e4ea 25%,#fff 0 50%,#e9e4ea 0 75%,#fff 0) 0 0/16px 16px}
+.cut-cell img{display:block;width:100%;aspect-ratio:1;object-fit:contain}
+.cut-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.cut-stage{max-height:52vh;display:flex;justify-content:center;border-radius:14px;margin-bottom:12px}
+.cut-stage canvas{max-width:100%;max-height:52vh;cursor:crosshair}

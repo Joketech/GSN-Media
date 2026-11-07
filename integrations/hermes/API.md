@@ -52,3 +52,7 @@ The studio plans, reviews and sends posts through the owner's self-hosted Postiz
 | DELETE | `/schedule/posts/{id}` | Only while draft, review or rejected |
 
 Agents cannot approve, post now, retry, cancel approved posts, or change live/paused/platform switches (403/409). Post statuses: draft, review, approved, posting, posted, simulated, failed, rejected, cancelled. Pictures for a design are rendered once by the owner's browser when approving, and shared by all posts using that design.
+
+## Background removal (AI cutout)
+
+POST `/cutout` with `{"image":"<base64 or data URL>","engine":"all"}` runs the studio's private cutout worker and returns `{width,height,candidates:[{engine,label,foreground,centre,ok,suggested,png_base64}]}`. Engines: `detail` (general objects, fine edges), `people` (people and what they hold), `scene` (whole subject groups) and `all` (default, runs each). `suggested` marks the candidate an automatic heuristic prefers: it keeps most of the middle of the picture without keeping the whole photo. Models disagree on hard photos, so an agent that cares should compare `foreground`/`centre` or leave the choice to a human in the editor. Images up to 16 megapixels; about 2 to 6 seconds per model on CPU. Use the returned PNG as an uploaded photo element in a design.

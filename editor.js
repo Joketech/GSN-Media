@@ -399,16 +399,63 @@ const Editor=(()=>{
   // Soften the cut edge so the outline is not jagged.
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const k=y*w+x;if(!seen[k]&&(seen[k-1]||seen[k+1]||seen[k-w]||seen[k+w]))d[k*4+3]=Math.min(d[k*4+3],150)}
   ctx.putImageData(id,0,0);
-  let k=1,out='';for(let i=0;i<8;i++){const t=document.createElement('canvas');t.width=Math.round(w*k);t.height=Math.round(h*k);t.getContext('2d').drawImage(c,0,0,t.width,t.height);out=t.toDataURL('image/png');if(out.length<1_300_000)return out;k*=.8}
+  return fitPng(c);
+ }
+ // Shrinks a canvas until its PNG fits the studio's per-picture limit.
+ function fitPng(c){
+  const w=c.width,h=c.height;let k=1;
+  for(let i=0;i<10;i++){const t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*k));t.height=Math.max(1,Math.round(h*k));t.getContext('2d').drawImage(c,0,0,t.width,t.height);const out=t.toDataURL('image/png');if(out.length<1_300_000)return out;k*=.8}
   throw Error('The result is too large. Use a smaller image.');
  }
+ const loadImg=u=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(Error('That image could not be read.'));im.src=u});
+ function applyPhoto(target,out){commit(()=>{if(target.t==='art')slide().image=out;else slide().elements[target.i]=out})}
+ // AI cutout: the studio's private worker returns several models' results; the person picks the best, then can touch it up.
  async function runRemoveBackground(){
-  const s=slide(),tol=+(el.bar.querySelector('[data-b=rmtol]')?.value||48);
-  const url=sel.t==='art'?s.image:s.elements[sel.i];
+  const s=slide(),target=sel,url=target.t==='art'?s.image:s.elements[target.i];
   if(!url||!isPhotoEl(url))return toast('Select an uploaded picture first.');
-  toast('Removing the background…');
-  try{const out=await removeBackground(url,tol);const t=sel;commit(()=>{if(t.t==='art')slide().image=out;else slide().elements[t.i]=out});toast('Background removed. Undo brings it back.')}
-  catch(e){toast(e.message)}
+  openModal(`<h2>Remove background</h2><p class="hint" id="cutMsg">Cutting the picture out with AI. This takes a few seconds…</p><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
+  const token=Symbol();cutToken=token;
+  let src;try{const im=await loadImg(url),k=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);src=c.toDataURL('image/png')}catch(e){return cutFallback(target,url,e.message)}
+  let r;try{r=await api('/cutout',{method:'POST',body:{image:src,engine:'all'}})}catch(e){if(cutToken!==token)return;return cutFallback(target,url,e.message)}
+  if(cutToken!==token||el.modal.hidden)return;
+  const cands=r.candidates;
+  openModal(`<h2>Pick the best cutout</h2><p class="hint">Each model sees the picture differently. Choose the one that kept what you want, then touch it up if needed.</p><div class="cut-grid">${cands.map((c,i)=>`<button class="cut-cell${c.suggested?' on':''}" data-cut="${i}" title="Use this cutout"><span class="cut-checker"><img alt="${esc(c.label)} cutout" src="data:image/png;base64,${c.png_base64}"></span><b>${esc(c.label)}</b>${c.suggested?'<i>Suggested</i>':''}</button>`).join('')}</div><div class="ed-actions"><button class="btn-light" data-cut="plain">Plain background tool</button><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
+  el.modal.onclick=async e=>{const b=e.target.closest('[data-cut]');if(!b)return;
+   if(b.dataset.cut==='plain'){closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message)}return}
+   const c=cands[+b.dataset.cut];refineCutout(target,url,'data:image/png;base64,'+c.png_base64)};
+ }
+ let cutToken=null;
+ async function cutFallback(target,url,why){
+  closeModal();toast(`AI cutout is not available (${why}). Using the plain-background tool instead.`,6000);
+  try{const out=await removeBackground(url,48);applyPhoto(target,out)}catch(e){toast(e.message,6000)}
+ }
+ // Touch-up: paint away leftovers or bring back parts the model removed.
+ async function refineCutout(target,origUrl,cutUrl){
+  const [cutImg,origImg]=await Promise.all([loadImg(cutUrl),loadImg(origUrl)]);
+  const w=cutImg.naturalWidth,h=cutImg.naturalHeight;
+  const work=document.createElement('canvas');work.width=w;work.height=h;work.getContext('2d').drawImage(cutImg,0,0);
+  const orig=document.createElement('canvas');orig.width=w;orig.height=h;orig.getContext('2d').drawImage(origImg,0,0,w,h);
+  const history=[];let mode='erase',size=Math.round(Math.max(w,h)*.04);
+  openModal(`<h2>Touch up</h2><p class="hint">Erase leftovers or restore parts that were cut by mistake. Drag over the picture.</p>
+  <div class="cut-tools"><button class="btn-maroon" data-t="erase">Erase</button><button class="btn-light" data-t="restore">Restore</button><label class="rng">Brush<input type="range" id="cutSize" min="1" max="15" value="4"></label><button class="btn-light" data-t="undo">Undo</button></div>
+  <div class="cut-stage cut-checker"><canvas id="cutCv"></canvas></div>
+  <div class="ed-actions"><button class="btn-light" data-t="cancel">Cancel</button><button class="btn-maroon" data-t="apply">Use this cutout</button></div>`);
+  const cv=$('#cutCv');cv.width=w;cv.height=h;const cx=cv.getContext('2d'),draw=()=>{cx.clearRect(0,0,w,h);cx.drawImage(work,0,0)};draw();
+  const wx=work.getContext('2d');let down=false,last=null;
+  const pt=e=>{const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)*w/r.width,y:(e.clientY-r.top)*h/r.height}};
+  const dab=(a,b)=>{const steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/(size/4)));for(let i=0;i<=steps;i++){const x=a.x+(b.x-a.x)*i/steps,y=a.y+(b.y-a.y)*i/steps;
+    if(mode==='erase'){wx.save();wx.globalCompositeOperation='destination-out';wx.beginPath();wx.arc(x,y,size/2,0,7);wx.fill();wx.restore()}
+    else{wx.save();wx.beginPath();wx.arc(x,y,size/2,0,7);wx.clip();wx.drawImage(orig,0,0);wx.restore()}}draw()};
+  cv.style.touchAction='none';
+  cv.onpointerdown=e=>{down=true;cv.setPointerCapture(e.pointerId);if(history.length>=12)history.shift();const snap=document.createElement('canvas');snap.width=w;snap.height=h;snap.getContext('2d').drawImage(work,0,0);history.push(snap);last=pt(e);dab(last,last)};
+  cv.onpointermove=e=>{if(!down)return;const p=pt(e);dab(last,p);last=p};
+  cv.onpointerup=cv.onpointercancel=()=>{down=false};
+  $('#cutSize').oninput=e=>{size=Math.round(Math.max(w,h)*(+e.target.value)/100)};
+  el.modal.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const t=b.dataset.t;
+   if(t==='erase'||t==='restore'){mode=t;el.modal.querySelectorAll('[data-t=erase],[data-t=restore]').forEach(x=>x.className=x.dataset.t===t?'btn-maroon':'btn-light')}
+   else if(t==='undo'){const p=history.pop();if(p){wx.clearRect(0,0,w,h);wx.drawImage(p,0,0);draw()}}
+   else if(t==='cancel')closeModal();
+   else if(t==='apply'){try{const out=fitPng(work);closeModal();applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message,6000)}}};
  }
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
@@ -698,7 +745,7 @@ const Editor=(()=>{
 
  /* ---------- download, present ---------- */
  function openModal(html){el.modal.innerHTML=`<div class="ed-dialog glass-strong" role="dialog" aria-modal="true">${html}</div>`;el.modal.hidden=false}
- function closeModal(){el.modal.hidden=true;el.modal.innerHTML=''}
+ function closeModal(){cutToken=null;el.modal.onclick=null;el.modal.hidden=true;el.modal.innerHTML=''}
  function openDownload(){
   const n=design.pages.length,mp4=globalThis.MediaRecorder?.isTypeSupported?.('video/mp4');
   openModal(`<form id="edDl"><h2>Download</h2>

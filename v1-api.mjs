@@ -21,7 +21,7 @@ async function body(req){if(!req.headers['content-type']?.startsWith('applicatio
 const text=(value,name,max,required=true)=>{if(typeof value!=='string'||value.length>max||(required&&!value.trim()))throw new InputError(`${name} must contain ${required?'1':'0'}–${max} characters.`);return value.trim();};
 const decode=(value,max)=>{if(typeof value!=='string'||!value||value.length>Math.ceil(max/3)*4||!/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))throw new InputError('Invalid or oversized base64 file.');const b=Buffer.from(value,'base64');if(b.length>max)throw new InputError('File is too large.',413);return b;};
 
-export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
+export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock});
  const sessions=new Map(),busy=new Set();let mutation=Promise.resolve(),reconciling=false;
  const ready=mkdir(dataDir,{recursive:true,mode:0o700}).then(async()=>{
@@ -129,7 +129,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(!who){if(!token&&!openUi)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);throw new InputError(openUi?'Open the studio in your browser, or send the agent access key as a Bearer token.':'Studio access key required.',401);}
   if(url.pathname==='/api/v1/session'&&req.method==='DELETE'){const sid=req.headers.cookie?.match(/gsn_session=([a-f0-9]{64})/)?.[1];sessions.delete(sid);res.setHeader('Set-Cookie','gsn_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0');json(res,200,{ok:true});return true;}
   if(await publisher.handle(req,res,url,who,{json:(r,c,v)=>json(r,c,v),body,InputError}))return true;
-  if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}
+  if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl],['cutout',cutoutUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}
   if(url.pathname==='/api/v1/templates'&&req.method==='GET'){
    // ?pages=N returns only templates that can carry N pages of wording (Hook + middle pages + call to action).
    const need=Number(url.searchParams.get('pages')||0);let list=templateCatalog();
@@ -138,6 +138,14 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(url.pathname==='/api/v1/layouts'&&req.method==='GET'){json(res,200,{layouts:layoutGuide()});return true;}
   const tm=url.pathname.match(/^\/api\/v1\/templates\/(\d{1,3})$/);
   if(tm&&req.method==='GET'){const id=Number(tm[1]);if(id>=designTemplateCount)throw new InputError('Template not found.',404);json(res,200,{id,pages:starterSlides(id),layouts:layoutGuide()});return true;}
+  if(url.pathname==='/api/v1/cutout'&&req.method==='POST'){
+   // Background removal: several models run privately and are returned side by side. Open to the owner and to agents.
+   const p=await body(req);if(!cutoutUrl)throw new InputError('The cutout worker is not configured. Set CUTOUT_WORKER_URL.',503);
+   const raw=String(p.image||p.image_base64||'').replace(/^data:image\/[a-z+.-]+;base64,/i,'');if(raw.length<100||raw.length>22*1024*1024)throw new InputError('Send image_base64 (a PNG, JPEG or WebP under about 16 MB).');
+   const engine=p.engine===undefined?'all':p.engine;if(!['auto','all','detail','people','scene'].includes(engine))throw new InputError('engine must be auto, all, detail, people or scene.');
+   let r;try{r=await fetchImpl(new URL('/cut',cutoutUrl),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_base64:raw,engine}),signal:AbortSignal.timeout(180000)})}catch{throw new InputError('The cutout worker is not reachable. Check that its container is running.',503)}
+   const out=await r.json().catch(()=>({}));if(!r.ok)throw new InputError(out.error||'The cutout worker could not process that image.',r.status===400||r.status===413?r.status:502);
+   json(res,200,out);return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=await list('job');json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}

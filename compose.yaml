@@ -12,6 +12,7 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       VOICE_WORKER_URL: ${VOICE_WORKER_URL:-http://voice:8091}
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
+      CUTOUT_WORKER_URL: ${CUTOUT_WORKER_URL:-http://cutout:8092}
       GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
       GSN_REQUIRE_KEY: ${GSN_REQUIRE_KEY:-}
       POSTIZ_API_URL: ${POSTIZ_API_URL:-}
@@ -27,6 +28,19 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+  cutout:
+    build:
+      context: .
+      dockerfile: services/Dockerfile.cutout
+    image: gsn-studio-cutout:local
+    restart: unless-stopped
+    expose: ["8092"]
+    mem_limit: 2g
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
   voice:
     profiles: [voice]
     build:
