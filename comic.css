@@ -1,0 +1,82 @@
+/* The comic collection uses the same editable layers as the existing templates. */
+.art.premium.campaign-art.cartoon-poster.comic-poster::before {
+  background:radial-gradient(circle at 90% 10%,var(--accent) 0 12%,transparent 12.3%);
+  opacity:.12;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-foot {
+  background:transparent;
+  color:var(--campaign-ink);
+  font-size:1.5cqw;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-brand { font-size:1.55cqw; letter-spacing:.18em; }
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-title {
+  font-family:'Arial Black',Arial,sans-serif;
+  font-size:7.9cqw;
+  letter-spacing:-.055em;
+  line-height:1.02;
+  overflow-wrap:normal;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-sub { font-size:2.8cqw; line-height:1.4; }
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-kicker {
+  font-size:1.55cqw;
+  letter-spacing:.09em;
+  border-radius:.4em;
+  padding:.55em .8em;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .campaign-visual {
+  inset:46% 9% 8%;
+  display:grid;
+  place-items:center;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .gsn-photo {
+  width:auto;
+  height:100%;
+  max-width:100%;
+  aspect-ratio:1;
+  border-radius:3cqw;
+  box-shadow:0 1.5cqw 3cqw #0002;
+  mask-image:none;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .campaign-copy {
+  inset:12% 8% auto;
+  max-height:33%;
+  text-align:left;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster .art-sub { margin-inline:0; max-width:100%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-1.slide-hook .campaign-copy { text-align:center; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-1.slide-hook .art-title { font-style:italic; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-2.slide-hook .art-title { color:var(--accent); }
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-3.slide-hook .campaign-copy { inset:12% 8% auto 18%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-3.slide-hook .campaign-copy::before {
+  content:''; position:absolute; top:0; bottom:0; left:-7cqw; width:2cqw; background:var(--accent);
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster.comic-composition-4.slide-hook .art-title {
+  text-transform:none;
+  font-family:Georgia,serif;
+  letter-spacing:-.045em;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster.slide-content .art-title { font-size:6.8cqw; text-transform:none; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.deck-steps .campaign-visual { inset:9% 14% 48%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.deck-steps .campaign-copy { inset:57% 9% auto; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.deck-principle .campaign-copy {
+  inset:12% 8% auto;
+  border-left:.8cqw solid var(--accent);
+  padding-left:4cqw;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster.slide-cta .campaign-visual { inset:9% 12% 48%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.slide-cta .campaign-copy { inset:56% 8% auto; text-align:center; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.slide-cta .art-title { font-size:6.5cqw; text-transform:none; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-landscape .campaign-visual { inset:9% 5% 12% 56%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-landscape .campaign-copy {
+  inset:18% 48% auto 6%;
+  max-height:70%;
+  text-align:left;
+}
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-landscape .art-title { font-size:4.5cqw; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-landscape .art-sub { font-size:1.8cqw; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-landscape .art-kicker { font-size:1.1cqw; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-story .campaign-visual { inset:43% 6% 10%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-story.deck-steps .campaign-visual,
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-story.slide-cta .campaign-visual { inset:10% 9% 52%; }
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-story.deck-steps .campaign-copy,
+.art.premium.campaign-art.cartoon-poster.comic-poster.ratio-story.slide-cta .campaign-copy { inset:56% 9% auto; }
