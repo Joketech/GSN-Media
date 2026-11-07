@@ -2,10 +2,10 @@
 /* A turning Earth on the Social Media Pack card.
    The picture already holds a glass globe in a robot hand. This lifts the globe's own pixels into a flat map, then redraws the sphere a little
    further round every frame, so the very same Earth (cloud, city lights, grid lines) appears to rotate in the hand. The fingers that cross the
-   globe are masked out so they stay in front. The map shows a 130-degree strip and mirrors it, so the spin has no seam. */
+   globe are masked out so they stay in front. The map shows a 100-degree strip and mirrors it, so the spin has no seam. */
 const HeroGlobe=(()=>{
  const IMG={w:1672,h:941,cx:1165,cy:330,R:275,posY:.35,src:'hero-realistic.png'};
- const S=340,SHOW=.93,STRIP=130*Math.PI/180,TW=512,TH=256,SPEED=.2;
+ const S=340,SHOW=.93,STRIP=100*Math.PI/180,TW=512,TH=256,SPEED=.2;
  const FINGERS=[
   [[1245,585],[1255,560],[1262,530],[1275,502],[1290,485],[1312,477],[1332,485],[1335,515],[1325,550],[1317,580],[1300,600],[1255,600]],
   [[1330,580],[1332,552],[1347,515],[1355,470],[1360,425],[1370,397],[1390,387],[1412,395],[1420,430],[1422,490],[1410,525],[1402,560],[1392,600],[1360,625],[1330,610]],
@@ -13,9 +13,10 @@ const HeroGlobe=(()=>{
   [[860,370],[885,372],[902,410],[902,445],[885,485],[860,495]]];
  let tex=null,geo=null,loading=null,canvas=null,ctx=null,out=null,raf=0,theta=0,last=0,ro=null,hero=null;
  const inPoly=(x,y,p)=>{let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const [xi,yi]=p[i],[xj,yj]=p[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c};
- const masked=(x,y)=>FINGERS.some(p=>inPoly(x,y,p));
+ const PAD=[[0,0],[9,0],[-9,0],[0,9],[0,-9],[7,7],[-7,7],[7,-7],[-7,-7]];
+ const masked=(x,y)=>PAD.some(([dx,dy])=>FINGERS.some(p=>inPoly(x+dx,y+dy,p)));
 
- // Flat map of the visible face: texel (u,v) is longitude -65..65 degrees, latitude -80..80.
+ // Flat map of the visible face: texel (u,v) is longitude -50..50 degrees, latitude -80..80.
  function buildTexture(img){
   const c=document.createElement('canvas');c.width=IMG.w;c.height=IMG.h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0);
   const px=x.getImageData(0,0,IMG.w,IMG.h).data,t=new Uint8ClampedArray(TW*TH*4),ok=new Uint8Array(TW*TH);
