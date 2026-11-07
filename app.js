@@ -59,10 +59,13 @@ const App=(()=>{
  // Social marks come from the template artwork set, so previews and UI use the same glyphs.
  const platformIcon=(id,cls='')=>{const e=window.GSNKit?.slideElements?.[id];return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${e?e[1]:''}</svg>`};
 
+ // The active workspace is remembered per browser; the server checks that the signed-in person belongs to it.
+ let workspace='';try{workspace=localStorage.getItem('gsn_ws')||''}catch{}
+ const setWorkspace=id=>{workspace=id||'';try{localStorage.setItem('gsn_ws',workspace)}catch{}};
  async function api(path,{method='GET',body}={}){
-  const response=await fetch('/api/v1'+path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  const response=await fetch('/api/v1'+path,{method,headers:{...(body?{'Content-Type':'application/json'}:{}),...(workspace?{'X-GSN-Workspace':workspace}:{})},body:body?JSON.stringify(body):undefined});
   let data=null;try{data=await response.json()}catch{}
-  if(!response.ok){const error=Error(data?.error||`The studio could not complete that request (${response.status}).`);error.status=response.status;error.data=data;throw error}
+  if(!response.ok){if(response.status===401&&typeof Team!=='undefined')Team.needLogin();const error=Error(data?.error||`The studio could not complete that request (${response.status}).`);error.status=response.status;error.data=data;throw error}
   return data;
  }
  let toastTimer=0;
@@ -100,14 +103,15 @@ const App=(()=>{
    if(editor){show('editor');await Editor.open(editor[1]);return}
    if(fresh){const t=Number(fresh[1]),p=fresh[2];if(!GSNKit.templates[t]||!preset(p)){location.replace('#templates');return}
     await createPack(t,[p],GSNKit.templates[t].cartoon?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
-   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents','schedule'].includes(view)?view:'dashboard');
+   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents','schedule','team'].includes(view)?view:'dashboard');
   }catch(error){toast(error.message,6000);if(editor||fresh)location.replace('#designs')}
  }
  async function start(){
   window.addEventListener('hashchange',route);
+  if(typeof Team!=='undefined'&&!await Team.boot())return;
   try{const {presets,groups}=await api('/platforms');state.presets=presets;state.groups=groups}
   catch(error){document.body.classList.remove('portal-open');show('stage');$('#stage').innerHTML=`<div class="boot-error"><h1>The studio can’t reach its server.</h1><p>${esc(error.message)}</p><p class="muted">Open this page through the studio server (for example <code>http://localhost:4188</code>), or through your SSH tunnel.</p></div>`;return}
   await route();
  }
- return {$,$$,esc,icon,platformIcon,api,toast,state,preset,groupOf,ago,loadDesigns,createPack,start,route};
+ return {$,$$,esc,icon,platformIcon,api,toast,state,setWorkspace,preset,groupOf,ago,loadDesigns,createPack,start,route};
 })();

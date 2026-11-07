@@ -56,3 +56,13 @@ Agents cannot approve, post now, retry, cancel approved posts, or change live/pa
 ## Background removal (AI cutout)
 
 POST `/cutout` with `{"image":"<base64 or data URL>","engine":"all"}` runs the studio's private cutout worker and returns `{width,height,candidates:[{engine,label,foreground,centre,ok,suggested,png_base64}]}`. Engines: `detail` (general objects, fine edges), `people` (people and what they hold), `scene` (whole subject groups) and `all` (default, runs each). `suggested` marks the candidate an automatic heuristic prefers: it keeps most of the middle of the picture without keeping the whole photo. Models disagree on hard photos, so an agent that cares should compare `foreground`/`centre` or leave the choice to a human in the editor. Images up to 16 megapixels; about 2 to 6 seconds per model on CPU. Use the returned PNG as an uploaded photo element in a design.
+
+## Workspaces and agent keys
+
+When the owner turns on accounts (Team page), the studio is split into workspaces. Each workspace has its own designs, voices, jobs, review queue, Postiz account, live switches and agent keys, so one person's or team's work is never visible to another.
+
+- A manager creates an agent key per agent on the Team page (or `POST /accounts/workspaces/{id}/tokens {"name":"Hermes"}` from a signed-in manager session). The key starts with `gsn_`, is shown once, and is sent as `Authorization: Bearer gsn_...`.
+- A key is bound to one workspace. Everything it creates and reads (designs, batches, posts, voices, jobs) is inside that workspace. It cannot read other workspaces or the accounts endpoints (401).
+- Agents prepare; they never approve, post now, retry, or change live/paused/platform switches. Editors (people) have the same limits; only managers approve.
+- The original shared `GSN_AGENT_TOKEN` keeps working and reaches the Main workspace only.
+- Postiz addresses and API keys are per workspace, set by a manager. They are never returned by the API.

@@ -7,8 +7,8 @@ const Dashboard=(()=>{
  const agentTone={Mira:'#8b6cf0',Seline:'#ef6f9a',Spectra:'#1fb5c4',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#2fb98a'};
  const initials=name=>name.slice(0,2).toUpperCase();
  const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule'};
+ const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['team','user','Team']];
+ const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',team:'Team'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  function build(){
@@ -26,7 +26,7 @@ const Dashboard=(()=>{
     <label class="search">${icon('search')}<input id="search" type="search" placeholder="Search templates…" autocomplete="off" aria-label="Search templates"></label>
     <div class="pop-wrap"><button class="pill-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false">Filter ${icon('chevron')}</button><div class="popover glass-strong" id="filterPop" hidden></div></div>
     <div class="pop-wrap"><button class="round-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true">${icon('bell')}<i class="badge" id="bellBadge" hidden></i></button><div class="popover glass-strong" id="bellPop" hidden></div></div>
-    <div class="pop-wrap"><button class="user-btn" id="userBtn" aria-haspopup="true" aria-label="Account menu"><span class="user-avatar">g</span>${icon('chevron')}</button><div class="popover glass-strong" id="userPop" hidden></div></div>
+    <div class="pop-wrap"><button class="user-btn" id="userBtn" aria-haspopup="true" aria-label="Account menu"><span class="user-avatar">${Team.initial()}</span>${icon('chevron')}</button><div class="popover glass-strong" id="userPop" hidden></div></div>
    </header>
    <div class="panel-scroll" id="view" tabindex="-1"></div>
   </main>
@@ -45,7 +45,7 @@ const Dashboard=(()=>{
   const pop=$('#'+kind+'Pop'),wasOpen=!pop.hidden;closePops();if(wasOpen)return;
   if(kind==='filter')pop.innerHTML=`<label>Format<select id="fFormat">${Library.formats().map(f=>`<option ${f===ui.format?'selected':''}>${esc(f)}</option>`).join('')}</select></label><label>Style<select id="fStyle">${Library.styles().map(f=>`<option ${f===ui.style?'selected':''}>${esc(f)}</option>`).join('')}</select></label><button class="btn-light" data-act="clearfilter">Clear filters</button>${Library.hiddenCount()?`<button class="btn-light" data-act="restore">Restore ${Library.hiddenCount()} removed templates</button>`:''}`;
   if(kind==='bell')pop.innerHTML=bellHtml();
-  if(kind==='user')pop.innerHTML=`<button data-nav="dashboard">Dashboard</button><button data-nav="designs">My designs</button><button data-act="globe">Back to the globe</button>`;
+  if(kind==='user')pop.innerHTML=Team.menuHtml()+`<button data-nav="dashboard">Dashboard</button><button data-nav="designs">My designs</button><button data-nav="team">Team and workspaces</button><button data-act="globe">Back to the globe</button>`+Team.signOutHtml();
   pop.hidden=false;$('#'+kind+'Btn').setAttribute('aria-expanded','true');
   if(kind==='filter'){$('#fFormat').onchange=e=>{ui.format=e.target.value;ui.shown=12;draw()};$('#fStyle').onchange=e=>{ui.style=e.target.value;ui.shown=12;draw()}}
  }
@@ -163,7 +163,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -179,7 +179,8 @@ const Dashboard=(()=>{
   if(!ui.built)build();
   try{if(!state.designs.length)await App.loadDesigns()}catch{}
   if(view==='schedule'){try{await Schedule.load()}catch(e){toast(e.message)}}
-  if(!ui.wired){Schedule.wire($('#view'));ui.wired=true}
+  if(view==='team'){try{await Team.load()}catch(e){toast(e.message)}}
+  if(!ui.wired){Schedule.wire($('#view'));Team.wire($('#view'));ui.wired=true}
   await draw();$('#view').scrollTop=0;
  }
 

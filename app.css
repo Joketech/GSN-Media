@@ -187,3 +187,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .field small.over{color:#b3261e;font-weight:700}.pf-ic{width:16px;height:16px;vertical-align:-3px}
 .empty-card{padding:26px;border-radius:20px;margin-top:14px}
 @media(max-width:800px){.sch-row{grid-template-columns:1fr 1fr}.sch-two,.sch-pick{grid-template-columns:1fr}.sch-day{min-height:70px}}
+
+/* Team, sign-in, and role-based hiding */
+body[data-role=editor] [data-m=approve],body[data-role=editor] [data-m=now],body[data-role=editor] [data-m=retry],body[data-role=editor] [data-m=reject],body[data-role=editor] [data-sch=approve-batch],body[data-role=editor] [data-sch=pause],body[data-role=editor] [data-sch=test],body[data-role=editor] [data-sch=test-channel],body[data-role=editor] .sch-switch{display:none!important}
+.login-root{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#fbe7ee,#e9e2f7 55%,#dff1ea)}
+.login-card{width:min(380px,100%);display:flex;flex-direction:column;gap:12px;padding:30px;border-radius:26px}
+.login-card h1{margin:0;font-family:'Cormorant Garamond',serif;font-size:34px;color:#4a1425}
+.login-card .brand-mark{align-self:flex-start}
+.login-msg{min-height:1.2em;color:#9b1c3a}
+.team{display:flex;flex-direction:column;gap:16px;padding:6px 4px 30px;max-width:860px}
+.team h1{margin:0;font-family:'Cormorant Garamond',serif;font-size:40px;color:#4a1425}
+.team h2{margin:0 0 6px;font-family:'Cormorant Garamond',serif;font-size:24px}
+.team-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.team-card{padding:20px 22px;border-radius:22px;display:flex;flex-direction:column;gap:10px}
+.team-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.team-row .field{flex:1 1 150px}
+.team-list{display:flex;flex-direction:column;gap:8px}
+.team-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.55)}
+.team-item small{display:block;opacity:.7}
+.team-key{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:#fff7d6;border:1px solid #e6cf7a}
+.team-key code{word-break:break-all;font-size:13px}
+.pop-title{margin:6px 12px;font-size:12px;opacity:.7}
+.team select,.login-card input,.team input{padding:10px 12px;border-radius:12px;border:1px solid rgba(60,30,40,.14);background:rgba(255,255,255,.75);font:inherit;color:inherit}
+.team .field{display:flex;flex-direction:column;gap:4px;font-weight:600}

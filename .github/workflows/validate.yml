@@ -32,8 +32,10 @@ jobs:
           node --check composer.js
           node --check publisher.mjs
           node --check schedule.js
+          node --check team.js
+          node --check accounts.mjs
           node --check globe.js
-          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs tests/cutout.test.mjs
+          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs tests/cutout.test.mjs tests/accounts.test.mjs
           python3 -m py_compile services/inference_worker.py
           python3 -m py_compile services/cutout_worker.py
           python3 -m py_compile integrations/hermes/gsn.py
