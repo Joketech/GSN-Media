@@ -7,8 +7,8 @@ const Dashboard=(()=>{
  const agentTone={Mira:'#8b6cf0',Seline:'#ef6f9a',Spectra:'#1fb5c4',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#2fb98a'};
  const initials=name=>name.slice(0,2).toUpperCase();
  const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['team','user','Team']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',team:'Team'};
+ const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','user','People'],['team','user','Team']];
+ const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  function build(){
@@ -86,7 +86,7 @@ const Dashboard=(()=>{
 
  function tabsFor(view){
   if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories']];
-  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors']];
+  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Portrait posters','Posters']];
   if(view==='schedule')return [['Calendar','Calendar'],['Review',`Needs review${Schedule.needsReview().length?' ('+Schedule.needsReview().length+')':''}`],['Setup','Setup']];
   if(view==='designs')return [['All','All'],['draft','Draft'],['review','In review'],['approved','Approved']];
   return [];
@@ -166,7 +166,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='people'?People.html():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -174,6 +174,7 @@ const Dashboard=(()=>{
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
+  if(ui.view==='people')People.mount($('#ppHost'));
  }
  async function show(view){
   ui.view=view;ui.shown=12;

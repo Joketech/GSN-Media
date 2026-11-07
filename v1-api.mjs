@@ -126,6 +126,21 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   let start=0,end=info.size-1,status=200;const range=req.headers.range;if(range){const m=range.match(/^bytes=(\d+)-(\d*)$/);if(!m||(start=Number(m[1]))>=info.size||(end=m[2]?Math.min(Number(m[2]),end):end)<start){res.writeHead(416,{'Content-Range':`bytes */${info.size}`});res.end();return;}status=206;headers['Content-Range']=`bytes ${start}-${end}/${info.size}`;}
   headers['Content-Length']=end-start+1;res.writeHead(status,headers);if(req.method==='HEAD')res.end();else createReadStream(target,{start,end}).on('error',()=>res.destroy()).pipe(res);
  }
+
+ // Brand people: faces and mascots the brand owns or has permission to use. A page may name one with person_id, and its picture is used as that page's image.
+ async function attachPeople(p,ws){
+  if(p.person_id!==undefined&&Array.isArray(p.pages)&&p.pages[0]&&typeof p.pages[0]==='object')p.pages[0].person_id??=p.person_id;
+  delete p.person_id;
+  if(!Array.isArray(p.pages))return;
+  for(const page of p.pages){
+   if(!page||typeof page!=='object'||page.person_id===undefined)continue;
+   const id=page.person_id;delete page.person_id;
+   if(typeof id!=='string'||!uuid.test(id))throw new InputError('person_id must be an id from GET /api/v1/people.');
+   const person=await load(id).catch(()=>null);
+   if(person?.record_type!=='person'||!inWs(person,ws))throw new InputError('That person is not in this workspace library.',404);
+   page.image=person.image;
+  }
+ }
  async function handle(req,res,url){if(!url.pathname.startsWith('/api/v1/'))return false;try{await ready;
   if(url.pathname==='/api/v1/session'&&req.method==='POST'){if(accounts.enabled())throw new InputError('This studio uses accounts. Sign in with your username and password.',409);if(!token)throw new InputError('Run deploy/setup-v1.sh to configure the access key.',503);const p=await body(req);if(typeof p.token!=='string'||!same(p.token,token))throw new InputError('Incorrect access key.',401);const sid=randomBytes(32).toString('hex');for(const [k,v] of sessions)if(v<Date.now())sessions.delete(k);if(sessions.size>1000)sessions.clear();sessions.set(sid,Date.now()+12*3600000);res.setHeader('Set-Cookie',`gsn_session=${sid}; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=43200${process.env.SITE_DOMAIN?'; Secure':''}`);json(res,200,{ok:true});return true;}
   const legacy=auth(req),secure=!!process.env.SITE_DOMAIN;
@@ -154,18 +169,46 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
    let r;try{r=await fetchImpl(new URL('/cut',cutoutUrl),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_base64:raw,engine}),signal:AbortSignal.timeout(180000)})}catch{throw new InputError('The cutout worker is not reachable. Check that its container is running.',503)}
    const out=await r.json().catch(()=>({}));if(!r.ok)throw new InputError(out.error||'The cutout worker could not process that image.',r.status===400||r.status===413?r.status:502);
    json(res,200,out);return true;}
+  // ----- Brand people library (per workspace). Adding someone records who confirmed permission, so only a signed-in person may do it.
+  const human=ctx.who==='owner'||!!ctx.user;
+  const PERSON_KINDS=['team','mascot','release'];
+  const personPublic=({image,...rest})=>({...rest,image_url:`/api/v1/people/${rest.id}/image`});
+  if(url.pathname==='/api/v1/people'&&req.method==='GET'){json(res,200,{people:(await list('person')).filter(x=>inWs(x,ws)).map(personPublic)});return true;}
+  if(url.pathname==='/api/v1/people'&&req.method==='POST'){
+   if(!human)throw new InputError('Only a signed-in person can add someone to the library, because it records their permission. Agents can list and use the people already there.',403);
+   const p=await body(req);
+   const name=text(p.name,'Name',80),kind=p.kind===undefined?'team':p.kind;
+   if(!PERSON_KINDS.includes(kind))throw new InputError('kind must be team, mascot or release.');
+   if(p.consent!==true)throw new InputError('Confirm that this person agreed, or that the brand owns this character, before saving.');
+   const note=text(p.permission_note??'','Permission note',300,kind==='release');
+   if(typeof p.image!=='string'||p.image.length>1400000||!/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(p.image))throw new InputError('image must be a PNG, JPEG or WebP data URL up to 1.4 MB.');
+   const created=await serial(async()=>{
+    if((await list('person')).filter(x=>inWs(x,ws)).length>=200)throw new InputError('Maximum 200 people per workspace. Remove some first.',409);
+    const id=randomUUID(),now=new Date().toISOString();
+    const record={id,record_type:'person',workspace_id:ws,name,kind,role:text(p.role??'','Role',80,false),permission_note:note,consent:{confirmed:true,by:ctx.actor,at:now},image:p.image,created_at:now,updated_at:now};
+    await save(id,record);return record;
+   });
+   json(res,201,personPublic(created));return true;}
+  const pm=url.pathname.match(/^\/api\/v1\/people\/([a-f0-9-]{36})(\/image)?$/);
+  if(pm&&uuid.test(pm[1])){
+   const read=async()=>{const x=await load(pm[1]).catch(()=>null);if(x?.record_type!=='person'||!inWs(x,ws))throw new InputError('Person not found.',404);return x;};
+   if(req.method==='GET'&&pm[2]){const x=await read(),m=x.image.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/i);res.writeHead(200,{'Content-Type':m[1].toLowerCase(),'Cache-Control':'private, max-age=300'});res.end(Buffer.from(m[2],'base64'));return true;}
+   if(req.method==='GET'&&!pm[2]){json(res,200,await read());return true;}
+   if(req.method==='DELETE'&&!pm[2]){if(who!=='owner')throw new InputError('Only a manager can remove someone from the library.',403);await serial(async()=>{await read();await unlink(file(pm[1]));});json(res,200,{ok:true});return true;}
+  }
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).filter(v=>inWs(v,ws)).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).filter(v=>inWs(v,ws)).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',workspace_id:ws,created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=(await list('job')).filter(j=>inWs(j,ws));json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='POST'){const key=req.headers['idempotency-key'];if(typeof key!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/.test(key))throw new InputError('Supply an Idempotency-Key of 1–160 letters, digits, _, ., : or -.');const j=await submit(await body(req),key,ws);json(res,202,publicJob(j));return true;}
   if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='GET'){const all=(await list('design')).filter(d=>inWs(d,ws)).map(designSummary);json(res,200,{designs:all.slice(0,500),total:all.length});return true;}
-  if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');if(p.copy!==undefined){try{p.pages=composeSlides(p.template_id,p.copy)}catch(e){throw new InputError(e.message)}delete p.copy}else p.pages=starterSlides(p.template_id);}
+  if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');if(p.copy!==undefined){try{p.pages=composeSlides(p.template_id,p.copy)}catch(e){throw new InputError(e.message)}if(Array.isArray(p.copy))p.copy.forEach((c,i)=>{if(typeof c?.person_id==='string'&&p.pages[i])p.pages[i].person_id=c.person_id});delete p.copy}else p.pages=starterSlides(p.template_id);}
+   await attachPeople(p,ws);
    const created=await serial(async()=>{const design=sanitizeDesign({title:'Untitled pack',...p},{templateCount:designTemplateCount});if((await list('design')).length>=500)throw new InputError('Maximum 500 saved designs. Delete some first.',409);const id=randomUUID(),now=new Date().toISOString();const record={...design,id,record_type:'design',workspace_id:ws,revision:1,created_at:now,updated_at:now,updated_by:ctx.actor};await save(id,record);return record;});json(res,201,created);return true;}
   const dm=url.pathname.match(/^\/api\/v1\/designs\/([a-f0-9-]{36})$/);
   if(dm&&uuid.test(dm[1])){const read=async()=>{const d=await load(dm[1]).catch(()=>null);if(d?.record_type!=='design'||!inWs(d,ws))throw new InputError('Design not found.',404);return d;};
    if(req.method==='GET'){json(res,200,await read());return true;}
-   if(req.method==='PUT'){const p=await body(req);const saved=await serial(async()=>{const current=await read();if(p.revision!==current.revision)throw new InputError(`This design changed since you opened it (now revision ${current.revision}). Reload it, then apply your edit again.`,409);const design=sanitizeDesign({pack_id:current.pack_id,...p},{templateCount:designTemplateCount});const record={...design,id:current.id,record_type:'design',workspace_id:current.workspace_id||'main',revision:current.revision+1,created_at:current.created_at,updated_at:new Date().toISOString(),updated_by:ctx.actor};await save(current.id,record);return record;});json(res,200,saved);return true;}
+   if(req.method==='PUT'){const p=await body(req);await attachPeople(p,ws);const saved=await serial(async()=>{const current=await read();if(p.revision!==current.revision)throw new InputError(`This design changed since you opened it (now revision ${current.revision}). Reload it, then apply your edit again.`,409);const design=sanitizeDesign({pack_id:current.pack_id,...p},{templateCount:designTemplateCount});const record={...design,id:current.id,record_type:'design',workspace_id:current.workspace_id||'main',revision:current.revision+1,created_at:current.created_at,updated_at:new Date().toISOString(),updated_by:ctx.actor};await save(current.id,record);return record;});json(res,200,saved);return true;}
    if(req.method==='DELETE'){await serial(async()=>{await read();await unlink(file(dm[1]));});json(res,200,{ok:true});return true;}
   }
   const match=url.pathname.match(/^\/api\/v1\/jobs\/([a-f0-9-]{36})(\/asset|\/review)?$/);if(match&&uuid.test(match[1])){const j=await load(match[1]).catch(()=>null);if(j?.record_type!=='job'||!inWs(j,ws))throw new InputError('Job not found.',404);
