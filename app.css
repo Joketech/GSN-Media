@@ -273,8 +273,10 @@ body[data-role=editor] .pp-del{display:none}
 .motion-switch[aria-checked="true"] .ms-track i{transform:translateX(14px)}
 @media (max-width:700px){.ms-label{display:none}.motion-switch{padding:0 8px}}
 
-/* Front rain layer: sits above the panel and never takes clicks. */
-.water-front{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+/* Rain layer: behind everything, never takes clicks. */
+.water-front{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+/* The rain lives behind the page: the big glass surfaces are made clearer so the drops show through them, and nothing is drawn over words, characters or art. */
+.stage>.glass{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,246,248,.12))}
 
 /* Motion off: no animation and no light anywhere. A working agent still shows steady red eyes so its state can be read. */
 [data-motion="off"] .bot svg,[data-motion="off"] .bot svg *,[data-motion="off"] .marquee-track,[data-motion="off"] .hero:after,[data-motion="off"] .stage-bg,[data-motion="off"] .orb,[data-motion="off"] .orb *{animation:none!important}

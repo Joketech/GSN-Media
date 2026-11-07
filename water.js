@@ -1,7 +1,7 @@
 'use strict';
 /* Rain on a window. Round beads of water cling to the glass, each one a small lens that shows the scene behind it upside down;
    now and then a bead grows heavy, runs down the glass in a wobbling line, gathers the beads it meets and leaves a thin wet trail.
-   Two canvases: .water (behind the panel) paints soft bokeh lights; .water-front (above everything, never catches clicks) paints the drops.
+   Two canvases, both behind the page: .water paints soft bokeh lights; .water-front paints the drops. Neither catches clicks.
    The beads sample an off-screen copy of the same scene, so what shows inside a drop is what is really behind it.
    Everything pauses when the dashboard is hidden and stops when motion is switched off. */
 const Water=(()=>{
