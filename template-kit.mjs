@@ -28,7 +28,7 @@ window.GSNKit={templates,palettes,agents,art,templateStarter,slideElements,esc,s
 })();`;
 
   // CSS for the shadow roots that host each page. :root/body rules are retargeted to the shadow host.
-  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'free-layers.css'].map(read));
+  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'free-layers.css', 'inner-pages.css'].map(read));
   const css = parts.join('\n')
     .replace(/@import[^;]+;/g, '')
     .replace(/:root\s*\{/g, ':host{')

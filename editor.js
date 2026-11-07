@@ -311,6 +311,7 @@ const Editor=(()=>{
   const node=nodeFor();if(!node||!sel||!['copy','text'].includes(sel.t))return;
   const target={...sel},pg=page;
   editing=true;el.over.innerHTML='';el.bar.hidden=true;el.over.style.pointerEvents='none';
+  if(target.t==='copy'){const raw=design.pages[pg]?.[target.k];if(typeof raw==='string'){node.textContent=raw;node.style.whiteSpace='pre-wrap';node.style.display='block'}}
   node.contentEditable='plaintext-only';if(node.contentEditable!=='plaintext-only')node.contentEditable='true';
   document.activeElement?.blur?.();node.style.outline='2px solid #7c5cff';node.style.cursor='text';node.style.userSelect='text';node.style.webkitUserSelect='text';node.focus();
   const range=document.createRange();range.selectNodeContents(node);const sc=el.host.shadowRoot.getSelection?.()||getSelection();sc.removeAllRanges?.();sc.addRange?.(range);
