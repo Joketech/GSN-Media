@@ -32,6 +32,25 @@ docker compose --profile voice --profile public up -d --build
 
 The app port stays bound to loopback. Only Caddy publishes 80/443. The worker ports are internal. A real domain and correct Basic Auth configuration are required for public deployment.
 
+## Contabo VPS quick path (SSH tunnel, no domain)
+
+On a CPU-only Contabo VPS with Docker installed:
+
+```sh
+git clone https://github.com/Joketech/GSN-Media.git && cd GSN-Media
+bash deploy/preflight.sh
+bash deploy/setup-v1.sh
+docker compose --profile voice up -d --build app voice
+```
+
+Then, from your own computer, open a tunnel and browse to `http://localhost:4188`:
+
+```sh
+ssh -L 4188:127.0.0.1:4188 YOUR_USER@YOUR_SERVER_IP
+```
+
+The app only listens on the server's loopback address and rejects any request whose `Host` header is not `localhost`, `127.0.0.1` or `SITE_DOMAIN`. Opening `http://YOUR_SERVER_IP:4188` directly therefore returns **403 Invalid local host** by design. To serve it publicly, set `SITE_DOMAIN`, point DNS at the server and use the `public` profile as described above. The `gpu` profile cannot run on a CPU-only VPS.
+
 ## GPU visual worker
 
 Requires a configured NVIDIA/CUDA GPU, sufficient RAM/model storage, and NVIDIA Container Toolkit. The initial preset is sized for approximately 24 GB VRAM or more. Verify with `nvidia-smi` and a short real inference test; do not infer GPU capacity from CPU-core/RAM specifications.
@@ -71,3 +90,10 @@ The source/Compose checks are not a completed deployment. Before use, build cont
 The worker queue is bounded and serial; active inference cancellation, automatic retries, multi-user authorization, server-side project/media migration, and server-side final-film MP4 encoding are not implemented. A worker restart marks unfinished jobs interrupted. The existing editor exports WebM in the browser.
 
 References: [Docker GPU configuration](https://docs.docker.com/compose/how-tos/gpu-support/), [Contabo GPU VPS](https://docs.contabo.com/docs/servers-hosting/gpu-vps/), [Qwen3-TTS usage](https://github.com/QwenLM/Qwen3-TTS).
+
+## Background removal, accounts and Postiz
+
+- **Cutout worker.** `cutout` runs with the default stack (no profile) and needs about 2 GB of RAM. Its three models are baked into the image, so it needs no internet at run time. The Containers workflow builds and pushes it as `cutout`, and `deploy/update.sh` pulls it.
+- **Postiz.** Deploy Postiz separately from its official docs. Then either set `POSTIZ_API_URL` and `POSTIZ_API_KEY` in `.env` (single owner) or, after turning on accounts, enter each workspace's Postiz address and key on the Team page. Keys are stored in the app data volume, never in Git.
+- **Accounts.** Off until the owner opens Team and clicks "Turn on accounts". Do this immediately after the first deploy: the first person to do it becomes the administrator. Back up the `app-data` volume; it holds accounts, designs and the schedule.
+- **Going live.** Posting stays in dry-run until a manager switches live mode and each platform on in Schedule → Setup. Send a test draft first.

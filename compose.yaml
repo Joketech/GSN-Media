@@ -1,9 +1,16 @@
 name: gsn-studio
+# Rotate container logs so a long-running VPS cannot fill its disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 services:
   app:
     build: .
     image: gsn-studio-app:local
     restart: unless-stopped
+    logging: *logging
     ports:
       - "127.0.0.1:${APP_PORT:-4188}:4187"
     environment:
@@ -12,7 +19,12 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       VOICE_WORKER_URL: ${VOICE_WORKER_URL:-http://voice:8091}
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
+      CUTOUT_WORKER_URL: ${CUTOUT_WORKER_URL:-http://cutout:8092}
       GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
+      GSN_REQUIRE_KEY: ${GSN_REQUIRE_KEY:-}
+      POSTIZ_API_URL: ${POSTIZ_API_URL:-}
+      POSTIZ_API_KEY: ${POSTIZ_API_KEY:-}
+      POSTIZ_HOURLY_LIMIT: ${POSTIZ_HOURLY_LIMIT:-}
       GSN_DATA_DIR: /data
     volumes:
       - app-data:/data
@@ -23,12 +35,27 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+  cutout:
+    build:
+      context: .
+      dockerfile: services/Dockerfile.cutout
+    image: gsn-studio-cutout:local
+    restart: unless-stopped
+    logging: *logging
+    expose: ["8092"]
+    mem_limit: 2g
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
   voice:
     profiles: [voice]
     build:
       context: .
       dockerfile: services/Dockerfile.voice
     restart: unless-stopped
+    logging: *logging
     environment:
       WORKER_KIND: voice
       DATA_DIR: /data
@@ -46,6 +73,7 @@ services:
       context: .
       dockerfile: services/Dockerfile.visuals
     restart: unless-stopped
+    logging: *logging
     gpus: all
     environment:
       WORKER_KIND: visuals
@@ -63,6 +91,7 @@ services:
     profiles: [public]
     image: caddy:2-alpine
     restart: unless-stopped
+    logging: *logging
     ports: ["80:80", "443:443"]
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:-localhost}

@@ -5,3 +5,5 @@ services:
     image: ${IMAGE_PREFIX:-ghcr.io/joketech/gsn-media}/voice:${IMAGE_TAG:-latest}
   visuals:
     image: ${IMAGE_PREFIX:-ghcr.io/joketech/gsn-media}/visuals:${IMAGE_TAG:-latest}
+  cutout:
+    image: ${IMAGE_PREFIX:-ghcr.io/joketech/gsn-media}/cutout:${IMAGE_TAG:-latest}

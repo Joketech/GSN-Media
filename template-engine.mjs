@@ -12,10 +12,20 @@ const sheets=await Promise.all([['campaign','campaign-atlas.png'],['automation',
  return {name,file,data:'data:image/png;base64,'+image.toString('base64')};
 }));
 const baseCss=(await Promise.all(['studio.css','premium.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
-const starterSource=source.slice(source.indexOf('function templateStarter('),source.indexOf('function ensureSlides('));
+const starterSource=source.slice(source.indexOf('// How many pages a template carries'),source.indexOf('function ensureSlides('));
 export function templateCatalog(){
  return vm.runInNewContext(photoSource+'\n'+definitions+starterSource+
-  'templates.map(t=>({id:t.id,name:t.name,format:t.format,...(t.cartoon?{slides:templateStarter(t.id),ratio:"4 / 5"}:{})}))',{}, {timeout:1000});
+  'templates.map(t=>{const s=templateStarter(t.id);return {id:t.id,name:t.name,format:t.format,pages:s.length,layouts:s.map(p=>p.deckLayout),...(t.cartoon?{slides:s,ratio:"4 / 5"}:{})}})',{}, {timeout:3000});
+}
+// Layout names with what each one expects in its body text.
+export function layoutGuide(){return vm.runInNewContext(starterSource+'LAYOUT_GUIDE',{},{timeout:1000});}
+// Wording-only creation: the template supplies every design decision; the caller supplies the words.
+export function composeSlides(id,copy){
+ return JSON.parse(vm.runInNewContext(photoSource+'\n'+definitions+starterSource+'JSON.stringify(composePages(templateId,copy))',{templateId:id,copy},{timeout:2000}));
+}
+// Server-side starter pages (Hook, write-up pages, CTA) so agents can create a design without a browser.
+export function starterSlides(id){
+ return JSON.parse(vm.runInNewContext(photoSource+'\n'+definitions+starterSource+'JSON.stringify(templateStarter(templateId))',{templateId:id},{timeout:1000}));
 }
 export function renderDesign(p){
  const context={esc,state:{brand:{name:p.brand||'GSN Technology',handle:p.handle||'GSN Technology'}},input:p};

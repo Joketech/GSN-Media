@@ -1,0 +1,13 @@
+/* Styles for layers the editor adds on top of a template page (free text boxes). */
+.free-text{
+  position:absolute;
+  box-sizing:border-box;
+  max-width:96%;
+  margin:0;
+  font:800 6.2cqw/1.12 'DM Sans','Manrope',Arial,sans-serif;
+  color:var(--campaign-ink,#fff);
+  white-space:pre-line;
+  overflow-wrap:anywhere;
+  transform-origin:left center;
+}
+.art [data-canvas-text]{cursor:move}

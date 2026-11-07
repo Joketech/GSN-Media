@@ -89,6 +89,14 @@ const slideElements={
  linkedin:['LinkedIn','<path d="M5 10v9m5 0v-9m0 4a4 4 0 0 1 8 0v5"/><circle cx="5" cy="6" r="1" fill="currentColor"/>'],
  facebook:['Facebook','<path d="M14 22V10c0-3 1-4 4-4h2V2h-3c-5 0-7 3-7 7v13m-4-10h13"/>'],
  x:['X','<path d="m4 3 16 18h-4L3 3h4l14 18M20 3 4 21"/>'],
+ tiktok:['TikTok','<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3c.4 2.4 2 4 5 4.2"/>'],
+ trend:['Trending','<path d="m3 17 6-6 4 4 8-9M15 6h6v6"/>'],
+ rect:['Rectangle','<rect x="3" y="5" width="18" height="14" rx="1"/>'],
+ rounded:['Rounded box','<rect x="3" y="4" width="18" height="16" rx="5"/>'],
+ triangle:['Triangle','<path d="M12 3 22 20H2Z"/>'],
+ star:['Star','<path d="m12 2.5 2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3 1.2-6.4-4.7-4.4 6.4-.8Z"/>'],
+ heart:['Heart','<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11Z"/>'],
+ chat:['Speech bubble','<path d="M4 5h16v11H9l-5 4Z"/>'],
 };
 function layerCopy(value,bullets){
  return bullets&&value?String(value).split('\n').map(line=>`<span class="text-bullet">${esc(line)}</span>`).join(''):esc(value);
@@ -105,6 +113,51 @@ function isUploadedPhoto(key){return typeof key==="string" && /^data:image\/(?:w
 function canvasElementLabel(key){
  return isUploadedPhoto(key)?"Uploaded photo":Object.hasOwn(slideElements,key)?slideElements[key][0]:gsnPicturePattern.test(key)?gsnLibraryPhoto(key)?.name||'':'';
 }
+// ---- Designed inner pages (write-up and CTA). Each layout is a real composition built from the template's own colours
+// and its own cover photograph, so a template reads as one family: Hook, designed pages, CTA. ----
+const DK_LAYOUTS={hook:'statement',agenda:'agenda',steps:'steps',compare:'compare',checklist:'checklist',quote:'quote',metric:'stat',triptych:'cards',feature:'split',principle:'statement',summary:'recap',example:'case',cta:'cta',blank:'statement'};
+function dkColors(accent,secondary){
+ const h=n=>parseInt(n,16)/255,r=h(accent.slice(1,3)),g=h(accent.slice(3,5)),b=h(accent.slice(5,7));
+ const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+ let hue=0;if(d){hue=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hue=Math.round((hue*60+360)%360)}
+ const lum=.2126*r**2.2+.7152*g**2.2+.0722*b**2.2;
+ return {hue,onAccent:lum>.28?'#0c0a1a':'#ffffff',a2:/^#[0-9a-f]{6}$/i.test(secondary||'')?secondary:`hsl(${(hue+40)%360} 90% 66%)`};
+}
+function dkItems(value){return String(value??'').split('\n').map(l=>l.trim()).filter(Boolean);}
+function dkSplit(line){
+ let i=line.indexOf(' · ');
+ if(i<0){const c=line.indexOf(': ');if(c>0&&c<34)i=c;}
+ return i>0?{lead:line.slice(0,i),rest:line.slice(i+(line[i]===':'?2:3))}:{lead:'',rest:line};
+}
+function dkBody(layout,value,hookPhoto){
+ const items=dkItems(value),num=n=>String(n+1).padStart(2,'0');
+ const thumb=(n)=>`<i class="dk-thumb" style="--z:${1.5+n*.35};--fx:${[0,-14,12][n%3]}%;--fy:${[-8,6,-2][n%3]}%"></i>`;
+ if(layout==='steps')return items.map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item" data-n="${n+1}">${lead?`<b>${esc(lead)}</b><em>${esc(rest)}</em>`:`<b>${esc(rest)}</b>`}</span>`}).join('');
+ if(layout==='agenda')return items.map((l,n)=>`<span class="dk-item" data-n="${num(n)}">${esc(l)}</span>`).join('');
+ if(layout==='compare')return items.slice(0,2).map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item dk-side${n}" data-tag="${esc(lead||(n?'After':'Before'))}">${esc(rest)}</span>`}).join('');
+ if(layout==='checklist')return items.map(l=>`<span class="dk-item">${esc(l)}</span>`).join('');
+ if(layout==='cards')return items.slice(0,3).map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item" data-n="${num(n)}">${thumb(n)}${lead?`<b>${esc(lead)}</b>${esc(rest)}`:esc(rest)}</span>`}).join('');
+ if(layout==='stat')return items.map((l,n)=>{const {lead,rest}=dkSplit(l);return n===0&&lead?`<span class="dk-item dk-big"><strong>${esc(lead)}</strong><span>${esc(rest)}</span></span>`:`<span class="dk-item">${esc(rest)}</span>`}).join('');
+ if(layout==='recap')return items.map((l,n)=>`<span class="dk-item" data-n="${num(n)}">${esc(l)}</span>`).join('');
+ return items.map(l=>`<span class="dk-item">${esc(l)}</span>`).join('');
+}
+function dkPage(t,slide,o){
+ const {layout,accent,cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo,caption,handle,brand}=o;
+ const c=dkColors(accent,p[3]);
+ const mode={agenda:'dark',steps:'light',compare:'light',checklist:'light',quote:'dark',stat:'solid',cards:'dark',split:'light',statement:'dark',recap:'dark',case:'dark',cta:'solid'}[layout]||'dark';
+ const flip=t.id%2?' dk-flip':'';
+ const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
+ const num=String(slide.number??1).padStart(2,'0'),total=slide.total?String(slide.total).padStart(2,'0'):'';
+ const titleText=slide.title??t.title;
+ const style=`--a:${accent};--a2:${c.a2};--on-a:${c.onAccent};--hue:${c.hue};aspect-ratio:${ratio}`;
+ const photoVars=photo?`--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size};`:'';
+ const cta=layout==='cta'?`<div class="dk-pill" style="${stack('footerText')}"><span>${esc(handle)}</span><b>↗</b></div>`:'';
+ return `<div class="art dk dk-${layout} dk-${mode}${flip} ratio-${ratioClass} ${role?'slide-'+role:''} ${o.extra}" data-num="${num}" style="${style};${photoVars}">
+<div class="dk-fx" aria-hidden="true"></div>
+<div class="art-brand" data-canvas-copy="brandText" style="${stack('brandText')}${textStyle('brandText')}">${o.layerCopy(slide.brandText??brand,slide.textLayers?.brandText?.bullets)}</div><div class="dk-count" aria-hidden="true">${num}${total?' / '+total:''}</div>
+<div class="campaign-visual dk-visual" aria-hidden="true" style="${stack('artwork')}${artStretch}">${pic}</div>
+<div class="campaign-copy dk-copy" style="${stack('title','body','kicker')}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex('kicker')}${textStyle('kicker')}">${o.layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex('title')}${textStyle('title')}">${o.layerCopy(titleText,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex('body')}${textStyle('body')}">${slide.textLayers?.body?.bullets?o.layerCopy(slide.body,true):dkBody(layout,slide.body??'')}</div>${cta}</div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack('footerText')}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${o.layerCopy(slide.footerText??handle,slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
+}
 function art(t,slide={},extra=''){
  const p=palettes[t.palette];
  const role=slide.total>1?(Number(slide.number)===1?'hook':Number(slide.number)===slide.total?'cta':'content'):'';
@@ -118,7 +171,8 @@ function art(t,slide={},extra=''){
  const hex=(value,fallback)=>/^#[0-9a-f]{6}$/i.test(value||'')?value:fallback;
  const clamp=(value,min,max,fallback)=>Number.isFinite(value)?Math.min(max,Math.max(min,value)):fallback;
  const image=typeof slide.image==='string'&&slide.image.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.image)?slide.image:'';
- const ratio=['1 / 1','4 / 5','9 / 16','16 / 9'].includes(slide.ratio)?slide.ratio:'1 / 1';
+ const ratioParts=/^[1-9]\d{0,3} \/ [1-9]\d{0,3}$/.test(slide.ratio||'')?slide.ratio.split(' / ').map(Number):[1,1];
+ const ratio=ratioParts.join(' / '),ratioShape=ratioParts[0]/ratioParts[1];
  const tone=({hourglass:'#ff9d36',visor:'#ff8a28',orbit:'#d49c65',portfolio:'#c2ee4e',stack:'#aa83ff',lift:'#e255ff',product:'#b879ff',audio:'#ad92ff',terminal:'#65efa7',rocket:'#ff933f'})[motif]||p[3];
  const cover=slide.catalog||role==='hook';
  const light=!cover&&[2,5,8].includes(t.palette);
@@ -142,10 +196,9 @@ function art(t,slide={},extra=''){
  const photo=customGsn?gsnLibraryPhoto(slide.motif):defaultGsn?gsnPhoto(t.cartoon?gsnOriginalPictureCount+t.id-200:(t.id+imageOffset)%200):null;
  const front=cover?'gsn-front front-'+(t.layout+t.palette)%5:'';
  const cartoonClass=t.cartoon?`cartoon-poster cartoon-style-${t.layout%5} cartoon-${cover?'hero':role==='cta'?'action':slide.deckLayout==='feature'?'feature':slide.deckLayout==='steps'?'steps':'story'}`:'';
- const ratioClass={'1 / 1':'square','4 / 5':'portrait','9 / 16':'story','16 / 9':'landscape'}[ratio];
- const heightFactor={'1 / 1':1,'4 / 5':1.25,'9 / 16':16/9,'16 / 9':9/16}[ratio];
- function textStyle(key){
-  const options=slide.textLayers?.[key];
+ const ratioClass=ratioShape>1.4?'landscape':ratioShape<.7?'story':ratioShape<.9?'portrait':'square';
+ const heightFactor=ratioParts[1]/ratioParts[0];
+ function textStyleFrom(options){
   if(!options)return '';
   const font={sans:'Arial, sans-serif',serif:'Georgia, serif',mono:'monospace'}[options.font];
   const decoration=[options.underline?'underline':'',options.strike?'line-through':''].filter(Boolean).join(' ');
@@ -153,23 +206,34 @@ function art(t,slide={},extra=''){
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
   return `${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
+ function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
  const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
  const zIndex=(...keys)=>{const ranks=keys.map(key=>order.indexOf(key));const rank=Math.max(...ranks);return rank<0?'':'position:relative;z-index:'+(10+rank)+';';};
  const stack=(...keys)=>zIndex(...keys).replace('position:relative;','');
- const elements=Array.isArray(slide.elements)?slide.elements.slice(0,6).filter(canvasElementLabel):[];
+ const stretch=i=>{const x=clamp(slide.elementStretchX?.[i],25,400,100),y=clamp(slide.elementStretchY?.[i],25,400,100),flip=slide.elementFlip?.[i]?-1:1,rot=clamp(slide.elementRotations?.[i],-360,360,0),rad=clamp(slide.elementRadius?.[i],0,50,0),op=clamp(slide.elementOpacity?.[i],10,100,100);
+  return `${x===100&&y===100&&flip===1?'':`scale:${flip*x/100} ${y/100};`}${rot?`rotate:${rot}deg;`:''}${rad?`border-radius:${rad}%;`:''}${op<100?`opacity:${op/100};`:''}`;};
+ const artStretch=(()=>{const x=clamp(slide.artStretchX,35,300,100),y=clamp(slide.artStretchY,35,300,100);return x===100&&y===100?'':`scale:${x/100} ${y/100};`;})();
+ const elements=Array.isArray(slide.elements)?slide.elements.slice(0,24).filter(canvasElementLabel):[];
+ const freeTexts=(Array.isArray(slide.texts)?slide.texts.slice(0,24):[]).map((item,index)=>typeof item?.text==='string'?`<div class="free-text" data-canvas-text="${index}" style="left:${clamp(item.left,-50,150,10)}%;top:${clamp(item.top,-50,150,10)}%;${stack('text:'+index)}${textStyleFrom({...item,x:0,y:0})}">${layerCopy(item.text,item.bullets)}</div>`:'').join('');
  const elementStrip=elements.length?`<div class="slide-element-strip" style="${stack(...elements.map((_,index)=>"element:"+index))}">${elements.map((key,index)=>{
   const position=slide.elementPositions?.[index];
   const placement=position?`position:absolute;left:${clamp(position.x,0,100,0)}%;top:${clamp(position.y,0,100,0)}%;transform:translate(-50%,-50%);`:'';
   const color=hex(slide.elementColors?.[index],['#25c8ff','#fb48b5','#ff9b27','#70eb8e'][index%4]);
-  if(isUploadedPhoto(key))return `<img class="photo-element uploaded-photo-element" data-canvas-element="${index}" src="${key}" alt="Uploaded photo" style="${placement||"position:relative;"}${stack("element:"+index)}--element-scale:${clamp(slide.elementSizes?.[index],25,500,100)/100}">`;
+  if(isUploadedPhoto(key))return `<img class="photo-element uploaded-photo-element" data-canvas-element="${index}" src="${key}" alt="Uploaded photo" style="${placement||"position:relative;"}${stack("element:"+index)}${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],25,500,100)/100}">`;
   if(gsnPicturePattern.test(key)){
    const picture=gsnLibraryPhoto(key);
-   return `<span class="photo-element" data-canvas-element="${index}" role="img" aria-label="${esc(picture.name)}" style="${placement||"position:relative;"}${stack("element:"+index)}--element-scale:${clamp(slide.elementSizes?.[index],25,500,100)/100};--photo-source:url('${picture.file}');--photo-position:${picture.position};--photo-size:${picture.size}"></span>`;
+   return `<span class="photo-element" data-canvas-element="${index}" role="img" aria-label="${esc(picture.name)}" style="${placement||"position:relative;"}${stack("element:"+index)}${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],25,500,100)/100};--photo-source:url('${picture.file}');--photo-position:${picture.position};--photo-size:${picture.size}"></span>`;
   }
-  return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
+  return `<svg data-canvas-element="${index}" style="${placement||"position:relative;"}${stack("element:"+index)}color:${color};${stretch(index)}--element-scale:${clamp(slide.elementSizes?.[index],50,250,100)/100}" viewBox="0 0 24 24" role="img" aria-label="${slideElements[key][0]}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${slideElements[key][1]}</svg>`;
  }).join('')}</div>`:'';
  const photograph=photo?`<div class="campaign-photo gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></div>`:photoIndex===undefined?'':`<div class="campaign-photo photo-${sheet}" style="--photo-x:${(photoIndex%4)*100/3}%;--photo-y:${Math.floor(photoIndex/4)*50}%"></div>`;
- return `<div class="art premium p${t.layout} campaign-art ratio-${ratioClass} ${front} ${cartoonClass} ${role?'slide-'+role:''} motif-${motif} deck-${/^(?:hook|cta|agenda|triptych|feature|principle|steps|compare|metric|checklist|quote|example|summary|blank)$/.test(slide.deckLayout)?slide.deckLayout:"legacy"} artwork-${['front','background'].includes(slide.artLayer)?slide.artLayer:'behind'} finish${t.palette} ${extra}" style="--bg:${p[1]};--fg:${p[2]};--accent:${accent};--campaign-palette:${p[3]};--campaign-bg:${background};--campaign-ink:${ink};--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}"><div class="art-brand" data-canvas-copy="brandText" style="${stack("brandText")}${textStyle('brandText')}">${layerCopy(slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION'),slide.textLayers?.brandText?.bullets)}</div><div class="campaign-visual" aria-hidden="true" style="${stack("artwork")}">${image?`<img class="campaign-upload" src="${image}" alt="">`:photograph}</div><div class="campaign-copy" style="${stack("title","body","kicker")}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex("kicker")}${textStyle('kicker')}">${layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex("title")}${textStyle('title')}${slide.size&&!slide.textLayers?.title?.size?'font-size:'+(clamp(slide.size,5,18,8)*(ratioClass==='landscape'?.65:1))+'cqw;':''}transform:translate(${clamp(slide.x,-100,100,0)}px,${clamp(slide.y,-100,100,0)}px)">${layerCopy(slide.title??t.title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex("body")}${textStyle('body')}">${deckBodyCopy(slide.body??'A fresh idea for a more intentional tomorrow.',slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}<div class="art-foot" style="${stack("footerText")}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(slide.footerText??(slide.catalog?'GSN Technology':state.brand.handle),slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
+ const dkLayout=role&&role!=='hook'&&!slide.catalog?DK_LAYOUTS[slide.deckLayout||(role==='cta'?'cta':'feature')]:null;
+ if(dkLayout){
+  const cp=t.cartoon?gsnPhoto(gsnOriginalPictureCount+t.id-200):gsnPhoto(t.id%200);
+  const brandName=slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION');
+  return dkPage(t,slide,{layout:role==='cta'?'cta':dkLayout,accent:hex(slide.accent,coverAccent),cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo:customGsn?photo:cp,caption,handle:slide.catalog?'GSN Technology':state.brand.handle,brand:brandName,extra,layerCopy});
+ }
+ return `<div class="art premium p${t.layout} campaign-art ratio-${ratioClass} ${front} ${cartoonClass} ${role?'slide-'+role:''} motif-${motif} deck-${/^(?:hook|cta|agenda|triptych|feature|principle|steps|compare|metric|checklist|quote|example|summary|blank)$/.test(slide.deckLayout)?slide.deckLayout:"legacy"} artwork-${['front','background'].includes(slide.artLayer)?slide.artLayer:'behind'} finish${t.palette} ${extra}" style="--bg:${p[1]};--fg:${p[2]};--accent:${accent};--campaign-palette:${p[3]};--campaign-bg:${background};--campaign-ink:${ink};--art-x:${clamp(slide.artX,-100,100,0)}%;--art-y:${clamp(slide.artY,-100,100,0)}%;--art-scale:${clamp(slide.artScale,35,180,100)/100};aspect-ratio:${ratio}"><div class="art-brand" data-canvas-copy="brandText" style="${stack("brandText")}${textStyle('brandText')}">${layerCopy(slide.brandText??((slide.catalog?'GSN Technology':state.brand.name).toUpperCase()+' · AI AUTOMATION'),slide.textLayers?.brandText?.bullets)}</div><div class="campaign-visual" aria-hidden="true" style="${stack("artwork")}${artStretch}">${image?`<img class="campaign-upload" src="${image}" alt="">`:photograph}</div><div class="campaign-copy" style="${stack("title","body","kicker")}"><div class="art-kicker" data-canvas-copy="kicker" style="${zIndex("kicker")}${textStyle('kicker')}">${layerCopy(caption,slide.textLayers?.kicker?.bullets)}</div><div class="art-title" data-canvas-copy="title" style="${zIndex("title")}${textStyle('title')}${slide.size&&!slide.textLayers?.title?.size?'font-size:'+(clamp(slide.size,5,18,8)*(ratioClass==='landscape'?.65:1))+'cqw;':''}transform:translate(${clamp(slide.x,-100,100,0)}px,${clamp(slide.y,-100,100,0)}px)">${layerCopy(slide.title??t.title,slide.textLayers?.title?.bullets)}</div><div class="art-sub" data-canvas-copy="body" style="${zIndex("body")}${textStyle('body')}">${deckBodyCopy(slide.body??'A fresh idea for a more intentional tomorrow.',slide.deckLayout,slide.textLayers?.body?.bullets)}</div></div>${elementStrip}${freeTexts}<div class="art-foot" style="${stack("footerText")}"><span data-canvas-copy="footerText" style="${textStyle('footerText')}">${layerCopy(slide.footerText??(slide.catalog?'GSN Technology':state.brand.handle),slide.textLayers?.footerText?.bullets)}</span><span>${esc(slide.number??'01')} &nbsp; ↗</span></div></div>`;
 }
 
 function card(t){const campaign=t.cartoon?[t.title,t.summary]:gsnCampaign(t.id);return `<article class="template-card">${art(t,{...(t.cartoon?templateStarter(t.id)[0]:{}),catalog:true,ratio:t.cartoon?'4 / 5':'1 / 1',title:campaign?.[0],body:campaign?.[1],kicker:t.cartoon?t.topic:campaign?'AI AUTOMATION FOR BUSINESS':undefined})}<div class="template-meta"><div><strong>${esc(t.cartoon?t.name:gsnPhoto(t.id).name)}</strong><small>${esc(palettes[t.palette][0])} · ${t.format} · #${String(t.id+1).padStart(3,'0')}</small></div><button data-template="${t.id}" aria-label="Use ${esc(t.name)}">Use ↗</button></div></article>`}
@@ -179,6 +243,70 @@ function render(){document.body.dataset.workspaceView=view; document.getElementB
 function activityList(n=30){return state.activity.slice(0,n).map(a=>`<div class="activity"><div class="agent-dot ${a.agent.toLowerCase()}">${esc(a.agent[0])}</div><div><p><b>${esc(a.agent)}</b> · ${esc(a.task)}</p><small>${new Date(a.time).toLocaleString()} · ${esc(a.model)}</small></div></div>`).join('')||'<div class="empty"><strong>A clean slate for good work.</strong><br>Your local actions will appear here as you create. No simulated runs or invented metrics.</div>'}
 function overview(){return heading('A little structure. A lot of possibility.','Your content operation, thoughtfully brought together.',`<button class="primary" data-view="ideas">＋ Create content</button>`)+`<section class="hero"><div class="hero-copy"><div class="eyebrow">FROM A SPARK TO SOMETHING WORTH SHARING</div><h2>Your next great idea<br>deserves a beautiful execution.</h2><p>Six specialist roles. One creative workspace.<br>Research, write, design, and make it yours.</p><button class="dark" data-view="templates">Explore the templates &nbsp; ↗</button></div><div class="hero-art" aria-hidden="true"><div class="mini-slide"><small>THE CREATIVE PROCESS / 01</small>Less noise.<br>More signal.<i>A different way to create. ↗</i></div><div class="mini-slide"><small>GSN MEDIA / STUDIO</small>Ideas into<br>impact.<i>Make something that matters.</i></div></div></section><div class="stats">${[['Local workflow actions',state.activity.length,'Recorded in this browser','⌘'],['Ideas captured',state.ideas.length,'Your starting points','✧'],['Saved projects',state.projects.length,'Ready to revisit','▣'],['Design templates',templates.length,'Ready to customize','▦']].map(([n,v,s,i])=>`<article class="stat"><div class="stat-top">${n}<span>${i}</span></div><div class="stat-value">${v}</div><small>${s}</small></article>`).join('')}</div><div class="columns"><section class="panel"><div class="section-head"><h2>Workspace activity</h2><button class="text-button" data-view="agents">View all activity ↗</button></div>${activityList(3)}</section><section class="panel"><div class="section-head"><h2>You’re in the loop.</h2><span class="badge">APPROVAL FIRST</span></div><p class="help">A considered path from your first thought to the final frame.</p><div class="flow"><span>Idea</span><div class="line"></div><span>Copy</span><div class="line"></div><span>Design</span><div class="line"></div><span>Review</span></div><div class="approval-note">${state.copyApproved?'✓ Words approved by you':'○ Words await your review'}<br>${state.finalApproved?'✓ Final content approved by you':'○ Final design awaits your review'}<br>○ Publishing integration not connected</div></section></div><div class="section-head"><h2>A starting point for your next story</h2><button class="text-button" data-view="templates">All ${templates.length} templates ↗</button></div><div class="template-grid">${[0,21,44,67].map(i=>card(templates[i])).join('')}</div>`}
 function library(){const list=templates.filter(t=>(filter==='All templates'||filter==='3D Agency'&&t.cartoon||filter==='3D Business Metaphors'&&t.metaphor||(gsnTopics.includes(filter)?gsnPhoto(t.id).sector.startsWith(filter):t.format===filter))&&`${t.name} ${t.format} ${t.cartoon?"3D Agency "+(t.metaphor?"Business Metaphors ":"")+t.topic:gsnPhoto(t.id).sector+" "+gsnCampaign(t.id)[0]+" AI automation"}`.toLowerCase().includes(query.toLowerCase()));const total=Math.max(1,Math.ceil(list.length/12));page=Math.min(page,total-1);return heading('AI automation for business.',templates.length+' editable designs across technology and 3D agency campaigns',`<span class="badge">GSN TECHNOLOGY</span>`)+`<div class="filters">${['All templates','3D Agency','3D Business Metaphors',...gsnTopics,...formats].map(f=>`<button data-filter="${f}" class="${filter===f?'active':''}">${f}</button>`).join('')}<input id="templateSearch" class="search" placeholder="Search topic, style, or format…" aria-label="Search templates" value="${esc(query)}"></div><div class="template-grid">${list.slice(page*12,page*12+12).map(card).join('')}</div>${!list.length?'<div class="empty">No templates match. Try another search.</div>':''}<div class="pagination"><button id="prevPage" ${page===0?'disabled':''}>← Previous</button><span>${page+1} / ${total} · ${list.length} templates</span><button id="nextPage" ${page>=total-1?'disabled':''}>Next →</button></div><p class="help">Format categories suggest a starting use. Every design can be edited, resized, or sequenced in the studio.</p>`}
+// How many pages a template carries: Hook + designed pages + CTA. Agents pick a template whose capacity fits their write-up.
+function templatePageCount(id){return [5,7,10][id%3];}
+const INNER_ORDER={3:['feature','steps','metric'],5:['agenda','feature','steps','metric','compare'],8:['agenda','feature','steps','metric','triptych','quote','compare','summary']};
+function innerBlueprint(layout,topic,subject){
+ const t=String(topic||'your work').toLowerCase();
+ const map={
+  agenda:['What this pack covers','The problem worth fixing\nA simple way to start\nWhat to measure\nYour next step'],
+  feature:[`Where ${t} gets stuck`,'Requests arrive in too many places.\nPeople re-enter the same details.\nNobody owns the next step.'],
+  steps:['Start in three steps','Map it · Write down where the task starts and who owns it.\nAutomate it · Let AI prepare the next step and flag exceptions.\nReview it · A person approves anything that needs judgment.'],
+  metric:['What teams often track','3× · faster handoffs (replace with your own result)\nFewer manual re-entries each week\nOne clear owner for every request'],
+  triptych:['Three places to begin','Intake · Capture every request in one queue.\nRouting · Send each task to the right owner.\nFollow-up · Remind people before work stalls.'],
+  quote:['“Automate the handoff. Keep the judgment.”','The GSN Technology approach'],
+  compare:['Before and after','Before · Requests arrive across disconnected channels.\nAfter · One queue tracks ownership and next steps.'],
+  summary:['Key takeaways','Start with one repeatable task.\nLet automation prepare, people decide.\nMeasure before and after.'],
+  checklist:['Check before you launch','Access is set up\nUnusual requests are tested\nThe team can pause the workflow'],
+  principle:['Small steps, real change.','Choose one workflow, improve it, then repeat.'],
+  example:['Put it into practice','Try a small pilot with the people who use the workflow every day.'],
+ };
+ return map[layout];
+}
+function innerPages(id,topic,subject,layouts,start=1){
+ const labels={agenda:'OVERVIEW',feature:'THE PROBLEM',steps:'HOW TO START',metric:'THE RESULT',triptych:'WHERE TO BEGIN',quote:'THE PRINCIPLE',compare:'THE SHIFT',summary:'RECAP',checklist:'CHECKLIST',principle:'THE IDEA',example:'IN PRACTICE'};
+ return layouts.map((layout,i)=>{const [title,body]=innerBlueprint(layout,topic,subject);return {deckLayout:layout,title,body,kicker:`${String(start+i).padStart(2,'0')} / ${labels[layout]}`}});
+}
+
+// What each designed layout expects in its body text, so people and agents write the right shape of words.
+const LAYOUT_GUIDE={
+ hook:'Cover. Title is the hook; body is one short supporting line.',
+ agenda:'Overview. Body: 3 to 5 lines, one agenda item per line.',
+ feature:'Photo band with points. Body: 2 to 4 short lines, one point each.',
+ steps:'Timeline. Body: 2 to 4 lines written as "Step name · what to do".',
+ metric:'Big number. Body line 1: "73% · what it measures". Further lines are short notes.',
+ triptych:'Three cards. Body: exactly 3 lines written as "Heading · one sentence".',
+ quote:'Pull quote. Title is the quote; body is who said it or the source.',
+ compare:'Before and after. Body: 2 lines written as "Before · …" and "After · …".',
+ checklist:'Ticked list. Body: 3 to 5 lines, one item each.',
+ principle:'One big idea. Title is the statement; body is one sentence.',
+ summary:'Recap pills. Body: 3 lines, one takeaway each.',
+ example:'Photo with a text panel. Body: one or two sentences.',
+ cta:'Closing call to action. Title is the ask; body one sentence; kicker is the small label.',
+};
+const EXTRA_ORDER=['agenda','feature','steps','metric','triptych','quote','compare','summary','checklist','principle'];
+// Builds a design from an agent's or person's wording only. The template keeps all of its design: Hook first,
+// call to action last, and one designed page for each piece of middle copy (extra pages reuse the template's own style).
+function composePages(id,copy){
+ if(!Array.isArray(copy)||copy.length<2||copy.length>10)throw new Error('Send 2 to 10 pages of wording: the Hook first, the call to action last.');
+ const base=templateStarter(id),hook=base[0],cta=base[base.length-1],mids=base.slice(1,-1).slice(0,copy.length-2);
+ const style=(({motif,background,ink,accent})=>({motif,background,ink,accent}))(base[1]||hook);
+ const used=new Set(mids.map(p=>p.deckLayout));
+ while(mids.length<copy.length-2){
+  const layout=EXTRA_ORDER.find(l=>!used.has(l))||EXTRA_ORDER[mids.length%EXTRA_ORDER.length];used.add(layout);
+  mids.push({deckLayout:layout,title:'',body:'',kicker:'',...(base[1]?.motif?{motif:style.motif}:{}),...(style.accent?{accent:style.accent,background:style.background,ink:style.ink}:{})});
+ }
+ const pages=[hook,...mids,cta];
+ return pages.map((page,i)=>{
+  const c=copy[i]||{},out={...page};
+  if(typeof c.title==='string'&&c.title.trim())out.title=c.title;
+  if(typeof c.body==='string')out.body=c.body;
+  if(typeof c.kicker==='string')out.kicker=c.kicker;
+  else if(i>0&&i<pages.length-1)out.kicker=`${String(i+1).padStart(2,'0')} / ${String(out.title||'').slice(0,26).toUpperCase()}`;
+  if(i>0&&i<pages.length-1&&typeof c.layout==='string'&&c.layout!=='hook'&&c.layout!=='cta'&&LAYOUT_GUIDE[c.layout])out.deckLayout=c.layout;
+  return out;
+ });
+}
 function templateStarter(template){
  const design=templates[template];
  if(design?.cartoon){
@@ -205,43 +333,24 @@ function templateStarter(template){
    const [diagnosis,detail,approach,steps,cta]=angles[design.topic];
    pages.splice(1,4,['feature',diagnosis,detail,'01 / DIAGNOSE'],['steps',approach,steps,'02 / DESIGN'],['principle',`${design.verb} ${design.metric}`,'Record a baseline before the change. Compare results over the same period and review exceptions with the team.','03 / MEASURE'],['cta',cta,'Send GSN Technology the task you want to improve and where it breaks today.','START A CONVERSATION']);
   }
-  return pages.map(([deckLayout,title,body,kicker])=>({deckLayout,title,body,kicker,motif,background,ink,accent}));
+  const cartoonPages=pages.map(([deckLayout,title,body,kicker])=>({deckLayout,title,body,kicker,motif,background,ink,accent}));
+  const extra=templatePageCount(template)-cartoonPages.length;
+  if(extra>0){
+   const have=new Set(cartoonPages.map(p=>p.deckLayout));
+   const order=['metric','triptych','quote','compare','summary','checklist','example'].filter(l=>!have.has(l)).slice(0,extra);
+   cartoonPages.splice(cartoonPages.length-1,0,...innerPages(template,design.topic,design.title,order,cartoonPages.length).map(p=>({...p,motif,background,ink,accent})));
+  }
+  // Cartoon steps carry one sentence per step so the designed timeline shows real steps.
+  for(const p of cartoonPages)if(p.deckLayout==='steps'&&!p.body.includes('\n'))p.body=p.body.split(/(?<=[.!?])\s+/).filter(Boolean).join('\n');
+  return cartoonPages;
  }
  const [title,body]=gsnCampaign(template);
  const topic=gsnPhoto(template).sector;
- const pages=[
-  ['triptych','Intelligent automation','Identify the repeatable task and document where it starts.\nUse AI to prepare the next step and surface exceptions.\nKeep people responsible for decisions that need judgment.'],
-  ['feature',`A closer look at ${topic.toLowerCase()}`,'Map the task and identify the decisions people make today.\nChoose a handoff that automation can prepare safely.\nPilot it with the team and track what changes.'],
-  ['metric','Measure what changes','— min · Compare completion time before and after the pilot.\n—% · Track how often the workflow needs human correction.'],
-  ['steps','Build the first workflow','1. Define the trigger.\n2. Decide what the automation can handle.\n3. Route exceptions to a person.'],
-  ['compare','Before and after','Before · Requests arrive across disconnected channels.\nAfter · One queue tracks ownership and next steps.'],
-  ['principle','Automate the handoff. Keep the judgment.','Let automation prepare the next step. Give people the context and authority to make the final call.'],
-  ['checklist','Check before you launch','Confirm access, test unusual requests, and give the team a clear way to pause the workflow.'],
-  ['quote','“Start where work already happens.”','Design around the tools and routines your team uses every day.'],
-  ['example','Put it into practice','Try a small pilot. Collect feedback from the people who use it and adjust the handoff before expanding.'],
-  ['summary','From one task to a repeatable process','Document what worked, what still needs review, and which workflow to tackle next.'],
- ];
- const content=pages.slice(0,3+template%8).map(([deckLayout,title,body],index)=>{
-  const page={deckLayout,title,body,kicker:String(index+1).padStart(2,'0')+' / '+topic.toUpperCase(),motif:'none'};
-  if(['triptych','feature','metric'].includes(deckLayout)){
-   Object.assign(page,{background:deckLayout==='metric'?'#272727':'#06162f',ink:'#f4f8ff',accent:deckLayout==='metric'?'#6bd443':'#32bfff'});
-  }
-  if(deckLayout==='feature'||deckLayout==='metric')page.motif='gsn-'+template;
-  if(deckLayout==='example'){
-   Object.assign(page,{motif:'gsn-'+template,background:'#f3f7fb',ink:'#102849',accent:'#1467cf'});
-  }
-  if(deckLayout==='quote'){
-   Object.assign(page,{motif:'gsn-'+template,background:'#100923',ink:'#f8f1ff',accent:'#a773ff'});
-  }
-  if(deckLayout==='triptych'){
-   page.elements=Array.from({length:3},(_,slot)=>400+template*3+slot).filter(id=>id<gsnPictureCount).map(id=>'gsn-'+id);
-  }
-  return page;
- });
+ const count=templatePageCount(template),layouts=INNER_ORDER[count-2];
  return [
   {deckLayout:'hook',title,body,kicker:'GSN TECHNOLOGY / AI AUTOMATION',motif:'gsn-'+(200+template)},
-  ...content,
-  {deckLayout:'cta',title:'Book an automation consultation.',body:'Tell GSN Technology which workflow your company wants to improve.',motif:'none'},
+  ...innerPages(template,topic.replace(/^[^·]*· ?/,''),title,layouts),
+  {deckLayout:'cta',title:'Ready to start?',body:'Tell GSN Technology which workflow your company wants to improve.',kicker:'LET’S TALK',motif:'none'},
  ];
 }
 function ensureSlides(){if(!state.slides.length){state.slides=templateStarter(state.template);state.selected=0;save()}}
