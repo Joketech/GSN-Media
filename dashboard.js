@@ -35,10 +35,10 @@ const Dashboard=(()=>{
  const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
- // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. First visit follows the system's reduced-motion setting.
+ // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
  const Motion={
   on:true,
-  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='on':!matchMedia('(prefers-reduced-motion: reduce)').matches;this.apply()},
+  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='off'?false:true:true;this.apply()},
   apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
   set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
  };

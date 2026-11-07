@@ -152,7 +152,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .brand-text small{display:none}
 }
 @media(max-height:820px){.hero-tag{display:none}.agents-grid{grid-template-columns:repeat(2,1fr);gap:2px 8px}.hero p{display:none}.hero-row{height:140px}.agent-row small{display:none}.agent-row{padding:0 8px}.agent-row .bot{width:46px;height:52px}.agents-card{padding:8px 14px}.dash{min-height:500px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}.marquee-track,.orb,.orb-ring,.orb-dot,.hero:after,.stage-bg{animation:none!important}.marquee{overflow-x:auto}}
+
 .portal-water{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
 
 .modal textarea{width:100%;border-radius:12px;border:1px solid rgba(0,0,0,.16);padding:10px 12px;font:inherit;background:#fff;color:var(--ink);resize:vertical}
