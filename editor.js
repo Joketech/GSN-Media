@@ -607,11 +607,31 @@ const Editor=(()=>{
   const brand=()=>commit(()=>{design.brand={name:$('#edBn').value.trim()||design.brand.name,handle:$('#edBh').value.trim()||design.brand.handle}},'brand');
   $('#edBn').oninput=brand;$('#edBh').oninput=brand;
  }
+ // Adding a page: pick a designed layout (or copy this page). New pages inherit the pack's colours and photo.
+ const LAYOUT_NAMES={agenda:'Agenda',feature:'Photo and points',steps:'Steps timeline',metric:'Big number',triptych:'Three cards',quote:'Quote',compare:'Before and after',checklist:'Checklist',principle:'Big statement',summary:'Recap',example:'Photo and text panel',cta:'Call to action'};
+ function layoutPage(layout){
+  const src=design.pages[Math.min(Math.max(page,1),design.pages.length-2)]||design.pages[0];
+  const [p]=GSNKit.innerPages(design.template_id,'your topic','',[layout],design.pages.length);
+  if(src&&src!==design.pages[0])for(const k of ['motif','background','ink','accent'])if(src[k]!==undefined)p[k]=src[k];
+  p.kicker=`${String(page+2).padStart(2,'0')} / NEW PAGE`;
+  return p;
+ }
+ function addLayoutPage(layout){
+  const n=design.pages.length;if(n>=30)return toast('A pack can have up to 30 pages.');
+  commit(()=>{const at=Math.min(page+1,n-1);design.pages.splice(at,0,layout==='copy'?JSON.parse(JSON.stringify(design.pages[page])):layoutPage(layout));page=at;sel=null;multi=[]});
+  thumbs();render();
+ }
+ function openLayoutPicker(){
+  const guide=GSNKit.LAYOUT_GUIDE;
+  openModal(`<h2>Add a page</h2><p class="hint">Choose a layout. It takes this pack's colours and photo, and you only write the words.</p><div class="ed-layouts">${Object.keys(LAYOUT_NAMES).map(k=>`<button class="ed-layout" data-layout="${k}"><b>${LAYOUT_NAMES[k]}</b><span>${esc(guide[k]||'')}</span></button>`).join('')}<button class="ed-layout" data-layout="copy"><b>Copy this page</b><span>An exact copy you can reword.</span></button></div><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
+  el.modal.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{closeModal();addLayoutPage(b.dataset.layout)});
+ }
  function toolPages(body){
   const s=slide(),n=design.pages.length;
   const field=(k,label,rows)=>`<label class="ed-field">${label}<textarea data-f="${k}" rows="${rows}" maxlength="${k==='title'?300:1200}">${esc(s[k]??'')}</textarea></label>`;
-  body.innerHTML=`<p class="hint">${role(page)} · the words on this page. They update as you type.</p><div class="ed-actions"><button class="btn-light" data-pg="dup">Duplicate</button><button class="btn-light" data-pg="left">Move earlier</button><button class="btn-light" data-pg="right">Move later</button><button class="btn-light" data-pg="del">Delete page</button></div>${field('title','Headline',2)}${field('body','Write-up',5)}${field('kicker','Label',1)}${field('footerText','Footer',1)}
+  body.innerHTML=`<p class="hint">${role(page)} · the words on this page. They update as you type.</p><div class="ed-actions"><button class="btn-light" data-pg="dup">Duplicate</button><button class="btn-light" data-pg="left">Move earlier</button><button class="btn-light" data-pg="right">Move later</button><button class="btn-light" data-pg="del">Delete page</button></div>${page>0&&page<n-1?`<label class="ed-field">Layout<select data-layoutsel>${Object.keys(LAYOUT_NAMES).map(k=>`<option value="${k}" ${s.deckLayout===k?'selected':''}>${LAYOUT_NAMES[k]}</option>`).join('')}</select></label>`:''}${field('title','Headline',2)}${field('body','Write-up',5)}${field('kicker','Label',1)}${field('footerText','Footer',1)}
   <h3>Layers on this page</h3><ol class="ed-layers" id="edLayers"></ol>`;
+  const ls=$('[data-layoutsel]',body);if(ls)ls.onchange=()=>{commit(()=>{slide().deckLayout=ls.value},'layout');thumbs([page])};
   $$('[data-f]',body).forEach(t=>t.oninput=()=>{const k=t.dataset.f;if(k==='title'&&!t.value.trim())return;commit(()=>{slide()[k]=t.value},'f'+k)});
   const names=k=>k.startsWith('text:')?'Text: '+(s.texts[+k.slice(5)]?.text||'').slice(0,24):k.startsWith('element:')?GSNKit.canvasElementLabel(s.elements[+k.slice(8)])||'Element':k==='artwork'?'Image':COPY[k];
   $('#edLayers').innerHTML=fullOrder().slice().reverse().filter(k=>names(k)).map(k=>`<li class="${sel&&layerKey()===k?'on':''}" data-layer="${k}"><span>${esc(names(k))}</span></li>`).join('');
@@ -669,7 +689,7 @@ const Editor=(()=>{
    else if(act==='closetool')closeTool();
    else if(act==='download')openDownload();else if(act==='present')present();else if(act==='closemodal')closeModal();
    else if(act==='zoomin')setZoom(zoom*1.2);else if(act==='zoomout')setZoom(zoom/1.2);else if(act==='zoomfit')setZoom(1);
-   else if(act==='addpage')pageOps('add');
+   else if(act==='addpage')openLayoutPicker();
    else if(act==='theirs')resolveConflict(false);else if(act==='mine')resolveConflict(true);
    else if(act==='resetcolors'){commit(()=>{const s=slide();delete s.accent;delete s.background;delete s.ink});toolBrand($('#edFlyBody'))}
    return;

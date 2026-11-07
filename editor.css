@@ -111,3 +111,9 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-sel.multi{border-style:dashed}
 .ed-bar .count{font:700 .8rem 'DM Sans',sans-serif;padding:0 8px;color:var(--ink)}
 .ed-bar .rng{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700}
+
+.ed-layouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;max-height:52vh;overflow:auto}
+.ed-layout{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.75);font:inherit;cursor:pointer}
+.ed-layout:hover{background:#fff;border-color:var(--maroon)}
+.ed-layout b{font:700 .9rem 'DM Sans',sans-serif}.ed-layout span{font-size:.74rem;color:#555;line-height:1.3}
+.ed-field select{width:100%;height:38px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:#fff;padding:0 8px}

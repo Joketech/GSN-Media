@@ -73,6 +73,31 @@ test('designs are stored on the server, versioned, and protected from silent ove
  }finally{await s.close()}
 });
 
+test('agents pick a template and send only wording; the design stays',async()=>{
+ const s=await serve({});
+ try{
+  const agent={Authorization:'Bearer agent-test-token','Content-Type':'application/json'};
+  const call=(route,method='GET',data)=>fetch(s.base+route,{method,headers:agent,body:data===undefined?undefined:JSON.stringify(data)});
+  const all=await (await call('/templates')).json();
+  assert.equal(all.templates.length,400);
+  assert.ok(all.templates.every(t=>t.pages>=5&&t.pages<=10&&t.layouts[0]==='hook'&&t.layouts.at(-1)==='cta'));
+  const roomy=await (await call('/templates?pages=9')).json();
+  assert.ok(roomy.templates.length>0&&roomy.templates.every(t=>t.pages>=9));
+  const layouts=await (await call('/layouts')).json();assert.ok(layouts.layouts.steps);
+  const t=roomy.templates[0];
+  const copy=[{title:'Hook line',body:'Support line'},...Array.from({length:7},(_,i)=>({title:'Point '+(i+1),body:'Words '+(i+1)})),{title:'Act now',body:'Do it'}];
+  const made=await call('/designs','POST',{template_id:t.id,platform:'instagram-post',copy});
+  assert.equal(made.status,201);
+  const d=await made.json();
+  assert.equal(d.pages.length,9);assert.equal(d.pages[0].deckLayout,'hook');assert.equal(d.pages[8].deckLayout,'cta');
+  assert.equal(d.pages[0].title,'Hook line');assert.equal(d.pages[4].title,'Point 4');
+  // Fewer wordings than the template holds: surplus designed pages are dropped, never left blank.
+  const short=await (await call('/designs','POST',{template_id:t.id,platform:'instagram-post',copy:[{title:'A'},{title:'B',body:'x'},{title:'C'}]})).json();
+  assert.equal(short.pages.length,3);
+  assert.equal((await call('/designs','POST',{template_id:t.id,platform:'instagram-post',copy:[{title:'only one'}]})).status,400);
+ }finally{await s.close()}
+});
+
 test('the access-key gate can be restored for public servers',async()=>{
  const s=await serve({openUi:false});
  try{

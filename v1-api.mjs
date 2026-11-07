@@ -5,7 +5,7 @@ import {randomUUID,randomBytes,createHash,timingSafeEqual} from 'node:crypto';
 import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {Transform} from 'node:stream';
-import {templateCatalog,renderDesign,starterSlides} from './template-engine.mjs';
+import {templateCatalog,renderDesign,starterSlides,composeSlides,layoutGuide} from './template-engine.mjs';
 import {sanitizeDesign,summary as designSummary,DesignError} from './designs-api.mjs';
 import {PRESETS,PLATFORM_GROUPS} from './platforms.mjs';
 
@@ -127,14 +127,21 @@ export function createV1({dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v
   if(!who){if(!token&&!openUi)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);throw new InputError(openUi?'Open the studio in your browser, or send the agent access key as a Bearer token.':'Studio access key required.',401);}
   if(url.pathname==='/api/v1/session'&&req.method==='DELETE'){const sid=req.headers.cookie?.match(/gsn_session=([a-f0-9]{64})/)?.[1];sessions.delete(sid);res.setHeader('Set-Cookie','gsn_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0');json(res,200,{ok:true});return true;}
   if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}
-  if(url.pathname==='/api/v1/templates'&&req.method==='GET'){json(res,200,{templates:templateCatalog()});return true;}
+  if(url.pathname==='/api/v1/templates'&&req.method==='GET'){
+   // ?pages=N returns only templates that can carry N pages of wording (Hook + middle pages + call to action).
+   const need=Number(url.searchParams.get('pages')||0);let list=templateCatalog();
+   if(need){if(!Number.isInteger(need)||need<2||need>10)throw new InputError('pages must be a whole number from 2 to 10.');list=list.filter(t=>t.pages>=need);}
+   json(res,200,{templates:list.map(({slides,...t})=>t),total:list.length});return true;}
+  if(url.pathname==='/api/v1/layouts'&&req.method==='GET'){json(res,200,{layouts:layoutGuide()});return true;}
+  const tm=url.pathname.match(/^\/api\/v1\/templates\/(\d{1,3})$/);
+  if(tm&&req.method==='GET'){const id=Number(tm[1]);if(id>=designTemplateCount)throw new InputError('Template not found.',404);json(res,200,{id,pages:starterSlides(id),layouts:layoutGuide()});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=await list('job');json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='POST'){const key=req.headers['idempotency-key'];if(typeof key!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/.test(key))throw new InputError('Supply an Idempotency-Key of 1–160 letters, digits, _, ., : or -.');const j=await submit(await body(req),key);json(res,202,publicJob(j));return true;}
   if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='GET'){const all=(await list('design')).map(designSummary);json(res,200,{designs:all.slice(0,500),total:all.length});return true;}
-  if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');p.pages=starterSlides(p.template_id);}
+  if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');if(p.copy!==undefined){try{p.pages=composeSlides(p.template_id,p.copy)}catch(e){throw new InputError(e.message)}delete p.copy}else p.pages=starterSlides(p.template_id);}
    const created=await serial(async()=>{const design=sanitizeDesign({title:'Untitled pack',...p},{templateCount:designTemplateCount});if((await list('design')).length>=500)throw new InputError('Maximum 500 saved designs. Delete some first.',409);const id=randomUUID(),now=new Date().toISOString();const record={...design,id,record_type:'design',revision:1,created_at:now,updated_at:now,updated_by:who};await save(id,record);return record;});json(res,201,created);return true;}
   const dm=url.pathname.match(/^\/api\/v1\/designs\/([a-f0-9-]{36})$/);
   if(dm&&uuid.test(dm[1])){const read=async()=>{const d=await load(dm[1]).catch(()=>null);if(d?.record_type!=='design')throw new InputError('Design not found.',404);return d;};

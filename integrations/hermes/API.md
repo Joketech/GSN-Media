@@ -5,7 +5,10 @@ Base: `http://127.0.0.1:4188/api/v1` on the Contabo host. Authenticate with `Aut
 | Method | Route | Purpose |
 |---|---|---|
 | GET | `/health` | Live voice/visual worker status |
-| GET | `/templates` | 200 zero-based template IDs and names |
+| GET | `/templates` | 200 zero-based template IDs, names, `pages` (capacity, 5 to 10) and the `layouts` of each page. `?pages=N` returns only templates that can carry N pages of wording. |
+| GET | `/templates/{id}` | 200 the template's starter pages and the layout guide |
+| GET | `/layouts` | 200 what each designed layout expects in its body text |
+| POST | `/designs` with `template_id`, `platform` and `copy` | 201 a design built from wording only: `copy` is a list of `{title, body, kicker?, layout?}`, Hook first, call to action last. The template supplies every design decision. Fewer pages than the template holds drops the spare designed pages; more is refused. |
 | GET / POST | `/voices` | List profiles / save a name, reference_text, audio_base64 |
 | GET | `/jobs` | Latest 200 jobs, newest first; total count |
 | POST | `/jobs` | Create a job; required Idempotency-Key header |

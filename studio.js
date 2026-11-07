@@ -115,7 +115,7 @@ function canvasElementLabel(key){
 }
 // ---- Designed inner pages (write-up and CTA). Each layout is a real composition built from the template's own colours
 // and its own cover photograph, so a template reads as one family: Hook, designed pages, CTA. ----
-const DK_LAYOUTS={agenda:'agenda',steps:'steps',compare:'compare',checklist:'checklist',quote:'quote',metric:'stat',triptych:'cards',feature:'split',principle:'statement',summary:'recap',example:'case',cta:'cta',blank:'statement'};
+const DK_LAYOUTS={hook:'statement',agenda:'agenda',steps:'steps',compare:'compare',checklist:'checklist',quote:'quote',metric:'stat',triptych:'cards',feature:'split',principle:'statement',summary:'recap',example:'case',cta:'cta',blank:'statement'};
 function dkColors(accent,secondary){
  const h=n=>parseInt(n,16)/255,r=h(accent.slice(1,3)),g=h(accent.slice(3,5)),b=h(accent.slice(5,7));
  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
@@ -242,7 +242,6 @@ function render(){document.body.dataset.workspaceView=view; document.getElementB
 function activityList(n=30){return state.activity.slice(0,n).map(a=>`<div class="activity"><div class="agent-dot ${a.agent.toLowerCase()}">${esc(a.agent[0])}</div><div><p><b>${esc(a.agent)}</b> · ${esc(a.task)}</p><small>${new Date(a.time).toLocaleString()} · ${esc(a.model)}</small></div></div>`).join('')||'<div class="empty"><strong>A clean slate for good work.</strong><br>Your local actions will appear here as you create. No simulated runs or invented metrics.</div>'}
 function overview(){return heading('A little structure. A lot of possibility.','Your content operation, thoughtfully brought together.',`<button class="primary" data-view="ideas">＋ Create content</button>`)+`<section class="hero"><div class="hero-copy"><div class="eyebrow">FROM A SPARK TO SOMETHING WORTH SHARING</div><h2>Your next great idea<br>deserves a beautiful execution.</h2><p>Six specialist roles. One creative workspace.<br>Research, write, design, and make it yours.</p><button class="dark" data-view="templates">Explore the templates &nbsp; ↗</button></div><div class="hero-art" aria-hidden="true"><div class="mini-slide"><small>THE CREATIVE PROCESS / 01</small>Less noise.<br>More signal.<i>A different way to create. ↗</i></div><div class="mini-slide"><small>GSN MEDIA / STUDIO</small>Ideas into<br>impact.<i>Make something that matters.</i></div></div></section><div class="stats">${[['Local workflow actions',state.activity.length,'Recorded in this browser','⌘'],['Ideas captured',state.ideas.length,'Your starting points','✧'],['Saved projects',state.projects.length,'Ready to revisit','▣'],['Design templates',templates.length,'Ready to customize','▦']].map(([n,v,s,i])=>`<article class="stat"><div class="stat-top">${n}<span>${i}</span></div><div class="stat-value">${v}</div><small>${s}</small></article>`).join('')}</div><div class="columns"><section class="panel"><div class="section-head"><h2>Workspace activity</h2><button class="text-button" data-view="agents">View all activity ↗</button></div>${activityList(3)}</section><section class="panel"><div class="section-head"><h2>You’re in the loop.</h2><span class="badge">APPROVAL FIRST</span></div><p class="help">A considered path from your first thought to the final frame.</p><div class="flow"><span>Idea</span><div class="line"></div><span>Copy</span><div class="line"></div><span>Design</span><div class="line"></div><span>Review</span></div><div class="approval-note">${state.copyApproved?'✓ Words approved by you':'○ Words await your review'}<br>${state.finalApproved?'✓ Final content approved by you':'○ Final design awaits your review'}<br>○ Publishing integration not connected</div></section></div><div class="section-head"><h2>A starting point for your next story</h2><button class="text-button" data-view="templates">All ${templates.length} templates ↗</button></div><div class="template-grid">${[0,21,44,67].map(i=>card(templates[i])).join('')}</div>`}
 function library(){const list=templates.filter(t=>(filter==='All templates'||filter==='3D Agency'&&t.cartoon||filter==='3D Business Metaphors'&&t.metaphor||(gsnTopics.includes(filter)?gsnPhoto(t.id).sector.startsWith(filter):t.format===filter))&&`${t.name} ${t.format} ${t.cartoon?"3D Agency "+(t.metaphor?"Business Metaphors ":"")+t.topic:gsnPhoto(t.id).sector+" "+gsnCampaign(t.id)[0]+" AI automation"}`.toLowerCase().includes(query.toLowerCase()));const total=Math.max(1,Math.ceil(list.length/12));page=Math.min(page,total-1);return heading('AI automation for business.',templates.length+' editable designs across technology and 3D agency campaigns',`<span class="badge">GSN TECHNOLOGY</span>`)+`<div class="filters">${['All templates','3D Agency','3D Business Metaphors',...gsnTopics,...formats].map(f=>`<button data-filter="${f}" class="${filter===f?'active':''}">${f}</button>`).join('')}<input id="templateSearch" class="search" placeholder="Search topic, style, or format…" aria-label="Search templates" value="${esc(query)}"></div><div class="template-grid">${list.slice(page*12,page*12+12).map(card).join('')}</div>${!list.length?'<div class="empty">No templates match. Try another search.</div>':''}<div class="pagination"><button id="prevPage" ${page===0?'disabled':''}>← Previous</button><span>${page+1} / ${total} · ${list.length} templates</span><button id="nextPage" ${page>=total-1?'disabled':''}>Next →</button></div><p class="help">Format categories suggest a starting use. Every design can be edited, resized, or sequenced in the studio.</p>`}
-function templateStarter(template){
 // How many pages a template carries: Hook + designed pages + CTA. Agents pick a template whose capacity fits their write-up.
 function templatePageCount(id){return [5,7,10][id%3];}
 const INNER_ORDER={3:['feature','steps','metric'],5:['agenda','feature','steps','metric','compare'],8:['agenda','feature','steps','metric','triptych','quote','compare','summary']};
@@ -267,6 +266,47 @@ function innerPages(id,topic,subject,layouts,start=1){
  const labels={agenda:'OVERVIEW',feature:'THE PROBLEM',steps:'HOW TO START',metric:'THE RESULT',triptych:'WHERE TO BEGIN',quote:'THE PRINCIPLE',compare:'THE SHIFT',summary:'RECAP',checklist:'CHECKLIST',principle:'THE IDEA',example:'IN PRACTICE'};
  return layouts.map((layout,i)=>{const [title,body]=innerBlueprint(layout,topic,subject);return {deckLayout:layout,title,body,kicker:`${String(start+i).padStart(2,'0')} / ${labels[layout]}`}});
 }
+
+// What each designed layout expects in its body text, so people and agents write the right shape of words.
+const LAYOUT_GUIDE={
+ hook:'Cover. Title is the hook; body is one short supporting line.',
+ agenda:'Overview. Body: 3 to 5 lines, one agenda item per line.',
+ feature:'Photo band with points. Body: 2 to 4 short lines, one point each.',
+ steps:'Timeline. Body: 2 to 4 lines written as "Step name · what to do".',
+ metric:'Big number. Body line 1: "73% · what it measures". Further lines are short notes.',
+ triptych:'Three cards. Body: exactly 3 lines written as "Heading · one sentence".',
+ quote:'Pull quote. Title is the quote; body is who said it or the source.',
+ compare:'Before and after. Body: 2 lines written as "Before · …" and "After · …".',
+ checklist:'Ticked list. Body: 3 to 5 lines, one item each.',
+ principle:'One big idea. Title is the statement; body is one sentence.',
+ summary:'Recap pills. Body: 3 lines, one takeaway each.',
+ example:'Photo with a text panel. Body: one or two sentences.',
+ cta:'Closing call to action. Title is the ask; body one sentence; kicker is the small label.',
+};
+const EXTRA_ORDER=['agenda','feature','steps','metric','triptych','quote','compare','summary','checklist','principle'];
+// Builds a design from an agent's or person's wording only. The template keeps all of its design: Hook first,
+// call to action last, and one designed page for each piece of middle copy (extra pages reuse the template's own style).
+function composePages(id,copy){
+ if(!Array.isArray(copy)||copy.length<2||copy.length>10)throw new Error('Send 2 to 10 pages of wording: the Hook first, the call to action last.');
+ const base=templateStarter(id),hook=base[0],cta=base[base.length-1],mids=base.slice(1,-1).slice(0,copy.length-2);
+ const style=(({motif,background,ink,accent})=>({motif,background,ink,accent}))(base[1]||hook);
+ const used=new Set(mids.map(p=>p.deckLayout));
+ while(mids.length<copy.length-2){
+  const layout=EXTRA_ORDER.find(l=>!used.has(l))||EXTRA_ORDER[mids.length%EXTRA_ORDER.length];used.add(layout);
+  mids.push({deckLayout:layout,title:'',body:'',kicker:'',...(base[1]?.motif?{motif:style.motif}:{}),...(style.accent?{accent:style.accent,background:style.background,ink:style.ink}:{})});
+ }
+ const pages=[hook,...mids,cta];
+ return pages.map((page,i)=>{
+  const c=copy[i]||{},out={...page};
+  if(typeof c.title==='string'&&c.title.trim())out.title=c.title;
+  if(typeof c.body==='string')out.body=c.body;
+  if(typeof c.kicker==='string')out.kicker=c.kicker;
+  else if(i>0&&i<pages.length-1)out.kicker=`${String(i+1).padStart(2,'0')} / ${String(out.title||'').slice(0,26).toUpperCase()}`;
+  if(i>0&&i<pages.length-1&&typeof c.layout==='string'&&c.layout!=='hook'&&c.layout!=='cta'&&LAYOUT_GUIDE[c.layout])out.deckLayout=c.layout;
+  return out;
+ });
+}
+function templateStarter(template){
  const design=templates[template];
  if(design?.cartoon){
   const motif='gsn-'+(gsnOriginalPictureCount+template-200);

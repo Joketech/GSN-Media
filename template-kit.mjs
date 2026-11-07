@@ -15,7 +15,7 @@ export async function buildKit() {
   const definitions = between(studio, 'const palettes=', 'const agents=', 'palettes and templates');
   const agents = between(studio, 'const agents=', '];', 'agents') + '];';
   const art = between(studio, 'const slideElements=', 'function card(', 'the art renderer');
-  const starter = between(studio, 'function templateStarter(', 'function ensureSlides(', 'template starters');
+  const starter = between(studio, '// How many pages a template carries', 'function ensureSlides(', 'template starters');
   const js = `(function(){'use strict';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const state={brand:{name:'GSN Technology',handle:'GSN Technology'}};
@@ -24,7 +24,7 @@ ${definitions}
 ${agents}
 ${art}
 ${starter}
-window.GSNKit={templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
+window.GSNKit={LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
 })();`;
 
   // CSS for the shadow roots that host each page. :root/body rules are retargeted to the shadow host.
