@@ -1,9 +1,16 @@
 name: gsn-studio
+# Rotate container logs so a long-running VPS cannot fill its disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 services:
   app:
     build: .
     image: gsn-studio-app:local
     restart: unless-stopped
+    logging: *logging
     ports:
       - "127.0.0.1:${APP_PORT:-4188}:4187"
     environment:
@@ -34,6 +41,7 @@ services:
       dockerfile: services/Dockerfile.cutout
     image: gsn-studio-cutout:local
     restart: unless-stopped
+    logging: *logging
     expose: ["8092"]
     mem_limit: 2g
     read_only: true
@@ -47,6 +55,7 @@ services:
       context: .
       dockerfile: services/Dockerfile.voice
     restart: unless-stopped
+    logging: *logging
     environment:
       WORKER_KIND: voice
       DATA_DIR: /data
@@ -64,6 +73,7 @@ services:
       context: .
       dockerfile: services/Dockerfile.visuals
     restart: unless-stopped
+    logging: *logging
     gpus: all
     environment:
       WORKER_KIND: visuals
@@ -81,6 +91,7 @@ services:
     profiles: [public]
     image: caddy:2-alpine
     restart: unless-stopped
+    logging: *logging
     ports: ["80:80", "443:443"]
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:-localhost}

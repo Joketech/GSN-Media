@@ -17,19 +17,33 @@ jobs:
             dockerfile: services/Dockerfile.voice
           - component: visuals
             dockerfile: services/Dockerfile.visuals
+          - component: cutout
+            dockerfile: services/Dockerfile.cutout
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Validate app and worker source
         run: |
           node --check server.mjs
-          node --check ai-proxy.mjs
+          node --check studio.js
           node --check ai-studio.js
-          node --check media.js
+          node --check ai-proxy.mjs
           node --check v1-api.mjs
           node --check v1.js
-          node --test tests/v1.test.mjs tests/designs.test.mjs
+          node --check template-engine.mjs
+          node --check template-kit.mjs
+          node --check designs-api.mjs
+          node --check platforms.mjs
+          node --check publisher.mjs
+          node --check accounts.mjs
+          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs tests/cutout.test.mjs tests/accounts.test.mjs
+          python3 -m py_compile services/cutout_worker.py
           python3 -m py_compile services/inference_worker.py
-          docker compose config --quiet
+          python3 -m py_compile integrations/hermes/gsn.py
+          python3 tests/worker_idempotency.py
+          docker compose --profile voice --profile gpu --profile public config --quiet
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
