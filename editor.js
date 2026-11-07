@@ -226,6 +226,7 @@ const Editor=(()=>{
    cur=cur.some(m=>layerKey(m)===k)?cur.filter(m=>layerKey(m)!==k):[...cur,target];
    multi=cur.length>1?cur:[];sel=cur[cur.length-1]||null;drawOverlay();return;
   }
+  const again=!handle&&!multi.length&&sameSel(target,sel)&&['copy','text'].includes(target.t)&&!(e.shiftKey||e.ctrlKey||e.metaKey||e.altKey);
   if(!handle&&!(multi.length>1&&multi.some(m=>sameSel(m,target)))&&!sameSel(target,sel))select(target);
   else if(!handle&&!multi.length&&groupFor(layerKey(target))&&!sameSel(target,sel))select(target);
   const node=nodeFor();if(!node)return;
@@ -255,7 +256,7 @@ const Editor=(()=>{
    el.over.onpointermove=el.over.onpointerup=el.over.onpointercancel=null;
    cancelAnimationFrame(raf);raf=0;if(drag.pending)applyDrag();
    const moved=drag.start.moved,wasSel=sel&&sel.t==='element'&&!multi.length?{...sel}:null;drag=null;
-   if(!moved){undo.pop();return}
+   if(!moved){undo.pop();if(again&&ev?.type==='pointerup')setTimeout(startEdit,0);return}
    if(wasSel&&ev?.type==='pointerup')dropIntoTarget(wasSel,ev.clientX,ev.clientY);
    if(design.status==='approved')design.status='draft';
    markDirty();queueThumbs([page]);render();
@@ -402,7 +403,7 @@ const Editor=(()=>{
   }
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
-   html=`<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
+   html=`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
    ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
@@ -519,6 +520,7 @@ const Editor=(()=>{
   if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
   if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
   if(a==='slotpan'){slotPan=!slotPan;return drawBar()}
+  if(a==='edit'){return startEdit()}
   if(a==='group')return groupSel();
   if(a==='ungroup')return ungroupSel();
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
