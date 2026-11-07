@@ -42,6 +42,9 @@ services:
     image: gsn-studio-cutout:local
     restart: unless-stopped
     logging: *logging
+    environment:
+      NUMBA_CACHE_DIR: /tmp/numba
+      HOME: /tmp
     expose: ["8092"]
     mem_limit: 2g
     read_only: true
