@@ -425,9 +425,10 @@ const Editor=(()=>{
    const c=cands[+b.dataset.cut];refineCutout(target,url,'data:image/png;base64,'+c.png_base64)};
  }
  let cutToken=null;
- async function cutFallback(target,url,why){
-  closeModal();toast(`AI cutout is not available (${why}). Using the plain-background tool instead.`,6000);
-  try{const out=await removeBackground(url,48);applyPhoto(target,out)}catch(e){toast(e.message,6000)}
+ // The plain-background tool only works on flat backgrounds, so it is offered, never applied without being asked.
+ function cutFallback(target,url,why){
+  openModal(`<h2>AI cutout isn’t available</h2><p class="hint">${esc(why)}</p><p class="hint">The plain-background tool still works, but only on pictures with a flat background. On a busy photo it will damage the subject.</p><div class="ed-actions"><button class="btn-light" data-cut="plain">Try the plain-background tool</button><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
+  el.modal.onclick=async e=>{if(!e.target.closest('[data-cut=plain]'))return;closeModal();try{const out=await removeBackground(url,48);applyPhoto(target,out);toast('Background removed. Undo brings it back.')}catch(err){toast(err.message,6000)}};
  }
  // Touch-up: paint away leftovers or bring back parts the model removed.
  async function refineCutout(target,origUrl,cutUrl){

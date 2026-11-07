@@ -28,6 +28,8 @@ const Library=(()=>{
   // Photographic templates lead; they are the realistic look of the dashboard.
   return list.slice().sort((a,b)=>Number(!!a.cartoon)-Number(!!b.cartoon)||a.id-b.id);
  }
+ // Takes templates in turn from each style so a short strip shows the whole range, not only the first style.
+ const mix=(list,n)=>{const by=new Map();for(const t of list){const k=styleOf(t);(by.get(k)||by.set(k,[]).get(k)).push(t)}const q=[...by.values()],out=[];for(let i=0;out.length<n&&q.some(a=>i<a.length);i++)for(const a of q)if(i<a.length&&out.length<n)out.push(a[i]);return out};
  const formats=()=>['All',...new Set(kit().templates.map(t=>t.format))];
  const styles=()=>['All','Photo','3D agency','Business metaphors'];
 
@@ -78,5 +80,5 @@ const Library=(()=>{
  // Cards added later (infinite scroll) join the same observer.
  function observeMore(cards){if(observer)cards.forEach(c=>observer.observe(c))}
  function dispose(){observer?.disconnect();observer=null}
- return {filter,formats,styles,cardHtml,hydrate,observeMore,dispose,nameOf,subOf,styleOf,roleLabel,hide,restoreAll,hiddenCount:()=>hidden().size,Preview};
+ return {filter,mix,formats,styles,cardHtml,hydrate,observeMore,dispose,nameOf,subOf,styleOf,roleLabel,hide,restoreAll,hiddenCount:()=>hidden().size,Preview};
 })();
