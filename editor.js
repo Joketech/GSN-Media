@@ -5,7 +5,7 @@
 const Editor=(()=>{
  const {$,$$,esc,icon,api,toast,state:app,preset,platformIcon}=App;
  const COPY={title:'Headline',body:'Write-up',kicker:'Label',brandText:'Brand line',footerText:'Footer'};
- const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['people','user','People'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
+ const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['people','user','People'],['background','image','Background'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
  const DEFAULT_ORDER=['artwork','brandText','kicker','title','body','footerText'];
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const round=v=>Math.round(v*100)/100;
@@ -251,14 +251,38 @@ const Editor=(()=>{
    drag.pending={ev,dx,dy,shift:ev.shiftKey};
    if(!raf)raf=requestAnimationFrame(applyDrag);
   };
-  el.over.onpointerup=el.over.onpointercancel=()=>{
+  el.over.onpointerup=el.over.onpointercancel=ev=>{
    el.over.onpointermove=el.over.onpointerup=el.over.onpointercancel=null;
    cancelAnimationFrame(raf);raf=0;if(drag.pending)applyDrag();
-   const moved=drag.start.moved;drag=null;
+   const moved=drag.start.moved,wasSel=sel&&sel.t==='element'&&!multi.length?{...sel}:null;drag=null;
    if(!moved){undo.pop();return}
+   if(wasSel&&ev?.type==='pointerup')dropIntoTarget(wasSel,ev.clientX,ev.clientY);
    if(design.status==='approved')design.status='draft';
    markDirty();queueThumbs([page]);render();
   };
+ }
+ // Dropping a picture on a shape or a picture frame puts it inside that shape or frame.
+ async function dropIntoTarget(src,x,y){
+  const s=slide(),key=s.elements?.[src.i];if(!(isPhotoEl(key)||(typeof key==='string'&&/^gsn-\d+$/.test(key))))return;
+  const root=el.host.shadowRoot;if(!root)return;
+  // Shapes are outlines, so pointer hit-testing would miss their inside: test against their boxes instead (smallest box on top wins).
+  let target=null,best=Infinity;
+  for(const n of root.querySelectorAll('[data-canvas-element],[data-slot]')){
+   const r=n.getBoundingClientRect();if(x<r.left||x>r.right||y<r.top||y>r.bottom)continue;
+   const area=r.width*r.height;if(area>=best)continue;
+   if(n.dataset.slot){target={t:'slot',k:n.dataset.slot};best=area;continue}
+   const j=+n.dataset.canvasElement;if(j===src.i)continue;const k2=s.elements[j];
+   if(typeof k2==='string'&&!isPhotoEl(k2)&&!/^gsn-\d+$/.test(k2)){target={t:'element',i:j};best=area}
+  }
+  if(!target)return;
+  let url=key;
+  if(!isPhotoEl(key)){const p=GSNKit.gsnLibraryPhoto(key);if(!p)return;try{url=await libraryCell(p)}catch{return}}
+  commit(()=>{
+   const sl=slide();
+   if(target.t==='element'){setFill(target.i,url);const at=target.i>src.i?target.i-1:target.i;deleteOne(sl,{t:'element',i:src.i});sel={t:'element',i:at}}
+   else{setSlot(target.k,{src:url,x:0,y:0,z:100});deleteOne(sl,{t:'element',i:src.i});sel={t:'slot',k:target.k}}
+  });
+  toast('Picture placed inside. Undo (Ctrl+Z) moves it back out.');drawOverlay();
  }
  // Text box sizes are in the template's own container units (cqw), which are not always the page width. Measure what one unit is on screen.
  function unitPx(node){
@@ -276,9 +300,9 @@ const Editor=(()=>{
    for(const m of members()){
     if(m.t==='copy'){const p=base.textLayers?.[m.k]||{};s.textLayers={...s.textLayers,[m.k]:{...p,x:round(clamp((p.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p.y||0)+dy/st.H*100,-100,100))}}}
     else if(m.t==='text'){const t=base.texts[m.i];s.texts[m.i]={...s.texts[m.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
-    else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,0,100)),y:round(clamp(c.y+dy/st.H*100,0,100))};movedPos=true}
+    else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
     else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
-    else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-100,100));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-100,100))}
+    else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
    }
    if(movedPos){for(let i=0;i<(s.elements||[]).length;i++)if(!pos[i])pos[i]=st.centers[i];s.elementPositions=pos}
   }else if(st.mode==='scale'){
@@ -363,6 +387,7 @@ const Editor=(()=>{
  }
  function drawBar(){
   const bar=el.bar,s=slide();
+  const ae=document.activeElement;if(ae&&bar.contains(ae)&&ae.matches?.('input[type=color],input[type=range]')&&!bar.hidden){const r0=nodeFor()?.getBoundingClientRect();if(r0)positionBar(r0,pageBox());return}
   const b=(act,ic,label,on)=>`<button class="${on?'on':''}" data-b="${act}" title="${label}" aria-label="${label}" aria-pressed="${!!on}">${icon(ic)}</button>`;
   const sep='<i class="sep"></i>';
   let html='';
@@ -375,13 +400,13 @@ const Editor=(()=>{
   }
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
-   html=`<select data-b="font" aria-label="Font">${[['sans','Sans'],['serif','Serif'],['mono','Mono']].map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${n}</option>`).join('')}</select>
+   html=`<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
    ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}${b('bullets','list','Bullets',l.bullets)}<label class="swatch" title="Text colour"><input type="color" data-b="color" value="${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></label>
    <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
   }else if(sel.t==='element'){
-   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label>`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<label class="swatch" title="Colour"><input type="color" data-b="elcolor" value="${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></label><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
    html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotreset" class="txt" title="Centre the picture and reset the zoom">Reset position</button>${sep}`;
@@ -395,6 +420,7 @@ const Editor=(()=>{
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
  }
+ function setFill(i,u){const s=slide(),n=s.elements.length,arr=Array.from({length:n},(_,j)=>s.elementFills?.[j]??null);arr[i]=u;if(arr.some(Boolean))s.elementFills=arr;else delete s.elementFills}
  const isPhotoEl=k=>typeof k==='string'&&/^data:image\//.test(k);
  const getList=(s,k,i,d)=>(s[k]&&s[k][i]!==undefined&&s[k][i]!==null)?s[k][i]:d;
  function setList(s,k,i,v,d){const n=s.elements.length,a=Array.from({length:n},(_,j)=>getList(s,k,j,d));a[i]=v;s[k]=a}
@@ -497,6 +523,9 @@ const Editor=(()=>{
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
   if(a==='rmbg')return runRemoveBackground();
   if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
+  if(a==='elfillup'){const t=sel;return pickImage(url=>commit(()=>setFill(t.i,url)))}
+  if(a==='elfilllib'){const t=sel;return libraryPick(url=>commit(()=>setFill(t.i,url)))}
+  if(a==='elfillclear'){const t=sel;return commit(()=>setFill(t.i,null))}
   if(a==='elflip'){const t=sel;return commit(()=>{setList(slide(),'elementFlip',t.i,getList(slide(),'elementFlip',t.i,0)?0:1,0)})}
   if(a==='elcenter'){const t=sel;return commit(()=>{const s=slide(),n=s.elements.length,pos=Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i));pos[t.i]={x:50,y:50};s.elementPositions=pos})}
   if(a==='clearimg')return commit(()=>{delete slide().image;delete slide().artX;delete slide().artY;delete slide().artScale});
@@ -539,14 +568,14 @@ const Editor=(()=>{
     s.elements=[...s.elements,s.elements[sel.i]];s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i)),{x:clamp(c.x+3,0,100),y:clamp(c.y+3,0,100)}];
     s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),s.elementSizes?.[sel.i]??100];
     if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),s.elementColors[sel.i]||'#25c8ff'];
-    for(const [k,d] of [['elementStretchX',100],['elementStretchY',100],['elementRotations',0],['elementRadius',0],['elementOpacity',100],['elementFlip',0]])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??d),s[k][sel.i]??d];
+    for(const [k,d] of [['elementStretchX',100],['elementStretchY',100],['elementRotations',0],['elementRadius',0],['elementOpacity',100],['elementFlip',0],['elementFills',null]])if(s[k])s[k]=[...Array.from({length:n},(_,i)=>s[k][i]??d),s[k][sel.i]??d];
     sel={t:'element',i:n}}
   });
   drawOverlay();
  }
  function deleteOne(s,m){
   if(m.t==='text'){s.texts=s.texts.filter((_,i)=>i!==m.i);s.layerOrder=remap(s.layerOrder,'text:',m.i);remapGroups(s,'text:',m.i)}
-  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
+  else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip','elementFills'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
   else if(m.t==='slot')clearSlot(m.k);
@@ -659,7 +688,7 @@ const Editor=(()=>{
   const label=TOOLS.find(t=>t[0]===id)[2];
   el.root.classList.add('has-fly');el.fly.hidden=false;el.fly.innerHTML=`<header><h2>${label}</h2><button class="ed-icon" data-act="closetool" aria-label="Close ${label}">${icon('close')}</button></header><div class="ed-flybody" id="edFlyBody"></div>`;
   const body=$('#edFlyBody');
-  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,people:toolPeople,brand:toolBrand,pages:toolPages,resize:toolResize})[id](body);
+  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,people:toolPeople,background:toolBackground,brand:toolBrand,pages:toolPages,resize:toolResize})[id](body);
   requestAnimationFrame(fit);
  }
  function toolTemplates(body){
@@ -704,13 +733,18 @@ const Editor=(()=>{
  }
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
-  const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button></div></div>`).join('')};
+  const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button><button data-up="del" data-i="${i}">Delete</button></div></div>`).join('')+(uploads.length?'<button class="btn-light" data-up="clear" style="grid-column:1/3">Delete all uploads</button>':'')};
   $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
   $('#edLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);draw()});
   draw();
  }
  // GSN picture library: every picture (photos, 3D agency, metaphors, comic characters) can be placed on a page or in a slot. A picked cell is cropped to its own
  // picture, so it behaves like any upload: replaceable, movable and zoomable.
+ async function libraryCell(p){
+  const img=new Image();img.src=p.file;await img.decode();const cell=img.naturalWidth*100/parseFloat(p.size);const [px,py]=p.position.split(' ').map(parseFloat);
+  const sx=px/100*(img.naturalWidth-cell),sy=py/100*(img.naturalHeight-cell),c=document.createElement('canvas');c.width=c.height=900;
+  c.getContext('2d').drawImage(img,sx,sy,cell,cell,0,0,900,900);return c.toDataURL('image/jpeg',.9);
+ }
  function libraryPick(done){
   const all=[];for(let i=0;i<1400;i++){const p=GSNKit.gsnLibraryPhoto('gsn-'+i);if(!p)break;all.push({...p,i})}
   const d=document.createElement('dialog');d.className='ed-lib';
@@ -722,9 +756,7 @@ const Editor=(()=>{
    d.querySelector('[data-p]').disabled=pg===0;d.querySelector('[data-n]').disabled=pg>=max-1};
   q.oninput=()=>{pg=0;draw()};d.querySelector('[data-p]').onclick=()=>{pg--;draw()};d.querySelector('[data-n]').onclick=()=>{pg++;draw()};
   grid.onclick=async e=>{const b=e.target.closest('button[data-i]');if(!b)return;const p=all[+b.dataset.i];
-   try{const img=new Image();img.src=p.file;await img.decode();const cell=img.naturalWidth*100/parseFloat(p.size);const [px,py]=p.position.split(' ').map(parseFloat);
-    const sx=px/100*(img.naturalWidth-cell),sy=py/100*(img.naturalHeight-cell),c=document.createElement('canvas');c.width=c.height=900;
-    c.getContext('2d').drawImage(img,sx,sy,cell,cell,0,0,900,900);d.close();done(c.toDataURL('image/jpeg',.9))}catch(err){toast('That picture could not be loaded.')}};
+   try{const url=await libraryCell(p);d.close();done(url)}catch(err){toast('That picture could not be loaded.')}};
   d.addEventListener('close',()=>d.remove());document.body.append(d);draw();d.showModal();
  }
  async function compress(file){
@@ -742,19 +774,46 @@ const Editor=(()=>{
   const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';
   input.onchange=async()=>{try{const u=await compress(input.files[0]);uploads.unshift(u);done(u)}catch(e){toast(e.message)}};input.click();
  }
+
+ // Page background: a colour, your own picture, or no template picture. Works on every template.
+ function toolBackground(body){
+  const s=slide(),hex=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
+  body.innerHTML=`<label class="ed-check"><input type="checkbox" id="edBgAll"> Apply to all pages</label>
+  <h3>Page colour</h3>
+  <label class="ed-colour">Fill the whole page<span><input type="color" id="edBgCol" value="${hex(s.pageFill,'#ffffff')}"><input type="text" id="edBgHex" value="${hex(s.pageFill,'#ffffff')}" maxlength="7" aria-label="Page colour hex"></span></label>
+  <div class="ed-pal">${['#ffffff','#f8f1e7','#fbe3e8','#e4ecff','#e3f6ec','#101323','#1f2a44','#8a2236','#ffd84d','#00a86b','#25c8ff','#000000'].map(c=>`<button data-c="${c}" title="${c}" aria-label="${c}"><i style="background:${c};width:100%"></i></button>`).join('')}</div>
+  <h3>Page picture</h3>
+  <p class="hint">Use your own picture behind the page, or hide the template's own picture.</p>
+  <div class="ed-row"><button class="btn-light" id="edBgUp">Upload picture</button><button class="btn-light" id="edBgLib">GSN pictures</button></div>
+  ${uploads.length?`<div class="ed-ugrid">${uploads.slice(0,8).map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" data-bgup="${i}" title="Use as page background"></div>`).join('')}</div>`:''}
+  <label class="ed-check"><input type="checkbox" id="edHide" ${s.hideArt?'checked':''}> Hide the template's picture</label>
+  <button class="btn-light" id="edBgClear">Remove page colour and picture</button>`;
+  const targets=()=>$('#edBgAll').checked?design.pages:[slide()];
+  const set=(patch,key)=>commit(()=>{for(const t of targets())for(const [k,v] of Object.entries(patch)){if(v===undefined)delete t[k];else t[k]=v}},key||'bg');
+  const colour=v=>{$('#edBgHex').value=v;$('#edBgCol').value=v;set({pageFill:v},'bgcol')};
+  $('#edBgCol').oninput=e=>colour(e.target.value);
+  $('#edBgHex').onchange=e=>{const v=e.target.value.trim().toLowerCase();if(/^#[0-9a-f]{6}$/.test(v))colour(v);else toast('Use a hex colour such as #ac82f4.')};
+  $$('[data-c]',body).forEach(b=>b.onclick=()=>colour(b.dataset.c));
+  $('#edBgUp').onclick=()=>pickImage(u=>{set({pageImage:u});toolBackground(body)});
+  $('#edBgLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);set({pageImage:u});toolBackground(body)});
+  $$('[data-bgup]',body).forEach(i=>i.onclick=()=>{set({pageImage:uploads[+i.dataset.bgup]})});
+  $('#edHide').onchange=e=>set({hideArt:e.target.checked||undefined});
+  $('#edBgClear').onclick=()=>{set({pageFill:undefined,pageImage:undefined,hideArt:undefined});toolBackground(body)};
+ }
  function toolBrand(body){
   const s=slide(),pal=GSNKit.palettes,hex=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
-  body.innerHTML=`<p class="hint">Colours apply to this page. Tick the box to apply them to every page.</p>
-  <label class="ed-check"><input type="checkbox" id="edAll"> Apply to all pages</label>
+  body.innerHTML=`<p class="hint">Your brand colours. They apply to every page unless you untick the box.</p>
+  <label class="ed-check"><input type="checkbox" id="edAll" checked> Apply to all pages</label>
   ${[['accent','Accent','#ac82f4'],['background','Background','#101323'],['ink','Text','#f8faff']].map(([k,l,f])=>`<label class="ed-colour">${l}<span><input type="color" data-col="${k}" value="${hex(s[k],f)}"><input type="text" data-hex="${k}" value="${hex(s[k],f)}" maxlength="7" aria-label="${l} hex"></span></label>`).join('')}
   <h3>Palettes</h3><div class="ed-pal">${pal.map(p=>`<button data-pal="${p[0]}" title="${p[0]}" aria-label="${p[0]} palette"><i style="background:${p[1]}"></i><i style="background:${p[2]}"></i><i style="background:${p[3]}"></i></button>`).join('')}</div>
-  <h3>Brand</h3><label class="ed-colour">Brand name<input id="edBn" maxlength="80" value="${esc(design.brand.name)}"></label><label class="ed-colour">Handle<input id="edBh" maxlength="80" value="${esc(design.brand.handle)}"></label><button class="btn-light" data-act="resetcolors">Reset page colours</button>`;
+  <h3>Brand</h3><label class="ed-colour">Brand name<input id="edBn" maxlength="80" value="${esc(design.brand.name)}"></label><label class="ed-colour">Handle<input id="edBh" maxlength="80" value="${esc(design.brand.handle)}"></label><button class="btn-light" id="edInkAll">Use the text colour on every text</button><button class="btn-light" data-act="resetcolors">Reset page colours</button>`;
   const apply=(patch)=>commit(()=>{const targets=$('#edAll').checked?design.pages:[slide()];for(const t of targets)Object.assign(t,patch)},'colour');
   $$('[data-col]',body).forEach(i=>i.oninput=()=>{apply({[i.dataset.col]:i.value});$(`[data-hex=${i.dataset.col}]`,body).value=i.value});
   $$('[data-hex]',body).forEach(i=>i.onchange=()=>{if(/^#[0-9a-f]{6}$/i.test(i.value))apply({[i.dataset.hex]:i.value.toLowerCase()});else toast('Use a hex colour such as #ac82f4.')});
   $$('[data-pal]',body).forEach(b=>b.onclick=()=>{const p=pal.find(x=>x[0]===b.dataset.pal);apply({background:p[1],ink:p[2],accent:p[3]});toolBrand(body)});
   const brand=()=>commit(()=>{design.brand={name:$('#edBn').value.trim()||design.brand.name,handle:$('#edBh').value.trim()||design.brand.handle}},'brand');
   $('#edBn').oninput=brand;$('#edBh').oninput=brand;
+  $('#edInkAll').onclick=()=>commit(()=>{for(const t of ($('#edAll').checked?design.pages:[slide()])){const ink=hex(t.ink,'#f8faff');for(const k of Object.keys(t.textLayers||{}))if(t.textLayers[k].color)t.textLayers[k].color=ink;for(const x of (t.texts||[]))if(x.color)x.color=ink}},'inkall');
  }
  // Adding a page: pick a designed layout (or copy this page). New pages inherit the pack's colours and photo.
  const LAYOUT_NAMES={agenda:'Agenda',feature:'Photo and points',steps:'Steps timeline',metric:'Big number',triptych:'Three cards',quote:'Quote',compare:'Before and after',checklist:'Checklist',principle:'Big statement',summary:'Recap',example:'Photo and text panel',cta:'Call to action'};
@@ -848,7 +907,7 @@ const Editor=(()=>{
   const tpl=e.target.closest('[data-tpl]');if(tpl){commit(()=>{design.template_id=+tpl.dataset.tpl});$$('.ed-tpl',el.fly).forEach(b=>b.classList.toggle('on',b===tpl));thumbs();return}
   const elb=e.target.closest('[data-el]');if(elb)return addElement(elb.dataset.el);
   const at=e.target.closest('[data-addtext]');if(at)return addText(at.dataset.addtext);
-  const up=e.target.closest('[data-up]');if(up){const u=uploads[+up.dataset.i];if(up.dataset.up==='el')addElement(u);else commit(()=>{slide().image=u});return}
+  const up=e.target.closest('[data-up]');if(up){if(up.dataset.up==='del'){uploads.splice(+up.dataset.i,1);return tool==='uploads'&&openTool('uploads')}if(up.dataset.up==='clear'){uploads.length=0;return tool==='uploads'&&openTool('uploads')}const u=uploads[+up.dataset.i];if(up.dataset.up==='el')addElement(u);else commit(()=>{slide().image=u});return}
   const rs=e.target.closest('[data-resize]');if(rs)return resizeTo(rs.dataset.resize);
   const cp=e.target.closest('[data-copy]');if(cp)return copyToSize(cp.dataset.copy);
   const pg=e.target.closest('[data-pg]');if(pg&&!el.modal.contains(pg)){pageOps(pg.dataset.pg);if(tool==='pages')openTool('pages');return}

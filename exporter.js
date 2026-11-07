@@ -28,6 +28,29 @@ async function inlineGsnPhotos(cards,direct=false){
  return `<style>:root{${properties.join('')}}</style>${cards}`;
 }
 const atlasData=new Map(),sheetTexts=new Map();
+const fontCssCache=new Map();
+// Google Fonts used on the pages are embedded in the export (only the character ranges the text needs), because an exported picture cannot load fonts from the web.
+async function fontExportCss(cards){
+ const used=(window.GSNKit?.gsnFonts||[]).filter(f=>f[3]&&cards.includes(f[2]));
+ if(!used.length)return '';
+ const chars=new Set([...cards.replace(/<style[\s\S]*?<\/style>/g,' ').replace(/<[^>]*>/g,' ')].map(c=>c.codePointAt(0)));
+ const inRange=range=>!range||range.split(',').some(part=>{const m=part.trim().match(/^U\+([0-9a-f?]+)(?:-([0-9a-f]+))?$/i);if(!m)return false;
+  let lo,hi;if(m[1].includes('?')){lo=parseInt(m[1].replace(/\?/g,'0'),16);hi=parseInt(m[1].replace(/\?/g,'f'),16)}else{lo=parseInt(m[1],16);hi=m[2]?parseInt(m[2],16):lo}
+  for(const c of chars)if(c>=lo&&c<=hi)return true;return false});
+ const toData=async url=>{if(!fontCssCache.has(url))fontCssCache.set(url,fetch(url).then(r=>r.blob()).then(b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(f.result);f.onerror=rej;f.readAsDataURL(b)})));return fontCssCache.get(url)};
+ let out='';
+ for(const f of used){
+  try{
+   const css=await (await fetch(`https://fonts.googleapis.com/css2?family=${f[3]}&display=swap`)).text();
+   for(const block of css.split('@font-face').slice(1)){
+    const range=(block.match(/unicode-range:\s*([^;]+);/)||[])[1];if(!inRange(range))continue;
+    const url=(block.match(/url\((https:[^)]+)\)/)||[])[1];if(!url)continue;
+    out+='@font-face'+block.replace(url,await toData(url));
+   }
+  }catch{}
+ }
+ return out;
+}
 async function campaignExportCss(cards){
  const files=[['campaign','campaign-atlas.png'],['automation','automation-atlas.png'],['automation-operations','automation-operations-atlas.png']];
  const read=async(path)=>{const response=await fetch(path);if(!response.ok)throw new Error(`Missing export asset: ${path}`);return response;};
@@ -44,7 +67,7 @@ async function campaignExportCss(cards){
  ]);
  const seasonal=cards.includes('greeting-poster')?await read('greetings.css').then(response=>response.text()):'';
  const all=[premium,library].join('\n').replace(/@import[^;]+;/g,'');
- return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}\n${poster}\n${seasonal}`;
+ return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}\n${poster}\n${seasonal}\n${await fontExportCss(cards)}`;
 }
 function loadDesignImage(source){
  return new Promise((resolve,reject)=>{

@@ -55,7 +55,7 @@ function textOptions(o, name) {
     rotation: range(o.rotation, -360, 360, `${name}.rotation`), size: range(o.size, 1, 30, `${name}.size`),
     width: range(o.width, 50, 180, `${name}.width`), spacing: range(o.spacing, -10, 40, `${name}.spacing`),
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
-    font: pick(o.font, ['sans', 'serif', 'mono'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
+    font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
     color: hex(o.color, `${name}.color`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
@@ -81,9 +81,11 @@ export function sanitizeSlide(s, index = 0) {
     deckLayout: pick(s.deckLayout, DECK_LAYOUTS, `${where} deckLayout`),
     artLayer: pick(s.artLayer, ['behind', 'front', 'background'], `${where} artLayer`),
     accent: hex(s.accent, `${where} accent`), background: hex(s.background, `${where} background`), ink: hex(s.ink, `${where} ink`),
-    artX: range(s.artX, -100, 100, `${where} artX`), artY: range(s.artY, -100, 100, `${where} artY`), artScale: range(s.artScale, 35, 180, `${where} artScale`),
+    artX: range(s.artX, -300, 300, `${where} artX`), artY: range(s.artY, -300, 300, `${where} artY`), artScale: range(s.artScale, 35, 180, `${where} artScale`),
     x: range(s.x, -100, 100, `${where} x`), y: range(s.y, -100, 100, `${where} y`), size: range(s.size, 5, 18, `${where} size`),
     image: image(s.image, `${where} image`),
+    pageFill: hex(s.pageFill, `${where} pageFill`), pageImage: image(s.pageImage, `${where} pageImage`),
+    hideArt: s.hideArt === undefined ? undefined : (typeof s.hideArt === 'boolean' ? s.hideArt : (() => { throw new DesignError(`${where} hideArt must be true or false.`); })()),
     elementSizes: numberList(s.elementSizes, `${where} elementSizes`, 25, 500),
     elementStretchX: numberList(s.elementStretchX, `${where} elementStretchX`, 25, 400), elementStretchY: numberList(s.elementStretchY, `${where} elementStretchY`, 25, 400),
     elementRotations: numberList(s.elementRotations, `${where} elementRotations`, -360, 360), elementRadius: numberList(s.elementRadius, `${where} elementRadius`, 0, 50),
@@ -140,7 +142,11 @@ export function sanitizeSlide(s, index = 0) {
     });
     if (s.elementPositions !== undefined) {
       if (!Array.isArray(s.elementPositions) || s.elementPositions.length > MAX_LAYERS) throw new DesignError(`${where} elementPositions is invalid.`);
-      slide.elementPositions = s.elementPositions.map((p, i) => (p == null ? null : { x: range(p.x, 0, 100, `${where} elementPositions[${i}].x`), y: range(p.y, 0, 100, `${where} elementPositions[${i}].y`) }));
+      slide.elementPositions = s.elementPositions.map((p, i) => (p == null ? null : { x: range(p.x, -50, 150, `${where} elementPositions[${i}].x`), y: range(p.y, -50, 150, `${where} elementPositions[${i}].y`) }));
+    }
+    if (s.elementFills !== undefined) {
+      if (!Array.isArray(s.elementFills) || s.elementFills.length > MAX_LAYERS) throw new DesignError(`${where} elementFills is invalid.`);
+      slide.elementFills = s.elementFills.map((f, i) => (f == null ? null : image(f, `${where} elementFills[${i}]`)));
     }
     if (s.elementColors !== undefined) {
       if (!Array.isArray(s.elementColors) || s.elementColors.length > MAX_LAYERS) throw new DesignError(`${where} elementColors is invalid.`);
