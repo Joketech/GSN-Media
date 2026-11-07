@@ -14,10 +14,12 @@ const Water=(()=>{
  function ell(x,cx,cy,rx,ry,colour,stop){x.save();x.translate(cx,cy);x.scale(1,ry/rx);const g=x.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,colour);g.addColorStop(stop,colour.slice(0,7)+'00');x.fillStyle=g;x.fillRect(-rx,-rx*(rx/ry),rx*2,rx*2*(rx/ry));x.restore()}
 
  // The scene the drops look at: the pastel backdrop plus soft out-of-focus lights.
- function paintScene(x){
-  x.fillStyle='#e8e3f1';x.fillRect(0,0,w,h);
+ const bgImg=new Image();bgImg.src='room-bg.jpg';bgImg.onload=()=>{if(w)size()};
+ function paintScene(x,lightsOnly){
+  if(!lightsOnly){x.fillStyle='#e8e3f1';x.fillRect(0,0,w,h);
+  if(bgImg.complete&&bgImg.naturalWidth){const k=Math.max(w/bgImg.naturalWidth,h/bgImg.naturalHeight);x.drawImage(bgImg,(w-bgImg.naturalWidth*k)/2,(h-bgImg.naturalHeight*k)/2,bgImg.naturalWidth*k,bgImg.naturalHeight*k)}else{
   ell(x,w*.12,h*.18,w*.6*.7,h*.55*.7,'#bcd9f7',1);ell(x,w*.88,h*.12,w*.5*.7,h*.5*.7,'#f6c9dc',1);
-  ell(x,w*.8,h*.88,w*.55*.7,h*.6*.7,'#c4ead9',1);ell(x,w*.18,h*.9,w*.5*.7,h*.5*.7,'#fbd9bd',1);ell(x,w*.5,h*.5,w*.4*.75,h*.4*.75,'#ddd2f6',1);
+  ell(x,w*.8,h*.88,w*.55*.7,h*.6*.7,'#c4ead9',1);ell(x,w*.18,h*.9,w*.5*.7,h*.5*.7,'#fbd9bd',1);ell(x,w*.5,h*.5,w*.4*.75,h*.4*.75,'#ddd2f6',1)}}
   seed=11;
   const lights=['#ffd18a','#ff9fc0','#8fd3ff','#ffe9a8','#b9a6ff','#9ff0d0','#ffb3a0'];
   const n=Math.round(w*h/26000);
@@ -35,7 +37,7 @@ const Water=(()=>{
   [scene,sceneCtx]=mk();paintScene(sceneCtx);
   [layer,layerCtx]=mk();
   // Back canvas: only the lights, so the pastel backdrop under it keeps drifting.
-  bctx.clearRect(0,0,w,h);bctx.save();bctx.globalAlpha=.55;bctx.drawImage(scene,0,0,w,h);bctx.restore();
+  const [lc,lx]=mk();paintScene(lx,true);bctx.clearRect(0,0,w,h);bctx.save();bctx.globalAlpha=.55;bctx.drawImage(lc,0,0,w,h);bctx.restore();
  }
 
  // A bead is placed so it does not sit on top of another; small ones are many, large ones few.
