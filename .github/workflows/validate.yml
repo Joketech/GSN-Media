@@ -30,8 +30,10 @@ jobs:
           node --check exporter.js
           node --check water.js
           node --check composer.js
+          node --check publisher.mjs
+          node --check schedule.js
           node --check globe.js
-          node --test tests/v1.test.mjs tests/designs.test.mjs
+          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs
           python3 -m py_compile services/inference_worker.py
           python3 -m py_compile integrations/hermes/gsn.py
           python3 tests/worker_idempotency.py

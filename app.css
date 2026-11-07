@@ -163,3 +163,27 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .tcard:hover .tcard-x{display:grid}.tcard-x:hover{background:var(--accent);color:#fff}
 .linklike{border:0;background:none;color:var(--accent);font-weight:700;text-decoration:underline;padding:0 4px}
 .more{color:var(--ink2);font-size:.85rem}.more[hidden]{display:none}
+
+/* ---- Schedule ---- */
+.sch-banner{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.62);border:1px solid var(--line)}
+.sch-banner b{font:800 .72rem 'DM Sans',sans-serif;letter-spacing:.14em;padding:4px 10px;border-radius:99px;background:#dfe9f7;color:#2a4a7a}
+.sch-banner.live b{background:#d5f3df;color:#1a6b3a}.sch-banner span{flex:1;font-size:.9rem}
+.sch-cal{padding:6px 2px}.sch-calhead{display:flex;align-items:center;gap:12px;margin-bottom:8px}.sch-calhead h2{margin:0;font:600 1.5rem 'Cormorant Garamond',serif;min-width:200px;text-align:center}.sch-count{margin-left:auto;color:#6a6a80;font-size:.85rem}
+.sch-week,.sch-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.sch-week span{font:700 .7rem 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7a7a90;padding:0 6px}
+.sch-day{min-height:92px;padding:6px;border-radius:14px;background:rgba(255,255,255,.55);border:1px solid rgba(120,120,160,.14);display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.sch-day.other{opacity:.45}.sch-day.today{border-color:var(--maroon);box-shadow:0 0 0 1px var(--maroon) inset}.sch-n{font:700 .75rem 'DM Sans',sans-serif;color:#555}
+.sch-chip{display:flex;align-items:center;gap:5px;width:100%;border:0;border-radius:9px;padding:3px 6px;font:600 .68rem 'DM Sans',sans-serif;text-align:left;background:#e7ecf8;color:#233;cursor:pointer;overflow:hidden;white-space:nowrap}
+.sch-chip span{overflow:hidden;text-overflow:ellipsis}.sch-chip .pf-ic{width:12px;height:12px;flex:none}
+.st-approved{background:#d8ecff!important}.st-posted{background:#d3f2dc!important}.st-simulated{background:#eee2ff!important}.st-failed{background:#ffd9d9!important}.st-review{background:#ffefc9!important}.st-cancelled,.st-rejected{background:#e4e4e4!important;text-decoration:line-through}
+.sch-more{border:0;background:none;font-size:.68rem;color:var(--maroon);text-align:left;cursor:pointer}
+.sch-batch{padding:16px;margin:12px 0;border-radius:20px}.sch-batch header{display:flex;justify-content:space-between;align-items:center;gap:12px}.sch-batch h2{margin:0;font:600 1.3rem 'Cormorant Garamond',serif}
+.sch-rows{display:grid;gap:8px;margin-top:10px}.sch-row{display:grid;grid-template-columns:130px 120px 1fr auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.6)}
+.sch-row p{margin:0;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sch-pf{display:flex;align-items:center;gap:6px}.sch-pf small{font-size:.75rem;color:#667}.sch-when{font-size:.8rem;font-weight:600}
+.sch-warn{color:#b3261e;font-size:.8rem;margin:0}.st-tag{font-size:.7rem;font-style:normal;padding:2px 9px;border-radius:99px}
+.sch-setup{padding:18px;border-radius:20px}.sch-setup h2{font:600 1.3rem 'Cormorant Garamond',serif;margin:14px 0 6px}.sch-channels{display:grid;gap:8px}.sch-channel{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,.6)}.sch-channel div{flex:1;display:grid}.sch-channel small{color:#667}
+.sch-switch{display:flex;align-items:center;gap:8px;padding:6px 0;font-weight:600}.sch-plats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px}
+.sch-modal{width:min(640px,94vw);max-height:90vh;overflow:auto}.sch-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sch-media{display:flex;gap:8px;overflow:auto;margin:8px 0}.sch-media img,.sch-media video{height:120px;border-radius:10px}
+.sch-pick{border:1px solid var(--line);border-radius:14px;padding:8px 12px;margin:8px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px}.sch-hist{font-size:.78rem;margin:8px 0;color:#556}
+.field small.over{color:#b3261e;font-weight:700}.pf-ic{width:16px;height:16px;vertical-align:-3px}
+.empty-card{padding:26px;border-radius:20px;margin-top:14px}
+@media(max-width:800px){.sch-row{grid-template-columns:1fr 1fr}.sch-two,.sch-pick{grid-template-columns:1fr}.sch-day{min-height:70px}}

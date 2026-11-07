@@ -96,7 +96,7 @@ const Editor=(()=>{
    <button class="ed-icon" data-act="redo" id="edRedo" title="Redo (Ctrl+Y)" aria-label="Redo">${icon('redo')}</button>
    <select id="edStatus" aria-label="Status"><option value="draft">Draft</option><option value="review">Ready for review</option><option value="approved">Approved</option></select>
    <button class="ed-icon" data-act="present" title="Present" aria-label="Present">${icon('play')}</button>
-   <button class="btn-maroon" data-act="download">${icon('download')}Download</button>
+   <button class="btn-light" data-act="schedule">${icon('calendar')}Schedule</button><button class="btn-maroon" data-act="download">${icon('download')}Download</button>
   </header>
   <div class="ed-banner" id="edBanner" hidden></div>
   <aside class="ed-dock" id="edDock"><button class="ed-plus" data-act="dock" aria-label="Show tools" aria-expanded="false" title="Tools">${icon('plus')}</button><div class="ed-tools" id="edTools">${TOOLS.map(([id,ic,label])=>`<button data-tool="${id}" title="${label}" aria-label="${label}">${icon(ic)}<span>${label}</span></button>`).join('')}</div></aside>
@@ -731,7 +731,7 @@ const Editor=(()=>{
    else if(act==='undo')doUndo();else if(act==='redo')doRedo();
    else if(act==='dock')toggleDock();
    else if(act==='closetool')closeTool();
-   else if(act==='download')openDownload();else if(act==='present')present();else if(act==='closemodal')closeModal();
+   else if(act==='schedule')Schedule.openSchedule(design.id);else if(act==='download')openDownload();else if(act==='present')present();else if(act==='closemodal')closeModal();
    else if(act==='zoomin')setZoom(zoom*1.2);else if(act==='zoomout')setZoom(zoom/1.2);else if(act==='zoomfit')setZoom(1);
    else if(act==='addpage')openLayoutPicker();
    else if(act==='theirs')resolveConflict(false);else if(act==='mine')resolveConflict(true);

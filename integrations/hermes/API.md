@@ -35,3 +35,20 @@ POST `/jobs`: `{"kind":"voice","voice_id":"PROFILE_UUID","text":"The new narrati
 Use `kind: "post"` for static HTML. Templates: 0–199 (20 layouts × 10 palettes). 1–20 slides; slide title 1–160 chars, body up to 600. Brand/handle up to 80 chars. Ratios: `1 / 1`, `4 / 5`, `9 / 16`, `16 / 9`. Animation scene_seconds: integer 1–10. HTML preserves the existing material layouts. Animation is silent HTML, not a generated MP4. Result previews are sandboxed.
 
 Authentication failures: 401; setup missing: 503; invalid input: 400/415; conflicting key: 409; active-job limit: 429. Responses contain `error`. Do not log Authorization headers or reference samples.
+
+## Scheduling and posting (Postiz)
+
+The studio plans, reviews and sends posts through the owner's self-hosted Postiz. Agents prepare; only the owner approves. The system starts in dry-run: approved posts are marked `simulated` and nothing is published until the owner switches live mode on in Schedule > Setup.
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/publish/status` | Postiz connected?, live/paused flags, per-platform switches, limits, max days ahead (30) |
+| GET | `/publish/channels` | Connected Postiz channels (`id`, `name`, `platform`) |
+| POST | `/schedule/batches` | `{title, notes, posts:[{platform, channel_id, scheduled_at, caption, hashtags, design_id, title}]}`. Creates posts in `review` for the owner. Up to 30 days ahead. |
+| GET | `/schedule/batches`, `/schedule/batches/{id}` | Batch list with status counts / one batch with its posts |
+| GET | `/schedule/posts` | All posts; filter with `?status=` |
+| PATCH | `/schedule/posts/{id}` | Edit wording or time; sends the post back to `review` |
+| POST | `/schedule/posts/{id}/media` | Attach rendered pictures/video |
+| DELETE | `/schedule/posts/{id}` | Only while draft, review or rejected |
+
+Agents cannot approve, post now, retry, cancel approved posts, or change live/paused/platform switches (403/409). Post statuses: draft, review, approved, posting, posted, simulated, failed, rejected, cancelled. Pictures for a design are rendered once by the owner's browser when approving, and shared by all posts using that design.

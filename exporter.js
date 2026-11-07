@@ -81,7 +81,7 @@ async function designPdf(canvases,width,height,scale){
  return new Blob(parts,{type:'application/pdf'});
 }
 
-async function downloadDesignVideo(images){
+async function designVideoBlob(images){
  const canvas=document.createElement('canvas'),context=canvas.getContext('2d');
  canvas.width=images[0].width;canvas.height=images[0].height;
  const stream=canvas.captureStream(25);
@@ -100,9 +100,10 @@ async function downloadDesignVideo(images){
    while(performance.now()<end){context.drawImage(image,0,0);await new Promise(resolve=>setTimeout(resolve,40));}
   }
   recorder.stop();
-  download(await complete,'gsn-design.mp4','video/mp4');
+  return await complete;
  }finally{stream.getTracks().forEach(track=>track.stop());}
 }
+async function downloadDesignVideo(images){download(await designVideoBlob(images),'gsn-design.mp4','video/mp4')}
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  const safe=s=>String(s||'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'design';
  async function css(cards){return `${await campaignExportCss(cards)}\n${await fetch('free-layers.css').then(r=>r.text())}`}
@@ -126,5 +127,14 @@ async function downloadDesignVideo(images){
   }
   onProgress(cards.length,cards.length);
  }
- return {run,inlineGsnPhotos,rasterDesignPage,css};
+ // Pictures (or one slideshow video) as files in memory, for scheduling. Returns [{name,blob,type}].
+ async function renderBlobs(design,{pages,scale=1,video=false,onProgress=()=>{}}){
+  const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
+  const cards=pages.map(i=>KitHost.pageHtml(design,i));const style=await css(cards.join(''));
+  const canvases=[];for(let i=0;i<cards.length;i++){onProgress(i,cards.length);canvases.push(await rasterDesignPage(cards[i],style,W,H));await sleep(0)}
+  if(video)return [{name:'slideshow.mp4',type:'video',blob:await designVideoBlob(await Promise.all(canvases.map(c=>loadDesignImage(c.toDataURL('image/png')))))}];
+  const out=[];for(let i=0;i<canvases.length;i++)out.push({name:`${String(i+1).padStart(2,'0')}.png`,type:'image',blob:await canvasImage(canvases[i],'image/png')});
+  return out;
+ }
+ return {run,renderBlobs,inlineGsnPhotos,rasterDesignPage,css};
 })();

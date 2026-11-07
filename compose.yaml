@@ -14,6 +14,9 @@ services:
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
       GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
       GSN_REQUIRE_KEY: ${GSN_REQUIRE_KEY:-}
+      POSTIZ_API_URL: ${POSTIZ_API_URL:-}
+      POSTIZ_API_KEY: ${POSTIZ_API_KEY:-}
+      POSTIZ_HOURLY_LIMIT: ${POSTIZ_HOURLY_LIMIT:-}
       GSN_DATA_DIR: /data
     volumes:
       - app-data:/data

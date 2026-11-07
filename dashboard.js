@@ -7,8 +7,8 @@ const Dashboard=(()=>{
  const agentTone={Mira:'#8b6cf0',Seline:'#ef6f9a',Spectra:'#1fb5c4',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#2fb98a'};
  const initials=name=>name.slice(0,2).toUpperCase();
  const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['agents','agents','Agents']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents'};
+ const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents']];
+ const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  function build(){
@@ -77,7 +77,7 @@ const Dashboard=(()=>{
   const chip=e.target.closest('[data-platform]');
   if(chip){state.platform=chip.dataset.platform;state.presetId=App.groupOf(state.platform).defaultPreset;try{localStorage.setItem('gsn-platform',state.platform)}catch{}draw();return}
   const use=e.target.closest('[data-use]');if(use){openPackModal(Number(use.dataset.use));return}
-  const tab=e.target.closest('[data-tab]');if(tab){if(ui.view==='designs')ui.designTab=tab.dataset.tab;else ui.tab=tab.dataset.tab;ui.shown=12;draw();return}
+  const tab=e.target.closest('[data-tab]');if(tab){if(ui.view==='designs')ui.designTab=tab.dataset.tab;else if(ui.view==='schedule')ui.schedTab=tab.dataset.tab;else ui.tab=tab.dataset.tab;ui.shown=12;draw();return}
   const open=e.target.closest('[data-open]');if(open){location.hash='#editor/'+open.dataset.open;return}
  }
 
@@ -87,12 +87,13 @@ const Dashboard=(()=>{
  function tabsFor(view){
   if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories']];
   if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors']];
+  if(view==='schedule')return [['Calendar','Calendar'],['Review',`Needs review${Schedule.needsReview().length?' ('+Schedule.needsReview().length+')':''}`],['Setup','Setup']];
   if(view==='designs')return [['All','All'],['draft','Draft'],['review','In review'],['approved','Approved']];
   return [];
  }
  function drawTabs(){
   const items=tabsFor(ui.view),el=$('#bottomTabs');el.hidden=!items.length;
-  const active=ui.view==='dashboard'?ui.tab:ui.view==='designs'?ui.designTab:ui.style;
+  const active=ui.view==='dashboard'?ui.tab:ui.view==='designs'?ui.designTab:ui.view==='schedule'?(ui.schedTab||'Calendar'):ui.style;
   el.innerHTML=items.map(([id,label])=>`<button data-tab="${esc(id)}" class="${id===active?'on':''}">${esc(label)}</button>`).join('');
   if(ui.view==='templates')$$('[data-tab]',el).forEach(b=>b.addEventListener('click',()=>{ui.style=b.dataset.tab},{capture:true}));
  }
@@ -162,7 +163,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -177,6 +178,8 @@ const Dashboard=(()=>{
   if(!App.groupOf(state.platform))state.platform='instagram';
   if(!ui.built)build();
   try{if(!state.designs.length)await App.loadDesigns()}catch{}
+  if(view==='schedule'){try{await Schedule.load()}catch(e){toast(e.message)}}
+  if(!ui.wired){Schedule.wire($('#view'));ui.wired=true}
   await draw();$('#view').scrollTop=0;
  }
 

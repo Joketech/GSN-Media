@@ -16,6 +16,7 @@ const App=(()=>{
   chevronRight:'<path d="m9 6 6 6-6 6"/>',
   back:'<path d="m15 5-7 7 7 7"/>',
   forward:'<path d="m9 5 7 7-7 7"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   reload:'<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
   share:'<path d="M12 15V3m-4 4 4-4 4 4"/><path d="M5 11v8h14v-8"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
@@ -99,7 +100,7 @@ const App=(()=>{
    if(editor){show('editor');await Editor.open(editor[1]);return}
    if(fresh){const t=Number(fresh[1]),p=fresh[2];if(!GSNKit.templates[t]||!preset(p)){location.replace('#templates');return}
     await createPack(t,[p],GSNKit.templates[t].cartoon?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
-   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents'].includes(view)?view:'dashboard');
+   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents','schedule'].includes(view)?view:'dashboard');
   }catch(error){toast(error.message,6000);if(editor||fresh)location.replace('#designs')}
  }
  async function start(){
