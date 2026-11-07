@@ -51,8 +51,10 @@ const Library=(()=>{
    await KitHost.mount(this.host,KitHost.pageHtml(this.design,this.i,reduceMotion.matches?'':'animate'));
    if(this.roleEl)this.roleEl.textContent=roleLabel(this.i,n);
   }
-  play(){if(this.timer||reduceMotion.matches)return;this.timer=setInterval(()=>{this.i=(this.i+1)%this.design.pages.length;this.paint()},2800)}
-  stop(){clearInterval(this.timer);this.timer=0}
+  // The Hook (first page) always shows first and is held longer, so a card is understood before it moves on.
+  play(){if(this.timer||reduceMotion.matches)return;
+   const tick=()=>{this.timer=setTimeout(()=>{this.i=(this.i+1)%this.design.pages.length;this.paint();tick()},this.i===0?5500:2400)};tick()}
+  stop(){clearTimeout(this.timer);this.timer=0;if(this.i!==0&&this.design){this.i=0;this.paint()}}
  }
  const previews=new WeakMap();
  let observer,hoverBound=null;
