@@ -248,3 +248,7 @@ body[data-role=editor] .pp-del{display:none}
 .bot .eye{transform-box:fill-box;transform-origin:center}
 .agent-row{padding:4px 10px}
 @media (prefers-reduced-motion:reduce){.bot.working svg,.bot.working .eye{animation:none}.bot.working svg{filter:drop-shadow(0 0 6px var(--tone)) drop-shadow(0 0 14px var(--tone))}}
+/* Agents tab: larger robots */
+.agents-page{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.agent-card{align-items:center;gap:20px;padding:22px}
+.agent-card .bot{width:120px;height:138px}
