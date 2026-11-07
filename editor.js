@@ -189,10 +189,10 @@ const Editor=(()=>{
  }
 
  /* ---------- selection and pointer editing ---------- */
- function select(s){
+ function select(s,solo){
   sel=s;multi=[];
-  // Picking one member of a group picks the whole group.
-  const g=s&&groupFor(layerKey(s));if(g&&g.length>1)multi=g.map(selOf);
+  // Picking one member of a group picks the whole group. Double-click, Alt-click or the item buttons in the bar pick just one item.
+  const g=!solo&&s&&groupFor(layerKey(s));if(g&&g.length>1)multi=g.map(selOf);
   drawOverlay();if(tool==='pages')openTool('pages');
  }
  function hit(x,y){
@@ -226,7 +226,8 @@ const Editor=(()=>{
    cur=cur.some(m=>layerKey(m)===k)?cur.filter(m=>layerKey(m)!==k):[...cur,target];
    multi=cur.length>1?cur:[];sel=cur[cur.length-1]||null;drawOverlay();return;
   }
-  if(!handle&&!(multi.length>1&&multi.some(m=>sameSel(m,target)))&&!sameSel(target,sel))select(target);
+  if(!handle&&e.altKey&&!(e.shiftKey||e.ctrlKey||e.metaKey)){select(target,true)}
+  else if(!handle&&!(multi.length>1&&multi.some(m=>sameSel(m,target)))&&!sameSel(target,sel))select(target);
   else if(!handle&&!multi.length&&groupFor(layerKey(target))&&!sameSel(target,sel))select(target);
   const node=nodeFor();if(!node)return;
   e.preventDefault();el.over.setPointerCapture(e.pointerId);
@@ -348,7 +349,7 @@ const Editor=(()=>{
  /* ---------- inline text editing ---------- */
  function onDouble(e){
   const h=hit(e.clientX,e.clientY);if(!h||h.t==='art'||h.t==='element')return;
-  select(h);startEdit();
+  select(h,true);if(['copy','text'].includes(h.t))startEdit();
  }
  function startEdit(){
   const node=nodeFor();if(!node||!sel||!['copy','text'].includes(sel.t))return;
@@ -393,7 +394,9 @@ const Editor=(()=>{
   let html='';
   if(multi.length>1){
    const grouped=members().some(m=>groupFor(layerKey(m)));
-   bar.innerHTML=`<span class="count">${multi.length} selected</span>${sep}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
+   const nm=m=>{const k=layerKey(m);return k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body'})[k]||k};
+   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
    return;
@@ -516,6 +519,7 @@ const Editor=(()=>{
   if(a==='hlpop')return colourPanel(t,l.bg||'',c=>{patchLayer({bg:c||undefined},'hl');drawBar()},{none:'No highlight'});
   if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
   if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
+  if(a==='solo'){const m=multi[+t.dataset.n];if(m){select(m,true)}return}
   if(a==='group')return groupSel();
   if(a==='ungroup')return ungroupSel();
   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
@@ -605,9 +609,10 @@ const Editor=(()=>{
   toast('Grouped. They now move together.');drawOverlay();
  }
  function ungroupSel(){
-  const keys=members().map(m=>layerKey(m));
+  let keys=members().map(m=>layerKey(m));
+  const g0=groupFor(keys[0]);if(g0)keys=[...new Set([...keys,...g0])];
   commit(()=>{const s=slide();s.groups=(s.groups||[]).filter(g=>!g.some(k=>keys.includes(k)));if(!s.groups.length)delete s.groups});
-  multi=[];drawOverlay();toast('Ungrouped.');
+  const again=keys.map(selOf);multi=again.length>1?again:[];drawOverlay();toast('Ungrouped. Click each item to edit it. Press Group to join them again.');
  }
  function selectAll(){
   const ks=fullOrder().filter(k=>nodeFor(selOf(k)));
