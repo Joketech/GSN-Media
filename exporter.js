@@ -11,7 +11,7 @@ function photoSheetData(file){
   const blob=await response.blob();
   // The photo sheets are opaque; re-encoding them as JPEG keeps the embedded export small enough for browsers to render reliably.
   const bitmap=await createImageBitmap(blob),sheet=document.createElement('canvas');sheet.width=bitmap.width;sheet.height=bitmap.height;
-  sheet.getContext('2d').drawImage(bitmap,0,0);bitmap.close?.();return sheet.toDataURL('image/jpeg',.92);
+  sheet.getContext('2d').drawImage(bitmap,0,0);bitmap.close?.();return sheet.toDataURL(Number(file.match(/\d+/)[0])>=52?'image/png':'image/jpeg',.92);
  })().catch(error=>{photoSheets.delete(file);throw error}));
  return photoSheets.get(file);
 }
@@ -42,8 +42,9 @@ async function campaignExportCss(cards){
    return atlasData.get(path);
   }),
  ]);
+ const seasonal=cards.includes('greeting-poster')?await read('greetings.css').then(response=>response.text()):'';
  const all=[premium,library].join('\n').replace(/@import[^;]+;/g,'');
- return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}\n${poster}`;
+ return `${base}\n${files.reduce((css,[,name],index)=>css.replaceAll(name,images[index]),all)}\n${layers.replace(/@import[^;]+;/g,'')}\n${inner.replace(/@import[^;]+;/g,'')}\n${poster}\n${seasonal}`;
 }
 function loadDesignImage(source){
  return new Promise((resolve,reject)=>{
