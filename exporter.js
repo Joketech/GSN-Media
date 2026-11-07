@@ -2,16 +2,24 @@
 /* Export: PNG / JPEG / PDF / HTML / MP4. Rendering helpers are lifted from the classic studio so output matches it exactly. */
 const Exporter=(()=>{
 function download(content,name,type='text/plain'){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
-async function inlineGsnPhotos(cards,direct=false){
- const files=new Set([...cards.matchAll(/--photo-source:url\('(gsn-photo-\d+\.png)'\)/g)].map(match=>match[1]));
- const properties=[];
- for(const file of files){
+// Each photo sheet is a multi-megabyte picture. Convert it once and reuse the result for every page and every export.
+const photoSheets=new Map();
+function photoSheetData(file){
+ if(!photoSheets.has(file))photoSheets.set(file,(async()=>{
   const response=await fetch(file);
   if(!response.ok)throw new Error(`Missing photo: ${file}`);
   const blob=await response.blob();
   // The photo sheets are opaque; re-encoding them as JPEG keeps the embedded export small enough for browsers to render reliably.
   const bitmap=await createImageBitmap(blob),sheet=document.createElement('canvas');sheet.width=bitmap.width;sheet.height=bitmap.height;
-  sheet.getContext('2d').drawImage(bitmap,0,0);const data=sheet.toDataURL('image/jpeg',.92);
+  sheet.getContext('2d').drawImage(bitmap,0,0);bitmap.close?.();return sheet.toDataURL('image/jpeg',.92);
+ })().catch(error=>{photoSheets.delete(file);throw error}));
+ return photoSheets.get(file);
+}
+async function inlineGsnPhotos(cards,direct=false){
+ const files=new Set([...cards.matchAll(/--photo-source:url\('(gsn-photo-\d+\.png)'\)/g)].map(match=>match[1]));
+ const properties=[];
+ for(const file of files){
+  const data=await photoSheetData(file);
   if(direct){cards=cards.replaceAll(`--photo-source:url('${file}')`,`--photo-source:url('${data}')`);continue}
   const variable=`--gsn-sheet-${properties.length}`;
   properties.push(`${variable}:url('${data}');`);
@@ -19,17 +27,19 @@ async function inlineGsnPhotos(cards,direct=false){
  }
  return `<style>:root{${properties.join('')}}</style>${cards}`;
 }
+const atlasData=new Map(),sheetTexts=new Map();
 async function campaignExportCss(cards){
  const files=[['campaign','campaign-atlas.png'],['automation','automation-atlas.png'],['automation-operations','automation-operations-atlas.png']];
  const read=async(path)=>{const response=await fetch(path);if(!response.ok)throw new Error(`Missing export asset: ${path}`);return response;};
+ const sheetText=path=>{if(!sheetTexts.has(path))sheetTexts.set(path,read(path).then(response=>response.text()).catch(error=>{sheetTexts.delete(path);throw error}));return sheetTexts.get(path)};
  // The export must use every stylesheet the editor shows the page with, or designed pages come out flat and without their pictures.
  const [base, premium, library, layers, inner, ...images]=await Promise.all([
-  read('studio.css').then(response=>response.text()), read('premium.css').then(response=>response.text()),
-  read('artwork-library.css').then(response=>response.text()), read('free-layers.css').then(response=>response.text()), read('inner-pages.css').then(response=>response.text()),
+  sheetText('studio.css'), sheetText('premium.css'),
+  sheetText('artwork-library.css'), sheetText('free-layers.css'), sheetText('inner-pages.css'),
   ...files.map(async([sheet,path])=>{
    if(!cards.includes(`photo-${sheet}"`)&&!cards.includes(`picture-${sheet}`))return 'data:,';
-   const blob=await read(path).then(response=>response.blob());
-   return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});
+   if(!atlasData.has(path))atlasData.set(path,read(path).then(response=>response.blob()).then(blob=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);})).catch(error=>{atlasData.delete(path);throw error}));
+   return atlasData.get(path);
   }),
  ]);
  const all=[premium,library].join('\n').replace(/@import[^;]+;/g,'');
@@ -115,13 +125,14 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
   const [rw,rh]=design.ratio.split(' / ').map(Number);
   const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
   const cards=pages.map(i=>KitHost.pageHtml(design,i));
-  const style=await css(cards.join(''));
+  const style=type==='html'?await css(cards.join('')):'';
   const name=safe(design.title);
   if(type==='html'){
    const body=cards.map(c=>`<section class="frame">${c}</section>`).join('');
    download(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${GSNKit.esc(design.title)}</title><style>${style}body{margin:0;background:#111;display:grid;gap:24px;justify-items:center;padding:24px}.frame{width:min(100%,${design.size.w/2}px)}</style>${await inlineGsnPhotos(body)}`,`${name}.html`,'text/html');return}
   const canvases=[];
-  for(let i=0;i<cards.length;i++){onProgress(i,cards.length);canvases.push(await rasterDesignPage(cards[i],style,W,H));await sleep(0)}
+  // Each page carries only the picture sheets it uses; one shared stylesheet would embed every sheet into every page.
+  for(let i=0;i<cards.length;i++){onProgress(i,cards.length);canvases.push(await rasterDesignPage(cards[i],await css(cards[i]),W,H));await sleep(0)}
   if(type==='pdf')download(await designPdf(canvases,W,H,scale),`${name}.pdf`,'application/pdf');
   else if(type==='mp4')await downloadDesignVideo(await Promise.all(canvases.map(c=>loadDesignImage(c.toDataURL('image/png')))));
   else{
@@ -133,8 +144,8 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
  // Pictures (or one slideshow video) as files in memory, for scheduling. Returns [{name,blob,type}].
  async function renderBlobs(design,{pages,scale=1,video=false,onProgress=()=>{}}){
   const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
-  const cards=pages.map(i=>KitHost.pageHtml(design,i));const style=await css(cards.join(''));
-  const canvases=[];for(let i=0;i<cards.length;i++){onProgress(i,cards.length);canvases.push(await rasterDesignPage(cards[i],style,W,H));await sleep(0)}
+  const cards=pages.map(i=>KitHost.pageHtml(design,i));
+  const canvases=[];for(let i=0;i<cards.length;i++){onProgress(i,cards.length);canvases.push(await rasterDesignPage(cards[i],await css(cards[i]),W,H));await sleep(0)}
   if(video)return [{name:'slideshow.mp4',type:'video',blob:await designVideoBlob(await Promise.all(canvases.map(c=>loadDesignImage(c.toDataURL('image/png')))))}];
   const out=[];for(let i=0;i<canvases.length;i++)out.push({name:`${String(i+1).padStart(2,'0')}.png`,type:'image',blob:await canvasImage(canvases[i],'image/png')});
   return out;
