@@ -19,11 +19,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .glass-dark{background:rgba(66,44,52,.5);color:#fff;border-color:rgba(255,255,255,.35)}
 .glass-strong{background:var(--glass-strong);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 .glass-inset{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
-.osbar{grid-column:1/3;display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:999px;color:var(--ink)}
+.osbar{grid-column:1/3;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
 .osgroup{display:flex;gap:4px}
-.osbtn{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
+.osbtn{width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
 .osbtn:hover{background:#fff}
-.osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.82rem;min-width:0;overflow:hidden;white-space:nowrap}
+.osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:3px 14px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.74rem;min-width:0;overflow:hidden;white-space:nowrap}
 .osaddress b{font-weight:700;color:var(--accent)}.osdot{width:8px;height:8px;border-radius:50%;background:#5cc79a;box-shadow:0 0 8px #8ee0bd}
 .rail{grid-row:2/4;align-self:center;display:flex;flex-direction:column;gap:8px;padding:10px 8px;border-radius:36px;margin-top:0}
 .rail button{width:52px;height:52px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.85);display:grid;place-items:center;transition:.25s}
@@ -55,7 +55,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .panel-scroll{flex:1;overflow:auto;padding:0 28px 22px;min-height:0;position:relative;z-index:1;scrollbar-width:thin;scrollbar-color:rgba(138,34,54,.3) transparent}
 .dash{display:flex;flex-direction:column;height:100%;min-height:540px;gap:14px}
 .hello{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:2px 0 4px}
-.hello h1{margin:0;font:600 clamp(1.8rem,3vw,2.5rem)/1 var(--serif);color:#4a2431}
+.hello h1{margin:0;font:600 clamp(1.25rem,1.9vw,1.6rem)/1 var(--serif);color:#4a2431}
 .chips{display:flex;gap:5px;flex-wrap:wrap}
 .chip{height:20px;padding:0 8px;border-radius:999px;border:0;display:flex;align-items:center;gap:4px;font-weight:700;font-size:.6rem;letter-spacing:.03em;color:#5a3b45;background:var(--pink);transition:.2s;opacity:.85}
 .chip:nth-child(7n+1){background:var(--pink)}.chip:nth-child(7n+2){background:var(--mint)}.chip:nth-child(7n+3){background:var(--sky)}.chip:nth-child(7n+4){background:var(--lilac)}.chip:nth-child(7n+5){background:var(--coral)}.chip:nth-child(7n+6){background:var(--peri)}.chip:nth-child(7n+7){background:var(--peach)}
@@ -67,7 +67,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .sec-head h2{margin:0;font:600 1.45rem var(--serif);color:#4a2431}
 .sec-head a{display:flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em}.sec-head .ic{width:13px;height:13px}
 .hero-row{display:grid;grid-template-columns:1.9fr 1fr;gap:16px;flex:1 1 0;min-height:260px}
-.hero{position:relative;border-radius:22px;padding:30px 34px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 35%/cover;border:1px solid var(--line)}
+.hero{position:relative;border-radius:22px;padding:30px 34px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 55%/cover;border:1px solid var(--line)}
 .hero:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
 @keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 .hero h2{margin:0;font:600 clamp(2rem,4vw,3.4rem)/.95 var(--serif);letter-spacing:.01em}
@@ -89,7 +89,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @keyframes orbit{from{transform:rotate(0) translateX(23px)}to{transform:rotate(360deg) translateX(23px)}}
 @keyframes orbpulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.07);transform:scale(1.05)}}
 /* The templates sit in view and drift left without stopping; they rest while you point at them. */
-.tpass{flex:none;height:clamp(215px,27vh,270px);display:flex;flex-direction:column}
+.tpass{flex:none;height:clamp(215px,26vh,262px);display:flex;flex-direction:column}
 .marquee{flex:1;min-height:0;overflow:hidden;margin:0 -28px;container-type:size;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .marquee-track{display:flex;gap:16px;width:max-content;height:100%;padding:4px 0 6px 16px;animation:scrollleft calc(var(--n,12)*4.5s) linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
@@ -116,9 +116,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .btn-maroon[disabled]{opacity:.6}
 .more{display:flex;justify-content:center;margin-top:22px}
 .empty{padding:40px 10px;color:var(--ink2);text-align:center}
-.tabs{grid-column:2;grid-row:3;justify-self:center;display:flex;gap:4px;padding:5px;border-radius:999px}
+.tabs{grid-column:2;grid-row:3;justify-self:center;display:flex;gap:3px;padding:3px;border-radius:999px}
 .tabs[hidden]{display:none}
-.tabs button{height:38px;padding:0 22px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.8rem;color:var(--ink2);transition:.2s}
+.tabs button{height:26px;padding:0 15px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.7rem;color:var(--ink2);transition:.2s}
 .tabs button:hover{color:var(--ink)}
 .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 4px 12px rgba(90,70,120,.18)}
 .agents-page{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-bottom:20px}
@@ -151,7 +151,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .dash{height:auto}.tpass{min-height:360px}
  .brand-text small{display:none}
 }
-@media(max-height:820px){.hero-tag{display:none}.agents-grid{grid-template-columns:repeat(3,1fr)}.hero p{display:none}.hero-row{height:140px}.agent-row small{display:none}.agents-card{padding:10px 16px}.dash{min-height:500px}}
+@media(max-height:820px){.hero-tag{display:none}.agents-grid{grid-template-columns:repeat(2,1fr);gap:2px 8px}.hero p{display:none}.hero-row{height:140px}.agent-row small{display:none}.agent-row{padding:0 8px}.agent-row .bot{width:46px;height:52px}.agents-card{padding:8px 14px}.dash{min-height:500px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.marquee-track,.orb,.orb-ring,.orb-dot,.hero:after,.stage-bg{animation:none!important}.marquee{overflow-x:auto}}
 .portal-water{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
 
