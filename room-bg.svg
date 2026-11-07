@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d9d2"/><stop offset=".55" stop-color="#efd7d6"/><stop offset="1" stop-color="#e6d3dc"/></linearGradient>
+<linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b5806a"/><stop offset="1" stop-color="#d8a98f"/></linearGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cfc6"/><stop offset="1" stop-color="#d9c2cf"/></linearGradient>
+<radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6dc" stop-opacity=".95"/><stop offset="1" stop-color="#ffe3b8" stop-opacity="0"/></radialGradient>
+<radialGradient id="pool" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff2e0" stop-opacity=".85"/><stop offset="1" stop-color="#fff2e0" stop-opacity="0"/></radialGradient>
+<filter id="b1" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="b2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="16"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#wall)"/>
+<g filter="url(#b1)">
+<!-- pergola ceiling: beams converging on a vanishing point -->
+<rect x="0" y="0" width="1600" height="215" fill="#c9a08e"/>
+<g fill="url(#beam)">
+<polygon points="0,0 210,0 520,215 150,215"/><polygon points="290,0 470,0 640,215 430,215"/><polygon points="560,0 700,0 760,215 620,215"/>
+<polygon points="820,0 960,0 1000,215 840,215"/><polygon points="1050,0 1230,0 1190,215 990,215"/><polygon points="1320,0 1600,0 1560,215 1170,215"/>
+</g>
+<rect x="0" y="205" width="1600" height="16" fill="#a4705c"/>
+</g>
+<g filter="url(#b2)">
+<ellipse cx="330" cy="225" rx="70" ry="34" fill="url(#glow)"/><ellipse cx="620" cy="225" rx="70" ry="34" fill="url(#glow)"/><ellipse cx="900" cy="225" rx="70" ry="34" fill="url(#glow)"/><ellipse cx="1170" cy="225" rx="70" ry="34" fill="url(#glow)"/><ellipse cx="1450" cy="225" rx="70" ry="34" fill="url(#glow)"/>
+</g>
+<g filter="url(#b1)">
+<!-- hanging ropes -->
+<rect x="236" y="0" width="7" height="330" fill="#c9a28f" opacity=".7"/><rect x="1380" y="0" width="7" height="330" fill="#c9a28f" opacity=".7"/>
+<!-- back wall boards -->
+<rect x="0" y="560" width="1600" height="150" fill="#d7b6a8" opacity=".55"/>
+<g fill="#cfa896" opacity=".5"><rect x="0" y="560" width="1600" height="6"/><rect x="0" y="610" width="1600" height="5"/><rect x="0" y="660" width="1600" height="5"/></g>
+<!-- floor -->
+<rect x="0" y="705" width="1600" height="195" fill="url(#floor)"/>
+</g>
+<g filter="url(#b2)">
+<ellipse cx="800" cy="760" rx="520" ry="70" fill="url(#pool)"/>
+<!-- plants: left and right -->
+<g fill="#86b898" opacity=".9"><ellipse cx="60" cy="300" rx="85" ry="190"/><ellipse cx="170" cy="420" rx="60" ry="150"/><ellipse cx="40" cy="620" rx="120" ry="150"/><ellipse cx="190" cy="760" rx="80" ry="90"/></g>
+<g fill="#78ad8c" opacity=".85"><ellipse cx="1550" cy="320" rx="90" ry="200"/><ellipse cx="1440" cy="470" rx="60" ry="140"/><ellipse cx="1565" cy="640" rx="110" ry="150"/></g>
+<g fill="#f6e3ee" opacity=".7"><ellipse cx="1300" cy="800" rx="90" ry="40"/><ellipse cx="300" cy="810" rx="100" ry="40"/></g>
+</g>
+<rect width="1600" height="900" fill="#f6dfe8" opacity=".06"/>
+</svg>

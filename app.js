@@ -8,7 +8,7 @@ const App=(()=>{
   home:'<path d="m3 11 9-8 9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/>',
   templates:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
   designs:'<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
-  agents:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c3 .2 5 2.2 5 5.3"/>',
+  agents:'<rect x="2" y="9" width="11" height="9" rx="3"/><path d="M7.5 9V6.4"/><circle cx="7.5" cy="5.4" r="1"/><circle cx="5.2" cy="13.4" r=".5"/><circle cx="9.8" cy="13.4" r=".5"/><rect x="13.6" y="11.5" width="8.4" height="7" rx="2.4"/><path d="M17.8 11.5V9.6"/><circle cx="17.8" cy="8.7" r=".9"/><circle cx="16" cy="15" r=".45"/><circle cx="19.6" cy="15" r=".45"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
   bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
