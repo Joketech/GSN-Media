@@ -45,13 +45,13 @@ const Dashboard=(()=>{
  function build(){
   const stage=$('#stage');
   stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas><canvas class="water-front" aria-hidden="true"></canvas>
-  <aside class="rail glass-dark" aria-label="Studio navigation">${navItems.map(([id,ic,label])=>`<button data-nav="${id}" title="${label}" aria-label="${label}">${icon(ic)}</button>`).join('')}</aside>
-  <main class="panel glass">
-  <header class="osbar" aria-label="Studio address bar">
+  <header class="osbar glass" aria-label="Studio address bar">
    <div class="osgroup"><button class="osbtn" data-os="home" title="Back to the globe" aria-label="Back to the globe">${icon('globe')}</button><button class="osbtn" data-os="back" title="Back" aria-label="Back">${icon('back')}</button><button class="osbtn" data-os="forward" title="Forward" aria-label="Forward">${icon('forward')}</button></div>
    <div class="osaddress"><span class="osdot"></span><span>${esc(location.host||'gsn-media.studio')}</span><b id="osPath">/dashboard</b></div>
    <div class="osgroup"><button class="motion-switch" id="motionSwitch" role="switch" aria-checked="true" title="Animation and light: on"><span class="ms-track" aria-hidden="true"><i></i></span><span class="ms-label">Motion</span></button><button class="osbtn" data-os="reload" title="Refresh" aria-label="Refresh">${icon('reload')}</button><button class="osbtn" data-os="share" title="Copy link" aria-label="Copy link">${icon('share')}</button><button class="osbtn" data-os="new" title="New pack" aria-label="New pack">${icon('plus')}</button><button class="osbtn" data-nav="designs" title="My designs" aria-label="My designs">${icon('layers')}</button></div>
   </header>
+  <aside class="rail glass-dark" aria-label="Studio navigation">${navItems.map(([id,ic,label])=>`<button data-nav="${id}" title="${label}" aria-label="${label}">${icon(ic)}</button>`).join('')}</aside>
+  <main class="panel glass">
    <header class="panel-top">
     <a class="brand" href="#dashboard"><span class="brand-mark">g.</span><span class="brand-text"><b>GSN MEDIA</b><small>Social media studio</small></span></a>
     <label class="search">${icon('search')}<input id="search" type="search" placeholder="Search templates…" autocomplete="off" aria-label="Search templates"></label>
