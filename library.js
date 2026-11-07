@@ -52,7 +52,7 @@ const Library=(()=>{
    if(this.roleEl)this.roleEl.textContent=roleLabel(this.i,n);
   }
   // The Hook (first page) always shows first and is held longer, so a card is understood before it moves on.
-  play(){if(this.timer||reduceMotion.matches)return;
+  play(){if(this.timer||reduceMotion.matches||document.documentElement.dataset.motion==='off')return;
    const tick=()=>{this.timer=setTimeout(()=>{this.i=(this.i+1)%this.design.pages.length;this.paint();tick()},this.i===0?5500:2400)};tick()}
   stop(){clearTimeout(this.timer);this.timer=0;if(this.i!==0&&this.design){this.i=0;this.paint()}}
  }
