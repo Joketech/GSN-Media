@@ -25,7 +25,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .osbtn:hover{background:#fff}
 .osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.82rem;min-width:0;overflow:hidden;white-space:nowrap}
 .osaddress b{font-weight:700;color:var(--accent)}.osdot{width:8px;height:8px;border-radius:50%;background:#5cc79a;box-shadow:0 0 8px #8ee0bd}
-.rail{grid-row:2/4;align-self:start;display:flex;flex-direction:column;gap:8px;padding:10px 8px;border-radius:36px;margin-top:14px}
+.rail{grid-row:2/4;align-self:center;display:flex;flex-direction:column;gap:8px;padding:10px 8px;border-radius:36px;margin-top:0}
 .rail button{width:52px;height:52px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.85);display:grid;place-items:center;transition:.25s}
 .rail button .ic{width:22px;height:22px}
 .rail button:hover{background:rgba(255,255,255,.22);color:#fff}
