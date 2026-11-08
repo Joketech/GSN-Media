@@ -15,6 +15,7 @@ const TEXT_KEYS = ['title', 'body', 'kicker', 'brandText', 'footerText'];
 const HEX = /^#[0-9a-f]{6}$/i;
 const IMAGE = /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
 const MOTIF = /^(?:hourglass|visor|orbit|portfolio|stack|lift|product|audio|terminal|rocket|none|business-(?:[0-9]|1[0-9]|2[0-3])|campaign-(?:[0-9]|1[01])|gsn-\d{1,4})$/;
+export const MASKS = ['circle', 'rounded', 'heart', 'star', 'diamond', 'triangle'];
 const SLOT_KEY = /^[a-z][a-z0-9]{0,23}$/;
 const SHAPE = /^[a-z][a-z0-9-]{1,24}$/;
 const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2})$/;
@@ -57,7 +58,7 @@ function textOptions(o, name) {
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
     font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
-    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`),
+    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
       if (o[flag] !== undefined && typeof o[flag] !== 'boolean') throw new DesignError(`${name}.${flag} must be true or false.`);
       return [flag, o[flag]];
@@ -90,8 +91,19 @@ export function sanitizeSlide(s, index = 0) {
     elementStretchX: numberList(s.elementStretchX, `${where} elementStretchX`, 25, 400), elementStretchY: numberList(s.elementStretchY, `${where} elementStretchY`, 25, 400),
     elementRotations: numberList(s.elementRotations, `${where} elementRotations`, -360, 360), elementRadius: numberList(s.elementRadius, `${where} elementRadius`, 0, 50),
     elementOpacity: numberList(s.elementOpacity, `${where} elementOpacity`, 10, 100), elementFlip: numberList(s.elementFlip, `${where} elementFlip`, 0, 1),
+    artMask: pick(s.artMask, MASKS, `${where} artMask`),
     artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
+  if (s.elementMasks !== undefined) {
+    if (!Array.isArray(s.elementMasks) || s.elementMasks.length > MAX_LAYERS || s.elementMasks.some(m => m !== '' && !MASKS.includes(m))) throw new DesignError(`${where} elementMasks must be a list of up to ${MAX_LAYERS} shape names.`);
+    slide.elementMasks = s.elementMasks;
+  }
+  if (s.panel !== undefined) {
+    // The template's own text card: where it sits, its colour, see-through amount and corner roundness, or hidden.
+    const o = s.panel;
+    if (!o || typeof o !== 'object' || Array.isArray(o)) throw new DesignError(`${where} panel must be an object.`);
+    slide.panel = clean({ x: range(o.x, -100, 100, `${where} panel.x`), y: range(o.y, -100, 100, `${where} panel.y`), fill: hex(o.fill, `${where} panel.fill`), opacity: range(o.opacity, 0, 100, `${where} panel.opacity`), radius: range(o.radius, 0, 80, `${where} panel.radius`), hide: o.hide === undefined ? undefined : (typeof o.hide === 'boolean' ? o.hide : (() => { throw new DesignError(`${where} panel.hide must be true or false.`); })()) });
+  }
   if (s.slots !== undefined) {
     // Named picture slots of a photo layout: an uploaded picture plus where it sits inside its frame (x, y) and how far it is zoomed (z, 100 to 400).
     if (!s.slots || typeof s.slots !== 'object' || Array.isArray(s.slots) || Object.keys(s.slots).length > 10) throw new DesignError(`${where} slots must be an object with up to 10 slots.`);
@@ -99,7 +111,7 @@ export function sanitizeSlide(s, index = 0) {
     for (const [key, v] of Object.entries(s.slots)) {
       if (!SLOT_KEY.test(key)) throw new DesignError(`${where} has an invalid slot name "${key}".`);
       if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} slot ${key} must be an object.`);
-      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`) });
+      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`), mask: pick(v.mask, MASKS, `${where} slot ${key} mask`) });
     }
   }
   if (s.motif !== undefined) {

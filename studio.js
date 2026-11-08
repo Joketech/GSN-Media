@@ -187,14 +187,21 @@ const slideElements={
  heart:['Heart','<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11Z"/>'],
  chat:['Speech bubble','<path d="M4 5h16v11H9l-5 4Z"/>'],
 };
+// Inline formatting inside a text box: ⟦text colour|background colour|words⟧. Either colour may be empty. The editor writes these when a word or phrase is selected.
+const FMT_RE=/⟦(#[0-9a-f]{6})?\|(#[0-9a-f]{6})?\|([^⟦⟧]*)⟧/gi;
+function escf(value){
+ const s=String(value??'');let out='',last=0,m;FMT_RE.lastIndex=0;
+ while((m=FMT_RE.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" style="${m[1]?'color:'+m[1]+';':''}${m[2]?'background:'+m[2]+';padding:.04em .28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}">${esc(m[3])}</span>`;last=m.index+m[0].length}
+ return out+esc(s.slice(last));
+}
 function layerCopy(value,bullets){
- return bullets&&value?String(value).split('\n').map(line=>`<span class="text-bullet">${esc(line)}</span>`).join(''):esc(value);
+ return bullets&&value?String(value).split('\n').map(line=>`<span class="text-bullet">${escf(line)}</span>`).join(''):escf(value);
 }
 function deckBodyCopy(value,layout,bullets){
  if(!['triptych','metric'].includes(layout)||bullets)return layerCopy(value,bullets);
  return String(value).split('\n').map((line,index)=>{
   const separator=layout==='metric'?line.indexOf(' · '):-1;
-  const copy=separator<0?esc(line):`<strong>${esc(line.slice(0,separator))}</strong><span>${esc(line.slice(separator))}</span>`;
+  const copy=separator<0?escf(line):`<strong>${escf(line.slice(0,separator))}</strong><span>${escf(line.slice(separator))}</span>`;
   return `<span class="deck-copy-item" data-row-number="${String(index+1).padStart(2,'0')}">${copy}</span>`;
  }).join('');
 }
@@ -327,7 +334,7 @@ function artBase(t,slide={},extra=''){
   const decoration=[options.underline?'underline':'',options.strike?'line-through':''].filter(Boolean).join(' ');
   const effect={shadow:'0 .09em .18em #0009',glow:'0 0 .35em currentColor',outline:'1px 1px #000,-1px -1px #000'}[options.effect];
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
-  const hl=/^#[0-9a-f]{6}$/i.test(options.bg||'')?`background:${options.bg};padding:.28em .6em;border-radius:.35em;box-decoration-break:clone;-webkit-box-decoration-break:clone;`:'';
+  const hl=/^#[0-9a-f]{6}$/i.test(options.bg||'')?`background:${options.bg};padding:${Math.round(.28*clamp(options.bgPad,0,150,100))/100}em ${Math.round(.6*clamp(options.bgPad,0,150,100))/100}em;border-radius:${clamp(options.bgRadius,0,100,35)/100}em;box-decoration-break:clone;-webkit-box-decoration-break:clone;`:'';
   return `${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
  function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
@@ -367,8 +374,31 @@ function artBase(t,slide={},extra=''){
 }
 
 // Page-level overrides that work on every template: a solid colour or own picture behind the page, and hiding the template's main picture.
+// Shapes a picture can be placed inside. Each fills a 24 by 24 box so the picture is cropped to the shape.
+const MASK_SHAPES={circle:"<circle cx='12' cy='12' r='12'/>",rounded:"<rect width='24' height='24' rx='6'/>",heart:"<path d='M12 23C5 17.5.5 13 .5 7.5A5.8 5.8 0 0 1 12 5.2 5.8 5.8 0 0 1 23.5 7.5C23.5 13 19 17.5 12 23Z'/>",star:"<path d='M12 .5l3.2 7.7 8.3.7-6.3 5.5 1.9 8.1L12 18.2 4.9 22.5l1.9-8.1L.5 8.9l8.3-.7z'/>",diamond:"<path d='M12 0l12 12-12 12L0 12z'/>",triangle:"<path d='M12 1l11.5 21.5H.5z'/>"};
+const maskCss=(sel,name)=>{const p=MASK_SHAPES[name];if(!p)return '';const u=`url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='#000'>${p}</g></svg>`)}")`;return `${sel}{-webkit-mask-image:${u}!important;mask-image:${u}!important;-webkit-mask-size:contain!important;mask-size:contain!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important;-webkit-mask-position:center!important;mask-position:center!important;-webkit-mask-composite:source-over!important;mask-composite:add!important;}`};
+function designCss(slide){
+ let css='';
+ if(slide.artMask)css+=maskCss('.campaign-visual .campaign-photo,.campaign-visual>img',slide.artMask);
+ (Array.isArray(slide.elementMasks)?slide.elementMasks:[]).forEach((m,i)=>{if(m)css+=maskCss(`[data-canvas-element="${i}"]`,m)});
+ for(const [k,v] of Object.entries(slide.slots||{})){if(v?.mask&&/^[a-z][a-z0-9]{0,23}$/.test(k))css+=maskCss(`[data-slot="${k}"]`,v.mask)}
+ const p=slide.panel;
+ if(p&&typeof p==='object'){
+  const num=(v,a,b)=>Number.isFinite(v)?Math.max(a,Math.min(b,v)):null;
+  const x=num(p.x,-100,100),y=num(p.y,-100,100);
+  if(x||y)css+=`.campaign-copy{translate:${x||0}cqw ${y||0}cqw;}`;
+  if(p.hide)css+='.campaign-copy{background:none!important;border-color:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}.campaign-copy::before,.campaign-copy::after{display:none!important;}';
+  else{
+   if(/^#[0-9a-f]{6}$/i.test(p.fill||'')){const o=num(p.opacity,0,100);const a=(o===null?100:o)/100,h=p.fill;css+=`.campaign-copy{background:rgba(${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)},${a})!important;}`}
+   const r=num(p.radius,0,80);if(r!==null)css+=`.campaign-copy{border-radius:${r}cqw!important;}`;
+  }
+ }
+ return css;
+}
 function art(t,slide={},extra=''){
- const html=artBase(t,slide,extra);
+ let html=artBase(t,slide,extra);
+ const dcss=designCss(slide);
+ if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
  const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';
  const bg=typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)?slide.pageImage:'';
  if(!fill&&!bg&&!slide.hideArt)return html;
