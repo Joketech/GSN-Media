@@ -266,6 +266,23 @@ const Editor=(()=>{
   const handle=e.target.dataset?.h;
   if(!handle)lastPt={x:e.clientX,y:e.clientY,n:0};
   let target=handle?sel:hit(e.clientX,e.clientY);
+  if(!handle&&(!target||target.t==='page')&&!(e.shiftKey||e.ctrlKey||e.metaKey)){
+   // Dragging on empty page space draws a box and selects every layer it touches.
+   const x0=e.clientX,y0=e.clientY,orc=el.over.getBoundingClientRect();let mq=null;
+   el.over.setPointerCapture(e.pointerId);
+   const mv=ev=>{if(!mq&&Math.hypot(ev.clientX-x0,ev.clientY-y0)<5)return;
+    if(!mq){mq=document.createElement('div');mq.className='ed-marquee';el.over.appendChild(mq)}
+    const L=Math.min(x0,ev.clientX),T=Math.min(y0,ev.clientY),W=Math.abs(ev.clientX-x0),H=Math.abs(ev.clientY-y0);
+    Object.assign(mq.style,{left:L-orc.left+'px',top:T-orc.top+'px',width:W+'px',height:H+'px'})};
+   const up=ev=>{el.over.removeEventListener('pointermove',mv);el.over.removeEventListener('pointerup',up);el.over.removeEventListener('pointercancel',up);
+    if(!mq){if(target)select(target);else select(null);return}
+    const q=mq.getBoundingClientRect();mq.remove();
+    const ks=fullOrder().filter(k=>{const n=nodeFor(selOf(k));if(!n)return false;const r=n.getBoundingClientRect();return r.width&&r.right>=q.left&&r.left<=q.right&&r.bottom>=q.top&&r.top<=q.bottom});
+    if(ks.length>1){multi=ks.map(selOf);sel=multi[multi.length-1];drawOverlay()}
+    else if(ks.length===1)select(selOf(ks[0]),true);else select(null)};
+   el.over.addEventListener('pointermove',mv);el.over.addEventListener('pointerup',up);el.over.addEventListener('pointercancel',up);
+   return;
+  }
   if(!target){select(null);return}
   // Shift or Ctrl click adds or removes an item, so several can be moved, grouped or deleted together.
   if(!handle&&(e.shiftKey||e.ctrlKey||e.metaKey)){
@@ -473,7 +490,7 @@ const Editor=(()=>{
   const saveSel=()=>{const s2=shadowSel();if(!s2||!s2.rangeCount)return;const r=s2.getRangeAt(0);if(!node.contains(r.startContainer)||!node.contains(r.endContainer))return;saved={start:offsetIn(r.startContainer,r.startOffset),end:offsetIn(r.endContainer,r.endOffset)};if(saved.start>saved.end)saved={start:saved.end,end:saved.start}};
   saveSel();
   const bar=document.createElement('div');bar.className='ed-bar ed-etb';
-  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><select data-e="font" aria-label="Font of the selected words"><option value="">Font</option>${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}">${esc(n)}</option>`).join('')}</select><select data-e="size" aria-label="Size of the selected words"><option value="">Size</option>${[50,75,100,125,150,200,250,300,400].map(v=>`<option value="${v}">${v}%</option>`).join('')}</select><button class="txt" data-e="italic" title="Italic for the selected words"><i>I</i></button><button class="txt" data-e="bold" title="Bold for the selected words"><b>B</b></button><button class="txt" data-e="underline" title="Underline for the selected words"><u>U</u></button><button class="txt" data-e="clear" title="Remove colour, background, font and size from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
+  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><button class="txt" data-e="fontpop" title="Font of the selected words">Font ▾</button><select data-e="size" aria-label="Size of the selected words"><option value="">Size</option>${[50,75,100,125,150,200,250,300,400].map(v=>`<option value="${v}">${v}%</option>`).join('')}</select><button class="txt" data-e="italic" title="Italic for the selected words"><i>I</i></button><button class="txt" data-e="bold" title="Bold for the selected words"><b>B</b></button><button class="txt" data-e="underline" title="Underline for the selected words"><u>U</u></button><button class="txt" data-e="clear" title="Remove colour, background, font and size from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
   el.area.appendChild(bar);
   const place=()=>{const ar=el.area.getBoundingClientRect(),r=node.getBoundingClientRect(),bw=bar.offsetWidth,bh=bar.offsetHeight;let x=r.left+r.width/2-ar.left-bw/2,y=r.top-ar.top-bh-12;if(y<8)y=r.bottom-ar.top+12;x=clamp(x,8,Math.max(8,ar.width-bw-8));y=clamp(y,8,Math.max(8,ar.height-bh-8));bar.style.left=(x+el.area.scrollLeft)+'px';bar.style.top=(y+el.area.scrollTop)+'px'};
   place();
@@ -510,9 +527,10 @@ const Editor=(()=>{
   };
   bar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault()});
   bar.addEventListener('click',e=>{
-   const b=e.target.closest('[data-e]');if(!b)return;saveSel();const k=b.dataset.e;
+   const b=e.target.closest('[data-e]');if(!b||b.tagName==='SELECT')return;saveSel();const k=b.dataset.e;
    if(k==='done')return finish(false);
    if(k==='clear')return apply({clear:true});
+   if(k==='fontpop'){const keep=saved?{...saved}:null;return fontPanel(b,'',f=>{if(keep)saved=keep;apply({ex:{f:f}})})}
    if(k==='italic'||k==='bold'||k==='underline'){const ch=charsOf(node),i0=Math.min(saved?.start??0,ch.length-1),cur=exParse(ch[i0]?.ex);const key=k==='italic'?'i':k==='bold'?'b':'u',on=cur[key]==='1';return apply({ex:{[key]:on?(k==='bold'?'0':null):'1'}})}
    const cur=curAttr(k),keep=saved?{...saved}:null;
    colourPanel(b,cur,c=>{if(keep)saved=keep;apply({[k]:c||''});},{none:k==='fg'?'Back to the box colour':'No background'});
@@ -542,8 +560,8 @@ const Editor=(()=>{
   if(multi.length>1){
    const grouped=members().some(m=>groupFor(layerKey(m)));
    const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
-   const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body'})[k]||k};
-   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:''}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body',footerText:'Footer'})[k]||k};
+   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:(multi.some(m=>m.t==='copy'||m.t==='text')?'<button class="txt" data-b="fontpop">Font ▾</button>':'')+'<button class="swatch cp" data-b="mcolor" title="Colour of every selected text and shape" aria-label="Colour of all selected" style="--sw:#ac82f4"></button>'+sep}<button class="txt" data-b="group" title="Lock these together so they move and resize as one">Lock together</button>${grouped?'<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
    return;
@@ -574,7 +592,7 @@ const Editor=(()=>{
   if(['text','shape','element','art','slot','copy'].includes(sel.t)&&lastPt)html+='<button class="txt" data-b="behind" title="Pick the next item underneath, at the place you clicked (for example the shape behind a text)">Select behind</button>';
   if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part'&&sel.t!=='page')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element'||sel.t==='shape')html+=b('dup','copy','Duplicate (Ctrl+D)');
-  const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
+  const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>';
   if(sel.t==='text'||sel.t==='element'||sel.t==='shape'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
@@ -582,7 +600,7 @@ const Editor=(()=>{
  function textBarHtml(l,s,single){
   const b=(act,ic,label,on)=>`<button class="${on?'on':''}" data-b="${act}" title="${label}" aria-label="${label}" aria-pressed="${!!on}">${icon(ic)}</button>`;
   const sep='<i class="sep"></i>';
-  return `${single?`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}`:'<span class="hint-s">Applies to every selected text:</span>'}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
+  return `${single?`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}`:'<span class="hint-s">Applies to every selected text:</span>'}<button class="txt fontbtn" data-b="fontpop" title="Choose a font" style="font-family:${esc((GSNKit.gsnFonts.find(f=>f[0]===(l.font||'sans'))||[])[2]||'inherit')}">${esc((GSNKit.gsnFonts.find(f=>f[0]===(l.font||'sans'))||[0,'Font'])[1])} ▾</button>
    <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
    ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
    ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}<button class="txt" data-b="spacing" title="Letter and line spacing">Spacing</button>${sel.t==='copy'&&sel.k==='body'?`<button class="txt" data-b="numbering" title="Show or hide the numbers beside each line on this page">Numbers: ${s.numbering==='off'?'Off':s.numbering==='on'?'On':'Auto'}</button>`:''}${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Background fill behind the text (padding and rounded corners inside)" aria-label="Text background fill" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button><button class="swatch cp" data-b="boxpop" title="Box colour (the shape behind the text)" aria-label="Box colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.boxFill||'')?l.boxFill:'transparent'}"><b style="font-size:10px">Box</b></button>
@@ -747,6 +765,8 @@ const Editor=(()=>{
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
   const a=t.dataset.b,l=sel.t==='copy'||sel.t==='text'?layerOf():null;
+  if(a==='mcolor')return colourPanel(t,'',c=>{if(!c)return;const ms=members();commit(()=>{const sl=slide();for(const m of ms){if(m.t==='copy')sl.textLayers={...sl.textLayers,[m.k]:{...(sl.textLayers?.[m.k]||{}),color:c}};else if(m.t==='text')sl.texts[m.i]={...sl.texts[m.i],color:c};else if(m.t==='shape'){const a=(sl.shapes||[]).map(x=>({...x}));if(a[m.i]){a[m.i].fill=c;sl.shapes=a}}else if(m.t==='element'){const x=[...(sl.elementColors||[])];x[m.i]=c;sl.elementColors=Array.from({length:sl.elements.length},(_,k)=>x[k]||'#25c8ff')}}},'multicolour');drawBar()});
+  if(a==='fontpop')return fontPanel(t,l?.font||'sans',k=>{patchLayer({font:k},'font');drawBar()});
   if(a==='smaller'||a==='bigger')return patchLayer({size:round(clamp(curSize()+(a==='bigger'?.5:-.5),1,30))},'size'),drawBar();
   if(['bold','italic','underline','uppercase','bullets'].includes(a))return patchLayer({[a]:!l[a]}),drawBar();
   if(a==='align'){const order=['left','center','right','justify'];return patchLayer({align:order[(order.indexOf(l.align||'left')+1)%4]}),drawBar()}
@@ -1031,6 +1051,27 @@ const Editor=(()=>{
   const set=new Set(),add=c=>{if(/^#[0-9a-f]{6}$/i.test(c||''))set.add(c.toLowerCase())};
   for(const p of design.pages){add(p.background);add(p.ink);add(p.accent);add(p.pageFill);(p.elementColors||[]).forEach(add);for(const l of Object.values(p.textLayers||{})){add(l.color);add(l.bg)}for(const t of p.texts||[]){add(t.color);add(t.bg)}}
   return [...set].slice(0,14);
+ }
+ // Font picker: search, categories and a preview of every font in its own typeface.
+ function fontPanel(anchor,current,done){
+  document.querySelector('.ed-fpanel')?.remove();
+  const cats=['All','Script','Handwriting','Display','Serif','Sans','Condensed','Mono','World'],fc=GSNKit.gsnFontCats||{};
+  const box=document.createElement('div');box.className='ed-fpanel';let cat='All',q='';
+  box.innerHTML=`<div class="fp-head"><b>Font</b><button class="fp-x" aria-label="Close">×</button></div><input class="fp-q" type="search" placeholder="Try &quot;Script&quot; or &quot;Open Sans&quot;" aria-label="Search fonts"><div class="fp-cats">${cats.map(c=>`<button data-cat="${c}" class="${c==='All'?'on':''}">${c}</button>`).join('')}</div><div class="fp-list"></div>`;
+  const list=box.querySelector('.fp-list');
+  const draw=()=>{const items=GSNKit.gsnFonts.filter(f=>(cat==='All'||fc[f[0]]===cat)&&(!q||f[1].toLowerCase().includes(q)||(fc[f[0]]||'').toLowerCase().includes(q)));
+   list.innerHTML=items.length?items.map(f=>`<button class="fp-it ${f[0]===current?'on':''}" data-f="${f[0]}" style="font-family:${esc(f[2])}">${esc(f[1])}<small>${esc(fc[f[0]]||'')}</small></button>`).join(''):'<p class="hint">No font matches.</p>'};
+  draw();document.body.appendChild(box);
+  box.querySelector('.fp-q').oninput=ev=>{q=ev.target.value.trim().toLowerCase();draw()};
+  box.querySelector('.fp-cats').onclick=ev=>{const b=ev.target.closest('[data-cat]');if(!b)return;cat=b.dataset.cat;box.querySelectorAll('.fp-cats button').forEach(x=>x.classList.toggle('on',x===b));draw()};
+  list.onclick=ev=>{const b=ev.target.closest('[data-f]');if(!b)return;current=b.dataset.f;done(current);draw()};
+  box.querySelector('.fp-x').onclick=()=>box.remove();
+  const r=anchor.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;
+  let x=Math.min(Math.max(8,r.left),innerWidth-bw-8),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);
+  box.style.left=x+'px';box.style.top=y+'px';
+  const away=ev=>{if(!box.contains(ev.target)&&!anchor.contains(ev.target)){box.remove();document.removeEventListener('pointerdown',away,true)}};
+  setTimeout(()=>document.addEventListener('pointerdown',away,true),0);
+  box.querySelector('.fp-q').focus();
  }
  function colourPanel(anchor,current,done,opt={}){
   document.querySelector('.ed-cpanel')?.remove();
