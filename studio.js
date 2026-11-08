@@ -203,7 +203,7 @@ const slideElements={
 const FMT_RE=/⟦(#[0-9a-f]{6})?\|(#[0-9a-f]{6})?\|([^⟦⟧]*)⟧/gi;
 function escf(value){
  const s=String(value??'');let out='',last=0,m;FMT_RE.lastIndex=0;
- while((m=FMT_RE.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" style="${m[1]?'color:'+m[1]+';':''}${m[2]?'background:'+m[2]+';padding:.04em .28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}">${esc(m[3])}</span>`;last=m.index+m[0].length}
+ while((m=FMT_RE.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" style="${m[1]?'color:'+m[1]+';':''}${m[2]?'background:'+m[2]+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}">${esc(m[3])}</span>`;last=m.index+m[0].length}
  return out+esc(s.slice(last));
 }
 function layerCopy(value,bullets){
@@ -243,11 +243,11 @@ function dkBody(layout,value,hookPhoto){
  if(layout==='steps')return items.map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item" data-n="${n+1}">${lead?`<b>${esc(lead)}</b><em>${esc(rest)}</em>`:`<b>${esc(rest)}</b>`}</span>`}).join('');
  if(layout==='agenda')return items.map((l,n)=>`<span class="dk-item" data-n="${num(n)}">${esc(l)}</span>`).join('');
  if(layout==='compare')return items.slice(0,2).map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item dk-side${n}" data-tag="${esc(lead||(n?'After':'Before'))}">${esc(rest)}</span>`}).join('');
- if(layout==='checklist')return items.map(l=>`<span class="dk-item">${esc(l)}</span>`).join('');
+ if(layout==='checklist')return items.map((l,n)=>`<span class="dk-item" data-n="${n+1}">${esc(l)}</span>`).join('');
  if(layout==='cards')return items.slice(0,3).map((l,n)=>{const {lead,rest}=dkSplit(l);return `<span class="dk-item" data-n="${num(n)}">${thumb(n)}${lead?`<b>${esc(lead)}</b>${esc(rest)}`:esc(rest)}</span>`}).join('');
  if(layout==='stat')return items.map((l,n)=>{const {lead,rest}=dkSplit(l);return n===0&&lead?`<span class="dk-item dk-big"><strong>${esc(lead)}</strong><span>${esc(rest)}</span></span>`:`<span class="dk-item">${esc(rest)}</span>`}).join('');
  if(layout==='recap')return items.map((l,n)=>`<span class="dk-item" data-n="${num(n)}">${esc(l)}</span>`).join('');
- return items.map(l=>`<span class="dk-item">${esc(l)}</span>`).join('');
+ return items.map((l,n)=>`<span class="dk-item" data-n="${n+1}">${esc(l)}</span>`).join('');
 }
 function dkPage(t,slide,o){
  const {layout,accent,cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo,caption,handle,brand}=o;
@@ -257,7 +257,7 @@ function dkPage(t,slide,o){
  const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
  const num=String(slide.number??1).padStart(2,'0'),total=slide.total?String(slide.total).padStart(2,'0'):'';
  const titleText=slide.title??t.title;
- const style=`--a:${accent};--a2:${c.a2};--on-a:${c.onAccent};--hue:${c.hue};aspect-ratio:${ratio}`;
+ const style=`--a:${accent};--a2:${c.a2};--on-a:${c.onAccent};--hue:${c.hue};--dk-art-x:${Math.min(100,Math.max(-100,Number(slide.artX)||0))}cqw;--dk-art-y:${Math.round(Math.min(100,Math.max(-100,Number(slide.artY)||0))*(()=>{const q=String(ratio).split('/').map(Number);return q[0]>0&&q[1]>0?q[1]/q[0]:1})()*100)/100}cqw;--dk-art-s:${Math.min(180,Math.max(35,Number(slide.artScale)||100))/100};aspect-ratio:${ratio}`;
  const photoVars=photo?`--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size};`:'';
  const cta=layout==='cta'?`<div class="dk-pill" style="${stack('footerText')}"><span>${esc(handle)}</span><b>↗</b></div>`:'';
  return `<div class="art dk dk-${layout} dk-${mode}${flip} ratio-${ratioClass} ${role?'slide-'+role:''} ${o.extra}" data-num="${num}" style="${style};${photoVars}">
@@ -435,6 +435,7 @@ function wrapHighlights(html){
 }
 function art(t,slide={},extra=''){
  let html=wrapHighlights(artBase(t,slide,extra));
+ if(slide.numbering==='off'||slide.numbering==='on'){const e=html.indexOf('>');if(e>0&&html.slice(0,e).indexOf('class="')>=0)html=html.slice(0,e).replace('class="','class="'+(slide.numbering==='off'?'no-num ':'num-on ')) +html.slice(e)}
  const dcss=designCss(slide,(/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')||(typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)))?1:0);
  if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
  const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';

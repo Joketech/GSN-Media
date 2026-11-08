@@ -92,6 +92,7 @@ export function sanitizeSlide(s, index = 0) {
     elementRotations: numberList(s.elementRotations, `${where} elementRotations`, -360, 360), elementRadius: numberList(s.elementRadius, `${where} elementRadius`, 0, 50),
     elementOpacity: numberList(s.elementOpacity, `${where} elementOpacity`, 10, 100), elementFlip: numberList(s.elementFlip, `${where} elementFlip`, 0, 1),
     artMask: pick(s.artMask, MASKS, `${where} artMask`),
+    numbering: pick(s.numbering, ['on', 'off'], `${where} numbering`),
     artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
   if (s.parts !== undefined) {
