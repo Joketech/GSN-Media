@@ -126,6 +126,18 @@ greetingDesigns.forEach((spec,index)=>{
  const label=spec.monthly?`${spec.name} · Happy New Month`:spec.name==='Friday'?'TGIF · Thank God it’s Friday':spec.name;
  templates.push({id:524+index,name:`Seasonal / ${spec.collection} / ${label}`,title,summary:spec.wish,topic:spec.name,format:'Carousel',layout:index%20,palette:spec.set*3,cartoon:true,greeting:true,greetingSet:spec.set,headingSize:Math.min(spec.set===0?19:17,125/Math.max(...title.split(' ').map(word=>word.length))),limit:110});
 });
+// Text behind the person: the headline sits behind a cut-out person (use Remove background on the picture), so the person stands in front of the words.
+// Added after every other template so existing template numbers never move.
+const behindLayouts=[
+ {key:'behind',name:'Text behind person',title:'BRAND',summary:'One clear line about your product.',kicker:'DESIGNED BY YOU',topic:'Products',colors:{background:'#e8d4b4',ink:'#f8efde',accent:'#b9691f'},
+  slots:[['main','Person (Remove background first)',demoPicture(36,19)],['product','Product (Remove background first)',demoPicture(35,0)]]},
+ {key:'wordsplit',name:'Split word',title:'Studio',summary:'story',kicker:'YOUR BRAND',topic:'Portraits',colors:{background:'#b8a6ee',ink:'#ffffff',accent:'#ffffff'},
+  slots:[['main','Person (Remove background first)',demoPicture(36,5)],['product','Product in hand (optional)',demoPicture(35,0)]]},
+];
+behindLayouts.forEach(layout=>{
+ templates.push({id:templates.length,name:layout.name,layout:templates.length%20,palette:templates.length%10,format:'Carousel',title:layout.title,summary:layout.summary,kicker:layout.kicker,topic:layout.topic,
+  slotKey:layout.key,slots:layout.slots,look:'Photo layout',colors:layout.colors,limit:110});
+});
 // Fonts a text layer can use. The last value is the Google Fonts family (loaded in the app and embedded when a design is exported).
 const gsnFonts=[
  ['sans','Sans (Arial)','Arial, sans-serif',''],['serif','Serif (Georgia)','Georgia, serif',''],['mono','Mono','monospace',''],
@@ -334,7 +346,7 @@ function artBase(t,slide={},extra=''){
   const decoration=[options.underline?'underline':'',options.strike?'line-through':''].filter(Boolean).join(' ');
   const effect={shadow:'0 .09em .18em #0009',glow:'0 0 .35em currentColor',outline:'1px 1px #000,-1px -1px #000'}[options.effect];
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
-  const hl=/^#[0-9a-f]{6}$/i.test(options.bg||'')?`background:${options.bg};padding:${Math.round(.28*clamp(options.bgPad,0,150,100))/100}em ${Math.round(.6*clamp(options.bgPad,0,150,100))/100}em;border-radius:${clamp(options.bgRadius,0,100,35)/100}em;box-decoration-break:clone;-webkit-box-decoration-break:clone;`:'';
+  const hl=(/^#[0-9a-f]{6}$/i.test(options.bg||'')?`--hl-bg:${options.bg};--hl-py:${Math.round(.28*clamp(options.bgPad,0,150,100))/100}em;--hl-px:${Math.round(.6*clamp(options.bgPad,0,150,100))/100}em;--hl-r:${clamp(options.bgRadius,0,100,35)/100}em;`:'')+(/^#[0-9a-f]{6}$/i.test(options.boxFill||'')?`background:${options.boxFill};`:'');
   return `${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
  function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
@@ -409,8 +421,20 @@ function designCss(slide,layerOffset=0){
  }
  return css;
 }
+/* A text background belongs to the words only: it is painted on a wrapper inside the text box, so the box keeps its own colour, padding and position. */
+const HL_CSS='.txt-hl{background:var(--hl-bg);padding:var(--hl-py) var(--hl-px);margin:0 calc(-1*var(--hl-px));border-radius:var(--hl-r);box-decoration-break:clone;-webkit-box-decoration-break:clone}';
+function wrapHighlights(html){
+ if(html.indexOf('--hl-bg:')<0||typeof document==='undefined')return html;
+ const tpl=document.createElement('template');tpl.innerHTML=html;
+ const wrap=n=>{const sp=document.createElement('span');sp.className='txt-hl';while(n.firstChild)sp.appendChild(n.firstChild);n.appendChild(sp)};
+ let any=false;
+ tpl.content.querySelectorAll('[style*="--hl-bg"]').forEach(el=>{const lis=el.querySelectorAll('li');if(lis.length)lis.forEach(wrap);else wrap(el);any=true});
+ if(!any)return html;
+ const root=tpl.content.firstElementChild;if(root){const st=document.createElement('style');st.textContent=HL_CSS;root.appendChild(st)}
+ return tpl.innerHTML;
+}
 function art(t,slide={},extra=''){
- let html=artBase(t,slide,extra);
+ let html=wrapHighlights(artBase(t,slide,extra));
  const dcss=designCss(slide,(/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')||(typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)))?1:0);
  if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
  const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';
