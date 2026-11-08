@@ -148,7 +148,7 @@ const Editor=(()=>{
  }
  function nodeFor(s=sel){
   const root=el.host.shadowRoot;if(!root||!s)return null;
-  const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:'.campaign-visual';
+  const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:s.t==='panel'?'.campaign-copy':'.campaign-visual';
   return root.querySelector(q);
  }
  const pageBox=()=>el.page.getBoundingClientRect();
@@ -173,8 +173,8 @@ const Editor=(()=>{
   const r=node.getBoundingClientRect();
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
-  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
-  box.innerHTML=`<i class="h se" data-h="scale"></i>${side}`;
+  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'||sel.t==='panel'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
+  box.innerHTML=sel.t==='panel'?'':`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
  }
@@ -204,6 +204,9 @@ const Editor=(()=>{
    const slotNode=n.closest?.('[data-slot]');if(slotNode)return {t:'slot',k:slotNode.dataset.slot};
    if(n.closest?.('.campaign-visual')&&(n.matches('img,.campaign-photo,.campaign-upload,svg,svg *,[class*=photo]')))return {t:'art'};
   }
+  // Empty space on the template's text card picks the card itself (move it, recolour it, hide it).
+  const cp=root.querySelector('.campaign-copy');
+  if(cp){const r=cp.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){const v=root.querySelector('.campaign-visual'),vr=v&&(v.firstElementChild||v).getBoundingClientRect();if(!(vr&&vr.width&&x>=vr.left&&x<=vr.right&&y>=vr.top&&y<=vr.bottom&&y<r.top+8))return {t:'panel'}}}
   // The artwork is decorative (pointer-events:none in the template), so test its box directly.
   const v=root.querySelector('.campaign-visual');
   if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'art'}}
@@ -311,6 +314,7 @@ const Editor=(()=>{
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
     else if(m.t==='slot'&&!slotPan){const b0=base.slots?.[m.k]||{};s.slots={...(s.slots||{}),[m.k]:{...b0,fx:round(clamp((b0.fx||0)+dx/st.W*100,-100,100)),fy:round(clamp((b0.fy||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
+    else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
    }
    if(movedPos){for(let i=0;i<(s.elements||[]).length;i++)if(!pos[i])pos[i]=st.centers[i];s.elementPositions=pos}
@@ -481,15 +485,18 @@ const Editor=(()=>{
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
    html=textBarHtml(l,s,true);
+  }else if(sel.t==='panel'){
+   const p=s.panel||{};
+   html=`<span class="count">Text card</span><button class="swatch cp" data-b="panelcol" title="Colour of the card behind the text" aria-label="Card colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="panelop"></label><label class="rng">Corners<input type="range" min="0" max="80" value="${p.radius??4}" data-b="panelrad"></label><button class="txt ${p.hide?'on':''}" data-b="panelhide" title="Hide or show the card look behind the text">${p.hide?'Show card':'Hide card'}</button><button class="txt" data-b="panelreset" title="Put the card back as the template had it">Reset</button>${sep}`;
   }else if(sel.t==='element'){
-   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPicEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
-   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotpan" class="txt ${slotPan?'on':''}" title="When on, dragging moves the picture inside its frame. When off, dragging moves the whole frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button data-b="slotreset" class="txt" title="Centre the picture, reset zoom, and put the frame back">Reset position</button>${isPhotoEl(photoOf(sel))?'<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>':''}${sep}`;
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotpan" class="txt ${slotPan?'on':''}" title="When on, dragging moves the picture inside its frame. When off, dragging moves the whole frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button data-b="slotreset" class="txt" title="Centre the picture, reset zoom, and put the frame back">Reset position</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>${sep}`;
   }else{
-   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button>${s.image?`<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select>`:''}<button data-b="clearimg" class="txt">Reset</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
-  if(sel.t!=='slot')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
+  if(sel.t!=='slot'&&sel.t!=='panel')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
   if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
@@ -509,8 +516,71 @@ const Editor=(()=>{
  const isPhotoEl=k=>typeof k==='string'&&/^data:image\//.test(k);
  const getList=(s,k,i,d)=>(s[k]&&s[k][i]!==undefined&&s[k][i]!==null)?s[k][i]:d;
  function setList(s,k,i,v,d){const n=s.elements.length,a=Array.from({length:n},(_,j)=>getList(s,k,j,d));a[i]=v;s[k]=a}
+
+ const isPicEl=k=>isPhotoEl(k)||(typeof k==='string'&&/^gsn-\d+$/.test(k));
+ const MASK_NAMES=[['','No shape'],['circle','Circle'],['rounded','Rounded square'],['heart','Heart'],['star','Star'],['diamond','Diamond'],['triangle','Triangle']];
+ const maskOf=t=>t.t==='art'?slide().artMask||'':t.t==='slot'?slide().slots?.[t.k]?.mask||'':slide().elementMasks?.[t.i]||'';
+ const maskSelect=t=>`<select data-b="mask" aria-label="Put the picture inside a shape" title="Put the picture inside a shape">${MASK_NAMES.map(([v,n])=>`<option value="${v}" ${maskOf(t)===v?'selected':''}>${v?n:'Shape: none'}</option>`).join('')}</select>`;
+ // The picture as an editable image. The template's own pictures and library pictures are turned into a copy first, so crop, cutout and the rest work on them too.
+ async function ownPicture(t){
+  const u=photoOf(t);
+  if(isPhotoEl(u))return u;
+  if(t.t==='element'&&/^gsn-\d+$/.test(u||'')){const p=GSNKit.gsnLibraryPhoto(u);if(p)return libraryCell(p)}
+  const root=el.host.shadowRoot,node=t.t==='art'?root.querySelector('.campaign-visual .campaign-photo'):root.querySelector(`[data-slot="${t.k}"]`);
+  const cs=node&&getComputedStyle(node),src=cs?.getPropertyValue('--photo-source').match(/url\(['"]?(.+?)['"]?\)/)?.[1];
+  if(src){const pos=cs.getPropertyValue('--photo-position').trim(),size=cs.getPropertyValue('--photo-size').trim();if(pos&&size)return libraryCell({file:src,position:pos,size});const img=await loadImg(src);const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);return c.toDataURL('image/jpeg',.92)}
+  const img=node?.querySelector?.('img');if(img?.src){const im=await loadImg(img.src);const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);return c.toDataURL('image/jpeg',.92)}
+  throw Error('This picture cannot be edited. Use Replace to put your own picture here.');
+ }
+ function putPicture(t,out){commit(()=>{const sl=slide();
+  if(t.t==='art'){sl.image=out;delete sl.hideArt}
+  else if(t.t==='slot')setSlot(t.k,{src:out,x:0,y:0,z:100});
+  else sl.elements[t.i]=out;})}
+ // Crop: drag the frame over the picture, pick a shape such as square or 9:16, and Apply. The cropped picture replaces the original on the page.
+ async function cropPicture(t){
+  let url,img;try{url=await ownPicture(t);img=await loadImg(url)}catch(e){return toast(e.message||'That picture could not be opened.')}
+  const IW=img.naturalWidth,IH=img.naturalHeight,K=Math.min(1,640/IW,420/IH),W=Math.round(IW*K),H=Math.round(IH*K);
+  const ratios=[['free','Free',null],['orig','Original',IW/IH],['sq','1:1',1],['p45','4:5',.8],['l54','5:4',1.25],['s916','9:16',9/16],['l169','16:9',16/9]];
+  openModal(`<h2>Crop picture</h2><p class="hint">Drag inside the frame to move it. Drag a corner or edge to resize. Pick a shape for a fixed ratio.</p><div class="crop-ratios">${ratios.map(([k,n],i)=>`<button class="btn-light ${i?'':'on'}" data-ratio="${k}">${n}</button>`).join('')}</div><div class="crop-wrap"><canvas id="cropCv" width="${W}" height="${H}" style="width:${W}px;height:${H}px;touch-action:none"></canvas></div><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button><button class="btn-maroon" id="cropGo">Apply crop</button></div>`);
+  const cv=q1('#cropCv'),cx=cv.getContext('2d');
+  let box={x:W*.08,y:H*.08,w:W*.84,h:H*.84},ratio=null,mode=null,start=null;
+  const draw=()=>{cx.clearRect(0,0,W,H);cx.drawImage(img,0,0,W,H);cx.fillStyle='rgba(10,5,20,.55)';
+   cx.beginPath();cx.rect(0,0,W,H);cx.rect(box.x,box.y,box.w,box.h);cx.fill('evenodd');
+   cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(box.x,box.y,box.w,box.h);cx.lineWidth=1;cx.strokeStyle='rgba(255,255,255,.5)';
+   for(let i=1;i<3;i++){cx.beginPath();cx.moveTo(box.x+box.w*i/3,box.y);cx.lineTo(box.x+box.w*i/3,box.y+box.h);cx.moveTo(box.x,box.y+box.h*i/3);cx.lineTo(box.x+box.w,box.y+box.h*i/3);cx.stroke()}
+   cx.fillStyle='#fff';for(const [hx,hy] of handles())cx.fillRect(hx-5,hy-5,10,10)};
+  const handles=()=>[[box.x,box.y],[box.x+box.w/2,box.y],[box.x+box.w,box.y],[box.x,box.y+box.h/2],[box.x+box.w,box.y+box.h/2],[box.x,box.y+box.h],[box.x+box.w/2,box.y+box.h],[box.x+box.w,box.y+box.h]];
+  const names=['nw','n','ne','w','e','sw','s','se'];
+  const clampBox=()=>{box.w=clamp(box.w,20,W);box.h=clamp(box.h,20,H);box.x=clamp(box.x,0,W-box.w);box.y=clamp(box.y,0,H-box.h)};
+  const setRatio=r=>{ratio=r;if(!r)return;let w=box.w,h=w/r;if(h>H){h=H;w=h*r}if(w>W){w=W;h=w/r}const cxm=box.x+box.w/2,cym=box.y+box.h/2;box.w=w*.9;box.h=h*.9;box.x=cxm-box.w/2;box.y=cym-box.h/2;clampBox()};
+  const pt=e=>{const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};
+  cv.onpointerdown=e=>{const p=pt(e);cv.setPointerCapture(e.pointerId);
+   const hi=handles().findIndex(([hx,hy])=>Math.abs(hx-p.x)<12&&Math.abs(hy-p.y)<12);
+   if(hi>=0)mode=names[hi];else if(p.x>box.x&&p.x<box.x+box.w&&p.y>box.y&&p.y<box.y+box.h)mode='move';else{mode='new';box={x:p.x,y:p.y,w:1,h:1}}
+   start={p,box:{...box}};};
+  cv.onpointermove=e=>{if(!mode)return;const p=pt(e),dx=p.x-start.p.x,dy=p.y-start.p.y,b0=start.box;
+   if(mode==='move'){box.x=clamp(b0.x+dx,0,W-b0.w);box.y=clamp(b0.y+dy,0,H-b0.h);draw();return}
+   let x1=b0.x,y1=b0.y,x2=b0.x+b0.w,y2=b0.y+b0.h;
+   if(mode==='new'){x1=start.p.x;y1=start.p.y;x2=p.x;y2=p.y}
+   else{if(mode.includes('w'))x1=b0.x+dx;if(mode.includes('e'))x2=b0.x+b0.w+dx;if(mode.includes('n'))y1=b0.y+dy;if(mode.includes('s'))y2=b0.y+b0.h+dy}
+   let L=Math.min(x1,x2),R=Math.max(x1,x2),T=Math.min(y1,y2),B=Math.max(y1,y2);L=clamp(L,0,W);R=clamp(R,0,W);T=clamp(T,0,H);B=clamp(B,0,H);
+   let w=Math.max(20,R-L),h=Math.max(20,B-T);
+   if(ratio){if(mode==='n'||mode==='s')w=h*ratio;else h=w/ratio;if(L+w>W){w=W-L;h=w/ratio}if(T+h>H){h=H-T;w=h*ratio}}
+   box={x:mode.includes('w')&&mode!=='new'?Math.min(R-w,W-w):L,y:mode.includes('n')&&mode!=='new'?Math.min(B-h,H-h):T,w,h};clampBox();draw()};
+  cv.onpointerup=cv.onpointercancel=()=>{mode=null};
+  el.modal.querySelectorAll('[data-ratio]').forEach(b=>b.onclick=()=>{el.modal.querySelectorAll('[data-ratio]').forEach(x=>x.classList.toggle('on',x===b));setRatio(ratios.find(r=>r[0]===b.dataset.ratio)[2]);draw()});
+  q1('#cropGo').onclick=()=>{
+   const sw=Math.round(box.w/K),sh=Math.round(box.h/K),sx=Math.round(box.x/K),sy=Math.round(box.y/K);
+   const k=Math.min(1,1600/Math.max(sw,sh)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(sw*k));c.height=Math.max(1,Math.round(sh*k));
+   c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
+   let out;try{out=/^data:image\/png/.test(url)?fitPng(c):(()=>{let q=.92,u2=c.toDataURL('image/jpeg',q);while(u2.length>1_300_000&&q>.5){q-=.08;u2=c.toDataURL('image/jpeg',q)}if(u2.length>1_300_000)throw Error('The result is too large.');return u2})()}catch(e){return toast(e.message)}
+   closeModal();putPicture(t,out);toast('Cropped. Undo (Ctrl+Z) brings the original back.');drawOverlay();
+  };
+  draw();
+ }
+ const q1=s=>el.modal.querySelector(s);
  function photoTools(s,i){
-  return `<label class="rng">Turn<input type="range" min="-180" max="180" value="${getList(s,'elementRotations',i,0)}" data-b="elrot"></label><label class="rng">Corners<input type="range" min="0" max="50" value="${getList(s,'elementRadius',i,0)}" data-b="elradius"></label><label class="rng">Fade<input type="range" min="10" max="100" value="${getList(s,'elementOpacity',i,100)}" data-b="elopacity"></label><button class="txt" data-b="elflip" title="Flip left and right">Flip</button><button class="txt" data-b="rmbg" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button class="txt" data-b="elreplace">Replace</button>`;
+  return `<label class="rng">Turn<input type="range" min="-180" max="180" value="${getList(s,'elementRotations',i,0)}" data-b="elrot"></label><label class="rng">Corners<input type="range" min="0" max="50" value="${getList(s,'elementRadius',i,0)}" data-b="elradius"></label><label class="rng">Fade<input type="range" min="10" max="100" value="${getList(s,'elementOpacity',i,100)}" data-b="elopacity"></label><button class="txt" data-b="elflip" title="Flip left and right">Flip</button><button class="txt" data-b="crop" title="Crop this picture">Crop</button>${maskSelect({t:'element',i})}<button class="txt" data-b="rmbg" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button class="txt" data-b="elreplace">Replace</button>`;
  }
  // Removes a plain or near-plain background: pixels joined to the picture's edge that look like its corners become transparent.
  async function removeBackground(url,tol){
@@ -548,8 +618,11 @@ const Editor=(()=>{
  const photoOf=t=>{const s=slide();return t.t==='art'?s.image:t.t==='slot'?(s.slots?.[t.k]?.src||(slotDefs()[0]?.[0]===t.k?s.image:'')):s.elements?.[t.i]}
  // AI cutout: the studio's private worker returns several models' results; the person picks the best, then can touch it up.
  async function runRemoveBackground(){
-  const s=slide(),target=sel,url=photoOf(target);
-  if(!url||!isPhotoEl(url))return toast('Select an uploaded picture first.');
+  const s=slide(),target={...sel};let url=photoOf(target);
+  if(!url||!isPhotoEl(url)){
+   // A template or library picture: make an editable copy first, then cut it out like an upload.
+   try{url=await ownPicture(target);applyPhoto(target,url,false)}catch(e){return toast(e.message||'Select a picture first.')}
+  }
   openModal(`<h2>Remove background</h2><p class="hint" id="cutMsg">Cutting the picture out with AI. This takes a few seconds…</p><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
   const token=Symbol();cutToken=token;
   let src;try{const im=await loadImg(url),k=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);src=c.toDataURL('image/png')}catch(e){return cutFallback(target,url,e.message)}
@@ -620,6 +693,10 @@ const Editor=(()=>{
   if(a==='slotreplace'){const t=sel;return pickImage(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100,fx:0,fy:0,fs:100})),drawBar()}
   if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
+  if(a==='crop')return cropPicture({...sel});
+  if(a==='panelcol'){return colourPanel(t,slide().panel?.fill||'',c=>{commit(()=>{slide().panel={...(slide().panel||{}),fill:c||undefined,...(c&&slide().panel?.opacity===undefined?{opacity:100}:{})};if(!c)delete slide().panel.fill},'panelcol');drawBar()},{none:'Template colour'})}
+  if(a==='panelhide')return commit(()=>{slide().panel={...(slide().panel||{}),hide:!slide().panel?.hide}}),drawBar();
+  if(a==='panelreset')return commit(()=>{delete slide().panel}),drawOverlay();
   if(a==='rmbg')return runRemoveBackground();
   if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
   if(a==='elfillup'){const t=sel;return pickImage(url=>commit(()=>setFill(t.i,url)))}
@@ -644,6 +721,9 @@ const Editor=(()=>{
   else if(a==='artsx'||a==='artsy')commit(()=>{slide()[a==='artsx'?'artStretchX':'artStretchY']=+v},a);
   else if(a==='artsize')commit(()=>{slide().artScale=+v},'artsize');
   else if(a==='artlayer')commit(()=>{slide().artLayer=v});
+  else if(a==='mask'){const t={...sel};commit(()=>{const sl=slide();if(t.t==='art'){if(v)sl.artMask=v;else delete sl.artMask}else if(t.t==='slot')setSlot(t.k,{mask:v||undefined});else{const n=sl.elements.length,arr=Array.from({length:n},(_,i)=>sl.elementMasks?.[i]||'');arr[t.i]=v;sl.elementMasks=arr.some(Boolean)?arr:undefined;if(!sl.elementMasks)delete sl.elementMasks}},'mask')}
+  else if(a==='panelop')commit(()=>{slide().panel={...(slide().panel||{}),opacity:+v}},'panelop');
+  else if(a==='panelrad')commit(()=>{slide().panel={...(slide().panel||{}),radius:+v}},'panelrad');
   if(e.type==='change')drawOverlay();
  }
  // Photo layouts: a slot is one named picture frame. The first slot is also the page's main picture (slide.image).
@@ -652,7 +732,7 @@ const Editor=(()=>{
  let slotPan=false;
  function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
  function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
- function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:'artwork'}
+ function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':'artwork'}
  function fullOrder(){
   const s=slide(),keys=[...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
   const own=(s.layerOrder||[]).filter(k=>keys.includes(k));return [...own,...keys.filter(k=>!own.includes(k))];
