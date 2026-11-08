@@ -26,7 +26,7 @@ ${definitions}
 ${agents}
 ${art}
 ${starter}
-window.GSNKit={gsnFonts,LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
+window.GSNKit={SHAPE_KINDS,gsnFonts,LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
 })();`;
 
   // CSS for the shadow roots that host each page. :root/body rules are retargeted to the shadow host.

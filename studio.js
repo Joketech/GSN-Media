@@ -223,7 +223,7 @@ function canvasElementLabel(key){
 }
 // ---- Designed inner pages (write-up and CTA). Each layout is a real composition built from the template's own colours
 // and its own cover photograph, so a template reads as one family: Hook, designed pages, CTA. ----
-const DK_LAYOUTS={hook:'statement',agenda:'agenda',steps:'steps',compare:'compare',checklist:'checklist',quote:'quote',metric:'stat',triptych:'cards',feature:'split',principle:'statement',summary:'recap',example:'case',cta:'cta',blank:'statement'};
+const DK_LAYOUTS={hook:'statement',agenda:'agenda',steps:'steps',compare:'compare',checklist:'checklist',quote:'quote',metric:'stat',triptych:'cards',feature:'split',principle:'statement',summary:'recap',example:'case',cta:'cta',blank:'statement',open:'open'};
 function dkColors(accent,secondary){
  const h=n=>parseInt(n,16)/255,r=h(accent.slice(1,3)),g=h(accent.slice(3,5)),b=h(accent.slice(5,7));
  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
@@ -252,7 +252,7 @@ function dkBody(layout,value,hookPhoto){
 function dkPage(t,slide,o){
  const {layout,accent,cover,ratioClass,ratio,role,p,hex,textStyle,zIndex,stack,artStretch,image,elementStrip,freeTexts,photo,caption,handle,brand}=o;
  const c=dkColors(accent,p[3]);
- const mode={agenda:'dark',steps:'light',compare:'light',checklist:'light',quote:'dark',stat:'solid',cards:'dark',split:'light',statement:'dark',recap:'dark',case:'dark',cta:'solid'}[layout]||'dark';
+ const mode={open:'light',agenda:'dark',steps:'light',compare:'light',checklist:'light',quote:'dark',stat:'solid',cards:'dark',split:'light',statement:'dark',recap:'dark',case:'dark',cta:'solid'}[layout]||'dark';
  const flip=t.id%2?' dk-flip':'';
  const pic=image?`<img class="campaign-upload" src="${image}" alt="">`:photo?`<i class="dk-ph gsn-photo" style="--photo-source:url('${photo.file}');--photo-position:${photo.position};--photo-size:${photo.size}"></i>`:'';
  const num=String(slide.number??1).padStart(2,'0'),total=slide.total?String(slide.total).padStart(2,'0'):'';
@@ -347,7 +347,7 @@ function artBase(t,slide={},extra=''){
   const effect={shadow:'0 .09em .18em #0009',glow:'0 0 .35em currentColor',outline:'1px 1px #000,-1px -1px #000'}[options.effect];
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
   const hl=(/^#[0-9a-f]{6}$/i.test(options.bg||'')?`--hl-bg:${options.bg};--hl-py:${Math.round(.28*clamp(options.bgPad,0,150,100))/100}em;--hl-px:${Math.round(.6*clamp(options.bgPad,0,150,100))/100}em;--hl-r:${clamp(options.bgRadius,0,100,35)/100}em;`:'')+(/^#[0-9a-f]{6}$/i.test(options.boxFill||'')?`background:${options.boxFill};`:'');
-  return `${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
+  return `${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':Object.hasOwn(TOK,options.color)?'color:'+TOK[options.color]+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
  function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
  const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
@@ -421,6 +421,28 @@ function designCss(slide,layerOffset=0){
  }
  return css;
 }
+const TOK={accent:'var(--a,var(--accent,#b0f000))',accent2:'var(--a2,#ffd84d)',onaccent:'var(--on-a,#101323)',ink:'var(--fg,var(--campaign-ink,#111111))',soft:'var(--card,#ffffffd9)',line:'var(--line,#00000026)',paper:'var(--paper,#f4f4f0)'};
+/* Free shapes: boxes, pills, ovals and picture frames placed anywhere on a page. They sit behind the text unless the layer order says otherwise. */
+const SHAPE_KINDS={rect:'Box',round:'Rounded box',pill:'Pill',oval:'Oval',diamond:'Diamond',triangle:'Triangle',star:'Star'};
+const SHAPE_CLIP={diamond:'polygon(50% 0,100% 50%,50% 100%,0 50%)',triangle:'polygon(50% 0,100% 100%,0 100%)',star:'polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)'};
+function shapesHtml(slide){
+ const list=Array.isArray(slide.shapes)?slide.shapes.slice(0,40):[];if(!list.length)return '';
+ const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
+ const col=v=>/^#[0-9a-f]{6}$/i.test(v||'')?v:Object.hasOwn(TOK,v)?TOK[v]:'';
+ const n=(v,lo,hi,d)=>Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):d;
+ const out=list.map((sh,i)=>{
+  const kind=SHAPE_KINDS[sh.kind]?sh.kind:'rect',fill=col(sh.fill),line=col(sh.line),lw=n(sh.lineW,0,12,0),op=n(sh.opacity,10,100,100),rot=n(sh.rot,-360,360,0);
+  const rank=order.indexOf('shape:'+i);
+  const radius=kind==='round'?n(sh.radius,0,25,4)+'cqw':kind==='pill'?'999px':kind==='oval'?'50%':'0';
+  const px=n(sh.px,0,100,50),py=n(sh.py,0,100,50),z=n(sh.z,100,400,100)/100;
+  let inner='';
+  if(typeof sh.src==='string'&&/^gsn-\d{1,4}$/.test(sh.src)){const p=gsnLibraryPhoto(sh.src);if(p)inner=`<i class="sp-lib" style="--photo-source:url('${p.file}');--photo-position:${p.position};--photo-size:${p.size};--sp-x:${50-px}%;--sp-y:${50-py}%;--sp-z:${z}"></i>`}
+  else if(typeof sh.src==='string'&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(sh.src)&&sh.src.length<=1400000)inner=`<img class="sp-img" src="${sh.src}" alt="" style="object-position:${px}% ${py}%;transform:scale(${z});transform-origin:${px}% ${py}%">`;
+  const style=`left:${n(sh.x,-50,150,10)}%;top:${n(sh.y,-50,150,10)}%;width:${n(sh.w,1,200,30)}%;height:${n(sh.h,1,200,20)}%;border-radius:${radius};${fill?'background:'+fill+';':''}${lw&&line&&!SHAPE_CLIP[kind]?'border:'+lw/10+'cqw solid '+line+';':''}${SHAPE_CLIP[kind]?'clip-path:'+SHAPE_CLIP[kind]+';':''}${rot?'rotate:'+rot+'deg;':''}${op<100?'opacity:'+op/100+';':''}${sh.shadow?'box-shadow:0 1.2cqw 3cqw #0005;':''}${rank>=0?'z-index:'+(10+rank)+';':''}`;
+  return `<div class="shape-el" data-canvas-shape="${i}" style="${style}">${inner}</div>`;
+ }).join('');
+ return `<div class="slide-shapes" aria-hidden="true">${out}</div>`;
+}
 /* A text background belongs to the words only: it is painted on a wrapper inside the text box, so the box keeps its own colour, padding and position. */
 const HL_CSS='.txt-hl{background:var(--hl-bg);padding:var(--hl-py) var(--hl-px);margin:0 calc(-1*var(--hl-px));border-radius:var(--hl-r);box-decoration-break:clone;-webkit-box-decoration-break:clone}';
 function wrapHighlights(html){
@@ -436,15 +458,17 @@ function wrapHighlights(html){
 function art(t,slide={},extra=''){
  let html=wrapHighlights(artBase(t,slide,extra));
  if(slide.numbering==='off'||slide.numbering==='on'){const e=html.indexOf('>');if(e>0&&html.slice(0,e).indexOf('class="')>=0)html=html.slice(0,e).replace('class="','class="'+(slide.numbering==='off'?'no-num ':'num-on ')) +html.slice(e)}
- const dcss=designCss(slide,(/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')||(typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)))?1:0);
- if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
  const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';
  const bg=typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)?slide.pageImage:'';
- if(!fill&&!bg&&!slide.hideArt)return html;
+ const shapes=shapesHtml(slide);
+ const dcss=designCss(slide,(fill||bg?1:0)+(shapes?1:0));
+ if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
+ if(!fill&&!bg&&!slide.hideArt&&!shapes)return html;
  const end=html.indexOf('>');if(end<0||html.slice(0,end).indexOf('class="')<0)return html;
- const open=html.slice(0,end).replace('class="','class="page-custom '+(slide.hideArt?'page-hide-art ':'')+(fill||bg?'page-has-bg ':''));
- const layer=`<div class="page-bg" style="${fill?'background-color:'+fill+';':''}${bg?"background-image:url('"+bg+"');":''}"></div>`;
- return open+'>'+layer+html.slice(end+1);
+ const custom=fill||bg||slide.hideArt;
+ const open=custom?html.slice(0,end).replace('class="','class="page-custom '+(slide.hideArt?'page-hide-art ':'')+(fill||bg?'page-has-bg ':'')):html.slice(0,end);
+ const layer=fill||bg?`<div class="page-bg" style="${fill?'background-color:'+fill+';':''}${bg?"background-image:url('"+bg+"');":''}"></div>`:'';
+ return open+'>'+layer+shapes+html.slice(end+1);
 }
 function card(t){const campaign=t.cartoon?[t.title,t.summary]:gsnCampaign(t.id);return `<article class="template-card">${art(t,{...(t.cartoon?templateStarter(t.id)[0]:{}),catalog:true,ratio:t.cartoon?'4 / 5':'1 / 1',title:campaign?.[0],body:campaign?.[1],kicker:t.cartoon?t.topic:campaign?'AI AUTOMATION FOR BUSINESS':undefined})}<div class="template-meta"><div><strong>${esc(t.cartoon?t.name:gsnPhoto(t.id).name)}</strong><small>${esc(palettes[t.palette][0])} · ${t.format} · #${String(t.id+1).padStart(3,'0')}</small></div><button data-template="${t.id}" aria-label="Use ${esc(t.name)}">Use ↗</button></div></article>`}
 const nav=[['overview','◫','Overview'],['ideas','✧','Ideas & copy'],['templates','▦','Post templates'],['studio','▧','Design studio'],['motion','✧','Animation studio'],['creation','✦','AI creation'],['calendar','▤','Calendar'],['archive','▣','Saved archive'],['agents','⌘','The agents'],['settings','⚙','Brand & settings']];

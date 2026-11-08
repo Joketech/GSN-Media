@@ -10,7 +10,7 @@ export const STATUSES = ['draft', 'review', 'approved'];
 export const MAX_DESIGN_BYTES = 12 * 1024 * 1024;
 const MAX_PAGES = 30;
 const MAX_LAYERS = 24;
-const DECK_LAYOUTS = ['hook', 'cta', 'agenda', 'triptych', 'feature', 'principle', 'steps', 'compare', 'metric', 'checklist', 'quote', 'example', 'summary', 'blank'];
+const DECK_LAYOUTS = ['hook', 'cta', 'agenda', 'triptych', 'feature', 'principle', 'steps', 'compare', 'metric', 'checklist', 'quote', 'example', 'summary', 'blank', 'open'];
 const TEXT_KEYS = ['title', 'body', 'kicker', 'brandText', 'footerText'];
 const HEX = /^#[0-9a-f]{6}$/i;
 const IMAGE = /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
@@ -18,7 +18,12 @@ const MOTIF = /^(?:hourglass|visor|orbit|portfolio|stack|lift|product|audio|term
 export const MASKS = ['circle', 'rounded', 'heart', 'star', 'diamond', 'triangle'];
 const SLOT_KEY = /^[a-z][a-z0-9]{0,23}$/;
 const SHAPE = /^[a-z][a-z0-9-]{1,24}$/;
-const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2})$/;
+const SHAPE_KINDS = ['rect', 'round', 'pill', 'oval', 'diamond', 'triangle', 'star'];
+const MAX_SHAPES = 40;
+// A shape colour is a six-digit hex or a page colour name, so a design follows the pack's colours when they change.
+const COLOUR_NAMES = ['accent', 'accent2', 'onaccent', 'ink', 'soft', 'line', 'paper'];
+const shapeColour = (value, name) => (value === undefined || value === null || value === '' ? undefined : COLOUR_NAMES.includes(value) ? value : hex(value, name));
+const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2}|shape:\d{1,2})$/;
 
 const range = (value, min, max, name) => {
   if (value === undefined) return undefined;
@@ -58,7 +63,7 @@ function textOptions(o, name) {
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
     font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
-    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), boxFill: hex(o.boxFill, `${name}.boxFill`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
+    color: shapeColour(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), boxFill: hex(o.boxFill, `${name}.boxFill`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
       if (o[flag] !== undefined && typeof o[flag] !== 'boolean') throw new DesignError(`${name}.${flag} must be true or false.`);
       return [flag, o[flag]];
@@ -156,6 +161,29 @@ export function sanitizeSlide(s, index = 0) {
       top: range(t.top, -50, 150, `${where} text box ${i + 1} top`) ?? 10,
       ...textOptions({ ...t, text: undefined, left: undefined, top: undefined }, `${where} text box ${i + 1}`),
     }));
+  }
+  // Free shapes: boxes, pills, ovals and picture frames a creator places anywhere on the page.
+  if (s.shapes !== undefined) {
+    if (!Array.isArray(s.shapes) || s.shapes.length > MAX_SHAPES) throw new DesignError(`${where} shapes must be a list of up to ${MAX_SHAPES}.`);
+    let pictures = 0;
+    slide.shapes = s.shapes.map((sh, i) => {
+      const n = `${where} shape ${i + 1}`;
+      if (!sh || typeof sh !== 'object' || Array.isArray(sh)) throw new DesignError(`${n} must be an object.`);
+      let src;
+      if (sh.src !== undefined && sh.src !== null && sh.src !== '') {
+        if (typeof sh.src === 'string' && /^gsn-\d{1,4}$/.test(sh.src)) src = sh.src;
+        else { src = image(sh.src, `${n}.src`); if (++pictures > 6) throw new DesignError(`${where} can hold up to 6 uploaded pictures in shapes.`); }
+      }
+      return clean({
+        kind: pick(sh.kind ?? 'rect', SHAPE_KINDS, `${n}.kind`),
+        x: range(sh.x ?? 10, -50, 150, `${n}.x`), y: range(sh.y ?? 10, -50, 150, `${n}.y`),
+        w: range(sh.w ?? 30, 1, 200, `${n}.w`), h: range(sh.h ?? 20, 1, 200, `${n}.h`),
+        fill: shapeColour(sh.fill, `${n}.fill`), line: shapeColour(sh.line, `${n}.line`), lineW: range(sh.lineW, 0, 12, `${n}.lineW`),
+        radius: range(sh.radius, 0, 25, `${n}.radius`), opacity: range(sh.opacity, 10, 100, `${n}.opacity`), rot: range(sh.rot, -360, 360, `${n}.rot`),
+        shadow: sh.shadow === undefined ? undefined : !!sh.shadow,
+        src, px: range(sh.px, 0, 100, `${n}.px`), py: range(sh.py, 0, 100, `${n}.py`), z: range(sh.z, 100, 400, `${n}.z`),
+      });
+    });
   }
   if (s.elements !== undefined) {
     if (!Array.isArray(s.elements) || s.elements.length > MAX_LAYERS) throw new DesignError(`${where} elements must be a list of up to ${MAX_LAYERS}.`);
