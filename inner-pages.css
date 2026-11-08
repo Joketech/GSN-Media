@@ -165,5 +165,5 @@
 
 /* Uploaded pictures and shapes can always be picked, moved and edited; images keep their own proportions. */
 .slide-element-strip>*,.free-text{pointer-events:auto}
-.uploaded-photo-element{height:auto!important;max-height:none!important;width:calc(22cqw*var(--element-scale,1));object-fit:fill}
+.uploaded-photo-element{background:none!important;height:auto!important;max-height:none!important;width:calc(22cqw*var(--element-scale,1));object-fit:fill}
 .uploaded-photo-element[style*="border-radius"]{overflow:hidden}
