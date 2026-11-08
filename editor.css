@@ -179,9 +179,6 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
  .ed-dock{top:auto;bottom:calc(168px + env(safe-area-inset-bottom));left:12px;flex-direction:column-reverse;align-items:flex-start}
 }
 
-/* The rain layer paints the editor's backdrop, so the shell lets it show through. */
-body.in-editor .editor-root{background:transparent;animation:none}
-
 /* Colouring single words while typing */
 .ed-etb .dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:1px solid rgba(0,0,0,.25)}
 .ed-etb .txt.main{background:var(--maroon,#7c1d3c);color:#fff;border-radius:10px}
