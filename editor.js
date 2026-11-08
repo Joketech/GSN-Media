@@ -232,26 +232,27 @@ const Editor=(()=>{
   const g=!solo&&s&&groupFor(layerKey(s));if(g&&g.length>1)multi=g.map(selOf);
   drawOverlay();if(tool==='pages')openTool('pages');
  }
- function hit(x,y){
+ function hit(x,y,skip=0){
   const root=el.host.shadowRoot;if(!root)return null;
+  const list=[],add=t=>{if(!list.some(o=>o.t===t.t&&o.k===t.k&&o.i===t.i))list.push(t)};
   for(const n of root.elementsFromPoint(x,y)){
-   if(n.dataset?.canvasText!==undefined)return {t:'text',i:+n.dataset.canvasText};
-   const shp=n.closest?.('[data-canvas-shape]');if(shp)return {t:'shape',i:+shp.dataset.canvasShape};
-   if(n.dataset?.canvasElement!==undefined)return {t:'element',i:+n.dataset.canvasElement};
-   if(n.dataset?.canvasCopy)return {t:'copy',k:n.dataset.canvasCopy};
-   const slotNode=n.closest?.('[data-slot]');if(slotNode)return {t:'slot',k:slotNode.dataset.slot};
-   if(n.closest?.('.campaign-visual')&&(n.matches('img,.campaign-photo,.campaign-upload,svg,svg *,[class*=photo]')))return {t:'art'};
+   if(n.dataset?.canvasText!==undefined){add({t:'text',i:+n.dataset.canvasText});continue}
+   const shp=n.closest?.('[data-canvas-shape]');if(shp){add({t:'shape',i:+shp.dataset.canvasShape});continue}
+   if(n.dataset?.canvasElement!==undefined){add({t:'element',i:+n.dataset.canvasElement});continue}
+   if(n.dataset?.canvasCopy){add({t:'copy',k:n.dataset.canvasCopy});continue}
+   const slotNode=n.closest?.('[data-slot]');if(slotNode){add({t:'slot',k:slotNode.dataset.slot});continue}
+   if(n.closest?.('.campaign-visual')&&(n.matches('img,.campaign-photo,.campaign-upload,svg,svg *,[class*=photo]')))add({t:'art'});
   }
   // Empty space on the template's text card picks the card itself (move it, recolour it, hide it).
   const cp=root.querySelector('.campaign-copy');
-  if(cp){const r=cp.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){const v=root.querySelector('.campaign-visual'),vr=v&&(v.firstElementChild||v).getBoundingClientRect();if(!(vr&&vr.width&&x>=vr.left&&x<=vr.right&&y>=vr.top&&y<=vr.bottom&&y<r.top+8))return {t:'panel'}}}
+  if(cp){const r=cp.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){const v=root.querySelector('.campaign-visual'),vr=v&&(v.firstElementChild||v).getBoundingClientRect();if(!(vr&&vr.width&&x>=vr.left&&x<=vr.right&&y>=vr.top&&y<=vr.bottom&&y<r.top+8))add({t:'panel'})}}
   // The artwork is decorative (pointer-events:none in the template), so test its box directly.
   const v=root.querySelector('.campaign-visual');
-  if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'art'}}
-  const pt=partAt(x,y);if(pt)return pt;
+  if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)add({t:'art'})}
+  const pt=partAt(x,y);if(pt)add(pt);
   // Nothing smaller is under the pointer, so it is the page itself: its background and colours.
-  const art=root.querySelector('.art');if(art){const r=art.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'page'}}
-  return null;
+  const art=root.querySelector('.art');if(art){const r=art.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)add({t:'page'})}
+  return list[Math.min(skip,list.length-1)]||null;
  }
  function onHover(e){
   if(drag)return;
@@ -259,9 +260,11 @@ const Editor=(()=>{
   el.over.style.cursor=h?'move':'default';
  }
  const sameSel=(a,b)=>a&&b&&a.t===b.t&&a.k===b.k&&a.i===b.i;
+ let lastPt=null;
  function onDown(e){
   if(e.button!==0||editing)return;
   const handle=e.target.dataset?.h;
+  if(!handle)lastPt={x:e.clientX,y:e.clientY,n:0};
   let target=handle?sel:hit(e.clientX,e.clientY);
   if(!target){select(null);return}
   // Shift or Ctrl click adds or removes an item, so several can be moved, grouped or deleted together.
@@ -553,7 +556,7 @@ const Editor=(()=>{
    html=`<span class="count">Page</span>${sw('pgbg','Background colour (the cream behind everything)',s.background,'Background')}${sw('pgacc','Accent colour (frame, bars and badges)',s.accent,'Accent')}${sw('pgink','Text colour for the whole page',s.ink,'Text')}${sw('pgfill','Fill the whole page with one colour',s.pageFill,'Cover')}<button class="txt" data-b="pgreset" title="Back to the template's own colours">Reset colours</button>${sep}`;
   }else if(sel.t==='shape'){
    const p=s.shapes?.[sel.i]||{},sw=(a,t,v)=>`<button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${shapeColourCss(v)}"></button>`;
-   html=`<span class="count">${p.src?'Picture frame':'Shape'}</span><select data-b="shapekind" aria-label="Shape">${Object.entries(GSNKit.SHAPE_KINDS).map(([v,n])=>`<option value="${v}" ${(p.kind||'rect')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>${p.src?'':sw('shapefill','Fill colour',p.fill)}${sw('shapeline','Outline colour',p.line)}<label class="rng">Outline<input type="range" min="0" max="12" value="${p.lineW||0}" data-b="shapelw"></label>${(p.kind||'rect')==='round'?`<label class="rng">Corners<input type="range" min="0" max="25" value="${p.radius??4}" data-b="shaperad"></label>`:''}<label class="rng">See-through<input type="range" min="10" max="100" value="${p.opacity??100}" data-b="shapeop"></label><button class="txt ${p.shadow?'on':''}" data-b="shapeshadow">Shadow</button><button class="txt" data-b="shapepic">${p.src?'Replace picture':'Add picture'}</button>${p.src?`<label class="rng">Zoom<input type="range" min="100" max="400" value="${p.z||100}" data-b="shapez"></label><button class="txt ${slotPan?'on':''}" data-b="slotpan" title="When on, dragging moves the picture inside the frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button class="txt" data-b="shapenopic">Remove picture</button>`:''}${sep}`;
+   html=`<span class="count">${p.src?'Picture frame':'Shape'}</span><select data-b="shapekind" aria-label="Shape">${Object.entries(GSNKit.SHAPE_KINDS).map(([v,n])=>`<option value="${v}" ${(p.kind||'rect')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>${p.src?'':sw('shapefill','Fill colour',p.fill)}${sw('shapeline','Outline colour',p.line)}<label class="rng">Outline<input type="range" min="0" max="12" value="${p.lineW||0}" data-b="shapelw"></label>${(p.kind||'rect')==='round'?`<label class="rng">Corners<input type="range" min="0" max="25" value="${p.radius??4}" data-b="shaperad"></label>`:''}<label class="rng">See-through<input type="range" min="10" max="100" value="${p.opacity??100}" data-b="shapeop"></label><button class="txt ${p.shadow?'on':''}" data-b="shapeshadow">Shadow</button><button class="txt ${p.flip?'on':''}" data-b="shapeflip" title="Flip left and right">Flip</button><button class="txt" data-b="shapepic">${p.src?'Replace picture':'Add picture'}</button>${p.src?`<label class="rng">Zoom<input type="range" min="100" max="400" value="${p.z||100}" data-b="shapez"></label><button class="txt ${slotPan?'on':''}" data-b="slotpan" title="When on, dragging moves the picture inside the frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button class="txt" data-b="shapenopic">Remove picture</button>`:''}${sep}`;
   }else if(sel.t==='part'){
    const p=s.parts?.[sel.k]||{};
    html=`<span class="count">Template item</span><button class="swatch cp" data-b="partfill" title="Fill colour" aria-label="Fill colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><button class="swatch cp hl" data-b="partcolor" title="Text or icon colour" aria-label="Text or icon colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.color||'')?p.color:'transparent'}"><b>A</b></button><label class="rng">Size<input type="range" min="20" max="400" value="${Math.round((p.scale||1)*100)}" data-b="partscale"></label><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="partop"></label><button class="txt ${p.hide?'on':''}" data-b="parthide">${p.hide?'Show':'Hide'}</button><button class="txt" data-b="partreset" title="Put it back as the template had it">Reset</button>${sep}`;
@@ -564,10 +567,11 @@ const Editor=(()=>{
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPicEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
    const st=s.slots?.[sel.k]||{};
-   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotpan" class="txt ${slotPan?'on':''}" title="When on, dragging moves the picture inside its frame. When off, dragging moves the whole frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button data-b="slotreset" class="txt" title="Centre the picture, reset zoom, and put the frame back">Reset position</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>${sep}`;
+   html=`<span class="count">${esc(slotLabel(sel.k))}</span><button data-b="slotreplace" class="txt">Replace picture</button><button data-b="slotlib" class="txt">From library</button><label class="rng">Zoom<input type="range" min="100" max="400" value="${st.z||100}" data-b="slotzoom"></label><button data-b="slotpan" class="txt ${slotPan?'on':''}" title="When on, dragging moves the picture inside its frame. When off, dragging moves the whole frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button data-b="slotflip" class="txt ${st.flip?'on':''}" title="Flip the picture left and right">Flip</button><button data-b="slotreset" class="txt" title="Centre the picture, reset zoom, and put the frame back">Reset position</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button>${sep}`;
   }else{
-   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
+   html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="artflip" class="txt ${s.artFlip==='on'?'on':''}" title="Flip the picture left and right">Flip</button><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
+  if(['text','shape','element','art','slot','copy'].includes(sel.t)&&lastPt)html+='<button class="txt" data-b="behind" title="Pick the next item underneath, at the place you clicked (for example the shape behind a text)">Select behind</button>';
   if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part'&&sel.t!=='page')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element'||sel.t==='shape')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
@@ -765,6 +769,9 @@ const Editor=(()=>{
   if(a==='del')return deleteSel();
   if(a==='slotlib'){const t=sel;return libraryPick(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreplace'){const t=sel;return pickPicture(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
+  if(a==='artflip')return commit(()=>{const sl=slide();if(sl.artFlip==='on')delete sl.artFlip;else sl.artFlip='on'}),drawBar();
+  if(a==='slotflip'){const t=sel;return commit(()=>setSlot(t.k,{flip:slide().slots?.[t.k]?.flip?undefined:1})),drawBar()}
+  if(a==='shapeflip'){const i=sel.i;patchShape(i,{flip:slide().shapes?.[i]?.flip?0:1},'shapeflip');return drawBar()}
   if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100,fx:0,fy:0,fs:100})),drawBar()}
   if(a==='replace')return pickPicture(url=>commit(()=>{slide().image=url;delete slide().hideArt}));
   if(a==='crop')return cropPicture({...sel});
@@ -785,6 +792,7 @@ const Editor=(()=>{
   if(a==='elfillup'){const t=sel;return pickPicture(url=>commit(()=>setFill(t.i,url)))}
   if(a==='elfilllib'){const t=sel;return libraryPick(url=>commit(()=>setFill(t.i,url)))}
   if(a==='elfillclear'){const t=sel;return commit(()=>setFill(t.i,null))}
+  if(a==='behind'){if(!lastPt)return;const n=lastPt.n+1,t=hit(lastPt.x,lastPt.y,n);if(t&&!sameSel(t,sel)){lastPt.n=n;select(t,true)}else{lastPt.n=-1;const t0=hit(lastPt.x,lastPt.y,0);if(t0)select(t0,true);lastPt.n=0}return}
   if(a==='elflip'){const t=sel;return commit(()=>{setList(slide(),'elementFlip',t.i,getList(slide(),'elementFlip',t.i,0)?0:1,0)})}
   if(a==='elcenter'){const t=sel;return commit(()=>{const s=slide(),n=s.elements.length,pos=Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i));pos[t.i]={x:50,y:50};s.elementPositions=pos})}
   if(a==='clearimg')return commit(()=>{delete slide().image;delete slide().artX;delete slide().artY;delete slide().artScale});

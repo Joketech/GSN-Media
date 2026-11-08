@@ -98,7 +98,7 @@ export function sanitizeSlide(s, index = 0) {
     elementOpacity: numberList(s.elementOpacity, `${where} elementOpacity`, 10, 100), elementFlip: numberList(s.elementFlip, `${where} elementFlip`, 0, 1),
     artMask: pick(s.artMask, MASKS, `${where} artMask`),
     numbering: pick(s.numbering, ['on', 'off'], `${where} numbering`),
-    artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
+    artFlip: pick(s.artFlip, ['on', 'off'], `${where} artFlip`), artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
   if (s.parts !== undefined) {
     // Adjustments to the template's own decorations (badges, bars, icons, numbers), keyed by their place in the page, such as "3" or "3.1".
@@ -127,7 +127,7 @@ export function sanitizeSlide(s, index = 0) {
     for (const [key, v] of Object.entries(s.slots)) {
       if (!SLOT_KEY.test(key)) throw new DesignError(`${where} has an invalid slot name "${key}".`);
       if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} slot ${key} must be an object.`);
-      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`), mask: pick(v.mask, MASKS, `${where} slot ${key} mask`) });
+      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`), mask: pick(v.mask, MASKS, `${where} slot ${key} mask`), flip: range(v.flip, 0, 1, `${where} slot ${key} flip`) });
     }
   }
   if (s.motif !== undefined) {
@@ -179,7 +179,7 @@ export function sanitizeSlide(s, index = 0) {
         x: range(sh.x ?? 10, -50, 150, `${n}.x`), y: range(sh.y ?? 10, -50, 150, `${n}.y`),
         w: range(sh.w ?? 30, 1, 200, `${n}.w`), h: range(sh.h ?? 20, 1, 200, `${n}.h`),
         fill: shapeColour(sh.fill, `${n}.fill`), line: shapeColour(sh.line, `${n}.line`), lineW: range(sh.lineW, 0, 12, `${n}.lineW`),
-        radius: range(sh.radius, 0, 25, `${n}.radius`), opacity: range(sh.opacity, 10, 100, `${n}.opacity`), rot: range(sh.rot, -360, 360, `${n}.rot`),
+        radius: range(sh.radius, 0, 25, `${n}.radius`), opacity: range(sh.opacity, 10, 100, `${n}.opacity`), rot: range(sh.rot, -360, 360, `${n}.rot`), flip: range(sh.flip, 0, 1, `${n}.flip`),
         shadow: sh.shadow === undefined ? undefined : !!sh.shadow,
         src, px: range(sh.px, 0, 100, `${n}.px`), py: range(sh.py, 0, 100, `${n}.py`), z: range(sh.z, 100, 400, `${n}.z`),
       });
