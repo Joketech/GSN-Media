@@ -110,7 +110,7 @@ const PER=60;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
 
 /* The real platform shapes come from the server so "Use in studio" links match its presets; the list above is the fallback. */
-fetch('/api/platforms').then(r=>r.ok?r.json():null).then(j=>{
+fetch('/api/v1/platforms').then(r=>r.ok?r.json():null).then(j=>{
   const p=j&&j.presets;if(!p||!p.length)return;
   const pick=['instagram-post','instagram-square','instagram-story','tiktok','linkedin-carousel','linkedin-post','x-post','youtube-thumbnail','facebook-post'];
   const got=pick.map(id=>p.find(x=>x.id===id)).filter(Boolean);
