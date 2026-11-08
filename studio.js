@@ -285,9 +285,9 @@ function slotBox(t,slide,key,image,cls=''){
  const px=50+lim(st.x,-100,100,0)/2,py=50+lim(st.y,-100,100,0)/2,z=lim(st.z,100,400,100)/100;
  const demo=gsnPhoto(def[2]);
  const inner=src?`<img class="slot-img" src="${src}" alt="">`:`<i class="slot-demo gsn-photo" style="--photo-source:url('${demo.file}');--photo-position:${demo.position};--photo-size:${demo.size}"></i>`;
- const fx=lim(st.fx,-100,100,0),fy=lim(st.fy,-100,100,0),fs=lim(st.fs,30,300,100);
+ const fx=lim(st.fx,-100,100,0),fy=lim(st.fy,-100,100,0),fs=lim(st.fs,30,300,100),flipSlot=st.flip===1?'scale:-1 1;':'';
  const place=fx||fy||fs!==100?`translate:${fx}cqw ${fy}cqw;scale:${fs/100};`:'';
- return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z};${place}"><div class="slot-fill">${inner}</div></div>`;
+ return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z};${place}"><div class="slot-fill" style="${flipSlot}">${inner}</div></div>`;
 }
 // The cover of a photo layout. It uses the same parts as every other page (brand, kicker, title, text, footer), so selecting, moving and resizing text work as usual.
 function slotPage(t,slide,o){
@@ -362,7 +362,7 @@ function artBase(t,slide={},extra=''){
  const stack=(...keys)=>zIndex(...keys).replace('position:relative;','');
  const stretch=i=>{const x=clamp(slide.elementStretchX?.[i],25,400,100),y=clamp(slide.elementStretchY?.[i],25,400,100),flip=slide.elementFlip?.[i]?-1:1,rot=clamp(slide.elementRotations?.[i],-360,360,0),rad=clamp(slide.elementRadius?.[i],0,50,0),op=clamp(slide.elementOpacity?.[i],10,100,100);
   return `${x===100&&y===100&&flip===1?'':`scale:${flip*x/100} ${y/100};`}${rot?`rotate:${rot}deg;`:''}${rad?`border-radius:${rad}%;`:''}${op<100?`opacity:${op/100};`:''}`;};
- const artStretch=(()=>{const x=clamp(slide.artStretchX,35,300,100),y=clamp(slide.artStretchY,35,300,100);return x===100&&y===100?'':`scale:${x/100} ${y/100};`;})();
+ const artStretch=(()=>{const x=clamp(slide.artStretchX,35,300,100),y=clamp(slide.artStretchY,35,300,100);const fl=slide.artFlip==='on'?-1:1;return x===100&&y===100&&fl===1?'':`scale:${fl*x/100} ${y/100};`;})();
  const elements=Array.isArray(slide.elements)?slide.elements.slice(0,24).filter(canvasElementLabel):[];
  const freeTexts=(Array.isArray(slide.texts)?slide.texts.slice(0,24):[]).map((item,index)=>typeof item?.text==='string'?`<div class="free-text" data-canvas-text="${index}" style="left:${clamp(item.left,-50,150,10)}%;top:${clamp(item.top,-50,150,10)}%;${stack('text:'+index)}${textStyleFrom({...item,x:0,y:0})}">${layerCopy(item.text,item.bullets)}</div>`:'').join('');
  const elementStrip=elements.length?`<div class="slide-element-strip" style="${stack(...elements.map((_,index)=>"element:"+index))}">${elements.map((key,index)=>{
@@ -445,7 +445,7 @@ function shapesHtml(slide){
   let inner='';
   if(typeof sh.src==='string'&&/^gsn-\d{1,4}$/.test(sh.src)){const p=gsnLibraryPhoto(sh.src);if(p)inner=`<i class="sp-lib" style="--photo-source:url('${p.file}');--photo-position:${p.position};--photo-size:${p.size};--sp-x:${50-px}%;--sp-y:${50-py}%;--sp-z:${z}"></i>`}
   else if(typeof sh.src==='string'&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(sh.src)&&sh.src.length<=1400000)inner=`<img class="sp-img" src="${sh.src}" alt="" style="object-position:${px}% ${py}%;transform:scale(${z});transform-origin:${px}% ${py}%">`;
-  const style=`left:${n(sh.x,-50,150,10)}%;top:${n(sh.y,-50,150,10)}%;width:${n(sh.w,1,200,30)}%;height:${n(sh.h,1,200,20)}%;border-radius:${radius};${fill?'background:'+fill+';':''}${lw&&line&&!SHAPE_CLIP[kind]?'border:'+lw/10+'cqw solid '+line+';':''}${SHAPE_CLIP[kind]?'clip-path:'+SHAPE_CLIP[kind]+';':''}${rot?'rotate:'+rot+'deg;':''}${op<100?'opacity:'+op/100+';':''}${sh.shadow?'box-shadow:0 1.2cqw 3cqw #0005;':''}${rank>=0?'z-index:'+(10+rank)+';':''}`;
+  const style=`left:${n(sh.x,-50,150,10)}%;top:${n(sh.y,-50,150,10)}%;width:${n(sh.w,1,200,30)}%;height:${n(sh.h,1,200,20)}%;border-radius:${radius};${fill?'background:'+fill+';':''}${lw&&line&&!SHAPE_CLIP[kind]?'border:'+lw/10+'cqw solid '+line+';':''}${SHAPE_CLIP[kind]?'clip-path:'+SHAPE_CLIP[kind]+';':''}${rot?'rotate:'+rot+'deg;':''}${sh.flip===1?'scale:-1 1;':''}${op<100?'opacity:'+op/100+';':''}${sh.shadow?'box-shadow:0 1.2cqw 3cqw #0005;':''}${rank>=0?'z-index:'+(10+rank)+';':''}`;
   return `<div class="shape-el" data-canvas-shape="${i}" style="${style}">${inner}</div>`;
  }).join('');
  return `<div class="slide-shapes" aria-hidden="true">${out}</div>`;
