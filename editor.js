@@ -465,7 +465,7 @@ const Editor=(()=>{
  function applyPhoto(target,out,cut){commit(()=>{
   if(target.t==='art'){slide().image=out;if(cut)slide().hideArt=true}
   else if(target.t==='slot'){setSlot(target.k,{src:out});if(cut)slide().hideArt=true}
-  else slide().elements[target.i]=out})}
+  else{slide().elements[target.i]=out;if(cut)slide().hideArt=true}})}
  const photoOf=t=>{const s=slide();return t.t==='art'?s.image:t.t==='slot'?(s.slots?.[t.k]?.src||(slotDefs()[0]?.[0]===t.k?s.image:'')):s.elements?.[t.i]}
  // AI cutout: the studio's private worker returns several models' results; the person picks the best, then can touch it up.
  async function runRemoveBackground(){
