@@ -166,6 +166,20 @@ const Editor=(()=>{
  function partKey(node){const root=el.host.shadowRoot?.querySelector('.art');if(!root)return '';const path=[];let n=node;while(n&&n!==root){const p=n.parentElement;if(!p)return '';path.unshift(partKids(p).indexOf(n)+1);n=p}return n===root?path.join('.'):''}
  function partNode(key){let n=el.host.shadowRoot?.querySelector('.art');for(const i of String(key).split('.').map(Number)){if(!n)return null;n=partKids(n)[i-1]}return n||null}
  const PART_SKIP='.slide-shapes,[data-canvas-copy],[data-canvas-text],[data-canvas-element],[data-slot],.campaign-visual,.slide-element-strip,.free-text,.campaign-copy,.page-bg,style';
+ // Pieces inside a template item that look like items of their own (a button, an icon, a picture), as opposed to its text.
+ function independentKids(key){
+  const node=partNode(key);if(!node)return [];
+  const out=[],picked=[];
+  for(const d of node.querySelectorAll('*')){
+   if(picked.some(p=>p.contains(d)))continue;
+   if(d.closest('svg')&&d.tagName!=='svg')continue;
+   const r=d.getBoundingClientRect();if(r.width<6||r.height<6)continue;
+   const cs=getComputedStyle(d),bgc=cs.backgroundColor,hasBg=bgc&&!/rgba?\(0, 0, 0, 0\)|transparent/.test(bgc),hasBorder=parseFloat(cs.borderTopWidth)>0&&cs.borderTopStyle!=='none',hasShadow=cs.boxShadow&&cs.boxShadow!=='none';
+   if(!(hasBg||hasBorder||hasShadow||/^(IMG|svg)$/.test(d.tagName)))continue;
+   const k=partKey(d);if(k){picked.push(d);out.push(k)}
+  }
+  return out;
+ }
  function partAt(x,y){
   const root=el.host.shadowRoot,art=root?.querySelector('.art');if(!art)return null;
   const pg=art.getBoundingClientRect(),pageArea=pg.width*pg.height;let best=null,area0=Infinity;
@@ -194,6 +208,7 @@ const Editor=(()=>{
  const groupFor=k=>(slide().groups||[]).find(g=>g.includes(k));
  function drawOverlay(){
   el.over.innerHTML='';
+  if($('.ed-pos'))queueMicrotask(()=>posPanel());
   if(showPage&&multi.length>1){const pr=nodeFor({t:'page'})?.getBoundingClientRect();if(pr){const pb0=pageBox(),b=document.createElement('div');b.className='ed-sel multi page-out';Object.assign(b.style,{left:(pr.left-pb0.left)+'px',top:(pr.top-pb0.top)+'px',width:pr.width+'px',height:pr.height+'px'});el.over.appendChild(b)}}el.bar.hidden=!sel;
   if(!sel||editing)return;
   const pb=pageBox(),ms=members();
@@ -384,7 +399,10 @@ const Editor=(()=>{
      if(slotPan&&b0.src&&members().length===1){const z=(b0.z||100)/100;b0.px=round(clamp((b0.px??50)-dx/(st.r.width||1)*100/Math.max(.35,z-.5),0,100));b0.py=round(clamp((b0.py??50)-dy/(st.r.height||1)*100/Math.max(.35,z-.5),0,100))}
      else{b0.x=round(clamp(b0.x+dx/st.W*100,-50,150));b0.y=round(clamp(b0.y+dy/st.H*100,-50,150))}
      s.shapes=arr}
-    else if(m.t==='part'){const p0=base.parts?.[m.k]||{};s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}}
+    else if(m.t==='part'){const p0=base.parts?.[m.k]||{},px=dx/st.W*100,py=dy/st.W*100;s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+px,-100,100)),y:round(clamp((p0.y||0)+py,-100,100))}};
+     // A box and a button sitting inside it are separate pieces: the button stays where it is unless it is selected too.
+     const mem=new Set(members().map(layerKey));
+     for(const kid of (st.kids?.[m.k]||(st.kids=st.kids||{},st.kids[m.k]=independentKids(m.k)))){if(mem.has('part:'+kid))continue;const b0=base.parts?.[kid]||{};s.parts[kid]={...b0,x:round(clamp((b0.x||0)-px,-100,100)),y:round(clamp((b0.y||0)-py,-100,100))}}}
     else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
    }
@@ -563,7 +581,7 @@ const Editor=(()=>{
    const grouped=members().some(m=>groupFor(layerKey(m)));
    const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
    const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body',footerText:'Footer',panel:'Text card'})[k]||(k.startsWith('part:')?'Item '+k.slice(5):k)};
-   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:(multi.some(m=>m.t==='copy'||m.t==='text')?'<button class="txt" data-b="fontpop">Font ▾</button>':'')+'<button class="swatch cp" data-b="mcolor" title="Colour of every selected text and shape" aria-label="Colour of all selected" style="--sw:#ac82f4"></button>'+sep}<button class="txt" data-b="solopage" title="Edit the page background on its own">Background</button><button class="txt" data-b="group" title="Lock these together so they move and resize as one">Lock together</button>${grouped?'<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:(multi.some(m=>m.t==='copy'||m.t==='text')?'<button class="txt" data-b="fontpop">Font ▾</button>':'')+'<button class="swatch cp" data-b="mcolor" title="Colour of every selected text and shape" aria-label="Colour of all selected" style="--sw:#ac82f4"></button>'+sep}<button class="txt" data-b="position" title="Arrange, align and layers">Position</button><button class="txt" data-b="solopage" title="Edit the page background on its own">Background</button><button class="txt" data-b="group" title="Lock these together so they move and resize as one">Lock together</button>${grouped?'<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
    return;
@@ -573,7 +591,7 @@ const Editor=(()=>{
    html=textBarHtml(l,s,true);
   }else if(sel.t==='page'){
    const sw=(a,t,v,lbl)=>`<span class="count">${lbl}</span><button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${/^#[0-9a-f]{6}$/i.test(v||'')?v:'transparent'}"></button>`;
-   html=`<span class="count">Page</span>${sw('pgbg','Background colour (the cream behind everything)',s.background,'Background')}${sw('pgacc','Accent colour (frame, bars and badges)',s.accent,'Accent')}${sw('pgink','Text colour for the whole page',s.ink,'Text')}${sw('pgfill','Fill the whole page with one colour',s.pageFill,'Cover')}<button class="txt" data-b="pgreset" title="Back to the template's own colours">Reset colours</button>${sep}`;
+   html=`<span class="count">Page</span>${sw('pgbg','Background colour (the cream behind everything)',s.background,'Background')}${sw('pgacc','Accent colour (frame, bars and badges)',s.accent,'Accent')}${sw('pgink','Text colour for the whole page',s.ink,'Text')}${sw('pgfill','Fill the whole page with one colour',s.pageFill,'Cover')}<button class="txt ${s.hideDeco?'on':''}" data-b="pgdeco" title="Hide the big page number and the template's built-in decorations">${s.hideDeco?'Show page decorations':'Hide page decorations'}</button><button class="txt" data-b="pgreset" title="Back to the template's own colours">Reset colours</button>${sep}`;
   }else if(sel.t==='shape'){
    const p=s.shapes?.[sel.i]||{},sw=(a,t,v)=>`<button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${shapeColourCss(v)}"></button>`;
    html=`<span class="count">${p.src?'Picture frame':'Shape'}</span><select data-b="shapekind" aria-label="Shape">${Object.entries(GSNKit.SHAPE_KINDS).map(([v,n])=>`<option value="${v}" ${(p.kind||'rect')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>${p.src?'':sw('shapefill','Fill colour',p.fill)}${sw('shapeline','Outline colour',p.line)}<label class="rng">Outline<input type="range" min="0" max="12" value="${p.lineW||0}" data-b="shapelw"></label>${(p.kind||'rect')==='round'?`<label class="rng">Corners<input type="range" min="0" max="25" value="${p.radius??4}" data-b="shaperad"></label>`:''}<label class="rng">See-through<input type="range" min="10" max="100" value="${p.opacity??100}" data-b="shapeop"></label><button class="txt ${p.shadow?'on':''}" data-b="shapeshadow">Shadow</button><button class="txt ${p.flip?'on':''}" data-b="shapeflip" title="Flip left and right">Flip</button><button class="txt" data-b="shapepic">${p.src?'Replace picture':'Add picture'}</button>${p.src?`<label class="rng">Zoom<input type="range" min="100" max="400" value="${p.z||100}" data-b="shapez"></label><button class="txt ${slotPan?'on':''}" data-b="slotpan" title="When on, dragging moves the picture inside the frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button class="txt" data-b="shapenopic">Remove picture</button>`:''}${sep}`;
@@ -592,10 +610,11 @@ const Editor=(()=>{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="artflip" class="txt ${s.artFlip==='on'?'on':''}" title="Flip the picture left and right">Flip</button><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
   if(['text','shape','element','art','slot','copy'].includes(sel.t)&&lastPt)html+='<button class="txt" data-b="behind" title="Pick the next item underneath, at the place you clicked (for example the shape behind a text)">Select behind</button>';
+  if(sel.t!=='page')html+='<button class="txt" data-b="position" title="Arrange, align and layers">Position</button>';
   if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part'&&sel.t!=='page')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element'||sel.t==='shape')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>';
-  if(sel.t==='text'||sel.t==='element'||sel.t==='shape'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
+  if(['text','element','shape','art','slot','copy','part','panel'].includes(sel.t))html+=b('del','trash','Delete (you can bring it back from Position > Layers)');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
  }
@@ -767,6 +786,8 @@ const Editor=(()=>{
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
   const a=t.dataset.b,l=sel.t==='copy'||sel.t==='text'?layerOf():null;
+  if(a==='pgdeco')return commit(()=>{const sl=slide();if(sl.hideDeco)delete sl.hideDeco;else sl.hideDeco=true}),drawBar();
+  if(a==='position')return posPanel('arrange');
   if(a==='solopage')return select({t:'page'},true);
   if(a==='mcolor')return colourPanel(t,'',c=>{if(!c)return;const ms=members();commit(()=>{const sl=slide();for(const m of ms){if(m.t==='copy')sl.textLayers={...sl.textLayers,[m.k]:{...(sl.textLayers?.[m.k]||{}),color:c}};else if(m.t==='text')sl.texts[m.i]={...sl.texts[m.i],color:c};else if(m.t==='shape'){const a=(sl.shapes||[]).map(x=>({...x}));if(a[m.i]){a[m.i].fill=c;sl.shapes=a}}else if(m.t==='element'){const x=[...(sl.elementColors||[])];x[m.i]=c;sl.elementColors=Array.from({length:sl.elements.length},(_,k)=>x[k]||'#25c8ff')}}},'multicolour');drawBar()});
   if(a==='fontpop')return fontPanel(t,l?.font||'sans',k=>{patchLayer({font:k},'font');drawBar()});
@@ -878,9 +899,9 @@ const Editor=(()=>{
  function deleteOne(s,m){
   if(m.t==='text'){s.texts=s.texts.filter((_,i)=>i!==m.i);s.layerOrder=remap(s.layerOrder,'text:',m.i);remapGroups(s,'text:',m.i)}
   else if(m.t==='element'){const i=m.i,f=a=>a?.filter((_,n)=>n!==i);s.elements=f(s.elements);for(const k of ['elementPositions','elementSizes','elementColors','elementSolid','elementStretchX','elementStretchY','elementRotations','elementRadius','elementOpacity','elementFlip','elementFills'])if(s[k])s[k]=f(s[k]);s.layerOrder=remap(s.layerOrder,'element:',i);remapGroups(s,'element:',i)}
-  else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
-  else if(m.t==='art'){delete s.image;s.motif='none'}
-  else if(m.t==='slot')clearSlot(m.k);
+  else if(m.t==='copy')s.textLayers={...(s.textLayers||{}),[m.k]:{...(s.textLayers?.[m.k]||{}),hide:true}};
+  else if(m.t==='art'){s.hideArt=true}
+  else if(m.t==='slot')s.slots={...(s.slots||{}),[m.k]:{...(s.slots?.[m.k]||{}),hide:true}};
   else if(m.t==='shape'){s.shapes=(s.shapes||[]).filter((_,i)=>i!==m.i);if(!s.shapes.length)delete s.shapes;s.layerOrder=remap(s.layerOrder,'shape:',m.i);remapGroups(s,'shape:',m.i)}
   else if(m.t==='part')s.parts={...(s.parts||{}),[m.k]:{...(s.parts?.[m.k]||{}),hide:true}};
   else if(m.t==='panel')s.panel={...(s.panel||{}),hide:true};
@@ -912,6 +933,7 @@ const Editor=(()=>{
   commit(()=>{const s=slide();
    // Highest index first so earlier deletions do not shift the later ones.
    for(const m of members().slice().sort((a,b)=>(b.i??-1)-(a.i??-1)))deleteOne(s,m);
+   if(showPage)s.hideDeco=true;
    sel=null;multi=[];
   });
   drawOverlay();
@@ -933,7 +955,72 @@ const Editor=(()=>{
   commit(()=>{const s=slide();s.groups=(s.groups||[]).filter(g=>!g.some(k=>keys.includes(k)));if(!s.groups.length)delete s.groups});
   const again=keys.map(selOf);multi=again.length>1?again:[];drawOverlay();toast('Ungrouped. Click each item to edit it. Press Group to join them again.');
  }
+ /* ---------- Position panel: arrange, align and layers for anything on the page ---------- */
+ let posTab='arrange';
+ const partName=k=>{const n=partNode(k);if(!n)return 'Template item';const t=(n.textContent||'').trim().replace(/\s+/g,' ');if(t)return '"'+t.slice(0,20)+'"';if(/^(svg|IMG)$/i.test(n.tagName)||n.querySelector('svg,img'))return 'Icon or picture';const r=n.getBoundingClientRect();return Math.min(r.width,r.height)<8?'Line':'Shape'};
+ const layerName=m=>{const s=slide(),k=layerKey(m);return m.t==='shape'?(s.shapes?.[m.i]?.src?'Picture frame ':(GSNKit.SHAPE_KINDS[s.shapes?.[m.i]?.kind]||'Box')+' ')+(m.i+1):m.t==='text'?'Text: '+(s.texts[m.i]?.text||'').slice(0,22):m.t==='element'?(GSNKit.canvasElementLabel(s.elements[m.i])||'Element'):m.t==='art'?'Picture':m.t==='slot'?slotLabel(m.k):m.t==='panel'?'Text card':m.t==='part'?partName(m.k):(COPY[k]||k)};
+ function toFront(toTop){
+  const ms=members().filter(m=>fullOrder().includes(layerKey(m)));
+  if(!ms.length)return toast('Template items stay in their place. Use Layers to show or hide them.');
+  commit(()=>{const keys=ms.map(layerKey),o=fullOrder().filter(k=>!keys.includes(k));slide().layerOrder=toTop?[...o,...keys]:[...keys,...o]});drawOverlay();
+ }
+ function moveSelBy(dx,dy){
+  if(!sel||(!dx&&!dy))return;
+  const pb=pageBox(),s=slide(),base=JSON.parse(JSON.stringify(s));
+  const st={W:pb.width,H:pb.height,mode:'move',moved:true,r:nodeFor().getBoundingClientRect(),centers:(s.elements||[]).map((_,i)=>s.elementPositions?.[i]||elementCenter(i)),frames:Object.fromEntries(members().map(m=>{const n=nodeFor(m),f=n?.closest?.('.campaign-visual')?.getBoundingClientRect()||n?.getBoundingClientRect();return [layerKey(m),{w:f?.width||1,h:f?.height||1}]}))};
+  undo.push(snapshot());if(undo.length>80)undo.shift();redo=[];
+  drag={start:st,base,pending:{ev:{},dx,dy,shift:false}};applyDrag();drag=null;
+  if(design.status==='approved')design.status='draft';markDirty();queueThumbs([page]);render();
+ }
+ function alignSel(how){
+  const rs=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean),pg=pageBox();
+  if(!rs.length)return;
+  const L=Math.min(...rs.map(r=>r.left)),T=Math.min(...rs.map(r=>r.top)),R=Math.max(...rs.map(r=>r.right)),B=Math.max(...rs.map(r=>r.bottom));
+  const dx=how==='left'?pg.left-L:how==='right'?pg.right-R:how==='center'?(pg.left+pg.width/2)-(L+R)/2:0;
+  const dy=how==='top'?pg.top-T:how==='bottom'?pg.bottom-B:how==='middle'?(pg.top+pg.height/2)-(T+B)/2:0;
+  moveSelBy(dx,dy);
+ }
+ function setHidden(m,on){
+  commit(()=>{const s=slide();
+   if(m.t==='copy')s.textLayers={...(s.textLayers||{}),[m.k]:{...(s.textLayers?.[m.k]||{}),hide:on||undefined}};
+   else if(m.t==='slot')s.slots={...(s.slots||{}),[m.k]:{...(s.slots?.[m.k]||{}),hide:on||undefined}};
+   else if(m.t==='part')s.parts={...(s.parts||{}),[m.k]:{...(s.parts?.[m.k]||{}),hide:on||undefined}};
+   else if(m.t==='panel')s.panel={...(s.panel||{}),hide:on||undefined};
+   else if(m.t==='art'){if(on)s.hideArt=true;else delete s.hideArt}
+  });render();posPanel();
+ }
+ function posPanel(tab){
+  if(tab)posTab=tab;
+  let box=$('.ed-pos');
+  if(!box){box=document.createElement('div');box.className='ed-pos';document.body.appendChild(box)}
+  const s=slide(),ic=n=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${n}</svg>`;
+  const ab=(a,label,svg)=>`<button class="pos-b" data-pa="${a}">${ic(svg)}<span>${label}</span></button>`;
+  let body='';
+  if(posTab==='arrange'){
+   body=`<div class="pos-grid">${ab('forward','Forward','<path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/>')}${ab('backward','Backward','<path d="M12 21l9-5-9-5-9 5z"/><path d="m3 11 9-5 9 5"/>')}${ab('front','To front','<path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/><path d="m3 17 9 5 9-5"/>')}${ab('back','To back','<path d="m3 7 9-5 9 5"/><path d="m3 11 9 5 9-5"/><path d="M12 21l9-5-9-5-9 5z"/>')}</div>
+   <h4>Align to page</h4><div class="pos-grid">${ab('top','Top','<path d="M4 4h16M9 8h6v12H9z"/>')}${ab('left','Left','<path d="M4 4v16M8 9h12v6H8z"/>')}${ab('middle','Middle','<path d="M4 12h16M8 7h8v10H8z"/>')}${ab('center','Center','<path d="M12 4v16M7 8h10v8H7z"/>')}${ab('bottom','Bottom','<path d="M4 20h16M9 4h6v12H9z"/>')}${ab('right','Right','<path d="M20 4v16M4 9h12v6H4z"/>')}</div>
+   <p class="hint">${multi.length>1?multi.length+' items selected: they are aligned as one group.':'Select several items first to align them as a group.'}</p>`;
+  }else{
+   const row=(m,hid)=>`<li class="${!hid&&sel&&layerKey(sel)===layerKey(m)?'on':''} ${hid?'off':''}" data-ly="${esc(layerKey(m))}"><span>${esc(layerName(m))}</span>${['copy','slot','part','panel','art'].includes(m.t)?`<button class="pos-eye" data-eye="${esc(layerKey(m))}" title="${hid?'Show':'Hide'}">${hid?'Show':'Hide'}</button>`:`<button class="pos-eye" data-del="${esc(layerKey(m))}" title="Delete">Delete</button>`}</li>`;
+   const shown=[...fullOrder().slice().reverse().map(selOf),...everything().filter(m=>m.t==='slot'||m.t==='panel'||m.t==='part')].filter(m=>!isHidden(m)&&nodeFor(m)).filter((m,i,a)=>a.findIndex(q=>layerKey(q)===layerKey(m))===i);
+   const hidden=[...Object.keys(s.textLayers||{}).filter(k=>s.textLayers[k]?.hide).map(k=>({t:'copy',k})),...Object.keys(s.slots||{}).filter(k=>s.slots[k]?.hide).map(k=>({t:'slot',k})),...Object.keys(s.parts||{}).filter(k=>s.parts[k]?.hide).map(k=>({t:'part',k})),...(s.panel?.hide?[{t:'panel'}]:[]),...(s.hideArt?[{t:'art'}]:[])];
+   body=`<ol class="pos-layers">${shown.map(m=>row(m,false)).join('')}</ol>${hidden.length?`<h4>Deleted or hidden</h4><ol class="pos-layers">${hidden.map(m=>row(m,true)).join('')}</ol>`:''}`;
+  }
+  box.innerHTML=`<div class="pos-head"><b>Position</b><button class="fp-x" data-pa="close" aria-label="Close">×</button></div><div class="pos-tabs"><button data-pt="arrange" class="${posTab==='arrange'?'on':''}">Arrange</button><button data-pt="layers" class="${posTab==='layers'?'on':''}">Layers</button></div>${body}`;
+  box.onclick=ev=>{
+   const t=ev.target.closest('[data-pt]');if(t)return posPanel(t.dataset.pt);
+   const a=ev.target.closest('[data-pa]')?.dataset.pa;
+   if(a==='close')return box.remove();
+   if(a==='forward'||a==='backward')return reorder(a==='forward'?1:-1);
+   if(a==='front'||a==='back')return toFront(a==='front');
+   if(a)return alignSel(a);
+   const e1=ev.target.closest('[data-eye]');if(e1){const m=selOf(e1.dataset.eye);return setHidden(m,!isHidden(m))}
+   const d1=ev.target.closest('[data-del]');if(d1){select(selOf(d1.dataset.del),true);return deleteSel()}
+   const li=ev.target.closest('[data-ly]');if(li&&!li.classList.contains('off'))select(selOf(li.dataset.ly),true);
+  };
+ }
  // Every piece of the page, so all of it can be picked together: text, pictures, shapes, lines, badges, the logo and the text card.
+ const isHidden=(m,s=slide())=>m.t==='copy'?!!s.textLayers?.[m.k]?.hide:m.t==='slot'?!!s.slots?.[m.k]?.hide:m.t==='part'?!!s.parts?.[m.k]?.hide:m.t==='panel'?!!s.panel?.hide:m.t==='art'?!!s.hideArt:false;
  function everything(){
   const root=el.host.shadowRoot,art=root?.querySelector('.art');if(!art)return [];
   const out=fullOrder().filter(k=>nodeFor(selOf(k))).map(selOf);
@@ -948,7 +1035,7 @@ const Editor=(()=>{
    if(getComputedStyle(n).visibility==='hidden')continue;
    const k=partKey(n);if(k){picked.push(n);out.push({t:'part',k})}
   }
-  return out.filter((o,i)=>out.findIndex(q=>layerKey(q)===layerKey(o))===i&&nodeFor(o));
+  return out.filter((o,i)=>out.findIndex(q=>layerKey(q)===layerKey(o))===i&&nodeFor(o)&&!isHidden(o));
  }
  function selectAll(){
   const ms=everything();
