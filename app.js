@@ -92,6 +92,7 @@ const App=(()=>{
  function show(which){
   $('#stage').hidden=which!=='stage';$('#editorRoot').hidden=which!=='editor';
   document.body.classList.toggle('in-editor',which==='editor');
+  try{if(which==='editor')Water.attach({veil:.14,bg:'radial-gradient(60% 55% at 12% 18%,#bcd9f7 0,transparent 70%),radial-gradient(50% 50% at 88% 12%,#f6c9dc 0,transparent 70%),radial-gradient(55% 60% at 80% 88%,#c4ead9 0,transparent 70%),radial-gradient(50% 50% at 18% 90%,#fbd9bd 0,transparent 70%),radial-gradient(40% 40% at 50% 50%,#ddd2f6 0,transparent 75%),#e8e3f1'});else Water.detach()}catch(e){}
  }
  async function route(){
   const hash=location.hash||'#home';

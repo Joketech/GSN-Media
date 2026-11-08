@@ -124,7 +124,7 @@ const Editor=(()=>{
  // Fit the page inside the work area, like Canva's "fit" zoom.
  function fit(){
   if(!el.area||!design)return;
-  const [w,h]=design.ratio.split(' / ').map(Number),aw=el.area.clientWidth-80,ah=el.area.clientHeight-100;
+  const [w,h]=design.ratio.split(' / ').map(Number),narrow=el.area.clientWidth<700,aw=el.area.clientWidth-(narrow?24:80),ah=el.area.clientHeight-(narrow?70:100);
   const width=Math.max(120,Math.min(aw,ah*w/h))*zoom;
   el.page.style.width=width+'px';el.page.style.height=(width*h/w)+'px';
   el.wrap.classList.toggle('zoomed',zoom>1.01);

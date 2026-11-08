@@ -56,6 +56,16 @@ h3{margin:14px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:upperca
 .card b{font-size:.8rem}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#3a1a28;color:#fff;border-radius:10px;padding:10px 16px;font-size:.82rem;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:90vw}.toast.on{opacity:1}
 @media(max-width:1000px){.app{grid-template-columns:110px 1fr 250px}}
+@media(max-width:760px){
+.app{position:absolute;inset:auto;top:0;left:0;right:0;min-height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto;grid-template-areas:"top" "pages" "stage" "insp";padding:8px;gap:8px}
+body{overflow:auto}
+.top{flex-wrap:nowrap;min-height:52px}
+.pages{flex-direction:row;overflow-x:auto;overflow-y:hidden}
+.pg{width:84px}
+.stage{min-height:0}
+.insp{overflow:visible}
+.stage .canvasbox,.stage>div{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -219,5 +229,6 @@ document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,sele
   window.GSNQuickEdit={get design(){return D},load:n=>{$('#tnum').value=n;$('#load').click()}};
 })();
 </script>
+<script src="water.js"></script><script>try{Water.attach()}catch(e){}</script>
 </body>
 </html>

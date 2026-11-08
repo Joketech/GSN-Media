@@ -140,7 +140,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .boot-error{max-width:520px;margin:20vh auto;padding:30px;border-radius:24px;background:#fff;color:#3a2a30}
 .editor-root{position:fixed;inset:0}
 @media(max-width:900px){
- .stage{grid-template-columns:1fr;padding:10px;gap:10px;grid-template-rows:auto auto 1fr auto}
+ .stage{grid-template-columns:minmax(0,1fr);padding:10px;gap:10px;grid-template-rows:auto auto 1fr auto}
  .osbar{grid-column:1;margin-right:0}.osaddress{display:none}
  .rail{grid-row:2;flex-direction:row;margin:0;justify-content:center;padding:6px;border-radius:999px;align-self:auto}
  .rail button{width:42px;height:42px}
@@ -312,3 +312,24 @@ body[data-role=editor] .pp-del{display:none}
 .act-table td{padding:9px 8px;border-bottom:1px solid rgba(70,40,50,.08);vertical-align:top}.act-table td small{display:block;color:#7b6a72;font-size:.74rem;margin-top:2px}
 .act-pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.7rem;font-weight:700;background:#e8f4ec;color:#1f6e45}.act-pill.failed{background:#fbe3e3;color:#9b2226}.act-pill.started{background:#fff2d6;color:#8a5a00}
 .act-empty{color:#7b6a72;margin:8px 0}.act-note{margin:12px 0 0;font-size:.74rem;color:#7b6a72}
+
+/* Phones and tablets: nothing may be wider than the screen; the icon rail scrolls instead of being cut off; comfortable touch targets; notch-safe edges. */
+.stage>*{min-width:0}
+@media(max-width:900px){
+ .stage{padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ .rail{max-width:100%;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .rail::-webkit-scrollbar{display:none}
+ .rail button{flex:none}
+ .panel,.panel-scroll,.hello{min-width:0}
+ .agents-page{grid-template-columns:minmax(0,1fr)}
+ .agent-card{gap:14px;padding:16px}.agent-card .bot{width:84px;height:98px;flex:none}
+ .cfg{grid-template-columns:minmax(0,1fr)}
+ .act-log{overflow-x:auto}
+}
+@media(max-width:560px){
+ .tgrid{grid-template-columns:minmax(0,1fr)}
+ .hero h2{font-size:2rem}
+ .rail button{width:44px;height:44px}
+ input,select,textarea{font-size:16px}
+}
+@media(hover:none){.btn-dark,.btn-light,.btn-maroon{min-height:40px}}

@@ -191,5 +191,15 @@ const Water=(()=>{
  }
  // Called by the motion switch.
  function setMotion(){if(!front)return;if(motionOn())resume();else{running=false;still1()}}
- return {start,resume,setMotion,setMirror};
+ // For pages that have no rain layer of their own (the studios): builds one behind everything and starts it.
+ function attach(opts){
+  const old=document.querySelector('.rain-layer');if(old){start(old.querySelector('.water'),{sparse:false});return}
+  const L=document.createElement('div');L.className='rain-layer';L.setAttribute('aria-hidden','true');
+  L.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden';if(opts?.bg)L.style.background=opts.bg;
+  const cv='position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+  L.innerHTML='<div style="position:absolute;inset:0;background:url(room-bg.jpg) center/cover no-repeat;opacity:'+(opts?.veil??.3)+'"></div><canvas class="water" style="'+cv+'"></canvas><canvas class="water-front" style="'+cv+'"></canvas>';
+  document.body.prepend(L);start(L.querySelector('.water'),{sparse:false});
+ }
+ function detach(){document.querySelector('.rain-layer')?.remove()}
+ return {start,resume,setMotion,setMirror,attach,detach};
 })();
