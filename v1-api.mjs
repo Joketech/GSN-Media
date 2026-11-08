@@ -26,6 +26,10 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const accounts=createAccounts({dataDir,now:clock});
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
+ const CONFIG_DEFAULTS={brand_name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',accent:'#ed6843'};
+ const configId=ws=>'config-'+String(ws).replace(/[^A-Za-z0-9_-]/g,'_');
+ const publicConfig=({brand_name,handle,voice,accent,updated_at,updated_by})=>({brand_name,handle,voice,accent,updated_at:updated_at||null,updated_by:updated_by||null,is_default:!updated_at});
+ async function getConfig(ws){try{const r=await load(configId(ws));if(r.record_type==='config'&&inWs(r,ws))return publicConfig({...CONFIG_DEFAULTS,...r})}catch{}return publicConfig(CONFIG_DEFAULTS);}
  const sessions=new Map(),busy=new Set();let mutation=Promise.resolve(),reconciling=false;
  const ready=mkdir(dataDir,{recursive:true,mode:0o700}).then(async()=>{
   for(const name of await readdir(dataDir))if(name.endsWith('.json')){
@@ -210,11 +214,20 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   }
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).filter(v=>inWs(v,ws)).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).filter(v=>inWs(v,ws)).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',workspace_id:ws,created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
+  // ----- Configuration: the brand name, handle and voice that every new design and every agent's writing starts from.
+  if(url.pathname==='/api/v1/config'&&req.method==='GET'){json(res,200,await getConfig(ws));return true;}
+  if(url.pathname==='/api/v1/config'&&req.method==='PUT'){
+   if(ctx.who!=='owner')throw new InputError('Only a manager can change the brand configuration. Agents can read it.',403);
+   const p=await body(req),cur=await getConfig(ws);
+   const next={brand_name:p.brand_name===undefined?cur.brand_name:text(p.brand_name,'brand_name',80),handle:p.handle===undefined?cur.handle:text(p.handle,'handle',80),voice:p.voice===undefined?cur.voice:text(p.voice,'voice',1200,false),accent:p.accent===undefined?cur.accent:(/^#[0-9a-f]{6}$/i.test(p.accent)?p.accent.toLowerCase():(()=>{throw new InputError('accent must be a colour like #ed6843.')})())};
+   const rec={record_type:'config',id:configId(ws),workspace_id:ws,...next,updated_at:new Date(clock()).toISOString(),updated_by:ctx.actor||who};
+   await serial(()=>save(rec.id,rec));json(res,200,publicConfig(rec));return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=(await list('job')).filter(j=>inWs(j,ws));json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='POST'){const key=req.headers['idempotency-key'];if(typeof key!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/.test(key))throw new InputError('Supply an Idempotency-Key of 1–160 letters, digits, _, ., : or -.');const j=await submit(await body(req),key,ws);json(res,202,publicJob(j));return true;}
   if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='GET'){const all=(await list('design')).filter(d=>inWs(d,ws)).map(designSummary);json(res,200,{designs:all.slice(0,500),total:all.length});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');if(p.copy!==undefined){try{p.pages=composeSlides(p.template_id,p.copy)}catch(e){throw new InputError(e.message)}if(Array.isArray(p.copy))p.copy.forEach((c,i)=>{if(typeof c?.person_id==='string'&&p.pages[i])p.pages[i].person_id=c.person_id});delete p.copy}else p.pages=starterSlides(p.template_id);}
+   if(p.brand===undefined){const c=await getConfig(ws);p.brand={name:c.brand_name,handle:c.handle};}
    await attachPeople(p,ws);
    const created=await serial(async()=>{const design=sanitizeDesign({title:'Untitled pack',...p},{templateCount:designTemplateCount});if((await list('design')).length>=500)throw new InputError('Maximum 500 saved designs. Delete some first.',409);const id=randomUUID(),now=new Date().toISOString();const record={...design,id,record_type:'design',workspace_id:ws,revision:1,created_at:now,updated_at:now,updated_by:ctx.actor};await save(id,record);return record;});json(res,201,created);return true;}
   const dm=url.pathname.match(/^\/api\/v1\/designs\/([a-f0-9-]{36})$/);

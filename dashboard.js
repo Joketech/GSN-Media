@@ -31,8 +31,8 @@ const Dashboard=(()=>{
    working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
   pollTimer=setTimeout(pollJobs,6000);
  }
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team'};
+ const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
+ const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
@@ -181,6 +181,30 @@ const Dashboard=(()=>{
   return `<section class="hello"><h1>Agents</h1></section>
   <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>`;
  }
+ // Settings: the brand name, handle and voice every new design and every agent's writing starts from.
+ function configHtml(){
+  return `<section class="hello"><h1>Settings</h1></section>
+  <section class="cfg"><div class="cfg-form"><h2>Brand and voice</h2>
+   <p class="act-note">These flow into every new design, and the agents read them before they write, so the words always sound like your brand.</p>
+   <label>Brand name<input id="cfgName" type="text" maxlength="80" autocomplete="off"></label>
+   <label>Handle<input id="cfgHandle" type="text" maxlength="80" autocomplete="off" placeholder="@yourbrand"></label>
+   <label>Brand voice<textarea id="cfgVoice" rows="5" maxlength="1200" placeholder="How should the agents write? Tone, words to use, words to avoid."></textarea></label>
+   <label>Accent colour<input id="cfgAccent" type="color" value="#ed6843"></label>
+   <div class="cfg-actions"><button class="btn-dark" id="cfgSave" disabled>Save</button><span class="act-note" id="cfgMsg">Loading…</span></div></div>
+   <div class="cfg-preview"><h2>Preview</h2><div class="cfg-page" id="cfgPage"></div><p class="act-note">This is how your brand name appears on a page.</p></div></section>`;
+ }
+ async function loadConfig(){
+  const name=$('#cfgName');if(!name)return;
+  const msg=$('#cfgMsg'),save=$('#cfgSave');
+  const paint=()=>{try{const d=KitHost.starterDesign(3,'4 / 5');d.brand={name:name.value||'Your brand',handle:$('#cfgHandle').value||name.value||'Your brand'};KitHost.mount($('#cfgPage'),KitHost.pageHtml(d,0))}catch{}};
+  try{
+   const c=await api('/config');
+   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgAccent').value=c.accent;
+   msg.textContent=c.is_default?'Showing the defaults. Save to make them yours.':`Last saved ${ago(c.updated_at)} by ${c.updated_by||'a manager'}.`;save.disabled=false;paint();
+   ['#cfgName','#cfgHandle'].forEach(i=>$(i).addEventListener('input',()=>{clearTimeout(paint.t);paint.t=setTimeout(paint,200)}));
+   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,accent:$('#cfgAccent').value}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
+  }catch(e){msg.textContent='Could not load settings: '+e.message}
+ }
  function drawDesignPreviews(){
   const grid=$('#dgrid');if(!grid)return;
   const io=new IntersectionObserver(async entries=>{for(const e of entries){if(!e.isIntersecting)continue;io.unobserve(e.target);
@@ -198,7 +222,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='people'?People.html():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -206,6 +230,7 @@ const Dashboard=(()=>{
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
+  if(ui.view==='settings')loadConfig();
   applyWorking();pollJobs();if(ui.view==='dashboard')HeroGlobe.mount($('.hero-globe'));
   if(ui.view==='people')People.mount($('#ppHost'));
  }
