@@ -190,10 +190,11 @@ const Editor=(()=>{
  }
  const pageBox=()=>el.page.getBoundingClientRect();
  const members=()=>multi.length>1?multi:(sel?[sel]:[]);
- const selOf=k=>k.startsWith('shape:')?{t:'shape',i:+k.slice(6)}:k.startsWith('slot:')?{t:'slot',k:k.slice(5)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
+ const selOf=k=>k.startsWith('shape:')?{t:'shape',i:+k.slice(6)}:k.startsWith('slot:')?{t:'slot',k:k.slice(5)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:k==='panel'?{t:'panel'}:k.startsWith('part:')?{t:'part',k:k.slice(5)}:{t:'copy',k};
  const groupFor=k=>(slide().groups||[]).find(g=>g.includes(k));
  function drawOverlay(){
-  el.over.innerHTML='';el.bar.hidden=!sel;
+  el.over.innerHTML='';
+  if(showPage&&multi.length>1){const pr=nodeFor({t:'page'})?.getBoundingClientRect();if(pr){const pb0=pageBox(),b=document.createElement('div');b.className='ed-sel multi page-out';Object.assign(b.style,{left:(pr.left-pb0.left)+'px',top:(pr.top-pb0.top)+'px',width:pr.width+'px',height:pr.height+'px'});el.over.appendChild(b)}}el.bar.hidden=!sel;
   if(!sel||editing)return;
   const pb=pageBox(),ms=members();
   if(ms.length>1){
@@ -226,8 +227,9 @@ const Editor=(()=>{
  }
 
  /* ---------- selection and pointer editing ---------- */
+ let showPage=false;
  function select(s,solo){
-  sel=s;multi=[];
+  sel=s;multi=[];showPage=false;
   // Picking one member of a group picks the whole group. Double-click, Alt-click or the item buttons in the bar pick just one item.
   const g=!solo&&s&&groupFor(layerKey(s));if(g&&g.length>1)multi=g.map(selOf);
   drawOverlay();if(tool==='pages')openTool('pages');
@@ -277,9 +279,9 @@ const Editor=(()=>{
    const up=ev=>{el.over.removeEventListener('pointermove',mv);el.over.removeEventListener('pointerup',up);el.over.removeEventListener('pointercancel',up);
     if(!mq){if(target)select(target);else select(null);return}
     const q=mq.getBoundingClientRect();mq.remove();
-    const ks=fullOrder().filter(k=>{const n=nodeFor(selOf(k));if(!n)return false;const r=n.getBoundingClientRect();return r.width&&r.right>=q.left&&r.left<=q.right&&r.bottom>=q.top&&r.top<=q.bottom});
-    if(ks.length>1){multi=ks.map(selOf);sel=multi[multi.length-1];drawOverlay()}
-    else if(ks.length===1)select(selOf(ks[0]),true);else select(null)};
+    const ks=everything().filter(o=>{const n=nodeFor(o);if(!n)return false;const r=n.getBoundingClientRect();return r.width&&r.right>=q.left&&r.left<=q.right&&r.bottom>=q.top&&r.top<=q.bottom});
+    if(ks.length>1){multi=ks;sel=multi[multi.length-1];showPage=false;drawOverlay()}
+    else if(ks.length===1)select(ks[0],true);else select(null)};
    el.over.addEventListener('pointermove',mv);el.over.addEventListener('pointerup',up);el.over.addEventListener('pointercancel',up);
    return;
   }
@@ -560,8 +562,8 @@ const Editor=(()=>{
   if(multi.length>1){
    const grouped=members().some(m=>groupFor(layerKey(m)));
    const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
-   const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body',footerText:'Footer'})[k]||k};
-   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:(multi.some(m=>m.t==='copy'||m.t==='text')?'<button class="txt" data-b="fontpop">Font ▾</button>':'')+'<button class="swatch cp" data-b="mcolor" title="Colour of every selected text and shape" aria-label="Colour of all selected" style="--sw:#ac82f4"></button>'+sep}<button class="txt" data-b="group" title="Lock these together so they move and resize as one">Lock together</button>${grouped?'<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body',footerText:'Footer',panel:'Text card'})[k]||(k.startsWith('part:')?'Item '+k.slice(5):k)};
+   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:(multi.some(m=>m.t==='copy'||m.t==='text')?'<button class="txt" data-b="fontpop">Font ▾</button>':'')+'<button class="swatch cp" data-b="mcolor" title="Colour of every selected text and shape" aria-label="Colour of all selected" style="--sw:#ac82f4"></button>'+sep}<button class="txt" data-b="solopage" title="Edit the page background on its own">Background</button><button class="txt" data-b="group" title="Lock these together so they move and resize as one">Lock together</button>${grouped?'<button class="txt" data-b="ungroup" title="Unlock so each item moves on its own">Unlock</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
    return;
@@ -765,6 +767,7 @@ const Editor=(()=>{
  function onBar(e){
   const t=e.target.closest('[data-b]');if(!t||!sel)return;
   const a=t.dataset.b,l=sel.t==='copy'||sel.t==='text'?layerOf():null;
+  if(a==='solopage')return select({t:'page'},true);
   if(a==='mcolor')return colourPanel(t,'',c=>{if(!c)return;const ms=members();commit(()=>{const sl=slide();for(const m of ms){if(m.t==='copy')sl.textLayers={...sl.textLayers,[m.k]:{...(sl.textLayers?.[m.k]||{}),color:c}};else if(m.t==='text')sl.texts[m.i]={...sl.texts[m.i],color:c};else if(m.t==='shape'){const a=(sl.shapes||[]).map(x=>({...x}));if(a[m.i]){a[m.i].fill=c;sl.shapes=a}}else if(m.t==='element'){const x=[...(sl.elementColors||[])];x[m.i]=c;sl.elementColors=Array.from({length:sl.elements.length},(_,k)=>x[k]||'#25c8ff')}}},'multicolour');drawBar()});
   if(a==='fontpop')return fontPanel(t,l?.font||'sans',k=>{patchLayer({font:k},'font');drawBar()});
   if(a==='smaller'||a==='bigger')return patchLayer({size:round(clamp(curSize()+(a==='bigger'?.5:-.5),1,30))},'size'),drawBar();
@@ -930,9 +933,26 @@ const Editor=(()=>{
   commit(()=>{const s=slide();s.groups=(s.groups||[]).filter(g=>!g.some(k=>keys.includes(k)));if(!s.groups.length)delete s.groups});
   const again=keys.map(selOf);multi=again.length>1?again:[];drawOverlay();toast('Ungrouped. Click each item to edit it. Press Group to join them again.');
  }
+ // Every piece of the page, so all of it can be picked together: text, pictures, shapes, lines, badges, the logo and the text card.
+ function everything(){
+  const root=el.host.shadowRoot,art=root?.querySelector('.art');if(!art)return [];
+  const out=fullOrder().filter(k=>nodeFor(selOf(k))).map(selOf);
+  for(const n of root.querySelectorAll('[data-slot]'))out.push({t:'slot',k:n.dataset.slot});
+  if(root.querySelector('.campaign-copy'))out.push({t:'panel'});
+  const pg=art.getBoundingClientRect(),pageArea=pg.width*pg.height,picked=[];
+  for(const n of art.querySelectorAll('*')){
+   if(n.matches?.(PART_SKIP)||n.closest?.(PART_SKIP.replace('.campaign-copy,','')))continue;
+   if(n.closest('svg')&&n.tagName!=='svg')continue;
+   if(picked.some(p=>p.contains(n)))continue;
+   const r=n.getBoundingClientRect();if(r.width<6||r.height<6||r.width*r.height>pageArea*.985)continue;
+   if(getComputedStyle(n).visibility==='hidden')continue;
+   const k=partKey(n);if(k){picked.push(n);out.push({t:'part',k})}
+  }
+  return out.filter((o,i)=>out.findIndex(q=>layerKey(q)===layerKey(o))===i&&nodeFor(o));
+ }
  function selectAll(){
-  const ks=fullOrder().filter(k=>nodeFor(selOf(k)));
-  if(ks.length>1){multi=ks.map(selOf);sel=multi[multi.length-1];drawOverlay()}
+  const ms=everything();
+  if(ms.length>1){multi=ms;sel=multi[multi.length-1];showPage=true;drawOverlay()}
  }
  function remap(order,prefix,removed){
   if(!order)return order;

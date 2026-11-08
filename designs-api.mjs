@@ -23,6 +23,7 @@ const MAX_SHAPES = 40;
 // A shape colour is a six-digit hex or a page colour name, so a design follows the pack's colours when they change.
 const COLOUR_NAMES = ['accent', 'accent2', 'onaccent', 'ink', 'soft', 'line', 'paper'];
 const shapeColour = (value, name) => (value === undefined || value === null || value === '' ? undefined : COLOUR_NAMES.includes(value) ? value : hex(value, name));
+const GROUP_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|panel|slot:[a-z0-9_-]{1,24}|part:\d{1,2}(?:\.\d{1,2}){0,5}|element:\d{1,2}|text:\d{1,2}|shape:\d{1,2})$/;
 const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2}|shape:\d{1,2})$/;
 
 const range = (value, min, max, name) => {
@@ -146,7 +147,7 @@ export function sanitizeSlide(s, index = 0) {
   if (s.groups !== undefined) {
     if (!Array.isArray(s.groups) || s.groups.length > 12) throw new DesignError(`${where} groups must be a list of up to 12 groups.`);
     slide.groups = s.groups.map((g, i) => {
-      if (!Array.isArray(g) || g.length < 2 || g.length > 40 || new Set(g).size !== g.length || g.some(k => typeof k !== 'string' || !LAYER_ORDER_KEY.test(k))) throw new DesignError(`${where} group ${i + 1} is not valid.`);
+      if (!Array.isArray(g) || g.length < 2 || g.length > 40 || new Set(g).size !== g.length || g.some(k => typeof k !== 'string' || !GROUP_KEY.test(k))) throw new DesignError(`${where} group ${i + 1} is not valid.`);
       return g;
     });
   }
