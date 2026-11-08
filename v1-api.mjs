@@ -28,9 +28,11 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const accounts=createAccounts({dataDir,now:clock});
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
- const CONFIG_DEFAULTS={brand_name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',accent:'#ed6843',niche:'',style:''};
+ const optHex=(v,n)=>{if(v===''||v===null)return '';if(typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v))return v.toLowerCase();throw new InputError(`${n} must be a colour like #ed6843, or empty.`)};
+ const hexList=v=>{if(!Array.isArray(v)||v.length>12||v.some(c=>typeof c!=='string'||!/^#[0-9a-f]{6}$/i.test(c)))throw new InputError('palette must be a list of up to 12 colours like #ed6843.');return [...new Set(v.map(c=>c.toLowerCase()))]};
+ const CONFIG_DEFAULTS={brand_name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',accent:'#ed6843',background:'',ink:'',palette:[],niche:'',style:''};
  const configId=ws=>'config-'+String(ws).replace(/[^A-Za-z0-9_-]/g,'_');
- const publicConfig=({brand_name,handle,voice,accent,niche,style,updated_at,updated_by})=>({brand_name,handle,voice,accent,niche:niche||'',style:style||'',updated_at:updated_at||null,updated_by:updated_by||null,is_default:!updated_at});
+ const publicConfig=({brand_name,handle,voice,accent,background,ink,palette,niche,style,updated_at,updated_by})=>({brand_name,handle,voice,accent,background:background||'',ink:ink||'',palette:Array.isArray(palette)?palette:[],niche:niche||'',style:style||'',updated_at:updated_at||null,updated_by:updated_by||null,is_default:!updated_at});
  async function getConfig(ws){try{const r=await load(configId(ws));if(r.record_type==='config'&&inWs(r,ws))return publicConfig({...CONFIG_DEFAULTS,...r})}catch{}return publicConfig(CONFIG_DEFAULTS);}
  const sessions=new Map(),busy=new Set();let mutation=Promise.resolve(),reconciling=false;
  const ready=mkdir(dataDir,{recursive:true,mode:0o700}).then(async()=>{
@@ -215,6 +217,26 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
    if(req.method==='GET'&&!pm[2]){json(res,200,await read());return true;}
    if(req.method==='DELETE'&&!pm[2]){if(who!=='owner')throw new InputError('Only a manager can remove someone from the library.',403);await serial(async()=>{await read();await unlink(file(pm[1]));});json(res,200,{ok:true});return true;}
   }
+  // ----- My uploads: pictures a creator uploaded stay here until they delete them, on every device.
+  const UP_IMG=/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
+  if(url.pathname==='/api/v1/uploads'&&req.method==='GET'){
+   const all=(await list('upload')).filter(u=>inWs(u,ws)).sort((a,b)=>b.created_at.localeCompare(a.created_at));
+   json(res,200,{uploads:all.map(({id,created_at,bytes})=>({id,created_at,bytes,url:`/api/v1/uploads/${id}/image`})),total:all.length});return true;}
+  if(url.pathname==='/api/v1/uploads'&&req.method==='POST'){
+   if(!human)throw new InputError('Only a signed-in creator can keep uploads.',403);
+   const p=await body(req);if(typeof p.image!=='string'||p.image.length>1400000||!UP_IMG.test(p.image))throw new InputError('image must be a PNG, JPEG or WebP data URL up to 1.4 MB.');
+   const digest=createHash('sha256').update(p.image).digest('hex').slice(0,32);
+   const rec=await serial(async()=>{
+    const mine=(await list('upload')).filter(u=>inWs(u,ws));const dupe=mine.find(u=>u.digest===digest);if(dupe)return dupe;
+    if(mine.length>=80)throw new InputError('You can keep up to 80 uploads. Delete some first.',409);
+    const id=randomUUID(),r={record_type:'upload',id,workspace_id:ws,digest,image:p.image,bytes:p.image.length,created_at:new Date(clock()).toISOString(),by:ctx.actor||who};await save(id,r);return r;});
+   json(res,201,{id:rec.id,created_at:rec.created_at,bytes:rec.bytes,url:`/api/v1/uploads/${rec.id}/image`});return true;}
+  const um=url.pathname.match(/^\/api\/v1\/uploads\/([a-f0-9-]{36})(\/image)?$/);
+  if(um){
+   const read=async()=>{const x=await load(um[1]).catch(()=>null);if(x?.record_type!=='upload'||!inWs(x,ws))throw new InputError('Upload not found.',404);return x};
+   if(req.method==='GET'&&um[2]){const x=await read(),m=x.image.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/i);res.writeHead(200,{'Content-Type':m[1].toLowerCase(),'Cache-Control':'private, max-age=3600'});res.end(Buffer.from(m[2],'base64'));return true;}
+   if(req.method==='DELETE'&&!um[2]){if(!human)throw new InputError('Only a signed-in creator can delete uploads.',403);await serial(async()=>{await read();await unlink(file(um[1]));});json(res,200,{ok:true});return true;}
+  }
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).filter(v=>inWs(v,ws)).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).filter(v=>inWs(v,ws)).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',workspace_id:ws,created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
   // ----- Configuration: the brand name, handle and voice that every new design and every agent's writing starts from.
@@ -222,7 +244,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(url.pathname==='/api/v1/config'&&req.method==='PUT'){
    if(ctx.who!=='owner')throw new InputError('Only a manager can change the brand configuration. Agents can read it.',403);
    const p=await body(req),cur=await getConfig(ws);
-   const next={brand_name:p.brand_name===undefined?cur.brand_name:text(p.brand_name,'brand_name',80),handle:p.handle===undefined?cur.handle:text(p.handle,'handle',80),voice:p.voice===undefined?cur.voice:text(p.voice,'voice',1200,false),niche:p.niche===undefined?cur.niche:text(p.niche,'niche',300,false),style:p.style===undefined?cur.style:text(p.style,'style',600,false),accent:p.accent===undefined?cur.accent:(/^#[0-9a-f]{6}$/i.test(p.accent)?p.accent.toLowerCase():(()=>{throw new InputError('accent must be a colour like #ed6843.')})())};
+   const next={brand_name:p.brand_name===undefined?cur.brand_name:text(p.brand_name,'brand_name',80),handle:p.handle===undefined?cur.handle:text(p.handle,'handle',80),voice:p.voice===undefined?cur.voice:text(p.voice,'voice',1200,false),background:p.background===undefined?cur.background:optHex(p.background,'background'),ink:p.ink===undefined?cur.ink:optHex(p.ink,'ink'),palette:p.palette===undefined?cur.palette:hexList(p.palette),niche:p.niche===undefined?cur.niche:text(p.niche,'niche',300,false),style:p.style===undefined?cur.style:text(p.style,'style',600,false),accent:p.accent===undefined?cur.accent:(/^#[0-9a-f]{6}$/i.test(p.accent)?p.accent.toLowerCase():(()=>{throw new InputError('accent must be a colour like #ed6843.')})())};
    const rec={record_type:'config',id:configId(ws),workspace_id:ws,...next,updated_at:new Date(clock()).toISOString(),updated_by:ctx.actor||who};
    await serial(()=>save(rec.id,rec));json(res,200,publicConfig(rec));return true;}
   if(await ideas.handle(req,res,url,ctx))return true;
@@ -244,7 +266,10 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='GET'){const all=(await list('design')).filter(d=>inWs(d,ws)).map(designSummary);json(res,200,{designs:all.slice(0,500),total:all.length});return true;}
   if(url.pathname==='/api/v1/designs'&&req.method==='POST'){const p=await body(req);if(p.pages===undefined){if(!Number.isInteger(p.template_id)||p.template_id<0||p.template_id>=designTemplateCount)throw new InputError('template_id is outside the template catalog.');if(p.copy!==undefined){try{p.pages=composeSlides(p.template_id,p.copy)}catch(e){throw new InputError(e.message)}if(Array.isArray(p.copy))p.copy.forEach((c,i)=>{if(typeof c?.person_id==='string'&&p.pages[i])p.pages[i].person_id=c.person_id});delete p.copy}else p.pages=starterSlides(p.template_id);}
-   if(p.brand===undefined){const c=await getConfig(ws);p.brand={name:c.brand_name,handle:c.handle};}
+   {const c=await getConfig(ws);
+    if(p.brand===undefined)p.brand={name:c.brand_name,handle:c.handle};
+    // Once the creator has saved their brand colours, every new design starts in them (agents and people alike). A colour set on the page itself always wins.
+    if(!c.is_default&&Array.isArray(p.pages))p.pages=p.pages.map(pg=>{if(!pg||typeof pg!=='object')return pg;const o={...pg};if(o.accent===undefined&&c.accent)o.accent=c.accent;if(o.background===undefined&&c.background)o.background=c.background;if(o.ink===undefined&&c.ink)o.ink=c.ink;return o});}
    await attachPeople(p,ws);
    const created=await serial(async()=>{const design=sanitizeDesign({title:'Untitled pack',...p},{templateCount:designTemplateCount});if((await list('design')).length>=500)throw new InputError('Maximum 500 saved designs. Delete some first.',409);const id=randomUUID(),now=new Date().toISOString();const record={...design,id,record_type:'design',workspace_id:ws,revision:1,created_at:now,updated_at:now,updated_by:ctx.actor};await save(id,record);return record;});json(res,201,created);return true;}
   const dm=url.pathname.match(/^\/api\/v1\/designs\/([a-f0-9-]{36})$/);

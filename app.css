@@ -377,3 +377,11 @@ body[data-role=editor] .pp-del{display:none}
 .idea-src a{color:var(--accent);word-break:break-word}.idea-note{font-style:italic;color:#7b6a72!important}
 .idea-card footer{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.idea-card footer button{height:34px}
 @media(max-width:700px){.idea-doors{grid-template-columns:1fr}.idea-compose,.idea-refine{padding:16px}}
+
+/* Settings: brand colours */
+.cfg-colors{margin-top:18px;padding-top:6px;border-top:1px solid var(--line)}.cfg-colors h3{margin:12px 0 2px;font:600 1.05rem var(--serif)}
+.cfg-crow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}.cfg-crow label{margin-top:10px!important}
+.cfg-crow .btn-light{margin-top:6px;height:28px;font-size:.7rem}
+.cfg-pal{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cfg-sw{position:relative;width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #0003;display:inline-block}
+.cfg-sw button{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;border:0;background:#3a1a28;color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0}
+.ed-src-row{display:flex;gap:10px;flex-wrap:wrap}.ed-src-row i{font-style:normal;opacity:.7;margin-left:4px}.ed-src-up{margin-top:6px}

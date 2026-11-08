@@ -94,6 +94,16 @@ export function sanitizeSlide(s, index = 0) {
     artMask: pick(s.artMask, MASKS, `${where} artMask`),
     artStretchX: range(s.artStretchX, 35, 300, `${where} artStretchX`), artStretchY: range(s.artStretchY, 35, 300, `${where} artStretchY`),
   });
+  if (s.parts !== undefined) {
+    // Adjustments to the template's own decorations (badges, bars, icons, numbers), keyed by their place in the page, such as "3" or "3.1".
+    if (!s.parts || typeof s.parts !== 'object' || Array.isArray(s.parts) || Object.keys(s.parts).length > 60) throw new DesignError(`${where} parts must be an object with up to 60 items.`);
+    slide.parts = {};
+    for (const [key, v] of Object.entries(s.parts)) {
+      if (!/^\d{1,3}(?:\.\d{1,3}){0,6}$/.test(key)) throw new DesignError(`${where} has an invalid part "${key}".`);
+      if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} part ${key} must be an object.`);
+      slide.parts[key] = clean({ x: range(v.x, -100, 100, `${where} part ${key} x`), y: range(v.y, -100, 100, `${where} part ${key} y`), scale: range(v.scale, 0.2, 4, `${where} part ${key} scale`), fill: hex(v.fill, `${where} part ${key} fill`), color: hex(v.color, `${where} part ${key} color`), opacity: range(v.opacity, 0, 100, `${where} part ${key} opacity`), hide: v.hide === undefined ? undefined : (typeof v.hide === 'boolean' ? v.hide : (() => { throw new DesignError(`${where} part ${key} hide must be true or false.`); })()) });
+    }
+  }
   if (s.elementMasks !== undefined) {
     if (!Array.isArray(s.elementMasks) || s.elementMasks.length > MAX_LAYERS || s.elementMasks.some(m => m !== '' && !MASKS.includes(m))) throw new DesignError(`${where} elementMasks must be a list of up to ${MAX_LAYERS} shape names.`);
     slide.elementMasks = s.elementMasks;

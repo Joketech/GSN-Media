@@ -16,3 +16,9 @@ test('bad values are rejected',()=>{
  assert.throws(()=>sanitizeSlide({...base,textLayers:{title:{bgPad:999}}},'Page 1'),DesignError);
  assert.throws(()=>sanitizeSlide({...base,slots:{hero:{mask:'x'}}},'Page 1'),DesignError);
 });
+test('template items (parts) are accepted and checked',()=>{
+ const ok=sanitizeSlide({...base,parts:{'3':{x:5,y:-2,scale:1.5,fill:'#ff0066',color:'#ffffff',opacity:80,hide:false},'3.1':{hide:true}}},'Page 1');
+ assert.equal(ok.parts['3'].scale,1.5);assert.equal(ok.parts['3.1'].hide,true);
+ const bad=x=>assert.throws(()=>sanitizeSlide({...base,parts:x},'Page 1'),DesignError);
+ bad({'abc':{x:1}});bad({'3':{scale:99}});bad({'3':{fill:'red'}});bad({'3':{x:900}});bad([]);
+});
