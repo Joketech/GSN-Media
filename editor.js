@@ -419,25 +419,33 @@ const Editor=(()=>{
  }
  /* ---------- rich text: colour or highlight single words inside a text box ---------- */
  // A word or phrase with its own colour is stored in the text as ⟦text colour|background|words⟧; the page draws it, and nothing else reads it.
- const FMT=/⟦(#[0-9a-f]{6})?\|(#[0-9a-f]{6})?\|([^⟦⟧]*)⟧/gi;
- const fmtStyle=(fg,bg)=>`${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}`;
- function toHtml(raw){let out='',last=0,m;const s=String(raw??'');FMT.lastIndex=0;while((m=FMT.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" data-fg="${m[1]||''}" data-bg="${m[2]||''}" style="${fmtStyle(m[1],m[2])}">${esc(m[3])}</span>`;last=m.index+m[0].length}return out+esc(s.slice(last))}
- // One record per character (UTF-16 unit) with its colour and background: easy to colour any range and to write back.
+ const FMT=/⟦(#[0-9a-f]{6})?\|([^|⟦⟧]*)\|([^⟦⟧]*)⟧/gi;
+ // The middle part holds the background and, after semicolons, the word's own font (f), size in percent (s), italic (i) and bold (b): #ffd84d;f=pacifico;s=180;i=1
+ const exParse=ex=>{const o={};for(const p of String(ex||'').split(';')){const [k,v]=p.split('=');if(k&&v!==undefined)o[k]=v}return o};
+ const exText=o=>['f','s','i','b'].filter(k=>o[k]!==undefined&&o[k]!=='').map(k=>k+'='+o[k]).join(';');
+ const segSplit=seg=>{const [b0,...rest]=String(seg||'').split(';');return {bg:/^#[0-9a-f]{6}$/i.test(b0)?b0:'',ex:exText(exParse(rest.join(';')))}};
+ const fmtStyle=(fg,bg,ex)=>{
+  const o=exParse(ex),font=GSNKit.gsnFonts.find(f=>f[0]===o.f)?.[2],sz=+o.s;
+  return `${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}${font?'font-family:'+font+';':''}${sz>=40&&sz<=400?'font-size:'+sz/100+'em;line-height:1;':''}${o.i==='1'?'font-style:italic;':''}${o.b==='1'?'font-weight:800;':o.b==='0'?'font-weight:400;':''}`;
+ };
+ function toHtml(raw){let out='',last=0,m;const s=String(raw??'');FMT.lastIndex=0;while((m=FMT.exec(s))){const {bg,ex}=segSplit(m[2]);out+=esc(s.slice(last,m.index))+`<span class="fmt" data-fg="${m[1]||''}" data-bg="${bg}" data-ex="${ex}" style="${fmtStyle(m[1],bg,ex)}">${esc(m[3])}</span>`;last=m.index+m[0].length}return out+esc(s.slice(last))}
+ // One record per character (UTF-16 unit) with its colour, background and own font settings: easy to style any range and to write back.
  function charsOf(root){
-  const out=[],nl=()=>out.push({ch:'\n',fg:'',bg:''});
-  const w=(n,fg,bg)=>{for(const c of n.childNodes){
-   if(c.nodeType===3){const v=c.nodeValue.replace(/ /g,' ').replace(/[⟦⟧]/g,'');for(let k=0;k<v.length;k++)out.push({ch:v[k],fg,bg})}
+  const out=[],nl=()=>out.push({ch:'\n',fg:'',bg:'',ex:''});
+  const w=(n,fg,bg,ex)=>{for(const c of n.childNodes){
+   if(c.nodeType===3){const v=c.nodeValue.replace(/ /g,' ').replace(/[⟦⟧]/g,'');for(let k=0;k<v.length;k++)out.push({ch:v[k],fg,bg,ex})}
    else if(c.nodeName==='BR')nl();
-   else if(c.nodeType===1){if(/^(DIV|P)$/.test(c.nodeName)&&out.length&&out[out.length-1].ch!=='\n')nl();w(c,c.dataset?.fg||fg,c.dataset?.bg||bg)}}};
-  w(root,'','');return out;
+   else if(c.nodeType===1){if(/^(DIV|P)$/.test(c.nodeName)&&out.length&&out[out.length-1].ch!=='\n')nl();w(c,c.dataset?.fg||fg,c.dataset?.bg||bg,c.dataset?.ex??ex)}}};
+  w(root,'','','');return out;
  }
  function charsToRaw(chars){
   let out='',i=0;
-  while(i<chars.length){const {fg,bg}=chars[i];let j=i,t='';while(j<chars.length&&chars[j].fg===fg&&chars[j].bg===bg){t+=chars[j].ch;j++}
-   out+=(!fg&&!bg)?t:t.split('\n').map(l=>l?`⟦${fg}|${bg}|${l}⟧`:'').join('\n');i=j}
+  while(i<chars.length){const {fg,bg,ex}=chars[i];let j=i,t='';while(j<chars.length&&chars[j].fg===fg&&chars[j].bg===bg&&(chars[j].ex||'')===(ex||'')){t+=chars[j].ch;j++}
+   const seg=bg+(ex?';'+ex:'');
+   out+=(!fg&&!bg&&!ex)?t:t.split('\n').map(l=>l?`⟦${fg}|${seg}|${l}⟧`:'').join('\n');i=j}
   return out;
  }
- const rawOfRaw=raw=>{const chars=[];let last=0,m;const push=(t,fg,bg)=>{for(let k=0;k<t.length;k++)chars.push({ch:t[k],fg,bg})};FMT.lastIndex=0;while((m=FMT.exec(raw))){push(raw.slice(last,m.index),'','');push(m[3],m[1]||'',m[2]||'');last=m.index+m[0].length}push(raw.slice(last),'','');return chars};
+ const rawOfRaw=raw=>{const chars=[];let last=0,m;const push=(t,fg,bg,ex)=>{for(let k=0;k<t.length;k++)chars.push({ch:t[k],fg,bg,ex})};FMT.lastIndex=0;while((m=FMT.exec(raw))){push(raw.slice(last,m.index),'','','');const {bg,ex}=segSplit(m[2]);push(m[3],m[1]||'',bg,ex);last=m.index+m[0].length}push(raw.slice(last),'','','');return chars};
  // Plain text of one raw string (no markers): what a person reads, used for searching and size checks.
  const plainOf=raw=>String(raw??'').replace(FMT,'$3');
  function pointAt(root,off){
@@ -462,7 +470,7 @@ const Editor=(()=>{
   const saveSel=()=>{const s2=shadowSel();if(!s2||!s2.rangeCount)return;const r=s2.getRangeAt(0);if(!node.contains(r.startContainer)||!node.contains(r.endContainer))return;saved={start:offsetIn(r.startContainer,r.startOffset),end:offsetIn(r.endContainer,r.endOffset)};if(saved.start>saved.end)saved={start:saved.end,end:saved.start}};
   saveSel();
   const bar=document.createElement('div');bar.className='ed-bar ed-etb';
-  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><button class="txt" data-e="clear" title="Remove colour and background from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
+  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><select data-e="font" aria-label="Font of the selected words"><option value="">Box font</option>${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}">${esc(n)}</option>`).join('')}</select><select data-e="size" aria-label="Size of the selected words"><option value="">Size</option>${[50,75,100,125,150,200,250,300,400].map(v=>`<option value="${v}">${v}%</option>`).join('')}</select><button class="txt" data-e="italic" title="Italic for the selected words"><i>I</i></button><button class="txt" data-e="bold" title="Bold for the selected words"><b>B</b></button><button class="txt" data-e="clear" title="Remove colour, background, font and size from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
   el.area.appendChild(bar);
   const place=()=>{const ar=el.area.getBoundingClientRect(),r=node.getBoundingClientRect(),bw=bar.offsetWidth,bh=bar.offsetHeight;let x=r.left+r.width/2-ar.left-bw/2,y=r.top-ar.top-bh-12;if(y<8)y=r.bottom-ar.top+12;x=clamp(x,8,Math.max(8,ar.width-bw-8));y=clamp(y,8,Math.max(8,ar.height-bh-8));bar.style.left=(x+el.area.scrollLeft)+'px';bar.style.top=(y+el.area.scrollTop)+'px'};
   place();
@@ -471,7 +479,7 @@ const Editor=(()=>{
   const restore=(a,b)=>{const s2=shadowSel(),r=document.createRange(),p1=pointAt(node,a),p2=pointAt(node,b);r.setStart(p1.node,p1.offset);r.setEnd(p2.node,p2.offset);s2.removeAllRanges?.();s2.addRange?.(r);saved={start:a,end:b}};
   const apply=patch=>{
    const chars=charsOf(node);let a=saved?.start??0,b=saved?.end??0;if(a===b){a=0;b=chars.length}
-   for(let i=a;i<b&&i<chars.length;i++){const c=chars[i];if(c.ch==='\n')continue;if(patch.clear){c.fg='';c.bg=''}else{if('fg' in patch)c.fg=patch.fg||'';if('bg' in patch)c.bg=patch.bg||''}}
+   for(let i=a;i<b&&i<chars.length;i++){const c=chars[i];if(c.ch==='\n')continue;if(patch.clear){c.fg='';c.bg='';c.ex=''}else{if('fg' in patch)c.fg=patch.fg||'';if('bg' in patch)c.bg=patch.bg||'';if(patch.ex){const o=exParse(c.ex);for(const [k,v] of Object.entries(patch.ex)){if(v===null||v==='')delete o[k];else o[k]=v}c.ex=exText(o)}}}
    node.innerHTML=toHtml(charsToRaw(chars));restore(a,b);paintDots();place();
   };
   const finish=cancel=>{
@@ -502,9 +510,11 @@ const Editor=(()=>{
    const b=e.target.closest('[data-e]');if(!b)return;saveSel();const k=b.dataset.e;
    if(k==='done')return finish(false);
    if(k==='clear')return apply({clear:true});
+   if(k==='italic'||k==='bold'){const ch=charsOf(node),i0=Math.min(saved?.start??0,ch.length-1),cur=exParse(ch[i0]?.ex);const key=k==='italic'?'i':'b',on=k==='italic'?cur.i==='1':cur.b==='1';return apply({ex:{[key]:on?(k==='bold'?'0':null):'1'}})}
    const cur=curAttr(k),keep=saved?{...saved}:null;
    colourPanel(b,cur,c=>{if(keep)saved=keep;apply({[k]:c||''});},{none:k==='fg'?'Back to the box colour':'No background'});
   });
+  bar.addEventListener('change',e=>{const sl=e.target.closest('select[data-e]');if(!sl)return;const keep=saved?{...saved}:null;if(keep)saved=keep;apply({ex:{[sl.dataset.e==='font'?'f':'s']:sl.value||null}});sl.value=''});
   document.addEventListener('pointerdown',away,true);
   node.addEventListener('blur',onBlur);node.addEventListener('keydown',onKeyEdit);node.addEventListener('paste',onPaste);node.addEventListener('pointerup',saveSel);node.addEventListener('keyup',saveSel);
  }
