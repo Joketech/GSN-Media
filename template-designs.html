@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSN Template Designs</title>
+<!--
+  GSN Template Designs - a hand-coded gallery of every template in the studio.
+  It uses the same renderer as the studio (template-kit.js + kit-host.js), so what you see here is exactly what the
+  studio and the agents get: every template, every page (Hook, write-up pages, CTA), at every platform shape.
+  Served by the dashboard server at /template-designs.html. No libraries, no AI model, nothing to pay for.
+-->
+<style>
+:root{--ink:#3a2a30;--ink2:#7b6a72;--accent:#8a2236;--line:rgba(70,40,50,.14);--panel:rgba(255,255,255,.72);--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font:14px/1.4 var(--sans);color:var(--ink);background:linear-gradient(135deg,#dfe8fb 0%,#f6e6f0 55%,#e8dcf7 100%) fixed}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.wrap{max-width:1500px;margin:0 auto;padding:14px 16px 40px}
+.bar{position:sticky;top:10px;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:var(--panel);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 14px 40px rgba(70,30,60,.12);backdrop-filter:blur(14px)}
+.bar h1{margin:0;font:700 1.4rem var(--serif);color:#4a2431;white-space:nowrap}
+.count{color:var(--ink2);font-size:.8rem;white-space:nowrap}
+.sp{flex:1}
+.in,.sel{height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 11px}
+.in{min-width:200px}
+.btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:.84rem;text-decoration:none;display:inline-flex;align-items:center;color:inherit}
+.btn:hover{background:#fdf4f6}
+.btn.main{background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;border-color:transparent}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 2px}
+.chip{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.7);font-size:.8rem;font-weight:600}
+.chip.on{background:#4a2431;color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:6px}
+.card{background:var(--panel);border:1px solid rgba(255,255,255,.85);border-radius:16px;padding:8px;box-shadow:0 8px 26px rgba(70,30,60,.1);cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:left;display:block;width:100%}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(70,30,60,.18)}
+.thumb{position:relative;border-radius:10px;overflow:hidden;background:#e9e1ee;aspect-ratio:4/5;display:grid;place-items:center}
+.thumb .page{width:100%}
+.role{position:absolute;left:6px;bottom:6px;background:#000a;color:#fff;font:700 9px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:6px}
+.card h3{margin:8px 4px 0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card p{margin:2px 4px 4px;color:var(--ink2);font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{padding:60px 0;text-align:center;color:var(--ink2)}
+.more{display:block;margin:20px auto 0}
+/* viewer */
+.veil{position:fixed;inset:0;background:rgba(40,15,30,.6);z-index:50;display:none;padding:18px;overflow:auto}
+.veil.on{display:block}
+.view{max-width:1100px;margin:0 auto;background:#fbf6f7;border-radius:20px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+.stage{display:grid;place-items:center;background:repeating-conic-gradient(#e9e1ee 0 25%,#f6f0f8 0 50%) 0 0/20px 20px;border-radius:12px;padding:16px;min-height:300px;position:relative}
+.stage .page{width:min(100%,460px)}
+.nav{position:absolute;top:50%;width:38px;height:38px;border-radius:50%;border:0;background:#fffe;box-shadow:0 4px 14px #0003;font-size:18px;transform:translateY(-50%)}
+.nav.l{left:8px}.nav.r{right:8px}
+.strip{display:flex;gap:8px;overflow:auto;grid-column:1/-1;padding:2px 0}
+.strip button{flex:none;width:84px;border:2px solid transparent;border-radius:8px;padding:0;background:#e9e1ee;overflow:hidden}
+.strip button.on{border-color:var(--accent)}
+.strip .page{display:block;width:100%}
+.side h2{margin:0 0 4px;font:700 1.35rem var(--serif);color:#4a2431}
+.side p{margin:2px 0 10px;color:var(--ink2);font-size:.82rem}
+.side label{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin:12px 0 4px}
+.side .sel{width:100%}
+.side .btn{width:100%;justify-content:center;margin-top:8px}
+.x{position:fixed;right:22px;top:20px;width:40px;height:40px;border-radius:50%;border:0;background:#fff;font-size:20px;z-index:60;box-shadow:0 4px 14px #0004;display:none}
+.veil.on~.x{display:block}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#3a1a28;color:#fff;border-radius:10px;padding:10px 16px;font-size:.82rem;opacity:0;pointer-events:none;transition:.2s;z-index:70}.toast.on{opacity:1}
+@media(max-width:820px){.view{grid-template-columns:1fr}.in{min-width:0;flex:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1>Template Designs</h1><span class="count" id="count"></span><span class="sp"></span>
+    <input class="in" id="q" type="search" placeholder="Search name, look or format" aria-label="Search templates">
+    <select class="sel" id="fmt" aria-label="Format"></select>
+    <a class="btn" href="/#templates">Back to dashboard</a>
+  </div>
+  <div class="chips" id="styles" role="group" aria-label="Style"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No templates match. Clear the search or pick another style.</div>
+  <button class="btn more" id="more" hidden>Show more</button>
+</div>
+
+<div class="veil" id="veil" role="dialog" aria-modal="true" aria-label="Template preview">
+  <div class="view">
+    <div class="stage" id="stage"><button class="nav l" id="prev" aria-label="Previous page">&#8249;</button><div class="page" id="big"></div><button class="nav r" id="next" aria-label="Next page">&#8250;</button></div>
+    <div class="side">
+      <h2 id="vName"></h2><p id="vSub"></p>
+      <p id="vMeta"></p>
+      <label for="vShape">Platform shape</label>
+      <select class="sel" id="vShape"></select>
+      <a class="btn main" id="vUse" href="#">Use this template in the studio</a>
+      <button class="btn" id="vCopy">Copy template number (for agents)</button>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+</div>
+<button class="x" id="close" aria-label="Close">&times;</button>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="/template-kit.js"></script>
+<script src="/kit-host.js"></script>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),kit=()=>window.GSNKit;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const styleOf=t=>t.funny?'Comic':t.month?'Monthly':t.slotKey?'Photo layouts':t.metaphor?'Business metaphors':t.cartoon?'3D agency':'Photo';
+const nameOf=t=>t.cartoon||t.slotKey?t.name:kit().gsnPhoto(t.id).name;
+const subOf=t=>`${t.slotKey?t.look:kit().palettes[t.palette][0]} · ${t.format}`;
+const roleOf=(i,n)=>i===0?'Hook':i===n-1?'CTA':'Page '+(i+1);
+const STYLES=['All','Photo','3D agency','Business metaphors','Photo layouts','Monthly','Comic'];
+const SHAPES=[{id:'instagram-post',name:'Instagram post',w:1080,h:1350},{id:'instagram-square',name:'Instagram square',w:1080,h:1080},{id:'instagram-story',name:'Instagram story / Reel',w:1080,h:1920},{id:'youtube-thumbnail',name:'YouTube thumbnail',w:1280,h:720}];
+let shapes=SHAPES,style='All',query='',format='All',shown=60,list=[],cur=null,page=0,design=null;
+const PER=60;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
+
+/* The real platform shapes come from the server so "Use in studio" links match its presets; the list above is the fallback. */
+fetch('/api/v1/platforms').then(r=>r.ok?r.json():null).then(j=>{
+  const p=j&&j.presets;if(!p||!p.length)return;
+  const pick=['instagram-post','instagram-square','instagram-story','tiktok','linkedin-carousel','linkedin-post','x-post','youtube-thumbnail','facebook-post'];
+  const got=pick.map(id=>p.find(x=>x.id===id)).filter(Boolean);
+  if(got.length)shapes=got;fillShapes();
+}).catch(()=>{});
+function fillShapes(){$('#vShape').innerHTML=shapes.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${s.w}×${s.h})</option>`).join('')}
+const ratioOf=id=>{const s=shapes.find(x=>x.id===id)||shapes[0];return s.w+' / '+s.h};
+
+function filtered(){
+  const q=query.trim().toLowerCase();
+  return kit().templates.filter(t=>(format==='All'||t.format===format)&&(style==='All'||styleOf(t)===style)&&(!q||`${nameOf(t)} ${t.name} ${t.format} ${styleOf(t)} ${t.slotKey?t.look:kit().palettes[t.palette][0]}`.toLowerCase().includes(q)))
+    .sort((a,b)=>Number(!!a.cartoon)-Number(!!b.cartoon)||a.id-b.id);
+}
+function renderGrid(){
+  list=filtered();$('#count').textContent=list.length+' of '+kit().templates.length+' templates';
+  $('#empty').hidden=list.length>0;
+  $('#grid').innerHTML=list.slice(0,shown).map(t=>`<button class="card" data-id="${t.id}" aria-label="Open ${esc(nameOf(t))}"><div class="thumb"><div class="page" data-lazy="${t.id}"></div><span class="role">Hook</span></div><h3>${esc(nameOf(t))}</h3><p>${esc(subOf(t))}</p></button>`).join('');
+  $('#more').hidden=shown>=list.length;$('#more').textContent='Show more ('+(list.length-shown)+' left)';
+  observe();
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);paintThumb(e.target)}),{rootMargin:'300px'});
+function observe(){$('#grid').querySelectorAll('[data-lazy]').forEach(n=>io.observe(n))}
+function paintThumb(n){
+  const id=+n.dataset.lazy;
+  try{const d=KitHost.starterDesign(id,'4 / 5');n.style.aspectRatio='4 / 5';KitHost.mount(n,KitHost.pageHtml(d,0));n._d=d}catch(e){n.textContent='Preview unavailable'}
+}
+/* Hovering a card steps through its pages, so a person sees the whole pack without opening it. */
+let hoverT=0;
+$('#grid').addEventListener('pointerover',e=>{
+  const c=e.target.closest('.card');if(!c||c===hoverT?.card)return;stopHover();
+  const n=c.querySelector('[data-lazy]');if(!n||!n._d)return;let i=0;const role=c.querySelector('.role');
+  hoverT={card:c,n,h:setInterval(()=>{i=(i+1)%n._d.pages.length;KitHost.mount(n,KitHost.pageHtml(n._d,i));role.textContent=roleOf(i,n._d.pages.length)},1500)};
+});
+function stopHover(){if(!hoverT)return;clearInterval(hoverT.h);const{n,card}=hoverT;hoverT=0;if(n._d){KitHost.mount(n,KitHost.pageHtml(n._d,0));card.querySelector('.role').textContent='Hook'}}
+$('#grid').addEventListener('pointerleave',stopHover);
+$('#grid').addEventListener('pointerout',e=>{if(hoverT&&!e.relatedTarget?.closest?.('.card'))stopHover()});
+
+/* Filters */
+function buildFilters(){
+  const formats=['All',...new Set(kit().templates.map(t=>t.format))];
+  $('#fmt').innerHTML=formats.map(f=>`<option>${esc(f)}</option>`).join('');
+  $('#styles').innerHTML=STYLES.map(s=>`<button class="chip ${s===style?'on':''}" data-s="${esc(s)}">${esc(s)}</button>`).join('');
+}
+$('#styles').onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;style=b.dataset.s;shown=PER;buildFilters();$('#fmt').value=format;renderGrid()};
+$('#fmt').onchange=e=>{format=e.target.value;shown=PER;renderGrid()};
+let qt=0;$('#q').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{query=e.target.value;shown=PER;renderGrid()},180)};
+$('#more').onclick=()=>{shown+=PER;renderGrid()};
+
+/* Viewer */
+$('#grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openView(+c.dataset.id)});
+function openView(id){
+  stopHover();const t=kit().templates[id]||kit().templates.find(x=>x.id===id);if(!t)return;
+  cur=t;page=0;fillShapes();
+  const preset=shapes.some(s=>s.id==='instagram-post')?'instagram-post':shapes[0].id;$('#vShape').value=preset;
+  $('#vName').textContent=nameOf(t);$('#vSub').textContent=subOf(t);
+  draw(true);$('#veil').classList.add('on');document.body.style.overflow='hidden';
+}
+function draw(rebuild){
+  design=KitHost.starterDesign(cur.id,ratioOf($('#vShape').value));const n=design.pages.length;
+  page=Math.min(page,n-1);
+  $('#vMeta').textContent=`${styleOf(cur)} · ${n} pages (Hook, ${n-2} write-up page${n-2===1?'':'s'}, CTA) · template number ${cur.id}`;
+  KitHost.mount($('#big'),KitHost.pageHtml(design,page));
+  $('#vUse').href='/#new/'+cur.id+'/'+$('#vShape').value;
+  if(rebuild||$('#strip').children.length!==n){
+    $('#strip').innerHTML=design.pages.map((_,i)=>`<button data-p="${i}" aria-label="${roleOf(i,n)}"><div class="page" data-sp="${i}"></div></button>`).join('');
+  }
+  $('#strip').querySelectorAll('[data-sp]').forEach(h=>{const i=+h.dataset.sp;h.parentNode.classList.toggle('on',i===page);KitHost.mount(h,KitHost.pageHtml(design,i))});
+}
+function go(d){if(!cur)return;const n=design.pages.length;page=(page+d+n)%n;draw(false)}
+$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);
+$('#strip').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;page=+b.dataset.p;draw(false)};
+$('#vShape').onchange=()=>draw(true);
+$('#vCopy').onclick=async()=>{try{await navigator.clipboard.writeText(String(cur.id));toast('Copied template number '+cur.id)}catch{toast('Template number: '+cur.id)}};
+function close(){$('#veil').classList.remove('on');document.body.style.overflow='';cur=null}
+$('#close').onclick=close;$('#veil').addEventListener('pointerdown',e=>{if(e.target===$('#veil'))close()});
+addEventListener('keydown',e=>{if(!cur)return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')go(-1);else if(e.key==='ArrowRight')go(1)});
+
+/* Start */
+(function start(){
+  if(!window.GSNKit){$('#grid').innerHTML='<div class="empty">The template kit did not load. Open this page from the dashboard server (/template-designs.html).</div>';return}
+  buildFilters();fillShapes();renderGrid();
+  window.GSNTemplateDesigns={count:()=>kit().templates.length,open:openView};
+})();
+</script>
+</body>
+</html>
