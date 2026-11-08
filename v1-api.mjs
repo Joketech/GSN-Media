@@ -10,6 +10,7 @@ import {sanitizeDesign,summary as designSummary,DesignError} from './designs-api
 import {PRESETS,PLATFORM_GROUPS} from './platforms.mjs';
 import {createAccounts} from './accounts.mjs';
 import {createPublisher} from './publisher.mjs';
+import {createIdeas} from './ideas-api.mjs';
 
 const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
@@ -27,9 +28,9 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const accounts=createAccounts({dataDir,now:clock});
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
- const CONFIG_DEFAULTS={brand_name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',accent:'#ed6843'};
+ const CONFIG_DEFAULTS={brand_name:'GSN Technology',handle:'GSN Technology',voice:'Clear, thoughtful, practical. Bold ideas, human words.',accent:'#ed6843',niche:'',style:''};
  const configId=ws=>'config-'+String(ws).replace(/[^A-Za-z0-9_-]/g,'_');
- const publicConfig=({brand_name,handle,voice,accent,updated_at,updated_by})=>({brand_name,handle,voice,accent,updated_at:updated_at||null,updated_by:updated_by||null,is_default:!updated_at});
+ const publicConfig=({brand_name,handle,voice,accent,niche,style,updated_at,updated_by})=>({brand_name,handle,voice,accent,niche:niche||'',style:style||'',updated_at:updated_at||null,updated_by:updated_by||null,is_default:!updated_at});
  async function getConfig(ws){try{const r=await load(configId(ws));if(r.record_type==='config'&&inWs(r,ws))return publicConfig({...CONFIG_DEFAULTS,...r})}catch{}return publicConfig(CONFIG_DEFAULTS);}
  const sessions=new Map(),busy=new Set();let mutation=Promise.resolve(),reconciling=false;
  const ready=mkdir(dataDir,{recursive:true,mode:0o700}).then(async()=>{
@@ -42,6 +43,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const save=async(id,data)=>{const temp=file(id,'tmp');await writeFile(temp,JSON.stringify(data),{mode:0o600});await rename(temp,file(id));};
  const serial=fn=>{const p=mutation.then(fn);mutation=p.catch(()=>{});return p;};
  async function list(type){await ready;const values=[];for(const name of await readdir(dataDir)){if(!name.endsWith('.json'))continue;try{const value=await load(name.slice(0,-5));if(value.record_type===type)values.push(value);}catch{}}return values.sort((a,b)=>b.created_at.localeCompare(a.created_at));}
+ const ideas=createIdeas({list:t=>list(t),load,save,serial,inWs,InputError,text,json,body,clock,getConfig,file,unlink});
  const publicJob=j=>{const {fingerprint,...value}=j;return value;};
  const sameSite=req=>{const f=req.headers['sec-fetch-site'];if(f)return f==='same-origin';const o=req.headers.origin||req.headers.referer;try{return !!o&&new URL(o).host===req.headers.host}catch{return false}};
  const auth=req=>{const bearer=req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];if(bearer&&token&&same(bearer,token))return 'agent';const sid=req.headers.cookie?.match(/(?:^|;\s*)gsn_session=([a-f0-9]{64})(?:;|$)/)?.[1];if(sid&&sessions.get(sid)>Date.now())return 'owner';if(openUi&&sameSite(req))return 'owner';return false;};
@@ -220,9 +222,10 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(url.pathname==='/api/v1/config'&&req.method==='PUT'){
    if(ctx.who!=='owner')throw new InputError('Only a manager can change the brand configuration. Agents can read it.',403);
    const p=await body(req),cur=await getConfig(ws);
-   const next={brand_name:p.brand_name===undefined?cur.brand_name:text(p.brand_name,'brand_name',80),handle:p.handle===undefined?cur.handle:text(p.handle,'handle',80),voice:p.voice===undefined?cur.voice:text(p.voice,'voice',1200,false),accent:p.accent===undefined?cur.accent:(/^#[0-9a-f]{6}$/i.test(p.accent)?p.accent.toLowerCase():(()=>{throw new InputError('accent must be a colour like #ed6843.')})())};
+   const next={brand_name:p.brand_name===undefined?cur.brand_name:text(p.brand_name,'brand_name',80),handle:p.handle===undefined?cur.handle:text(p.handle,'handle',80),voice:p.voice===undefined?cur.voice:text(p.voice,'voice',1200,false),niche:p.niche===undefined?cur.niche:text(p.niche,'niche',300,false),style:p.style===undefined?cur.style:text(p.style,'style',600,false),accent:p.accent===undefined?cur.accent:(/^#[0-9a-f]{6}$/i.test(p.accent)?p.accent.toLowerCase():(()=>{throw new InputError('accent must be a colour like #ed6843.')})())};
    const rec={record_type:'config',id:configId(ws),workspace_id:ws,...next,updated_at:new Date(clock()).toISOString(),updated_by:ctx.actor||who};
    await serial(()=>save(rec.id,rec));json(res,200,publicConfig(rec));return true;}
+  if(await ideas.handle(req,res,url,ctx))return true;
   // ----- Agent activity log. Each Hermes agent records what it did (agent, task, AI model, time); the dashboard shows exactly this and nothing else.
   if(url.pathname==='/api/v1/activity'&&req.method==='POST'){
    const p=await body(req),agent=AGENTS.find(a=>a.toLowerCase()===String(p.agent||'').trim().toLowerCase());

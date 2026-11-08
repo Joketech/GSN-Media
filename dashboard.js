@@ -31,8 +31,8 @@ const Dashboard=(()=>{
    working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
   pollTimer=setTimeout(pollJobs,6000);
  }
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
+ const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
+ const titles={dashboard:'Dashboard',ideas:'Ideas',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
@@ -203,6 +203,8 @@ const Dashboard=(()=>{
    <label>Brand name<input id="cfgName" type="text" maxlength="80" autocomplete="off"></label>
    <label>Handle<input id="cfgHandle" type="text" maxlength="80" autocomplete="off" placeholder="@yourbrand"></label>
    <label>Brand voice<textarea id="cfgVoice" rows="5" maxlength="1200" placeholder="How should the agents write? Tone, words to use, words to avoid."></textarea></label>
+   <label>Niche and audience<textarea id="cfgNiche" rows="2" maxlength="300" placeholder="What you post about, and who for."></textarea></label>
+   <label>Style of posting<textarea id="cfgStyle" rows="2" maxlength="600" placeholder="e.g. Short carousels, direct, one idea per post."></textarea></label>
    <label>Accent colour<input id="cfgAccent" type="color" value="#ed6843"></label>
    <div class="cfg-actions"><button class="btn-dark" id="cfgSave" disabled>Save</button><span class="act-note" id="cfgMsg">Loading…</span></div></div>
    <div class="cfg-preview"><h2>Preview</h2><div class="cfg-page" id="cfgPage"></div><p class="act-note">This is how your brand name appears on a page.</p></div></section>`;
@@ -213,10 +215,10 @@ const Dashboard=(()=>{
   const paint=()=>{try{const d=KitHost.starterDesign(3,'4 / 5');d.brand={name:name.value||'Your brand',handle:$('#cfgHandle').value||name.value||'Your brand'};KitHost.mount($('#cfgPage'),KitHost.pageHtml(d,0))}catch{}};
   try{
    const c=await api('/config');
-   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgAccent').value=c.accent;
+   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgNiche').value=c.niche||'';$('#cfgStyle').value=c.style||'';$('#cfgAccent').value=c.accent;
    msg.textContent=c.is_default?'Showing the defaults. Save to make them yours.':`Last saved ${ago(c.updated_at)} by ${c.updated_by||'a manager'}.`;save.disabled=false;paint();
    ['#cfgName','#cfgHandle'].forEach(i=>$(i).addEventListener('input',()=>{clearTimeout(paint.t);paint.t=setTimeout(paint,200)}));
-   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,accent:$('#cfgAccent').value}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
+   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,niche:$('#cfgNiche').value,style:$('#cfgStyle').value,accent:$('#cfgAccent').value}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
   }catch(e){msg.textContent='Could not load settings: '+e.message}
  }
  function drawDesignPreviews(){
@@ -236,7 +238,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -248,6 +250,7 @@ const Dashboard=(()=>{
   if(ui.view==='agents')loadActivity();
   applyWorking();pollJobs();if(ui.view==='dashboard')HeroGlobe.mount($('.hero-globe'));
   if(ui.view==='people')People.mount($('#ppHost'));
+  if(ui.view==='ideas')Ideas.mount($('#ideasHost'));
  }
  async function show(view){
   ui.view=view;ui.shown=12;

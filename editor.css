@@ -156,3 +156,28 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 
 .ed-bar .hint-s{font-size:.72rem;color:#7a6872;margin:0 4px}
 .ed-spacing{width:250px;display:grid;gap:10px}.sp-row{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:.8rem;font-weight:600;color:#4a2f3b}.sp-row input{grid-column:1/-1;width:100%}
+
+/* Phones and tablets: the editor never grows wider than the screen; the top bar wraps; the page fits; big touch targets. */
+.ed>*{min-width:0}
+@media(max-width:900px){
+ .ed{grid-template-columns:minmax(0,1fr)}
+ .ed-top{min-width:0;margin:max(8px,env(safe-area-inset-top)) 8px 0;flex-wrap:wrap;row-gap:6px;border-radius:22px}
+ .ed-title{flex:1 1 120px;min-width:0;width:auto}
+ .ed-chip{display:none}
+ .ed-top .spacer{display:none}
+ .ed-icon{width:44px;height:44px}
+ .ed-strip{padding:8px 8px calc(10px + env(safe-area-inset-bottom))}
+}
+@media(max-width:560px){
+ .ed-top .btn-light,.ed-top .btn-maroon{height:40px;padding:0 12px}
+ .ed-top select{max-width:140px}
+ .ed-stagewrap{padding:14px 8px 70px}
+}
+
+/* Phones: the tool dock sits bottom-left above the page strip so it never covers the wrapped top bar. */
+@media(max-width:900px){
+ .ed-dock{top:auto;bottom:calc(168px + env(safe-area-inset-bottom));left:12px;flex-direction:column-reverse;align-items:flex-start}
+}
+
+/* The rain layer paints the editor's backdrop, so the shell lets it show through. */
+body.in-editor .editor-root{background:transparent;animation:none}
