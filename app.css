@@ -304,3 +304,11 @@ body[data-role=editor] .pp-del{display:none}
 .hero>*:not(.hero-globe):not(.hero-water){position:relative;z-index:1}
 
 #landingPortal .portal-water-front{z-index:6}
+
+/* Agent activity log: the agents' own records */
+.act-stat{margin:8px 0 0;font-size:.82rem;color:#4a2f3b}.act-stat b{font-weight:700}.act-stat span{color:var(--muted,#7b6a72);font-size:.76rem}
+.act-log{margin:6px 0 24px;padding:18px 20px;border-radius:20px;background:rgba(255,255,255,.5);border:1px solid var(--line)}
+.act-table{width:100%;border-collapse:collapse;font-size:.84rem}.act-table th{text-align:left;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:#7b6a72;padding:6px 8px;border-bottom:1px solid var(--line)}
+.act-table td{padding:9px 8px;border-bottom:1px solid rgba(70,40,50,.08);vertical-align:top}.act-table td small{display:block;color:#7b6a72;font-size:.74rem;margin-top:2px}
+.act-pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.7rem;font-weight:700;background:#e8f4ec;color:#1f6e45}.act-pill.failed{background:#fbe3e3;color:#9b2226}.act-pill.started{background:#fff2d6;color:#8a5a00}
+.act-empty{color:#7b6a72;margin:8px 0}.act-note{margin:12px 0 0;font-size:.74rem;color:#7b6a72}
