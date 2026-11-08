@@ -377,8 +377,22 @@ function artBase(t,slide={},extra=''){
 // Shapes a picture can be placed inside. Each fills a 24 by 24 box so the picture is cropped to the shape.
 const MASK_SHAPES={circle:"<circle cx='12' cy='12' r='12'/>",rounded:"<rect width='24' height='24' rx='6'/>",heart:"<path d='M12 23C5 17.5.5 13 .5 7.5A5.8 5.8 0 0 1 12 5.2 5.8 5.8 0 0 1 23.5 7.5C23.5 13 19 17.5 12 23Z'/>",star:"<path d='M12 .5l3.2 7.7 8.3.7-6.3 5.5 1.9 8.1L12 18.2 4.9 22.5l1.9-8.1L.5 8.9l8.3-.7z'/>",diamond:"<path d='M12 0l12 12-12 12L0 12z'/>",triangle:"<path d='M12 1l11.5 21.5H.5z'/>"};
 const maskCss=(sel,name)=>{const p=MASK_SHAPES[name];if(!p)return '';const u=`url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='#000'>${p}</g></svg>`)}")`;return `${sel}{-webkit-mask-image:${u}!important;mask-image:${u}!important;-webkit-mask-size:contain!important;mask-size:contain!important;-webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important;-webkit-mask-position:center!important;mask-position:center!important;-webkit-mask-composite:source-over!important;mask-composite:add!important;}`};
-function designCss(slide){
+function designCss(slide,layerOffset=0){
  let css='';
+ if(slide.parts&&typeof slide.parts==='object'){
+  const num=(v,a,b)=>Number.isFinite(v)?Math.max(a,Math.min(b,v)):null,col=v=>/^#[0-9a-f]{6}$/i.test(v||'')?v:'';
+  for(const [key,v] of Object.entries(slide.parts).slice(0,60)){
+   if(!/^\d{1,3}(?:\.\d{1,3}){0,6}$/.test(key)||!v||typeof v!=='object')continue;
+   const idx=key.split('.').map(Number);if(layerOffset)idx[0]+=layerOffset;
+   const sel='.art'+idx.map(n=>` > :nth-child(${n})`).join('');
+   let r='';const x=num(v.x,-100,100),y=num(v.y,-100,100),sc=num(v.scale,.2,4),op=num(v.opacity,0,100);
+   if(x||y)r+=`translate:${x||0}cqw ${y||0}cqw;`;if(sc&&sc!==1)r+=`scale:${sc};`;if(op!==null&&op<100)r+=`opacity:${op/100};`;
+   if(col(v.fill))r+=`background-color:${col(v.fill)}!important;`;if(col(v.color))r+=`color:${col(v.color)}!important;`;
+   if(v.hide===true)r+='visibility:hidden!important;';
+   if(r)css+=`${sel}{${r}}`;
+   if(col(v.fill))css+=`${sel} :is(path,circle,rect,ellipse,polygon,line){fill:${col(v.fill)}!important;}${sel}:is(svg){fill:${col(v.fill)}!important;}`;
+  }
+ }
  if(slide.artMask)css+=maskCss('.campaign-visual .campaign-photo,.campaign-visual>img',slide.artMask);
  (Array.isArray(slide.elementMasks)?slide.elementMasks:[]).forEach((m,i)=>{if(m)css+=maskCss(`[data-canvas-element="${i}"]`,m)});
  for(const [k,v] of Object.entries(slide.slots||{})){if(v?.mask&&/^[a-z][a-z0-9]{0,23}$/.test(k))css+=maskCss(`[data-slot="${k}"]`,v.mask)}
@@ -397,7 +411,7 @@ function designCss(slide){
 }
 function art(t,slide={},extra=''){
  let html=artBase(t,slide,extra);
- const dcss=designCss(slide);
+ const dcss=designCss(slide,(/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')||(typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)))?1:0);
  if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
  const fill=/^#[0-9a-f]{6}$/i.test(slide.pageFill||'')?slide.pageFill:'';
  const bg=typeof slide.pageImage==='string'&&slide.pageImage.length<=1400000&&/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(slide.pageImage)?slide.pageImage:'';

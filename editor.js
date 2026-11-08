@@ -16,6 +16,19 @@ const Editor=(()=>{
 
  /* ---------- loading and saving ---------- */
  let opening=0;
+ // Uploads are kept on the server for the creator's workspace until they delete them.
+ const upIds=new Map();
+ const wsHeader=()=>{let w='';try{w=localStorage.getItem('gsn_ws')||''}catch{}return w?{'X-GSN-Workspace':w}:{}};
+ async function loadUploads(){
+  try{
+   const r=await api('/uploads');
+   const got=await Promise.all(r.uploads.slice(0,40).map(async it=>{try{const b=await (await fetch(it.url,{headers:wsHeader()})).blob();const u=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=no;fr.readAsDataURL(b)});return [it.id,u]}catch{return null}}));
+   const mem=uploads.filter(u=>!upIds.has(u));uploads=[];for(const g of got)if(g){uploads.push(g[1]);upIds.set(g[1],g[0])}for(const u of mem)if(!uploads.includes(u))uploads.unshift(u);
+   if(tool==='uploads')openTool('uploads');
+  }catch{}
+ }
+ function addUpload(u){uploads.unshift(u);if(!upIds.has(u))api('/uploads',{method:'POST',body:{image:u}}).then(r=>upIds.set(u,r.id)).catch(()=>{})}
+ function dropUpload(u){const id=upIds.get(u);upIds.delete(u);if(id)api('/uploads/'+id,{method:'DELETE'}).catch(()=>{})}
  async function open(id){
   if(design?.id===id&&el.root?.isConnected)return;
   close();
@@ -26,6 +39,7 @@ const Editor=(()=>{
   design=d;page=0;sel=null;undo=[];redo=[];dirty=false;conflict=false;tool=null;dockOpen=false;
   build();render();thumbs();fit();
   polling=setInterval(poll,8000);
+  loadUploads();loadBrand();
  }
  function close(){
   opening++;
@@ -146,8 +160,29 @@ const Editor=(()=>{
   fit();
   if(opts.thumbs){queueThumbs(opts.thumbs)}
  }
+ /* ---------- the template's own decorations (badges, bars, numbers, icons) ---------- */
+ // Each one is found by its place in the page, such as "3" or "3.1", so it can be moved, resized, recoloured or hidden on any template.
+ const partKids=n=>[...n.children].filter(c=>!c.classList.contains('page-bg')&&c.tagName!=='STYLE');
+ function partKey(node){const root=el.host.shadowRoot?.querySelector('.art');if(!root)return '';const path=[];let n=node;while(n&&n!==root){const p=n.parentElement;if(!p)return '';path.unshift(partKids(p).indexOf(n)+1);n=p}return n===root?path.join('.'):''}
+ function partNode(key){let n=el.host.shadowRoot?.querySelector('.art');for(const i of String(key).split('.').map(Number)){if(!n)return null;n=partKids(n)[i-1]}return n||null}
+ const PART_SKIP='[data-canvas-copy],[data-canvas-text],[data-canvas-element],[data-slot],.campaign-visual,.slide-element-strip,.free-text,.campaign-copy,.page-bg,style';
+ function partAt(x,y){
+  const root=el.host.shadowRoot,art=root?.querySelector('.art');if(!art)return null;
+  const pg=art.getBoundingClientRect(),pageArea=pg.width*pg.height;let best=null,area0=Infinity;
+  for(const n of art.querySelectorAll('*')){
+   if(n.matches?.(PART_SKIP)||n.closest?.(PART_SKIP.replace('.campaign-copy,','')))continue;
+   if(n.closest('svg')&&n.tagName!=='svg')continue;
+   const r=n.getBoundingClientRect();if(r.width<6||r.height<6)continue;
+   const a=r.width*r.height;if(a>pageArea*.6||a>=area0)continue;
+   if(x<r.left||x>r.right||y<r.top||y>r.bottom)continue;
+   if(getComputedStyle(n).visibility==='hidden')continue;
+   best=n;area0=a;
+  }
+  const k=best&&partKey(best);return k?{t:'part',k}:null;
+ }
  function nodeFor(s=sel){
   const root=el.host.shadowRoot;if(!root||!s)return null;
+  if(s.t==='part')return partNode(s.k);
   const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:s.t==='panel'?'.campaign-copy':'.campaign-visual';
   return root.querySelector(q);
  }
@@ -174,7 +209,7 @@ const Editor=(()=>{
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
   const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'||sel.t==='panel'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
-  box.innerHTML=sel.t==='panel'?'':`<i class="h se" data-h="scale"></i>${side}`;
+  box.innerHTML=sel.t==='panel'?'':sel.t==='part'?'<i class="h se" data-h="scale"></i>':`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
  }
@@ -210,7 +245,7 @@ const Editor=(()=>{
   // The artwork is decorative (pointer-events:none in the template), so test its box directly.
   const v=root.querySelector('.campaign-visual');
   if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'art'}}
-  return null;
+  return partAt(x,y);
  }
  function onHover(e){
   if(drag)return;
@@ -314,6 +349,7 @@ const Editor=(()=>{
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
     else if(m.t==='slot'&&!slotPan){const b0=base.slots?.[m.k]||{};s.slots={...(s.slots||{}),[m.k]:{...b0,fx:round(clamp((b0.fx||0)+dx/st.W*100,-100,100)),fy:round(clamp((b0.fy||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
+    else if(m.t==='part'){const p0=base.parts?.[m.k]||{};s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
    }
@@ -323,6 +359,7 @@ const Editor=(()=>{
    if(sel.t==='copy'){const p=base.textLayers?.[k]||{};s.textLayers={...s.textLayers,[k]:{...p,size:round(clamp(st.size*f,1,30))}}}
    else if(sel.t==='text'){s.texts[sel.i]={...s.texts[sel.i],size:round(clamp(st.size*f,1,30))}}
    else if(sel.t==='element'){const a=[...(s.elementSizes||[])];a[sel.i]=Math.round(clamp(st.elSize*f,25,500));s.elementSizes=a.map(v=>v??100)}
+   else if(sel.t==='part'){const p0=base.parts?.[k]||{};s.parts={...(s.parts||{}),[k]:{...p0,scale:round(clamp((p0.scale||1)*f,.2,4))}}}
    else if(sel.t==='art'){s.artScale=Math.round(clamp(st.art*f,35,180))}
    else if(sel.t==='slot'&&!slotPan){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,fs:Math.round(clamp((b0.fs||100)*f,30,300))}}}
    else if(sel.t==='slot'){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,z:Math.round(clamp((b0.z||100)*f,100,400))}}}
@@ -485,6 +522,9 @@ const Editor=(()=>{
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
    html=textBarHtml(l,s,true);
+  }else if(sel.t==='part'){
+   const p=s.parts?.[sel.k]||{};
+   html=`<span class="count">Template item</span><button class="swatch cp" data-b="partfill" title="Fill colour" aria-label="Fill colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><button class="swatch cp hl" data-b="partcolor" title="Text or icon colour" aria-label="Text or icon colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.color||'')?p.color:'transparent'}"><b>A</b></button><label class="rng">Size<input type="range" min="20" max="400" value="${Math.round((p.scale||1)*100)}" data-b="partscale"></label><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="partop"></label><button class="txt ${p.hide?'on':''}" data-b="parthide">${p.hide?'Show':'Hide'}</button><button class="txt" data-b="partreset" title="Put it back as the template had it">Reset</button>${sep}`;
   }else if(sel.t==='panel'){
    const p=s.panel||{};
    html=`<span class="count">Text card</span><button class="swatch cp" data-b="panelcol" title="Colour of the card behind the text" aria-label="Card colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="panelop"></label><label class="rng">Corners<input type="range" min="0" max="80" value="${p.radius??4}" data-b="panelrad"></label><button class="txt ${p.hide?'on':''}" data-b="panelhide" title="Hide or show the card look behind the text">${p.hide?'Show card':'Hide card'}</button><button class="txt" data-b="panelreset" title="Put the card back as the template had it">Reset</button>${sep}`;
@@ -496,7 +536,7 @@ const Editor=(()=>{
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
-  if(sel.t!=='slot'&&sel.t!=='panel')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
+  if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
   if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
@@ -690,16 +730,19 @@ const Editor=(()=>{
   if(a==='dup')return duplicateSel();
   if(a==='del')return deleteSel();
   if(a==='slotlib'){const t=sel;return libraryPick(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
-  if(a==='slotreplace'){const t=sel;return pickImage(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
+  if(a==='slotreplace'){const t=sel;return pickPicture(url=>commit(()=>setSlot(t.k,{src:url,x:0,y:0,z:100})))}
   if(a==='slotreset'){const t=sel;return commit(()=>setSlot(t.k,{x:0,y:0,z:100,fx:0,fy:0,fs:100})),drawBar()}
-  if(a==='replace')return pickImage(url=>commit(()=>{slide().image=url}));
+  if(a==='replace')return pickPicture(url=>commit(()=>{slide().image=url;delete slide().hideArt}));
   if(a==='crop')return cropPicture({...sel});
   if(a==='panelcol'){return colourPanel(t,slide().panel?.fill||'',c=>{commit(()=>{slide().panel={...(slide().panel||{}),fill:c||undefined,...(c&&slide().panel?.opacity===undefined?{opacity:100}:{})};if(!c)delete slide().panel.fill},'panelcol');drawBar()},{none:'Template colour'})}
+  if(a==='partfill'||a==='partcolor'){const k=sel.k,f=a==='partfill'?'fill':'color';return colourPanel(t,slide().parts?.[k]?.[f]||'',c=>{commit(()=>{const o={...(slide().parts?.[k]||{})};if(c)o[f]=c;else delete o[f];slide().parts={...(slide().parts||{}),[k]:o}},'part'+f);drawBar()},{none:'Template colour'})}
+  if(a==='parthide'){const k=sel.k;return commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),hide:!slide().parts?.[k]?.hide}}}),drawBar()}
+  if(a==='partreset'){const k=sel.k;return commit(()=>{const o={...(slide().parts||{})};delete o[k];slide().parts=Object.keys(o).length?o:undefined;if(!slide().parts)delete slide().parts}),drawOverlay()}
   if(a==='panelhide')return commit(()=>{slide().panel={...(slide().panel||{}),hide:!slide().panel?.hide}}),drawBar();
   if(a==='panelreset')return commit(()=>{delete slide().panel}),drawOverlay();
   if(a==='rmbg')return runRemoveBackground();
-  if(a==='elreplace'){const t=sel;return pickImage(url=>commit(()=>{slide().elements[t.i]=url}))}
-  if(a==='elfillup'){const t=sel;return pickImage(url=>commit(()=>setFill(t.i,url)))}
+  if(a==='elreplace'){const t=sel;return pickPicture(url=>commit(()=>{slide().elements[t.i]=url}))}
+  if(a==='elfillup'){const t=sel;return pickPicture(url=>commit(()=>setFill(t.i,url)))}
   if(a==='elfilllib'){const t=sel;return libraryPick(url=>commit(()=>setFill(t.i,url)))}
   if(a==='elfillclear'){const t=sel;return commit(()=>setFill(t.i,null))}
   if(a==='elflip'){const t=sel;return commit(()=>{setList(slide(),'elementFlip',t.i,getList(slide(),'elementFlip',t.i,0)?0:1,0)})}
@@ -722,6 +765,8 @@ const Editor=(()=>{
   else if(a==='artsize')commit(()=>{slide().artScale=+v},'artsize');
   else if(a==='artlayer')commit(()=>{slide().artLayer=v});
   else if(a==='mask'){const t={...sel};commit(()=>{const sl=slide();if(t.t==='art'){if(v)sl.artMask=v;else delete sl.artMask}else if(t.t==='slot')setSlot(t.k,{mask:v||undefined});else{const n=sl.elements.length,arr=Array.from({length:n},(_,i)=>sl.elementMasks?.[i]||'');arr[t.i]=v;sl.elementMasks=arr.some(Boolean)?arr:undefined;if(!sl.elementMasks)delete sl.elementMasks}},'mask')}
+  else if(a==='partscale'){const k=sel.k;commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),scale:+v/100}}},'partscale')}
+  else if(a==='partop'){const k=sel.k;commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),opacity:+v}}},'partop')}
   else if(a==='panelop')commit(()=>{slide().panel={...(slide().panel||{}),opacity:+v}},'panelop');
   else if(a==='panelrad')commit(()=>{slide().panel={...(slide().panel||{}),radius:+v}},'panelrad');
   if(e.type==='change')drawOverlay();
@@ -732,7 +777,7 @@ const Editor=(()=>{
  let slotPan=false;
  function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
  function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
- function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':'artwork'}
+ function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':s.t==='part'?'part:'+s.k:'artwork'}
  function fullOrder(){
   const s=slide(),keys=[...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
   const own=(s.layerOrder||[]).filter(k=>keys.includes(k));return [...own,...keys.filter(k=>!own.includes(k))];
@@ -970,7 +1015,7 @@ const Editor=(()=>{
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/*,.jfif,.avif,.webp,.svg" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG, WebP, GIF, SVG or AVIF</small></label><button class="btn-light" id="edLib">Browse GSN pictures</button><div class="ed-ugrid" id="edUg"></div>`;
   const draw=()=>{$('#edUg').innerHTML=uploads.map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" draggable="true" data-dragup="${i}" title="Drag onto the page"><div><button data-up="el" data-i="${i}">Add to page</button><button data-up="bg" data-i="${i}">Set as image</button><button data-up="del" data-i="${i}">Delete</button></div></div>`).join('')+(uploads.length?'<button class="btn-light" data-up="clear" style="grid-column:1/3">Delete all uploads</button>':'')};
-  $('#edFile').onchange=async e=>{for(const f of e.target.files){try{uploads.unshift(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
+  $('#edFile').onchange=async e=>{for(const f of e.target.files){try{addUpload(await compress(f))}catch(err){toast(err.message)}}e.target.value='';draw()};
   $('#edLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);draw()});
   draw();
  }
@@ -1018,9 +1063,27 @@ const Editor=(()=>{
   }
   throw Error('That image is too large. Try a smaller one.');
  }
+
+ // Replace a picture: from the GSN library, from pictures already uploaded, or from this computer.
+ function pickPicture(done){
+  const d=document.createElement('dialog');d.className='ed-lib ed-src';
+  const mine=uploads.slice(0,60);
+  d.innerHTML=`<header><h2>Replace picture</h2><form method="dialog"><button aria-label="Close">×</button></form></header>
+  <div class="ed-src-row"><button class="btn-light" data-s="lib">From GSN library</button><button class="btn-light" data-s="up">From my uploads <i>${uploads.length}</i></button><button class="btn-maroon" data-s="pc">From my computer</button></div>
+  <div class="ed-src-up" hidden><p class="hint">Click a picture to use it. Uploads stay here until you delete them.</p><div class="ed-lib-grid">${mine.map((u,i)=>`<button data-u="${i}"><span style="background-image:url('${u}');background-size:cover;background-position:center"></span></button>`).join('')||'<p class="hint">No uploads yet.</p>'}</div></div>`;
+  d.onclick=e=>{
+   const b=e.target.closest('[data-s]');
+   if(b){const k=b.dataset.s;
+    if(k==='pc'){d.close();return pickImage(done)}
+    if(k==='lib'){d.close();return libraryPick(done)}
+    d.querySelector('.ed-src-up').hidden=false;return}
+   const u=e.target.closest('[data-u]');if(u){const url=mine[+u.dataset.u];d.close();done(url)}
+  };
+  d.addEventListener('close',()=>d.remove());document.body.append(d);d.showModal();
+ }
  function pickImage(done){
   const input=document.createElement('input');input.type='file';input.accept='image/*,.jfif,.avif,.webp,.svg';
-  input.onchange=async()=>{try{const u=await compress(input.files[0]);uploads.unshift(u);done(u)}catch(e){toast(e.message)}};input.click();
+  input.onchange=async()=>{try{const u=await compress(input.files[0]);addUpload(u);done(u)}catch(e){toast(e.message)}};input.click();
  }
 
  // Page background: a colour, your own picture, or no template picture. Works on every template.
@@ -1050,8 +1113,17 @@ const Editor=(()=>{
   $('#edHide').onchange=e=>set({hideArt:e.target.checked||undefined});
   $('#edBgClear').onclick=()=>{set({pageFill:undefined,pageImage:undefined,hideArt:undefined});toolBackground(body)};
  }
- const kit=()=>{try{return JSON.parse(localStorage.getItem('gsn-brand-kit')||'[]').filter(c=>/^#[0-9a-f]{6}$/.test(c))}catch{return[]}};
- const saveKit=a=>{try{localStorage.setItem('gsn-brand-kit',JSON.stringify(a))}catch{}};
+ // The brand colours saved in Settings belong to the workspace, so every creator in it sees and uses the same ones. This browser's own list is kept as a fallback.
+ let brandCfg=null;
+ async function loadBrand(){try{brandCfg=await api('/config')}catch{brandCfg=null}}
+ const kit=()=>{let own=[];try{own=JSON.parse(localStorage.getItem('gsn-brand-kit')||'[]').filter(c=>/^#[0-9a-f]{6}$/.test(c))}catch{}
+  const cfg=brandCfg&&!brandCfg.is_default?[...(brandCfg.palette||[]),brandCfg.accent,brandCfg.background,brandCfg.ink].filter(c=>/^#[0-9a-f]{6}$/i.test(c||'')).map(c=>c.toLowerCase()):[];
+  return [...new Set([...cfg,...own])].slice(0,16)};
+ const saveKit=a=>{
+  try{localStorage.setItem('gsn-brand-kit',JSON.stringify(a))}catch{}
+  // A manager's saved colours go to the workspace, so every new design and every creator starts from them.
+  api('/config',{method:'PUT',body:{palette:a.slice(0,12)}}).then(c=>{brandCfg=c}).catch(()=>{});
+ };
  function toolBrand(body){
   const s=slide(),pal=GSNKit.palettes,hex=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
   body.innerHTML=`<p class="hint">Your brand colours. They apply to every page unless you untick the box.</p>
@@ -1062,6 +1134,7 @@ const Editor=(()=>{
   <div class="ed-row"><input type="color" id="edKitNew" value="${hex(s.accent,'#ac82f4')}" aria-label="New brand colour"><input type="text" id="edKitHex" maxlength="7" placeholder="#ac82f4" aria-label="Brand colour hex"><button class="btn-light" id="edKitAdd">Save colour</button>${window.EyeDropper?'<button class="btn-light" id="edKitPick">Pick from screen</button>':''}</div>
   <div class="ed-kit">${kit().map((c,i)=>`<span class="ed-kitc"><button data-kit="${i}" title="${c}" aria-label="Use ${c}" style="background:${c}"></button><small>${c}</small><button data-kitrm="${i}" aria-label="Remove ${c}">×</button></span>`).join('')||'<small>No saved colours yet.</small>'}</div>
   <div class="ed-row"><button class="btn-light" id="edKitBg">Set as background</button><button class="btn-light" id="edKitInk">Set as text</button></div>
+  ${brandCfg&&!brandCfg.is_default?'<button class="btn-maroon" id="edUseBrand" title="Set the accent, background and text colour saved in Settings">Use my brand colours</button>':'<p class="hint">Save your brand colours in Settings and every new design starts with them.</p>'}
   <button class="btn-light" id="edRecolour">Recolour all shapes with the accent</button>
   <h3>Brand</h3><label class="ed-colour">Brand name<input id="edBn" maxlength="80" value="${esc(design.brand.name)}"></label><label class="ed-colour">Handle<input id="edBh" maxlength="80" value="${esc(design.brand.handle)}"></label><button class="btn-light" id="edInkAll">Use the text colour on every text</button><button class="btn-light" data-act="resetcolors">Reset page colours</button>`;
   $('#edAll').onchange=e=>{applyAll=e.target.checked};
@@ -1077,6 +1150,7 @@ const Editor=(()=>{
   $$('[data-kitrm]',body).forEach(b=>b.onclick=()=>{saveKit(kit().filter((_,i)=>i!==+b.dataset.kitrm));toolBrand(body)});
   $('#edKitBg').onclick=()=>{kitSel=kitSel||kit()[0];if(kitSel){apply({background:kitSel});toolBrand(body)}else toast('Save a colour first.')};
   $('#edKitInk').onclick=()=>{kitSel=kitSel||kit()[0];if(kitSel){apply({ink:kitSel});toolBrand(body)}else toast('Save a colour first.')};
+  $('#edUseBrand')&&($('#edUseBrand').onclick=()=>{const c=brandCfg,p={};if(c.accent)p.accent=c.accent;if(c.background)p.background=c.background;if(c.ink)p.ink=c.ink;apply(p);toolBrand(body)});
   $('#edRecolour').onclick=()=>commit(()=>{for(const t of (applyAll?design.pages:[slide()])){const a=hex(t.accent,'#ac82f4');t.elementColors=(t.elements||[]).map(()=>a)}},'recolour');
   const brand=()=>commit(()=>{design.brand={name:$('#edBn').value.trim()||design.brand.name,handle:$('#edBh').value.trim()||design.brand.handle}},'brand');
   $('#edBn').oninput=brand;$('#edBh').oninput=brand;
@@ -1175,7 +1249,7 @@ const Editor=(()=>{
   const sob=e.target.closest('[data-elsolid]');if(sob){addElement(sob.dataset.elsolid);const i=sel.i,s=slide(),acc=/^#[0-9a-f]{6}$/i.test(s.accent||'')?s.accent:'#ac82f4';commit(()=>{setList(s,'elementSolid',i,true,false);const x=[...(s.elementColors||[])];x[i]=acc;s.elementColors=Array.from({length:s.elements.length},(_,k)=>x[k]||'#25c8ff');setList(s,'elementSizes',i,160,100)},'solid');drawOverlay();return}
   const elb=e.target.closest('[data-el]');if(elb)return addElement(elb.dataset.el);
   const at=e.target.closest('[data-addtext]');if(at)return addText(at.dataset.addtext);
-  const up=e.target.closest('[data-up]');if(up){if(up.dataset.up==='del'){uploads.splice(+up.dataset.i,1);return tool==='uploads'&&openTool('uploads')}if(up.dataset.up==='clear'){uploads.length=0;return tool==='uploads'&&openTool('uploads')}const u=uploads[+up.dataset.i];if(up.dataset.up==='el')addElement(u);else commit(()=>{slide().image=u});return}
+  const up=e.target.closest('[data-up]');if(up){if(up.dataset.up==='del'){const [gone]=uploads.splice(+up.dataset.i,1);dropUpload(gone);return tool==='uploads'&&openTool('uploads')}if(up.dataset.up==='clear'){if(!confirm('Delete all your uploaded pictures?'))return;uploads.forEach(dropUpload);uploads.length=0;return tool==='uploads'&&openTool('uploads')}const u=uploads[+up.dataset.i];if(up.dataset.up==='el')addElement(u);else commit(()=>{slide().image=u});return}
   const rs=e.target.closest('[data-resize]');if(rs)return resizeTo(rs.dataset.resize);
   const cp=e.target.closest('[data-copy]');if(cp)return copyToSize(cp.dataset.copy);
   const pg=e.target.closest('[data-pg]');if(pg&&!el.modal.contains(pg)){pageOps(pg.dataset.pg);if(tool==='pages')openTool('pages');return}
@@ -1196,7 +1270,7 @@ const Editor=(()=>{
  document.addEventListener('paste',async e=>{
   if(!design||editing||e.target.closest?.('input,textarea,[contenteditable]'))return;
   const f=[...(e.clipboardData?.files||[])].find(IMG_OK);if(!f)return;
-  e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u);toast('Picture pasted onto the page.')}catch(err){toast(err.message)}
+  e.preventDefault();try{const u=await compress(f);addUpload(u);addElement(u);toast('Picture pasted onto the page.')}catch(err){toast(err.message)}
  });
  document.addEventListener('drop',async e=>{
   if(design&&el.page?.contains(e.target)){
@@ -1204,7 +1278,7 @@ const Editor=(()=>{
    const idx=e.dataTransfer.getData('application/x-gsn-upload');
    if(idx!==''&&uploads[+idx]){e.preventDefault();return addElement(uploads[+idx],at)}
    const f=[...(e.dataTransfer.files||[])].find(IMG_OK);
-   if(f){e.preventDefault();try{const u=await compress(f);uploads.unshift(u);addElement(u,at)}catch(err){toast(err.message)}return}
+   if(f){e.preventDefault();try{const u=await compress(f);addUpload(u);addElement(u,at)}catch(err){toast(err.message)}return}
   }
   const th=e.target.closest?.('.ed-thumb');if(!th||!design)return;e.preventDefault();
   const from=+e.dataTransfer.getData('text/plain'),to=+th.dataset.page,n=design.pages.length;

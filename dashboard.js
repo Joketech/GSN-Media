@@ -205,20 +205,30 @@ const Dashboard=(()=>{
    <label>Brand voice<textarea id="cfgVoice" rows="5" maxlength="1200" placeholder="How should the agents write? Tone, words to use, words to avoid."></textarea></label>
    <label>Niche and audience<textarea id="cfgNiche" rows="2" maxlength="300" placeholder="What you post about, and who for."></textarea></label>
    <label>Style of posting<textarea id="cfgStyle" rows="2" maxlength="600" placeholder="e.g. Short carousels, direct, one idea per post."></textarea></label>
-   <label>Accent colour<input id="cfgAccent" type="color" value="#ed6843"></label>
+   <div class="cfg-colors"><h3>Brand colours</h3><p class="act-note">Every new design, from you or from the agents, starts in these colours. Leave the background or text colour off to keep each template's own.</p>
+    <div class="cfg-crow"><label>Accent<input id="cfgAccent" type="color" value="#ed6843"></label>
+     <label>Background<input id="cfgBg" type="color" value="#101323"><button type="button" class="btn-light" data-off="cfgBg">Template's own</button></label>
+     <label>Text<input id="cfgInk" type="color" value="#f8faff"><button type="button" class="btn-light" data-off="cfgInk">Template's own</button></label></div>
+    <label>My colour palette<span class="cfg-pal" id="cfgPal"></span></label><div class="cfg-crow"><input id="cfgPalNew" type="color" value="#1e6bff"><button type="button" class="btn-light" id="cfgPalAdd">Add to palette</button></div></div>
    <div class="cfg-actions"><button class="btn-dark" id="cfgSave" disabled>Save</button><span class="act-note" id="cfgMsg">Loading…</span></div></div>
    <div class="cfg-preview"><h2>Preview</h2><div class="cfg-page" id="cfgPage"></div><p class="act-note">This is how your brand name appears on a page.</p></div></section>`;
  }
  async function loadConfig(){
   const name=$('#cfgName');if(!name)return;
   const msg=$('#cfgMsg'),save=$('#cfgSave');
+  let pal=[],bgOn=false,inkOn=false,state_cfg=null;
+  const paintPal=()=>{pal=[...(state_cfg?.palette||pal)];const box=$('#cfgPal');if(box)box.innerHTML=pal.map((c,i)=>`<span class="cfg-sw" style="background:${c}" title="${c}"><button type="button" data-rm="${i}" aria-label="Remove ${c}">×</button></span>`).join('')||'<small>No colours yet.</small>'};
   const paint=()=>{try{const d=KitHost.starterDesign(3,'4 / 5');d.brand={name:name.value||'Your brand',handle:$('#cfgHandle').value||name.value||'Your brand'};KitHost.mount($('#cfgPage'),KitHost.pageHtml(d,0))}catch{}};
   try{
    const c=await api('/config');
-   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgNiche').value=c.niche||'';$('#cfgStyle').value=c.style||'';$('#cfgAccent').value=c.accent;
+   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgNiche').value=c.niche||'';$('#cfgStyle').value=c.style||'';$('#cfgAccent').value=c.accent;state_cfg=c;paintPal();bgOn=!!c.background;inkOn=!!c.ink;if(c.background)$('#cfgBg').value=c.background;if(c.ink)$('#cfgInk').value=c.ink;
    msg.textContent=c.is_default?'Showing the defaults. Save to make them yours.':`Last saved ${ago(c.updated_at)} by ${c.updated_by||'a manager'}.`;save.disabled=false;paint();
    ['#cfgName','#cfgHandle'].forEach(i=>$(i).addEventListener('input',()=>{clearTimeout(paint.t);paint.t=setTimeout(paint,200)}));
-   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,niche:$('#cfgNiche').value,style:$('#cfgStyle').value,accent:$('#cfgAccent').value}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
+   $('#cfgBg').oninput=()=>{bgOn=true};$('#cfgInk').oninput=()=>{inkOn=true};
+   $$('[data-off]').forEach(b=>b.onclick=()=>{if(b.dataset.off==='cfgBg')bgOn=false;else inkOn=false;toast('Using the template\'s own colour. Save to apply.')});
+   $('#cfgPalAdd').onclick=()=>{const c=$('#cfgPalNew').value.toLowerCase();if(!pal.includes(c)&&pal.length<12)pal.push(c);state_cfg={...state_cfg,palette:pal};paintPal()};
+   $('#cfgPal').onclick=e=>{const b=e.target.closest('[data-rm]');if(b){pal.splice(+b.dataset.rm,1);state_cfg={...state_cfg,palette:pal};paintPal()}};
+   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,niche:$('#cfgNiche').value,style:$('#cfgStyle').value,accent:$('#cfgAccent').value,background:bgOn?$('#cfgBg').value:'',ink:inkOn?$('#cfgInk').value:'',palette:pal}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
   }catch(e){msg.textContent='Could not load settings: '+e.message}
  }
  function drawDesignPreviews(){
