@@ -173,7 +173,7 @@ const Editor=(()=>{
    if(n.matches?.(PART_SKIP)||n.closest?.(PART_SKIP.replace('.campaign-copy,','')))continue;
    if(n.closest('svg')&&n.tagName!=='svg')continue;
    const r=n.getBoundingClientRect();if(r.width<6||r.height<6)continue;
-   const a=r.width*r.height;if(a>pageArea*.6||a>=area0)continue;
+   const a=r.width*r.height;if(a>pageArea*.985||a>=area0)continue;
    if(x<r.left||x>r.right||y<r.top||y>r.bottom)continue;
    if(getComputedStyle(n).visibility==='hidden')continue;
    best=n;area0=a;
@@ -183,6 +183,7 @@ const Editor=(()=>{
  function nodeFor(s=sel){
   const root=el.host.shadowRoot;if(!root||!s)return null;
   if(s.t==='part')return partNode(s.k);
+  if(s.t==='page')return root.querySelector('.art');
   const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:s.t==='panel'?'.campaign-copy':'.campaign-visual';
   return root.querySelector(q);
  }
@@ -209,7 +210,7 @@ const Editor=(()=>{
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
   const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'||sel.t==='panel'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
-  box.innerHTML=sel.t==='panel'?'':sel.t==='part'?'<i class="h se" data-h="scale"></i>':`<i class="h se" data-h="scale"></i>${side}`;
+  box.innerHTML=sel.t==='panel'||sel.t==='page'?'':sel.t==='part'?'<i class="h se" data-h="scale"></i>':`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
  }
@@ -245,7 +246,10 @@ const Editor=(()=>{
   // The artwork is decorative (pointer-events:none in the template), so test its box directly.
   const v=root.querySelector('.campaign-visual');
   if(v){const r=(v.firstElementChild||v).getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'art'}}
-  return partAt(x,y);
+  const pt=partAt(x,y);if(pt)return pt;
+  // Nothing smaller is under the pointer, so it is the page itself: its background and colours.
+  const art=root.querySelector('.art');if(art){const r=art.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return {t:'page'}}
+  return null;
  }
  function onHover(e){
   if(drag)return;
@@ -349,6 +353,7 @@ const Editor=(()=>{
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
     else if(m.t==='slot'&&!slotPan){const b0=base.slots?.[m.k]||{};s.slots={...(s.slots||{}),[m.k]:{...b0,fx:round(clamp((b0.fx||0)+dx/st.W*100,-100,100)),fy:round(clamp((b0.fy||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
+    else if(m.t==='page'){}
     else if(m.t==='part'){const p0=base.parts?.[m.k]||{};s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
@@ -522,6 +527,9 @@ const Editor=(()=>{
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
    html=textBarHtml(l,s,true);
+  }else if(sel.t==='page'){
+   const sw=(a,t,v,lbl)=>`<span class="count">${lbl}</span><button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${/^#[0-9a-f]{6}$/i.test(v||'')?v:'transparent'}"></button>`;
+   html=`<span class="count">Page</span>${sw('pgbg','Background colour (the cream behind everything)',s.background,'Background')}${sw('pgacc','Accent colour (frame, bars and badges)',s.accent,'Accent')}${sw('pgink','Text colour for the whole page',s.ink,'Text')}${sw('pgfill','Fill the whole page with one colour',s.pageFill,'Cover')}<button class="txt" data-b="pgreset" title="Back to the template's own colours">Reset colours</button>${sep}`;
   }else if(sel.t==='part'){
    const p=s.parts?.[sel.k]||{};
    html=`<span class="count">Template item</span><button class="swatch cp" data-b="partfill" title="Fill colour" aria-label="Fill colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><button class="swatch cp hl" data-b="partcolor" title="Text or icon colour" aria-label="Text or icon colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.color||'')?p.color:'transparent'}"><b>A</b></button><label class="rng">Size<input type="range" min="20" max="400" value="${Math.round((p.scale||1)*100)}" data-b="partscale"></label><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="partop"></label><button class="txt ${p.hide?'on':''}" data-b="parthide">${p.hide?'Show':'Hide'}</button><button class="txt" data-b="partreset" title="Put it back as the template had it">Reset</button>${sep}`;
@@ -536,7 +544,7 @@ const Editor=(()=>{
   }else{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
-  if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
+  if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part'&&sel.t!=='page')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
   if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
   if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
@@ -735,6 +743,8 @@ const Editor=(()=>{
   if(a==='replace')return pickPicture(url=>commit(()=>{slide().image=url;delete slide().hideArt}));
   if(a==='crop')return cropPicture({...sel});
   if(a==='panelcol'){return colourPanel(t,slide().panel?.fill||'',c=>{commit(()=>{slide().panel={...(slide().panel||{}),fill:c||undefined,...(c&&slide().panel?.opacity===undefined?{opacity:100}:{})};if(!c)delete slide().panel.fill},'panelcol');drawBar()},{none:'Template colour'})}
+  if(['pgbg','pgacc','pgink','pgfill'].includes(a)){const f={pgbg:'background',pgacc:'accent',pgink:'ink',pgfill:'pageFill'}[a];return colourPanel(t,slide()[f]||'',c=>{commit(()=>{if(c)slide()[f]=c;else delete slide()[f]},'page'+f);drawBar()},{none:'Template colour'})}
+  if(a==='pgreset')return commit(()=>{for(const f of ['background','accent','ink','pageFill'])delete slide()[f]},'pagereset'),drawBar();
   if(a==='partfill'||a==='partcolor'){const k=sel.k,f=a==='partfill'?'fill':'color';return colourPanel(t,slide().parts?.[k]?.[f]||'',c=>{commit(()=>{const o={...(slide().parts?.[k]||{})};if(c)o[f]=c;else delete o[f];slide().parts={...(slide().parts||{}),[k]:o}},'part'+f);drawBar()},{none:'Template colour'})}
   if(a==='parthide'){const k=sel.k;return commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),hide:!slide().parts?.[k]?.hide}}}),drawBar()}
   if(a==='partreset'){const k=sel.k;return commit(()=>{const o={...(slide().parts||{})};delete o[k];slide().parts=Object.keys(o).length?o:undefined;if(!slide().parts)delete slide().parts}),drawOverlay()}
@@ -777,7 +787,7 @@ const Editor=(()=>{
  let slotPan=false;
  function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
  function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
- function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':s.t==='part'?'part:'+s.k:'artwork'}
+ function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':s.t==='part'?'part:'+s.k:s.t==='page'?'page':'artwork'}
  function fullOrder(){
   const s=slide(),keys=[...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
   const own=(s.layerOrder||[]).filter(k=>keys.includes(k));return [...own,...keys.filter(k=>!own.includes(k))];
@@ -804,6 +814,8 @@ const Editor=(()=>{
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
   else if(m.t==='slot')clearSlot(m.k);
+  else if(m.t==='part')s.parts={...(s.parts||{}),[m.k]:{...(s.parts?.[m.k]||{}),hide:true}};
+  else if(m.t==='panel')s.panel={...(s.panel||{}),hide:true};
  }
  function deleteSel(){
   if(!sel)return;
