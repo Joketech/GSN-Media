@@ -23,6 +23,7 @@ const MAX_SHAPES = 40;
 // A shape colour is a six-digit hex or a page colour name, so a design follows the pack's colours when they change.
 const COLOUR_NAMES = ['accent', 'accent2', 'onaccent', 'ink', 'soft', 'line', 'paper'];
 const shapeColour = (value, name) => (value === undefined || value === null || value === '' ? undefined : COLOUR_NAMES.includes(value) ? value : hex(value, name));
+const GROUP_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|panel|slot:[a-z0-9_-]{1,24}|part:\d{1,2}(?:\.\d{1,2}){0,5}|element:\d{1,2}|text:\d{1,2}|shape:\d{1,2})$/;
 const LAYER_ORDER_KEY = /^(?:title|body|kicker|brandText|footerText|artwork|element:\d{1,2}|text:\d{1,2}|shape:\d{1,2})$/;
 
 const range = (value, min, max, name) => {
@@ -33,6 +34,11 @@ const range = (value, min, max, name) => {
 const text = (value, name, max, { required = false } = {}) => {
   if (value === undefined && !required) return undefined;
   if (typeof value !== 'string' || value.length > max || (required && !value.trim())) throw new DesignError(`${name} must be ${required ? '1' : '0'} to ${max} characters.`);
+  return value;
+};
+const pickFont = (value, name) => {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || !/^[a-z][a-z0-9]{1,23}$/.test(value)) throw new DesignError(`${name} must be a font name from the font list.`);
   return value;
 };
 const pick = (value, allowed, name) => {
@@ -61,7 +67,7 @@ function textOptions(o, name) {
     rotation: range(o.rotation, -360, 360, `${name}.rotation`), size: range(o.size, 1, 30, `${name}.size`),
     width: range(o.width, 50, 180, `${name}.width`), spacing: range(o.spacing, -10, 40, `${name}.spacing`), lineHeight: range(o.lineHeight, 70, 250, `${name}.lineHeight`),
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
-    font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'greatvibes', 'dancing', 'anton', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
+    font: pickFont(o.font, `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
     color: shapeColour(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), boxFill: hex(o.boxFill, `${name}.boxFill`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
@@ -141,7 +147,7 @@ export function sanitizeSlide(s, index = 0) {
   if (s.groups !== undefined) {
     if (!Array.isArray(s.groups) || s.groups.length > 12) throw new DesignError(`${where} groups must be a list of up to 12 groups.`);
     slide.groups = s.groups.map((g, i) => {
-      if (!Array.isArray(g) || g.length < 2 || g.length > 40 || new Set(g).size !== g.length || g.some(k => typeof k !== 'string' || !LAYER_ORDER_KEY.test(k))) throw new DesignError(`${where} group ${i + 1} is not valid.`);
+      if (!Array.isArray(g) || g.length < 2 || g.length > 40 || new Set(g).size !== g.length || g.some(k => typeof k !== 'string' || !GROUP_KEY.test(k))) throw new DesignError(`${where} group ${i + 1} is not valid.`);
       return g;
     });
   }
