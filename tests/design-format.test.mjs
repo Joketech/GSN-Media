@@ -22,3 +22,8 @@ test('template items (parts) are accepted and checked',()=>{
  const bad=x=>assert.throws(()=>sanitizeSlide({...base,parts:x},'Page 1'),DesignError);
  bad({'abc':{x:1}});bad({'3':{scale:99}});bad({'3':{fill:'red'}});bad({'3':{x:900}});bad([]);
 });
+test('box colour on a text layer is accepted and checked',()=>{
+ const ok=sanitizeSlide({...base,textLayers:{title:{boxFill:'#ff5a36',bg:'#2563eb'}}},'Page 1');
+ assert.equal(ok.textLayers.title.boxFill,'#ff5a36');
+ assert.throws(()=>sanitizeSlide({...base,textLayers:{title:{boxFill:'orange'}}},'Page 1'),DesignError);
+});

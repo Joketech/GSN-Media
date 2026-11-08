@@ -58,7 +58,7 @@ function textOptions(o, name) {
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
     font: pick(o.font, ['sans', 'serif', 'mono', 'inter', 'poppins', 'montserrat', 'playfair', 'lora', 'oswald', 'bebas', 'dmserif', 'pacifico', 'caveat', 'arabic', 'hebrew', 'devanagari', 'bengali', 'thai', 'chinese', 'japanese', 'korean'], `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
-    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
+    color: hex(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), boxFill: hex(o.boxFill, `${name}.boxFill`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
     ...Object.fromEntries(['bold', 'italic', 'underline', 'strike', 'uppercase', 'bullets'].map(flag => {
       if (o[flag] !== undefined && typeof o[flag] !== 'boolean') throw new DesignError(`${name}.${flag} must be true or false.`);
       return [flag, o[flag]];
