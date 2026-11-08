@@ -17,6 +17,7 @@ const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const hash=x=>createHash('sha256').update(x).digest();
 const same=(a,b)=>timingSafeEqual(hash(a),hash(b));
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
+const AGENTS=['Mira','Lyra','Seline','Spectra','Flux','Relay'];
 class InputError extends Error{constructor(message,status=400){super(message);this.status=status;}}
 async function body(req){if(!req.headers['content-type']?.startsWith('application/json'))throw new InputError('Send application/json.',415);let size=0,chunks=[];for await(const c of req){size+=c.length;if(size>30*1024*1024)throw new InputError('Request exceeds 30 MB.',413);chunks.push(c);}try{const value=JSON.parse(Buffer.concat(chunks));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value;}catch{throw new InputError('Send a valid JSON object.');}}
 const text=(value,name,max,required=true)=>{if(typeof value!=='string'||value.length>max||(required&&!value.trim()))throw new InputError(`${name} must contain ${required?'1':'0'}–${max} characters.`);return value.trim();};
@@ -210,6 +211,19 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   }
   if(url.pathname==='/api/v1/voices'&&req.method==='GET'){json(res,200,{voices:(await list('voice')).filter(v=>inWs(v,ws)).map(({id,name,created_at})=>({id,name,created_at}))});return true;}
   if(url.pathname==='/api/v1/voices'&&req.method==='POST'){const p=await body(req),audio=decode(p.audio_base64,20*1024*1024),name=text(p.name,'Voice name',80),reference_text=text(p.reference_text,'Sample transcript',2000);const profile=await serial(async()=>{if((await list('voice')).filter(v=>inWs(v,ws)).length>=20)throw new InputError('Maximum 20 saved voice profiles.',409);const id=randomUUID(),v={id,name,reference_text,record_type:'voice',workspace_id:ws,created_at:new Date().toISOString()};await writeFile(file(id,'audio'),audio,{mode:0o600});await save(id,v);return v;});json(res,201,{id:profile.id,name:profile.name,created_at:profile.created_at});return true;}
+  // ----- Agent activity log. Each Hermes agent records what it did (agent, task, AI model, time); the dashboard shows exactly this and nothing else.
+  if(url.pathname==='/api/v1/activity'&&req.method==='POST'){
+   const p=await body(req),agent=AGENTS.find(a=>a.toLowerCase()===String(p.agent||'').trim().toLowerCase());
+   if(!agent)throw new InputError(`agent must be one of ${AGENTS.join(', ')}.`);
+   const status=p.status===undefined?'done':p.status;if(!['started','done','failed'].includes(status))throw new InputError('status must be started, done or failed.');
+   const rec={record_type:'activity',id:randomUUID(),workspace_id:ws,agent,task:text(p.task,'task',200),model:p.model===undefined||p.model===null||p.model===''?'':text(p.model,'model',80),status,detail:p.detail===undefined?'':text(p.detail,'detail',500,false),by:ctx.actor||who,created_at:new Date(clock()).toISOString()};
+   await serial(()=>save(rec.id,rec));json(res,201,rec);return true;}
+  if(url.pathname==='/api/v1/activity'&&req.method==='GET'){
+   const limit=Math.max(1,Math.min(200,Number(url.searchParams.get('limit'))||50)),only=url.searchParams.get('agent')?.toLowerCase();
+   const all=(await list('activity')).filter(a=>inWs(a,ws)).sort((a,b)=>b.created_at.localeCompare(a.created_at));
+   const summary=Object.fromEntries(AGENTS.map(a=>[a,{agent:a,done:0,failed:0,started:0,last_at:null,last_task:null,models:{}}]));
+   for(const a of all){const m=summary[a.agent];if(!m)continue;m[a.status]=(m[a.status]||0)+1;if(!m.last_at){m.last_at=a.created_at;m.last_task=a.task}if(a.model&&a.status!=='started')m.models[a.model]=(m.models[a.model]||0)+1}
+   json(res,200,{activity:all.filter(a=>!only||a.agent.toLowerCase()===only).slice(0,limit).map(({record_type,workspace_id,...v})=>v),total:all.length,summary:Object.values(summary)});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='GET'){const all=(await list('job')).filter(j=>inWs(j,ws));json(res,200,{jobs:all.slice(0,200).map(publicJob),total:all.length});return true;}
   if(url.pathname==='/api/v1/jobs'&&req.method==='POST'){const key=req.headers['idempotency-key'];if(typeof key!=='string'||!/^[A-Za-z0-9_.:-]{1,160}$/.test(key))throw new InputError('Supply an Idempotency-Key of 1–160 letters, digits, _, ., : or -.');const j=await submit(await body(req),key,ws);json(res,202,publicJob(j));return true;}
   if(url.pathname==='/api/v1/platforms'&&req.method==='GET'){json(res,200,{presets:PRESETS,groups:PLATFORM_GROUPS});return true;}
