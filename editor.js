@@ -348,7 +348,9 @@ const Editor=(()=>{
     else if(m.t==='text'){const t=base.texts[m.i];s.texts[m.i]={...s.texts[m.i],left:round(clamp(t.left+dx/st.W*100,-50,150)),top:round(clamp(t.top+dy/st.H*100,-50,150))}}
     else if(m.t==='element'){const c=st.centers[m.i];pos[m.i]={x:round(clamp(c.x+dx/st.W*100,-50,150)),y:round(clamp(c.y+dy/st.H*100,-50,150))};movedPos=true}
     else if(m.t==='slot'&&!slotPan){const b0=base.slots?.[m.k]||{};s.slots={...(s.slots||{}),[m.k]:{...b0,fx:round(clamp((b0.fx||0)+dx/st.W*100,-100,100)),fy:round(clamp((b0.fy||0)+dy/st.W*100,-100,100))}}}
-    else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z=(b0.z||100)/100,ws=st.r.width||1,hs=st.r.height||1;s.slots={...(s.slots||{}),[m.k]:{...b0,x:round(clamp((b0.x||0)-dx/ws*200/z,-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/z,-100,100))}}}
+    else if(m.t==='slot'){const b0=base.slots?.[m.k]||{},z0=(b0.z||100)/100,z=z0<1.05?1.3:z0,ws=st.r.width||1,hs=st.r.height||1;
+     // The picture follows the pointer one to one. At 100% it exactly fills the frame and has no room to move, so it zooms in a little first.
+     s.slots={...(s.slots||{}),[m.k]:{...b0,z:Math.round(z*100),x:round(clamp((b0.x||0)-dx/ws*200/(z-1),-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/(z-1),-100,100))}}}
     else if(m.t==='part'){const p0=base.parts?.[m.k]||{};s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
