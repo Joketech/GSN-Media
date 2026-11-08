@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSN Quick-Edit Studio</title>
+<!--
+  GSN Quick-Edit Studio - hand-coded, no libraries, no AI model, every edit is free.
+  Open any template by number, change its words, fonts, colours and pages, check it on a phone and in each platform
+  shape, then save it to the dashboard (one click opens it in the full editor for moving, resizing and pictures).
+  Uses the studio's own renderer (template-kit.js + kit-host.js), so the page you edit here is exactly what ships.
+  Served by the dashboard server at /studio-design.html?t=<template number>.
+-->
+<style>
+:root{--ink:#3a2a30;--ink2:#7b6a72;--accent:#8a2236;--line:rgba(70,40,50,.14);--panel:rgba(255,255,255,.74);--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font:14px/1.35 var(--sans);color:var(--ink);background:linear-gradient(135deg,#dfe8fb 0%,#f6e6f0 55%,#e8dcf7 100%);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.app{position:fixed;inset:0;display:grid;grid-template-columns:150px 1fr 310px;grid-template-rows:56px 1fr;gap:10px;padding:10px;grid-template-areas:"top top top" "pages stage insp"}
+.glass{background:var(--panel);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 14px 40px rgba(70,30,60,.12);backdrop-filter:blur(14px)}
+.top{grid-area:top;display:flex;gap:8px;align-items:center;padding:0 12px;overflow:auto}
+.top h1{margin:0;font:700 1.3rem var(--serif);color:#4a2431;white-space:nowrap}
+.sp{flex:1}
+.btn{height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:.8rem;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;color:inherit}
+.btn:hover{background:#fdf4f6}.btn:disabled{opacity:.4;cursor:default}
+.btn.main{background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;border-color:transparent}
+.btn.sm{height:28px;padding:0 9px;font-size:.74rem;border-radius:8px}
+.btn.on{background:#f3dde3;border-color:#d9a9b6}
+.sel,.in{height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 9px}
+.pages{grid-area:pages;padding:8px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.pg{border:2px solid transparent;border-radius:10px;padding:0;background:#e9e1ee;overflow:hidden;position:relative;flex:none}
+.pg.on{border-color:var(--accent)}
+.pg .page{display:block;width:100%}
+.pg i{position:absolute;left:4px;bottom:4px;background:#000a;color:#fff;font:700 9px/1 var(--sans);font-style:normal;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:5px}
+.stage{grid-area:stage;display:grid;grid-template-rows:auto 1fr;min-height:0;padding:10px;gap:8px}
+.stbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.view{min-height:0;display:grid;place-items:center;overflow:auto;background:repeating-conic-gradient(#e9e1ee 0 25%,#f6f0f8 0 50%) 0 0/20px 20px;border-radius:12px;padding:14px}
+.view .page{box-shadow:0 10px 40px rgba(30,10,40,.35)}
+.phone{width:min(340px,100%);padding:12px 10px 16px;background:#16121a;border-radius:38px;box-shadow:0 18px 50px rgba(0,0,0,.45);position:relative}
+.phone:before{content:'';display:block;width:84px;height:18px;background:#000;border-radius:0 0 12px 12px;margin:-12px auto 8px}
+.phone .screen{border-radius:22px;overflow:hidden;background:#fff}
+.phone .page{width:100%;box-shadow:none}
+.insp{grid-area:insp;padding:12px;overflow:auto}
+h2{margin:0 0 6px;font:700 1.05rem var(--serif);color:#4a2431}
+h3{margin:14px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2)}
+.hint{color:var(--ink2);font-size:.76rem;margin:2px 0 6px}
+.f{display:grid;grid-template-columns:84px 1fr;gap:6px;align-items:center;margin:5px 0;font-size:.78rem}
+.f input[type=text],.f input[type=number],.f select,.f textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:5px 7px;background:#fff}
+.f textarea{grid-column:1/-1;min-height:62px;resize:vertical}
+.f input[type=color]{width:100%;height:28px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff}
+.f input[type=range]{width:100%}
+.flags{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 8px}
+.card{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:rgba(255,255,255,.55)}
+.card b{font-size:.8rem}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#3a1a28;color:#fff;border-radius:10px;padding:10px 16px;font-size:.82rem;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:90vw}.toast.on{opacity:1}
+@media(max-width:1000px){.app{grid-template-columns:110px 1fr 250px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top glass">
+    <h1>Quick-Edit Studio</h1>
+    <input class="in" id="tnum" type="number" min="0" style="width:84px" title="Template number" aria-label="Template number">
+    <button class="btn" id="load">Load template</button>
+    <a class="btn" href="/template-designs.html">Browse templates</a>
+    <span class="sp"></span>
+    <button class="btn" id="undo">Undo</button><button class="btn" id="redo">Redo</button>
+    <button class="btn" id="exp" title="Download this design as a file">Save file</button>
+    <button class="btn" id="imp">Open file</button><input type="file" id="impf" accept=".json,application/json" hidden>
+    <button class="btn main" id="save">Save to dashboard</button>
+    <a class="btn" id="full" href="#" hidden>Open in full editor</a>
+  </header>
+
+  <aside class="pages glass" id="pages"></aside>
+
+  <main class="stage glass">
+    <div class="stbar">
+      <select class="sel" id="shape" aria-label="Platform shape"></select>
+      <button class="btn" id="phoneBtn">Phone preview</button>
+      <span class="sp"></span>
+      <button class="btn sm" id="pUp">Move page up</button><button class="btn sm" id="pDown">Move page down</button>
+      <button class="btn sm" id="pDup">Duplicate page</button><button class="btn sm" id="pDel">Delete page</button>
+    </div>
+    <div class="view" id="view"></div>
+  </main>
+
+  <aside class="insp glass" id="insp"></aside>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="/template-kit.js"></script>
+<script src="/kit-host.js"></script>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),kit=()=>window.GSNKit;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),ms)}
+const roleOf=(i,n)=>i===0?'Hook':i===n-1?'CTA':'Page '+(i+1);
+let SHAPES=[{id:'instagram-post',name:'Instagram post',w:1080,h:1350},{id:'instagram-square',name:'Instagram square',w:1080,h:1080},{id:'instagram-story',name:'Instagram story / Reel',w:1080,h:1920},{id:'linkedin-post',name:'LinkedIn post',w:1200,h:1200},{id:'youtube-thumbnail',name:'YouTube thumbnail',w:1280,h:720}];
+let D=null,pg=0,phone=false,undoS=[],redoS=[],savedId=null,savedRev=null,lastSnap='';
+const FIELDS=[['kicker','Small heading'],['title','Title'],['body','Text'],['brandText','Top line']];
+const FONTS=()=>{try{return kit().gsnFonts.map(f=>[f[0],f[1]])}catch{return [['sans','Sans'],['serif','Serif'],['mono','Mono']]}};
+
+/* ---- design state ---- */
+function fresh(t,platform){
+  const shape=SHAPES.find(s=>s.id===platform)||SHAPES[0];
+  D={template_id:t,platform:shape.id,title:'My design',brand:{name:'GSN Technology',handle:'GSN Technology'},pages:JSON.parse(JSON.stringify(kit().templateStarter(t)))};
+  pg=0;undoS=[];redoS=[];savedId=null;savedRev=null;lastSnap=JSON.stringify(D);
+}
+const ratio=()=>{const s=SHAPES.find(x=>x.id===D.platform)||SHAPES[0];return s.w+' / '+s.h};
+const view=()=>({template_id:D.template_id,ratio:ratio(),brand:D.brand,pages:D.pages});
+function pageHtml(i){return KitHost.pageHtml(view(),i)}
+function push(){undoS.push(lastSnap);if(undoS.length>100)undoS.shift();redoS=[];lastSnap=JSON.stringify(D)}
+function restore(s){D=JSON.parse(s);lastSnap=s;pg=Math.min(pg,D.pages.length-1);syncShape();all()}
+$('#undo').onclick=()=>{if(!undoS.length)return;redoS.push(JSON.stringify(D));restore(undoS.pop())};
+$('#redo').onclick=()=>{if(!redoS.length)return;undoS.push(JSON.stringify(D));restore(redoS.pop())};
+
+/* ---- drawing ---- */
+function drawStage(){
+  const v=$('#view');
+  const host=document.createElement('div');host.className='page';host.style.aspectRatio=ratio();
+  if(phone){const w=(SHAPES.find(x=>x.id===D.platform)||SHAPES[0]);host.style.width='100%';v.innerHTML='<div class="phone"><div class="screen"></div></div>';v.querySelector('.screen').appendChild(host)}
+  else{v.innerHTML='';host.style.width='min(100%,'+(ratioNum()>=1.5?'900px':'460px')+')';v.appendChild(host)}
+  KitHost.mount(host,pageHtml(pg));
+}
+const ratioNum=()=>{const [w,h]=ratio().split(' / ').map(Number);return w/h};
+function drawPages(){
+  const n=D.pages.length;
+  $('#pages').innerHTML=D.pages.map((_,i)=>`<button class="pg ${i===pg?'on':''}" data-i="${i}" aria-label="${roleOf(i,n)}"><div class="page" data-h="${i}" style="aspect-ratio:${ratio()}"></div><i>${roleOf(i,n)}</i></button>`).join('');
+  $('#pages').querySelectorAll('[data-h]').forEach(h=>KitHost.mount(h,pageHtml(+h.dataset.h)));
+}
+function drawInsp(){
+  const p=D.pages[pg],fonts=FONTS(),L=p.textLayers||{};
+  let h=`<h2>${roleOf(pg,D.pages.length)} · template ${D.template_id}</h2><p class="hint">Change the words and look here. For moving, resizing and pictures, press Open in full editor after saving.</p>
+  <div class="f"><label for="dt">Design name</label><input type="text" id="dt" value="${esc(D.title)}"></div>`;
+  h+='<h3>Words on this page</h3>';
+  for(const [k,label] of FIELDS){
+    const val=p[k]??'';const o=L[k]||{};
+    h+=`<div class="card"><b>${label}</b><div class="f"><textarea data-k="${k}" aria-label="${label}">${esc(val)}</textarea></div>
+      <div class="f"><label>Font</label><select data-o="${k}.font"><option value="">Template default</option>${fonts.map(f=>`<option value="${esc(f[0])}" ${o.font===f[0]?'selected':''}>${esc(f[1])}</option>`).join('')}</select></div>
+      <div class="f"><label>Size</label><input type="range" min="1" max="30" step=".5" data-o="${k}.size" value="${o.size??''}" ${o.size==null?'data-unset="1"':''}></div>
+      <div class="f"><label>Colour</label><input type="color" data-o="${k}.color" value="${/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:'#ffffff'}"></div>
+      <div class="flags">${['bold','italic','uppercase','underline'].map(f=>`<button class="btn sm ${o[f]?'on':''}" data-flag="${k}.${f}">${f[0].toUpperCase()+f.slice(1)}</button>`).join('')}<button class="btn sm" data-reset="${k}">Reset look</button></div></div>`;
+  }
+  h+=`<h3>Page look</h3>
+  <div class="f"><label>Accent</label><input type="color" data-p="accent" value="${/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#ff5a36'}"></div>
+  <div class="f"><label>Page colour</label><input type="color" data-p="pageFill" value="${/^#[0-9a-f]{6}$/i.test(p.pageFill||'')?p.pageFill:'#ffffff'}"></div>
+  <div class="flags"><button class="btn sm" data-clear="pageFill">Use template colour</button><button class="btn sm ${p.hideArt?'on':''}" data-hide="1">Hide template picture</button><button class="btn sm" data-clear="accent">Reset accent</button></div>
+  <h3>Brand (every page)</h3>
+  <div class="f"><label>Brand name</label><input type="text" data-b="name" value="${esc(D.brand.name)}"></div>
+  <div class="f"><label>Handle</label><input type="text" data-b="handle" value="${esc(D.brand.handle)}"></div>`;
+  $('#insp').innerHTML=h;
+}
+function all(){drawStage();drawPages();drawInsp();$('#tnum').value=D.template_id}
+function light(){drawStage();clearTimeout(light.t);light.t=setTimeout(drawPages,250)}
+
+/* ---- editing ---- */
+const setPath=(p,path,val)=>{const [k,key]=path.split('.');p.textLayers=p.textLayers||{};const o=p.textLayers[k]=p.textLayers[k]||{};if(val===''||val==null)delete o[key];else o[key]=val;if(!Object.keys(o).length)delete p.textLayers[k];if(!Object.keys(p.textLayers).length)delete p.textLayers};
+let typing=0;
+function startEdit(){if(!typing){push();}clearTimeout(typing);typing=setTimeout(()=>{typing=0},900)}
+$('#insp').addEventListener('input',e=>{
+  const t=e.target,p=D.pages[pg];
+  if(t.id==='dt'){D.title=t.value;return}
+  startEdit();
+  if(t.dataset.k){p[t.dataset.k]=t.value;light()}
+  else if(t.dataset.o){const v=t.type==='range'||t.type==='number'?+t.value:t.value;if(t.dataset.unset)t.removeAttribute('data-unset');setPath(p,t.dataset.o,v);light()}
+  else if(t.dataset.p){p[t.dataset.p]=t.value;light()}
+  else if(t.dataset.b){D.brand[t.dataset.b]=t.value;light()}
+});
+$('#insp').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const p=D.pages[pg];
+  if(b.dataset.flag){const [k,f]=b.dataset.flag.split('.');push();const cur=(p.textLayers?.[k]||{})[f];setPath(p,k+'.'+f,cur?'':true);if(cur)setPath(p,k+'.'+f,'');all()}
+  else if(b.dataset.reset){push();if(p.textLayers){delete p.textLayers[b.dataset.reset];if(!Object.keys(p.textLayers).length)delete p.textLayers}all()}
+  else if(b.dataset.clear){push();delete p[b.dataset.clear];all()}
+  else if(b.dataset.hide){push();if(p.hideArt)delete p.hideArt;else p.hideArt=true;all()}
+});
+$('#pages').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;pg=+b.dataset.i;drawStage();drawInsp();$('#pages').querySelectorAll('.pg').forEach((x,i)=>x.classList.toggle('on',i===pg))};
+$('#pUp').onclick=()=>{if(pg<1)return;push();const [x]=D.pages.splice(pg,1);D.pages.splice(--pg,0,x);all()};
+$('#pDown').onclick=()=>{if(pg>=D.pages.length-1)return;push();const [x]=D.pages.splice(pg,1);D.pages.splice(++pg,0,x);all()};
+$('#pDup').onclick=()=>{if(D.pages.length>=12)return toast('A pack can have up to 12 pages.');push();D.pages.splice(pg+1,0,JSON.parse(JSON.stringify(D.pages[pg])));pg++;all()};
+$('#pDel').onclick=()=>{if(D.pages.length<=1)return toast('A design needs at least one page.');push();D.pages.splice(pg,1);pg=Math.min(pg,D.pages.length-1);all()};
+function syncShape(){$('#shape').value=D.platform}
+$('#shape').onchange=e=>{push();D.platform=e.target.value;all()};
+$('#phoneBtn').onclick=()=>{phone=!phone;$('#phoneBtn').classList.toggle('on',phone);drawStage()};
+$('#load').onclick=()=>{const n=+$('#tnum').value;if(!Number.isInteger(n)||!kit().templates[n])return toast('There is no template with that number. Browse templates to find one.');fresh(n,D.platform);syncShape();all();toast('Template '+n+' loaded.')};
+$('#tnum').addEventListener('keydown',e=>{if(e.key==='Enter')$('#load').click()});
+
+/* ---- files + dashboard ---- */
+$('#exp').onclick=()=>{const b=new Blob([JSON.stringify({format:'gsn-quick-edit',version:1,design:D})],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(D.title||'design').replace(/[^\w\-]+/g,'_')+'.gsndesign.json';a.click();toast('Design saved as a file.')};
+$('#imp').onclick=()=>$('#impf').click();
+$('#impf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());if(j.format!=='gsn-quick-edit'||!kit().templates[j.design.template_id])throw 0;D=j.design;pg=0;undoS=[];redoS=[];savedId=null;lastSnap=JSON.stringify(D);syncShape();all();toast('Design opened.')}catch{toast('That is not a Quick-Edit design file.')}};
+async function api(path,opt={}){
+  let ws='';try{ws=localStorage.getItem('gsn_ws')||''}catch{}
+  const r=await fetch('/api/v1'+path,{method:opt.method||'GET',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(ws?{'X-GSN-Workspace':ws}:{})},body:opt.body?JSON.stringify(opt.body):undefined,credentials:'same-origin'});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||('The dashboard said no ('+r.status+').'));return j;
+}
+$('#save').onclick=async()=>{
+  $('#save').disabled=true;
+  try{
+    if(!savedId){const r=await api('/designs',{method:'POST',body:{template_id:D.template_id,platform:D.platform,title:D.title,brand:D.brand}});savedId=r.id;savedRev=r.revision}
+    const cur=await api('/designs/'+savedId);
+    const body={...cur,title:D.title,brand:D.brand,pages:D.pages,revision:cur.revision};
+    const r=await api('/designs/'+savedId,{method:'PUT',body});savedRev=r.revision;
+    const a=$('#full');a.href='/#editor/'+savedId;a.hidden=false;toast('Saved to the dashboard. Press Open in full editor to move and resize things.',4200);
+  }catch(e){toast('Could not save: '+e.message+' (open this page from your dashboard server and sign in first)',6000)}
+  $('#save').disabled=false;
+};
+document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select'))return;const m=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();if(m&&k==='z'){e.preventDefault();(e.shiftKey?$('#redo'):$('#undo')).click()}else if(m&&k==='y'){e.preventDefault();$('#redo').click()}});
+
+/* ---- start ---- */
+(async function start(){
+  if(!window.GSNKit){document.body.innerHTML='<p style="padding:30px">The template kit did not load. Open this page from the dashboard server (/studio-design.html).</p>';return}
+  try{const j=await fetch('/api/v1/platforms').then(r=>r.ok?r.json():null);const pick=['instagram-post','instagram-square','instagram-story','tiktok','linkedin-post','x-post','youtube-thumbnail','facebook-post'];const g=j&&pick.map(id=>j.presets.find(x=>x.id===id)).filter(Boolean);if(g&&g.length)SHAPES=g}catch{}
+  $('#shape').innerHTML=SHAPES.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${s.w}×${s.h})</option>`).join('');
+  const q=new URLSearchParams(location.search),t=+(q.get('t')??3);
+  fresh(kit().templates[t]?t:3,q.get('shape')||'instagram-post');syncShape();all();
+  window.GSNQuickEdit={get design(){return D},load:n=>{$('#tnum').value=n;$('#load').click()}};
+})();
+</script>
+</body>
+</html>
