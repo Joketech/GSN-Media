@@ -179,7 +179,21 @@ const Dashboard=(()=>{
  }
  function agentsHtml(){
   return `<section class="hello"><h1>Agents</h1></section>
-  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>`;
+  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p><p class="act-stat" data-stat="${esc(name)}">Loading activity…</p></div></article>`).join('')}</div>
+  <section class="act-log"><div class="sec-head"><h2>What the agents did</h2></div><div id="actLog"><p class="act-empty">Loading…</p></div>
+  <p class="act-note">These are the agents' own records: each one logs its name, the task, the AI model and the time. Nothing here is estimated.</p></section>`;
+ }
+ // Fills the Agents page from the activity the agents logged themselves.
+ async function loadActivity(){
+  const log=$('#actLog');if(!log)return;
+  try{
+   const r=await api('/activity?limit=40');
+   $$('[data-stat]').forEach(n=>{const m=r.summary.find(x=>x.agent===n.dataset.stat);
+    if(!m||!m.last_at){n.innerHTML='<b>No activity yet</b>';return}
+    const models=Object.entries(m.models).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${esc(k)} ×${v}`).join(', ');
+    n.innerHTML=`<b>${m.done} done</b>${m.failed?` · ${m.failed} failed`:''} · last ${esc(ago(m.last_at))}<br><span>${esc(m.last_task)}${models?' · '+models:''}</span>`});
+   log.innerHTML=r.activity.length?`<table class="act-table"><thead><tr><th>Agent</th><th>Task</th><th>AI model</th><th>Result</th><th>When</th></tr></thead><tbody>${r.activity.map(a=>`<tr><td>${esc(a.agent)}</td><td>${esc(a.task)}${a.detail?`<small>${esc(a.detail)}</small>`:''}</td><td>${esc(a.model||'–')}</td><td><span class="act-pill ${esc(a.status)}">${esc(a.status)}</span></td><td title="${esc(a.created_at)}">${esc(ago(a.created_at))}</td></tr>`).join('')}</tbody></table>`:'<p class="act-empty">No activity yet. When the agents work, each task appears here with the AI model used and the time.</p>';
+  }catch(e){log.innerHTML=`<p class="act-empty">Could not load activity: ${esc(e.message)}</p>`;$$('[data-stat]').forEach(n=>n.textContent='')}
  }
  // Settings: the brand name, handle and voice every new design and every agent's writing starts from.
  function configHtml(){
@@ -231,6 +245,7 @@ const Dashboard=(()=>{
   const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
   if(ui.view==='settings')loadConfig();
+  if(ui.view==='agents')loadActivity();
   applyWorking();pollJobs();if(ui.view==='dashboard')HeroGlobe.mount($('.hero-globe'));
   if(ui.view==='people')People.mount($('#ppHost'));
  }
