@@ -126,6 +126,18 @@ greetingDesigns.forEach((spec,index)=>{
  const label=spec.monthly?`${spec.name} · Happy New Month`:spec.name==='Friday'?'TGIF · Thank God it’s Friday':spec.name;
  templates.push({id:524+index,name:`Seasonal / ${spec.collection} / ${label}`,title,summary:spec.wish,topic:spec.name,format:'Carousel',layout:index%20,palette:spec.set*3,cartoon:true,greeting:true,greetingSet:spec.set,headingSize:Math.min(spec.set===0?19:17,125/Math.max(...title.split(' ').map(word=>word.length))),limit:110});
 });
+// Text behind the person: the headline sits behind a cut-out person (use Remove background on the picture), so the person stands in front of the words.
+// Added after every other template so existing template numbers never move.
+const behindLayouts=[
+ {key:'behind',name:'Text behind person',title:'BRAND',summary:'One clear line about your product.',kicker:'DESIGNED BY YOU',topic:'Products',colors:{background:'#e8d4b4',ink:'#f8efde',accent:'#b9691f'},
+  slots:[['main','Person (Remove background first)',demoPicture(36,19)],['product','Product (Remove background first)',demoPicture(35,0)]]},
+ {key:'wordsplit',name:'Split word',title:'Studio',summary:'story',kicker:'YOUR BRAND',topic:'Portraits',colors:{background:'#b8a6ee',ink:'#ffffff',accent:'#ffffff'},
+  slots:[['main','Person (Remove background first)',demoPicture(36,5)],['product','Product in hand (optional)',demoPicture(35,0)]]},
+];
+behindLayouts.forEach(layout=>{
+ templates.push({id:templates.length,name:layout.name,layout:templates.length%20,palette:templates.length%10,format:'Carousel',title:layout.title,summary:layout.summary,kicker:layout.kicker,topic:layout.topic,
+  slotKey:layout.key,slots:layout.slots,look:'Photo layout',colors:layout.colors,limit:110});
+});
 // Fonts a text layer can use. The last value is the Google Fonts family (loaded in the app and embedded when a design is exported).
 const gsnFonts=[
  ['sans','Sans (Arial)','Arial, sans-serif',''],['serif','Serif (Georgia)','Georgia, serif',''],['mono','Mono','monospace',''],

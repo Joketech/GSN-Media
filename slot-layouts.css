@@ -412,3 +412,27 @@
 :is(.slt-c1,.slt-c2,.slt-c3,.slt-c5,.slt-c6,.slt-c7,.slt-c8,.slt-c9,.slt-c10).ratio-landscape .art-kicker{left:5%;right:auto;top:auto;bottom:34%;transform:none;font-size:2.2cqw;clip-path:none;width:auto;height:auto;display:block;background:var(--ac);color:var(--k);padding:.6cqw 1.6cqw;white-space:nowrap}
 .slt-c3.ratio-landscape .slt-deco{inset:2%}
 .slt-c4.ratio-landscape .art-title{font-size:min(var(--fit-c),5.6cqw)}
+
+/* ---- Text behind the person: a giant headline behind a cut-out person and product ---- */
+.slt-behind .slot,.slt-wordsplit .slot{background:none;box-shadow:none;border-radius:0}
+.slt-behind .slt-slots,.slt-behind .campaign-copy,.slt-wordsplit .slt-slots,.slt-wordsplit .campaign-copy{z-index:auto}
+.slt-behind .art-title{left:0;top:5%;width:100%;text-align:center;font:900 var(--fit-big)/.8 'Arial Black',Impact,sans-serif;color:var(--ink);text-transform:uppercase;transform:scaleY(2.5);transform-origin:top center;z-index:2}
+.slt-behind [data-slot=main]{left:32%;top:14%;width:60%;height:82%;z-index:3}
+.slt-behind [data-slot=product]{left:3%;top:44%;width:52%;height:50%;z-index:4}
+.slt-behind .art-kicker{left:62%;top:2.5%;width:36%;text-align:right;color:var(--ac);font:700 1.6cqw/1.3 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;z-index:7}
+.slt-behind .art-sub{left:7%;bottom:7%;width:60%;color:var(--ac);font:500 2.1cqw/1.4 Georgia,serif;z-index:7}
+.slt-behind .art-brand{display:none}
+.slt-behind .art-foot{color:var(--ac)}
+.slt-wordsplit{background:radial-gradient(70% 55% at 50% 40%,color-mix(in srgb,var(--bg) 82%,#fff),var(--bg))}
+.slt-wordsplit [data-slot=main]{left:12%;top:6%;width:76%;height:90%;z-index:3}
+.slt-wordsplit [data-slot=product]{left:2%;top:40%;width:34%;height:34%;z-index:4}
+.slt-wordsplit .art-title{left:0;top:4%;width:100%;text-align:center;font:400 calc(var(--fit-l)*1.3)/1 'Didot','Bodoni MT',Georgia,serif;letter-spacing:-.02em;color:var(--ink);z-index:2}
+.slt-wordsplit .art-sub{left:0;bottom:9%;width:100%;text-align:center;font:400 calc(var(--fit-l)*1.3)/1 'Didot','Bodoni MT',Georgia,serif;letter-spacing:-.02em;color:var(--ink);z-index:7}
+.slt-wordsplit .art-kicker{left:0;top:1.8%;width:100%;text-align:center;color:var(--ink);font:600 1.5cqw/1 Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;z-index:7}
+.slt-wordsplit .art-brand{display:none}
+.slt-wordsplit .art-foot{color:var(--ink)}
+/* Until a cut-out is added, an empty frame is shown as a labelled outline so the headline stays readable. */
+.slt-behind .slot:has(.slot-demo),.slt-wordsplit .slot:has(.slot-demo){border:.35cqw dashed color-mix(in srgb,var(--ink) 55%,transparent);border-radius:2cqw;display:flex;align-items:flex-end;justify-content:center;background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.slt-behind .slot:has(.slot-demo) .slot-fill,.slt-wordsplit .slot:has(.slot-demo) .slot-fill{display:none}
+.slt-behind .slot:has(.slot-demo)::after,.slt-wordsplit .slot:has(.slot-demo)::after{content:attr(aria-label);padding:2cqw;text-align:center;font:600 5cqw/1.3 Arial,sans-serif;color:var(--ink);opacity:.85}
+.slt-behind [data-slot=main]:has(.slot-demo)::after{color:var(--ac)}
