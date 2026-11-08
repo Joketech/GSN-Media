@@ -67,14 +67,14 @@ export function layerBox(doc,layer) {
   const rx=dx*Math.cos(radians)-dy*Math.sin(radians),ry=(dx*Math.sin(radians)+dy*Math.cos(radians))*doc.width/doc.height;
   return {x:cx+rx-w/2,y:cy+ry-h/2,width:w,height:h,rotation:p.rotation+layer.rotation};
 }
-export function createDocument(campaign,images) {
+export function createDocument(campaign,images,layout={}) {
   for(const role of ['background','person','product','packaging'])validateSource(images[role]);
   const [paper,ink,accent]=campaign.palette;
   const base=(id,role,kind,x,y,width,height,extra={})=>({id,role,kind,x,y,width,height,rotation:0,opacity:1,visible:true,locked:false,...extra});
   const photo=(role,x,y,w,h)=>base(role,role,'image',x,y,w,h,{src:images[role],fit:role==='background'?'cover':'contain',...(role==='packaging'?{tint:accent,tintStrength:0}: {})});
   const text=(id,value,x,y,w,h,size,extra={})=>base(id,'text','text',x,y,w,h,{text:value,font:'Arial',fontSize:size,color:ink,fill:null,align:'left',bold:false,...extra});
   const positions=campaign.id===10?{person:[48,27,49,52],product:[0,45,95,53],packaging:[72,70,23,25]}:campaign.id===8?{person:[3,25,92,61],product:[0,64,100,29],packaging:[77,70,21,23]}:{person:[5,36,70,64],product:[13,75,24,17],packaging:[59,56,34,36]};
-  return validateDocument({version:1,templateId:campaign.id,width:1080,height:1350,layers:[
+  const document=validateDocument({version:1,templateId:campaign.id,width:1080,height:1350,layers:[
     photo('background',0,0,100,100),photo('person',...positions.person),photo('product',...positions.product),photo('packaging',...positions.packaging),
     text('brand','YOUR BRAND',7,3.5,86,3,1.8,{bold:true}),text('category',campaign.category.toUpperCase(),7,7.7,86,3,1.6),
     text('hook',campaign.hook,7,12,86,16,7.2,{bold:campaign.id!==0,font:campaign.id===0?'Georgia':'Arial'}),text('description',campaign.description,7,campaign.id===8?82:campaign.id===0?29:34,campaign.id===10?28:86,campaign.id===10?12:6,2.5,{fill:paper}),
@@ -82,4 +82,6 @@ export function createDocument(campaign,images) {
     text('package-brand','YOUR BRAND',14,30,72,16,1.8,{parent:'packaging',bold:true,align:'center'}),
     text('package-name',campaign.product,14,48,72,22,1.7,{parent:'packaging',bold:true,align:'center'}),
   ]});
+  if(!Object.keys(layout).length)return document;
+  return applyCampaignPlan(document,{version:1,templateId:campaign.id,changes:Object.entries(layout).map(([layerId,values])=>({layerId,values}))});
 }

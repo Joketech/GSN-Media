@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference image is the existing matcha campaign. Create ONE horizontal 1536x1024 photographic asset sheet with genuine transparent alpha background. Three disconnected objects arranged in strictly separate equal-width columns with 45px clear transparent gutters: LEFT adult Korean man with tousled short black hair, dark emerald knit sweater over white shirt, beige apron and trousers, seated relaxed, chin resting on his left hand, complete shoes visible, empty hands; CENTER wooden bowl heaped with bright green matcha powder and small wooden scoop; RIGHT blank pale mint green stand-up resealable pouch. Preserve the reference person's adult identity, clothing, hair and commercial photographic quality. Each column's entire object must fit within x=40..470, x=550..980, x=1060..1490 respectively, with at least 30px top and bottom margin. No touching, overlap, environment, text, watermark, brand logos, captions or colored background. Full person may be scaled to fit. Real skin and materials, clean natural alpha edges. These will be separate editable layers; do not fuse product to person or packaging."
+  },
+  {
+    "id": 1,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference existing campaign as exact art direction. Produce its empty vertical 4:5 background plate: teal and mint geometric studio with mint terrazzo plinth, sweeping mint arch left and teal fluted panels right. Remove ALL people, advertised products, product containers and food. Preserve lighting, material textures, camera angle and rich premium photographic realism. Keep upper 35% calm empty wall for editable headline. No words, branding, logos, watermark. Only background architecture and counters, no figures."
+  },
+  {
+    "id": 2,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference image is the existing coconut-water campaign. Create ONE horizontal 1536x1024 photographic asset sheet with genuine transparent alpha background. Three disconnected objects arranged in strictly separate equal-width columns with 45px clear transparent gutters: LEFT adult South Asian woman with wavy dark bob, modest burgundy long-sleeve blouse, smiling, leaning forward with chin supported by one hand, waist-up cutout, empty hands; CENTER fresh green coconut with neatly cut white top and pink striped drinking straw, dew droplets; RIGHT blank rose and cream coconut-water carton with a cap. Preserve the reference person's adult identity, clothing, hair and commercial photographic quality. Each column's entire object must fit within x=40..470, x=550..980, x=1060..1490 respectively, with at least 30px top and bottom margin. No touching, overlap, environment, text, watermark, brand logos, captions or colored background. Full person may be scaled to fit. Real skin and materials, clean natural alpha edges. These will be separate editable layers; do not fuse product to person or packaging."
+  },
+  {
+    "id": 2,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference existing campaign as exact art direction. Produce its empty vertical 4:5 background plate: rose and burgundy sculptural studio, low pink stone platform left, freestanding empty rose-metal smartphone-shaped frame right, burgundy wall. Remove ALL people, advertised products, product containers and food. Preserve lighting, material textures, camera angle and rich premium photographic realism. Keep upper 35% calm empty wall for editable headline. No words, branding, logos, watermark. Only background architecture and counters, no figures."
+  },
+  {
+    "id": 3,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference image is the existing granola campaign. Create ONE horizontal 1536x1024 photographic asset sheet with genuine transparent alpha background. Three disconnected objects arranged in strictly separate equal-width columns with 45px clear transparent gutters: LEFT adult Nigerian man with short natural locs, cream knit cardigan and brown apron, smiling, seated waist-up, arms comfortably folded resting, both empty hands visible, do not include food or bowl in hands; CENTER ceramic bowl of crunchy granola, strawberries and blueberries with milk, no hands; RIGHT blank cream resealable granola pouch with transparent lower window filled with oats and nuts. Preserve the reference person's adult identity, clothing, hair and commercial photographic quality. Each column's entire object must fit within x=40..470, x=550..980, x=1060..1490 respectively, with at least 30px top and bottom margin. No touching, overlap, environment, text, watermark, brand logos, captions or colored background. Full person may be scaled to fit. Real skin and materials, clean natural alpha edges. These will be separate editable layers; do not fuse product to person or packaging."
+  },
+  {
+    "id": 3,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference existing campaign as exact art direction. Produce its empty vertical 4:5 background plate: cream and warm copper breakfast studio with curved sculptural copper panels at edges, stone counter, subtle oat stalks far left. Remove ALL people, advertised products, product containers and food. Preserve lighting, material textures, camera angle and rich premium photographic realism. Keep upper 35% calm empty wall for editable headline. No words, branding, logos, watermark. Only background architecture and counters, no figures."
+  }
+]

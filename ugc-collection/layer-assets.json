@@ -5,19 +5,257 @@
       "id": 0,
       "kit": "layered-assets/000-kit.png",
       "background": "layered-assets/000-background.png",
-      "regions": {"person": [0,85,575,925], "product": [590,380,400,350], "packaging": [1030,175,475,730]}
+      "regions": {
+        "person": [
+          0,
+          85,
+          575,
+          925
+        ],
+        "product": [
+          590,
+          380,
+          400,
+          350
+        ],
+        "packaging": [
+          1030,
+          175,
+          475,
+          730
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "kit": "layered-assets/001-kit.png",
+      "background": "layered-assets/001-background.png",
+      "regions": {
+        "person": [
+          0,
+          100,
+          550,
+          850
+        ],
+        "product": [
+          560,
+          350,
+          460,
+          400
+        ],
+        "packaging": [
+          1030,
+          140,
+          495,
+          740
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 36,
+          "width": 52,
+          "height": 59
+        },
+        "product": {
+          "x": 37,
+          "y": 71,
+          "width": 36,
+          "height": 22
+        },
+        "packaging": {
+          "x": 58,
+          "y": 39,
+          "width": 37,
+          "height": 49
+        },
+        "hook": {
+          "fontSize": 6.8,
+          "color": "#f1fff8"
+        },
+        "brand": {
+          "color": "#f1fff8"
+        },
+        "category": {
+          "color": "#f1fff8"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "kit": "layered-assets/002-kit.png",
+      "background": "layered-assets/002-background.png",
+      "regions": {
+        "person": [
+          0,
+          90,
+          550,
+          850
+        ],
+        "product": [
+          560,
+          90,
+          520,
+          830
+        ],
+        "packaging": [
+          1110,
+          80,
+          400,
+          850
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 48,
+          "y": 35,
+          "width": 49,
+          "height": 48
+        },
+        "product": {
+          "x": 3,
+          "y": 45,
+          "width": 46,
+          "height": 43
+        },
+        "packaging": {
+          "x": 65,
+          "y": 68,
+          "width": 23,
+          "height": 23
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.8,
+          "color": "#fff0ed"
+        },
+        "brand": {
+          "color": "#fff0ed"
+        },
+        "category": {
+          "color": "#fff0ed"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 3,
+      "kit": "layered-assets/003-kit.png",
+      "background": "layered-assets/003-background.png",
+      "regions": {
+        "person": [
+          0,
+          170,
+          560,
+          750
+        ],
+        "product": [
+          560,
+          350,
+          470,
+          400
+        ],
+        "packaging": [
+          1050,
+          180,
+          470,
+          700
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 2,
+          "y": 36,
+          "width": 59,
+          "height": 52
+        },
+        "product": {
+          "x": 12,
+          "y": 67,
+          "width": 47,
+          "height": 23
+        },
+        "packaging": {
+          "x": 62,
+          "y": 43,
+          "width": 34,
+          "height": 44
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
     },
     {
       "id": 8,
       "kit": "layered-assets/008-kit.png",
       "background": "layered-assets/008-background.png",
-      "regions": {"person": [0,170,525,670], "product": [530,335,500,330], "packaging": [1060,355,465,350]}
+      "regions": {
+        "person": [
+          0,
+          170,
+          525,
+          670
+        ],
+        "product": [
+          530,
+          335,
+          500,
+          330
+        ],
+        "packaging": [
+          1060,
+          355,
+          465,
+          350
+        ]
+      }
     },
     {
       "id": 10,
       "kit": "layered-assets/010-kit.png",
       "background": "layered-assets/010-background.png",
-      "regions": {"person": [0,80,510,920], "product": [490,300,590,420], "packaging": [1090,220,410,600]}
+      "regions": {
+        "person": [
+          0,
+          80,
+          510,
+          920
+        ],
+        "product": [
+          490,
+          300,
+          590,
+          420
+        ],
+        "packaging": [
+          1090,
+          220,
+          410,
+          600
+        ]
+      }
     }
   ]
 }

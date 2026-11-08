@@ -9,6 +9,28 @@ const rows=JSON.parse(await readFile(new URL('manifest.json',import.meta.url),'u
 const image='data:image/png;base64,AAAA';
 const images={person:image,product:image,packaging:image,background:'layered-assets/000-background.png'};
 const starter=()=>createDocument(rows[0],images);
+
+test('prepared campaign registry has real assets, unique IDs and valid independent layouts',async()=>{
+  const registry=JSON.parse(await readFile(new URL('layer-assets.json',import.meta.url),'utf8'));
+  const seen=new Set();
+  for(const asset of registry.campaigns){
+    assert.ok(!seen.has(asset.id),'Duplicate prepared campaign');seen.add(asset.id);
+    assert.ok(rows.some(r=>r.id===asset.id));
+    for(const path of [asset.kit,asset.background]){const bytes=await readFile(new URL(path,import.meta.url));assert.equal(bytes.subarray(1,4).toString(),'PNG');}
+    assert.deepEqual(Object.keys(asset.regions).sort(),['packaging','person','product']);
+    for(const region of Object.values(asset.regions))assert.ok(region.length===4&&region.every(Number.isFinite)&&region[2]>0&&region[3]>0);
+    const doc=createDocument(rows.find(r=>r.id===asset.id),images,asset.layout||{});
+    for(const role of ['person','product','packaging','background'])assert.equal(doc.layers.filter(l=>l.role===role).length,1);
+  }
+});
+
+test('per-campaign layout changes do not modify the other campaigns or bake text into images',()=>{
+  const original=starter(),custom=createDocument(rows[1],images,{person:{x:2,width:50},hook:{font:'Georgia',fontSize:6}});
+  assert.equal(custom.layers.find(l=>l.id==='person').x,2);
+  assert.equal(custom.layers.find(l=>l.id==='hook').text,rows[1].hook);
+  assert.deepEqual(starter(),original);
+  assert.throws(()=>createDocument(rows[1],images,{missing:{x:1}}));
+});
 test('replacing a person changes only its source; product, package and copy stay intact',()=>{
   const before=starter(),source='data:image/png;base64,AQID',after=changeLayer(before,'person',{src:source});
   assert.equal(after.layers.find(l=>l.id==='person').src,source);
