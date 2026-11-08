@@ -5,7 +5,7 @@
 const Editor=(()=>{
  const {$,$$,esc,icon,api,toast,state:app,preset,platformIcon}=App;
  const COPY={title:'Headline',body:'Write-up',kicker:'Label',brandText:'Brand line',footerText:'Footer'};
- const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
+ const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['imagegen','image','Create image'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
  const DEFAULT_ORDER=['artwork','brandText','kicker','title','body','footerText'];
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const round=v=>Math.round(v*100)/100;
@@ -625,7 +625,7 @@ const Editor=(()=>{
   const label=TOOLS.find(t=>t[0]===id)[2];
   el.root.classList.add('has-fly');el.fly.hidden=false;el.fly.innerHTML=`<header><h2>${label}</h2><button class="ed-icon" data-act="closetool" aria-label="Close ${label}">${icon('close')}</button></header><div class="ed-flybody" id="edFlyBody"></div>`;
   const body=$('#edFlyBody');
-  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,brand:toolBrand,pages:toolPages,resize:toolResize})[id](body);
+  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,brand:toolBrand,pages:toolPages,resize:toolResize,imagegen:toolImageGeneration})[id](body);
   requestAnimationFrame(fit);
  }
  function toolTemplates(body){
@@ -653,6 +653,13 @@ const Editor=(()=>{
    if(s.elementColors)s.elementColors=[...Array.from({length:n},(_,i)=>s.elementColors[i]||'#25c8ff'),'#25c8ff'];
    sel={t:'element',i:n}});
   drawOverlay();
+ }
+ async function generatedFile(url){const response=await fetch(url);return new File([await response.blob()],'generated.png',{type:'image/png'})}
+ function toolImageGeneration(body){
+  ImageCreator.open(body,{
+   insert:async(url,role)=>{const target=slide();const image=await compress(await generatedFile(url));if(!design||slide()!==target)throw Error('Return to the page you want to edit.');if(role==='background')commit(()=>{target.backgroundImage=image});else addElement(image);},
+   replace:async url=>{const target=slide(),selected=sel?{...sel}:null;if(!selected||(selected.t!=='art'&&!(selected.t==='element'&&isPhotoEl(target.elements?.[selected.i]))))throw Error('Select the person or product image you want to replace first.');const previous=selected.t==='art'?target.image:target.elements[selected.i];const image=await compress(await generatedFile(url));if(!design||slide()!==target||(selected.t==='element'&&target.elements[selected.i]!==previous))throw Error('The selected page or layer changed. Select it again.');commit(()=>{if(selected.t==='art')target.image=image;else target.elements[selected.i]=image});}
+  });
  }
  function toolText(body){
   body.innerHTML=`<p class="hint">Add a text box, then double-click it to type.</p><button class="ed-bigbtn h1" data-addtext="heading">Add a heading</button><button class="ed-bigbtn h2" data-addtext="sub">Add a subheading</button><button class="ed-bigbtn h3" data-addtext="body">Add body text</button>`;
@@ -689,7 +696,7 @@ const Editor=(()=>{
   body.innerHTML=`<p class="hint">Colours apply to this page. Tick the box to apply them to every page.</p>
   <label class="ed-check"><input type="checkbox" id="edAll"> Apply to all pages</label>
   ${[['accent','Accent','#ac82f4'],['background','Background','#101323'],['ink','Text','#f8faff']].map(([k,l,f])=>`<label class="ed-colour">${l}<span><input type="color" data-col="${k}" value="${hex(s[k],f)}"><input type="text" data-hex="${k}" value="${hex(s[k],f)}" maxlength="7" aria-label="${l} hex"></span></label>`).join('')}
-  <h3>Palettes</h3><div class="ed-pal">${pal.map(p=>`<button data-pal="${p[0]}" title="${p[0]}" aria-label="${p[0]} palette"><i style="background:${p[1]}"></i><i style="background:${p[2]}"></i><i style="background:${p[3]}"></i></button>`).join('')}</div>
+  ${s.backgroundImage?'<button type="button" class="btn-light" data-act="clearbackground">Remove page background image</button>':''}<h3>Palettes</h3><div class="ed-pal">${pal.map(p=>`<button data-pal="${p[0]}" title="${p[0]}" aria-label="${p[0]} palette"><i style="background:${p[1]}"></i><i style="background:${p[2]}"></i><i style="background:${p[3]}"></i></button>`).join('')}</div>
   <h3>Brand</h3><label class="ed-colour">Brand name<input id="edBn" maxlength="80" value="${esc(design.brand.name)}"></label><label class="ed-colour">Handle<input id="edBh" maxlength="80" value="${esc(design.brand.handle)}"></label><button class="btn-light" data-act="resetcolors">Reset page colours</button>`;
   const apply=(patch)=>commit(()=>{const targets=$('#edAll').checked?design.pages:[slide()];for(const t of targets)Object.assign(t,patch)},'colour');
   $$('[data-col]',body).forEach(i=>i.oninput=()=>{apply({[i.dataset.col]:i.value});$(`[data-hex=${i.dataset.col}]`,body).value=i.value});
@@ -782,6 +789,7 @@ const Editor=(()=>{
    else if(act==='zoomin')setZoom(zoom*1.2);else if(act==='zoomout')setZoom(zoom/1.2);else if(act==='zoomfit')setZoom(1);
    else if(act==='addpage')openLayoutPicker();
    else if(act==='theirs')resolveConflict(false);else if(act==='mine')resolveConflict(true);
+   else if(act==='clearbackground'){commit(()=>{delete slide().backgroundImage})}
    else if(act==='resetcolors'){commit(()=>{const s=slide();delete s.accent;delete s.background;delete s.ink});toolBrand($('#edFlyBody'))}
    return;
   }

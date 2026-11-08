@@ -10,6 +10,7 @@ import {sanitizeDesign,summary as designSummary,DesignError} from './designs-api
 import {PRESETS,PLATFORM_GROUPS} from './platforms.mjs';
 import {createAccounts} from './accounts.mjs';
 import {createPublisher} from './publisher.mjs';
+import {createImageGeneration} from './image-generation.mjs';
 
 const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
@@ -22,7 +23,8 @@ async function body(req){if(!req.headers['content-type']?.startsWith('applicatio
 const text=(value,name,max,required=true)=>{if(typeof value!=='string'||value.length>max||(required&&!value.trim()))throw new InputError(`${name} must contain ${required?'1':'0'}–${max} characters.`);return value.trim();};
 const decode=(value,max)=>{if(typeof value!=='string'||!value||value.length>Math.ceil(max/3)*4||!/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))throw new InputError('Invalid or oversized base64 file.');const b=Buffer.from(value,'base64');if(b.length>max)throw new InputError('File is too large.',413);return b;};
 
-export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
+export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'',imageUrl=process.env.IMAGE_WORKER_URL||'',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
+ const imageGeneration=createImageGeneration({dataDir,workerUrl:imageUrl,fetchImpl});
  const accounts=createAccounts({dataDir,now:clock});
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
@@ -135,6 +137,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(!ctx){if(accounts.enabled())throw new InputError('Sign in to continue.',401);if(!token&&!openUi)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);throw new InputError(openUi?'Open the studio in your browser, or send the agent access key as a Bearer token.':'Studio access key required.',401);}
   if(!ctx.ws)throw new InputError('Your account is not in a workspace yet. Ask an administrator to add you to one.',403);
   const who=ctx.who,ws=ctx.ws;
+  if(await imageGeneration.handle(req,res,url,{ws,json:(r,c,v)=>json(r,c,v),body}))return true;
   if(url.pathname==='/api/v1/session'&&req.method==='DELETE'){const sid=req.headers.cookie?.match(/gsn_session=([a-f0-9]{64})/)?.[1];sessions.delete(sid);res.setHeader('Set-Cookie','gsn_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0');json(res,200,{ok:true});return true;}
   if(await publisher.handle(req,res,url,who,{json:(r,c,v)=>json(r,c,v),body,InputError,ws,actor:ctx.actor}))return true;
   if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl],['cutout',cutoutUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}
