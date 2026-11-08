@@ -145,7 +145,7 @@ const gsnFonts=[
  ['montserrat','Montserrat',"'Montserrat', Arial, sans-serif",'Montserrat:wght@400;700'],['playfair','Playfair Display',"'Playfair Display', Georgia, serif",'Playfair+Display:wght@400;700'],
  ['lora','Lora',"'Lora', Georgia, serif",'Lora:wght@400;700'],['oswald','Oswald',"'Oswald', Arial, sans-serif",'Oswald:wght@400;700'],
  ['bebas','Bebas Neue',"'Bebas Neue', Arial, sans-serif",'Bebas+Neue'],['dmserif','DM Serif Display',"'DM Serif Display', Georgia, serif",'DM+Serif+Display'],
- ['pacifico','Pacifico (script)',"'Pacifico', cursive",'Pacifico'],['caveat','Caveat (handwriting)',"'Caveat', cursive",'Caveat:wght@400;700'],
+ ['pacifico','Pacifico (script)',"'Pacifico', cursive",'Pacifico'],['greatvibes','Great Vibes (elegant script)',"'Great Vibes', cursive",'Great+Vibes'],['dancing','Dancing Script',"'Dancing Script', cursive",'Dancing+Script:wght@400;700'],['anton','Anton (heavy caps)',"'Anton', Impact, sans-serif",'Anton'],['caveat','Caveat (handwriting)',"'Caveat', cursive",'Caveat:wght@400;700'],
  ['arabic','العربية · Arabic',"'Cairo', Arial, sans-serif",'Cairo:wght@400;700'],['hebrew','עברית · Hebrew',"'Heebo', Arial, sans-serif",'Heebo:wght@400;700'],
  ['devanagari','हिन्दी · Hindi',"'Noto Sans Devanagari', Arial, sans-serif",'Noto+Sans+Devanagari:wght@400;700'],['bengali','বাংলা · Bengali',"'Noto Sans Bengali', Arial, sans-serif",'Noto+Sans+Bengali:wght@400;700'],
  ['thai','ไทย · Thai',"'Noto Sans Thai', Arial, sans-serif",'Noto+Sans+Thai:wght@400;700'],['chinese','中文 · Chinese',"'Noto Sans SC', Arial, sans-serif",'Noto+Sans+SC:wght@400;700'],
@@ -200,10 +200,17 @@ const slideElements={
  chat:['Speech bubble','<path d="M4 5h16v11H9l-5 4Z"/>'],
 };
 // Inline formatting inside a text box: ⟦text colour|background colour|words⟧. Either colour may be empty. The editor writes these when a word or phrase is selected.
-const FMT_RE=/⟦(#[0-9a-f]{6})?\|(#[0-9a-f]{6})?\|([^⟦⟧]*)⟧/gi;
+const FMT_RE=/⟦(#[0-9a-f]{6})?\|([^|⟦⟧]*)\|([^⟦⟧]*)⟧/gi;
+// The middle part is the background and, after semicolons, the word's own font (f), size in percent (s), italic (i) and bold (b).
+function fmtStyle(fg,seg){
+ const [b0,...rest]=String(seg||'').split(';'),bg=/^#[0-9a-f]{6}$/i.test(b0)?b0:'',o={};
+ for(const p of rest){const [k,v]=p.split('=');if(k&&v!==undefined)o[k]=v}
+ const font=gsnFonts.find(f=>f[0]===o.f)?.[2],sz=+o.s;
+ return `${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}${font?'font-family:'+font+';':''}${sz>=40&&sz<=400?'font-size:'+sz/100+'em;line-height:1;':''}${o.i==='1'?'font-style:italic;':''}${o.b==='1'?'font-weight:800;':o.b==='0'?'font-weight:400;':''}`;
+}
 function escf(value){
  const s=String(value??'');let out='',last=0,m;FMT_RE.lastIndex=0;
- while((m=FMT_RE.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" style="${m[1]?'color:'+m[1]+';':''}${m[2]?'background:'+m[2]+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}">${esc(m[3])}</span>`;last=m.index+m[0].length}
+ while((m=FMT_RE.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" style="${fmtStyle(m[1],m[2])}">${esc(m[3])}</span>`;last=m.index+m[0].length}
  return out+esc(s.slice(last));
 }
 function layerCopy(value,bullets){
