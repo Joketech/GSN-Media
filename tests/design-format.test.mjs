@@ -27,3 +27,8 @@ test('box colour on a text layer is accepted and checked',()=>{
  assert.equal(ok.textLayers.title.boxFill,'#ff5a36');
  assert.throws(()=>sanitizeSlide({...base,textLayers:{title:{boxFill:'orange'}}},'Page 1'),DesignError);
 });
+
+test('page numbering switch is accepted and checked',()=>{
+ assert.equal(sanitizeSlide({...base,numbering:'off'},'Page 1').numbering,'off');
+ assert.throws(()=>sanitizeSlide({...base,numbering:'maybe'},'Page 1'),DesignError);
+});

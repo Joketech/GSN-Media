@@ -167,3 +167,11 @@
 .slide-element-strip>*,.free-text{pointer-events:auto}
 .uploaded-photo-element{background:none!important;height:auto!important;max-height:none!important;width:calc(22cqw*var(--element-scale,1));object-fit:fill}
 .uploaded-photo-element[style*="border-radius"]{overflow:hidden}
+
+/* Numbers on list pages can be switched off or on per page (Numbers button on the body text). */
+.no-num .dk-item:before,.no-num .deck-copy-item:before,.no-num .deck-copy-item:after{content:none!important;display:none!important}
+.no-num.dk-steps .dk-item,.no-num.dk-agenda .dk-item,.no-num.dk-cards .dk-item,.no-num.dk-recap .dk-item{grid-template-columns:1fr}
+.no-num.dk-steps .art-sub:before{display:none}
+.num-on:not(.dk-steps):not(.dk-agenda):not(.dk-cards):not(.dk-recap) .dk-item[data-n]:before{content:attr(data-n)!important;display:inline-grid!important;place-items:center;min-width:1.7em;height:1.7em;margin-right:.6em;border-radius:50%;background:var(--a);color:var(--on-a);font-size:.85em;font-weight:800;vertical-align:middle;position:static;transform:none}
+/* The picture on list and story pages can be moved and resized from the editor. */
+.dk .dk-visual{translate:var(--dk-art-x,0) var(--dk-art-y,0);scale:var(--dk-art-s,1)}
