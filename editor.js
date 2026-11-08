@@ -276,12 +276,18 @@ const Editor=(()=>{
    const j=+n.dataset.canvasElement;if(j===src.i)continue;const k2=s.elements[j];
    if(typeof k2==='string'&&!isPhotoEl(k2)&&!/^gsn-\d+$/.test(k2)){target={t:'element',i:j};best=area}
   }
+  // The template's own picture (the panda): drop a photo on it to replace it in the same place.
+  if(!target||target.t!=='slot'){
+   const v=root.querySelector('.campaign-visual');
+   if(v){const r=v.getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom&&r.width*r.height<best)target={t:'art'}}
+  }
   if(!target)return;
   let url=key;
   if(!isPhotoEl(key)){const p=GSNKit.gsnLibraryPhoto(key);if(!p)return;try{url=await libraryCell(p)}catch{return}}
   commit(()=>{
    const sl=slide();
-   if(target.t==='element'){setFill(target.i,url);const at=target.i>src.i?target.i-1:target.i;deleteOne(sl,{t:'element',i:src.i});sel={t:'element',i:at}}
+   if(target.t==='art'){sl.image=url;delete sl.hideArt;deleteOne(sl,{t:'element',i:src.i});sel={t:'art'}}
+   else if(target.t==='element'){setFill(target.i,url);const at=target.i>src.i?target.i-1:target.i;deleteOne(sl,{t:'element',i:src.i});sel={t:'element',i:at}}
    else{setSlot(target.k,{src:url,x:0,y:0,z:100});deleteOne(sl,{t:'element',i:src.i});sel={t:'slot',k:target.k}}
   });
   toast('Picture placed inside. Undo (Ctrl+Z) moves it back out.');drawOverlay();
@@ -463,7 +469,7 @@ const Editor=(()=>{
  }
  const loadImg=u=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(Error('That image could not be read.'));im.src=u});
  function applyPhoto(target,out,cut){commit(()=>{
-  if(target.t==='art'){slide().image=out;if(cut)slide().hideArt=true}
+  if(target.t==='art'){slide().image=out;delete slide().hideArt}
   else if(target.t==='slot'){setSlot(target.k,{src:out});if(cut)slide().hideArt=true}
   else{slide().elements[target.i]=out;if(cut)slide().hideArt=true}})}
  const photoOf=t=>{const s=slide();return t.t==='art'?s.image:t.t==='slot'?(s.slots?.[t.k]?.src||(slotDefs()[0]?.[0]===t.k?s.image:'')):s.elements?.[t.i]}
