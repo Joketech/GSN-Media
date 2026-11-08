@@ -32,3 +32,10 @@ test('page numbering switch is accepted and checked',()=>{
  assert.equal(sanitizeSlide({...base,numbering:'off'},'Page 1').numbering,'off');
  assert.throws(()=>sanitizeSlide({...base,numbering:'maybe'},'Page 1'),DesignError);
 });
+
+test('free shapes, picture frames and open pages are accepted and checked',()=>{
+ const ok=sanitizeSlide({...base,deckLayout:'open',shapes:[{kind:'pill',x:46,y:34,w:50,h:26,fill:'accent',line:'ink',lineW:6},{kind:'round',x:4,y:13,w:34,h:78,radius:4,src:'gsn-1',px:40,py:60,z:150}],layerOrder:['shape:0','title'],textLayers:{title:{color:'onaccent'}}},'Page 1');
+ assert.equal(ok.deckLayout,'open');assert.equal(ok.shapes.length,2);assert.equal(ok.shapes[1].src,'gsn-1');assert.equal(ok.shapes[0].fill,'accent');
+ const bad=x=>assert.throws(()=>sanitizeSlide({...base,...x},'Page 1'),DesignError);
+ bad({shapes:[{kind:'cube'}]});bad({shapes:[{fill:'red'}]});bad({shapes:[{src:'http://x/a.png'}]});bad({shapes:[{w:900}]});bad({shapes:new Array(41).fill({})});bad({shapes:'x'});bad({layerOrder:['shape:123']});
+});

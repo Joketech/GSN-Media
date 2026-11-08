@@ -162,10 +162,10 @@ const Editor=(()=>{
  }
  /* ---------- the template's own decorations (badges, bars, numbers, icons) ---------- */
  // Each one is found by its place in the page, such as "3" or "3.1", so it can be moved, resized, recoloured or hidden on any template.
- const partKids=n=>[...n.children].filter(c=>!c.classList.contains('page-bg')&&c.tagName!=='STYLE');
+ const partKids=n=>[...n.children].filter(c=>!c.classList.contains('page-bg')&&!c.classList.contains('slide-shapes')&&c.tagName!=='STYLE');
  function partKey(node){const root=el.host.shadowRoot?.querySelector('.art');if(!root)return '';const path=[];let n=node;while(n&&n!==root){const p=n.parentElement;if(!p)return '';path.unshift(partKids(p).indexOf(n)+1);n=p}return n===root?path.join('.'):''}
  function partNode(key){let n=el.host.shadowRoot?.querySelector('.art');for(const i of String(key).split('.').map(Number)){if(!n)return null;n=partKids(n)[i-1]}return n||null}
- const PART_SKIP='[data-canvas-copy],[data-canvas-text],[data-canvas-element],[data-slot],.campaign-visual,.slide-element-strip,.free-text,.campaign-copy,.page-bg,style';
+ const PART_SKIP='.slide-shapes,[data-canvas-copy],[data-canvas-text],[data-canvas-element],[data-slot],.campaign-visual,.slide-element-strip,.free-text,.campaign-copy,.page-bg,style';
  function partAt(x,y){
   const root=el.host.shadowRoot,art=root?.querySelector('.art');if(!art)return null;
   const pg=art.getBoundingClientRect(),pageArea=pg.width*pg.height;let best=null,area0=Infinity;
@@ -183,13 +183,14 @@ const Editor=(()=>{
  function nodeFor(s=sel){
   const root=el.host.shadowRoot;if(!root||!s)return null;
   if(s.t==='part')return partNode(s.k);
+  if(s.t==='shape')return root.querySelector(`[data-canvas-shape="${s.i}"]`);
   if(s.t==='page')return root.querySelector('.art');
   const q=s.t==='copy'?`[data-canvas-copy="${s.k}"]`:s.t==='text'?`[data-canvas-text="${s.i}"]`:s.t==='element'?`[data-canvas-element="${s.i}"]`:s.t==='slot'?`[data-slot="${s.k}"]`:s.t==='panel'?'.campaign-copy':'.campaign-visual';
   return root.querySelector(q);
  }
  const pageBox=()=>el.page.getBoundingClientRect();
  const members=()=>multi.length>1?multi:(sel?[sel]:[]);
- const selOf=k=>k.startsWith('slot:')?{t:'slot',k:k.slice(5)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
+ const selOf=k=>k.startsWith('shape:')?{t:'shape',i:+k.slice(6)}:k.startsWith('slot:')?{t:'slot',k:k.slice(5)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k};
  const groupFor=k=>(slide().groups||[]).find(g=>g.includes(k));
  function drawOverlay(){
   el.over.innerHTML='';el.bar.hidden=!sel;
@@ -209,7 +210,7 @@ const Editor=(()=>{
   const r=node.getBoundingClientRect();
   const box=document.createElement('div');box.className='ed-sel';
   Object.assign(box.style,{left:(r.left-pb.left)+'px',top:(r.top-pb.top)+'px',width:r.width+'px',height:r.height+'px'});
-  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'||sel.t==='panel'?'':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
+  const side=sel.t==='copy'||sel.t==='text'?'<i class="h e" data-h="width"></i><i class="h w" data-h="widthW"></i><i class="h s" data-h="height"></i><i class="h rot" data-h="rotate"></i>':sel.t==='slot'||sel.t==='panel'?'':sel.t==='shape'?'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i><i class="h rot" data-h="rotate"></i>':'<i class="h e" data-h="sx"></i><i class="h s" data-h="sy"></i>';
   box.innerHTML=sel.t==='panel'||sel.t==='page'?'':sel.t==='part'?'<i class="h se" data-h="scale"></i>':`<i class="h se" data-h="scale"></i>${side}`;
   el.over.appendChild(box);
   positionBar(r,pb);drawBar();
@@ -235,6 +236,7 @@ const Editor=(()=>{
   const root=el.host.shadowRoot;if(!root)return null;
   for(const n of root.elementsFromPoint(x,y)){
    if(n.dataset?.canvasText!==undefined)return {t:'text',i:+n.dataset.canvasText};
+   const shp=n.closest?.('[data-canvas-shape]');if(shp)return {t:'shape',i:+shp.dataset.canvasShape};
    if(n.dataset?.canvasElement!==undefined)return {t:'element',i:+n.dataset.canvasElement};
    if(n.dataset?.canvasCopy)return {t:'copy',k:n.dataset.canvasCopy};
    const slotNode=n.closest?.('[data-slot]');if(slotNode)return {t:'slot',k:slotNode.dataset.slot};
@@ -277,7 +279,7 @@ const Editor=(()=>{
   const pb=pageBox(),r=node.getBoundingClientRect(),s=slide();
   const W=pb.width,H=pb.height,cx=r.left+r.width/2,cy=r.top+r.height/2;
   const base=JSON.parse(JSON.stringify(s));
-  const layer=sel.t==='copy'?(s.textLayers?.[sel.k]||{}):sel.t==='text'?s.texts[sel.i]:{};
+  const layer=sel.t==='copy'?(s.textLayers?.[sel.k]||{}):sel.t==='text'?s.texts[sel.i]:sel.t==='shape'?{rotation:s.shapes?.[sel.i]?.rot||0}:{};
   const fontPx=parseFloat(getComputedStyle(node).fontSize)||0;
   const start={x:e.clientX,y:e.clientY,W,H,cx,cy,r,mode:handle||'move',size:fontPx/unitPx(node),
    unit:unitPx(node),dist:Math.hypot(e.clientX-cx,e.clientY-cy)||1,width:r.width/unitPx(node),height:r.height/unitPx(node),angle:Math.atan2(e.clientY-cy,e.clientX-cx),rot:layer.rotation||0,moved:false,
@@ -356,6 +358,10 @@ const Editor=(()=>{
      // The picture follows the pointer one to one. At 100% it exactly fills the frame and has no room to move, so it zooms in a little first.
      s.slots={...(s.slots||{}),[m.k]:{...b0,z:Math.round(z*100),x:round(clamp((b0.x||0)-dx/ws*200/(z-1),-100,100)),y:round(clamp((b0.y||0)-dy/hs*200/(z-1),-100,100))}}}
     else if(m.t==='page'){}
+    else if(m.t==='shape'){const arr=(base.shapes||[]).map(x=>({...x})),b0=arr[m.i];
+     if(slotPan&&b0.src&&members().length===1){const z=(b0.z||100)/100;b0.px=round(clamp((b0.px??50)-dx/(st.r.width||1)*100/Math.max(.35,z-.5),0,100));b0.py=round(clamp((b0.py??50)-dy/(st.r.height||1)*100/Math.max(.35,z-.5),0,100))}
+     else{b0.x=round(clamp(b0.x+dx/st.W*100,-50,150));b0.y=round(clamp(b0.y+dy/st.H*100,-50,150))}
+     s.shapes=arr}
     else if(m.t==='part'){const p0=base.parts?.[m.k]||{};s.parts={...(s.parts||{}),[m.k]:{...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}}
     else if(m.t==='panel'){const p0=base.panel||{};s.panel={...p0,x:round(clamp((p0.x||0)+dx/st.W*100,-100,100)),y:round(clamp((p0.y||0)+dy/st.W*100,-100,100))}}
     else if(m.t==='art'){const sc=(base.artScale||100)/100,f=st.frames.artwork||{w:st.frameW,h:st.frameH};s.artX=round(clamp((base.artX||0)+dx/f.w*100*sc,-300,300));s.artY=round(clamp((base.artY||0)+dy/f.h*100*sc,-300,300))}
@@ -367,13 +373,15 @@ const Editor=(()=>{
    else if(sel.t==='text'){s.texts[sel.i]={...s.texts[sel.i],size:round(clamp(st.size*f,1,30))}}
    else if(sel.t==='element'){const a=[...(s.elementSizes||[])];a[sel.i]=Math.round(clamp(st.elSize*f,25,500));s.elementSizes=a.map(v=>v??100)}
    else if(sel.t==='part'){const p0=base.parts?.[k]||{};s.parts={...(s.parts||{}),[k]:{...p0,scale:round(clamp((p0.scale||1)*f,.2,4))}}}
+   else if(sel.t==='shape'){const arr=(base.shapes||[]).map(x=>({...x})),b0=arr[sel.i];b0.w=round(clamp(b0.w*f,1,200));b0.h=round(clamp(b0.h*f,1,200));s.shapes=arr}
    else if(sel.t==='art'){s.artScale=Math.round(clamp(st.art*f,35,180))}
    else if(sel.t==='slot'&&!slotPan){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,fs:Math.round(clamp((b0.fs||100)*f,30,300))}}}
    else if(sel.t==='slot'){const b0=base.slots?.[sel.k]||{};s.slots={...(s.slots||{}),[sel.k]:{...b0,z:Math.round(clamp((b0.z||100)*f,100,400))}}}
   }else if(st.mode==='sx'||st.mode==='sy'){
    // Reshape: stretch one side to change the width or height of a shape or image on its own.
    const f=clamp(st.mode==='sx'?(st.r.width+dx)/st.r.width:(st.r.height+dy)/st.r.height,.25,5);
-   if(sel.t==='element'){const n=s.elements.length,key=st.mode==='sx'?'elementStretchX':'elementStretchY',old=st.mode==='sx'?st.sx:st.sy,arr=Array.from({length:n},(_,i)=>base[key]?.[i]??100);arr[sel.i]=Math.round(clamp(old*f,25,400));s[key]=arr}
+   if(sel.t==='shape'){const arr=(base.shapes||[]).map(x=>({...x})),b0=arr[sel.i];if(st.mode==='sx')b0.w=round(clamp(b0.w*f,1,200));else b0.h=round(clamp(b0.h*f,1,200));s.shapes=arr}
+   else if(sel.t==='element'){const n=s.elements.length,key=st.mode==='sx'?'elementStretchX':'elementStretchY',old=st.mode==='sx'?st.sx:st.sy,arr=Array.from({length:n},(_,i)=>base[key]?.[i]??100);arr[sel.i]=Math.round(clamp(old*f,25,400));s[key]=arr}
    else if(sel.t==='art'){const key=st.mode==='sx'?'artStretchX':'artStretchY';s[key]=Math.round(clamp((st.mode==='sx'?st.asx:st.asy)*f,35,300))}
   }else if(st.mode==='width'||st.mode==='widthW'||st.mode==='height'){
    // Text boxes: the right handle widens to the right, the left handle widens to the left (the right edge stays put), the bottom handle makes the box taller.
@@ -391,7 +399,8 @@ const Editor=(()=>{
   }else if(st.mode==='rotate'){
    let deg=(Math.atan2(ev.clientY-st.cy,ev.clientX-st.cx)-st.angle)*180/Math.PI+st.rot;
    deg=Math.round(clamp(((deg+540)%360)-180,-360,360));if(shift||Math.abs(deg%15)<3)deg=Math.round(deg/15)*15;
-   if(sel.t==='copy')s.textLayers={...s.textLayers,[k]:{...(base.textLayers?.[k]||{}),rotation:deg}};else s.texts[sel.i]={...s.texts[sel.i],rotation:deg};
+   if(sel.t==='shape'){const arr=(base.shapes||[]).map(x=>({...x}));arr[sel.i].rot=deg;s.shapes=arr}
+   else if(sel.t==='copy')s.textLayers={...s.textLayers,[k]:{...(base.textLayers?.[k]||{}),rotation:deg}};else s.texts[sel.i]={...s.texts[sel.i],rotation:deg};
   }
   drag.pending=null;
   KitHost.mount(el.host,KitHost.pageHtml(design,page));
@@ -520,7 +529,7 @@ const Editor=(()=>{
   if(multi.length>1){
    const grouped=members().some(m=>groupFor(layerKey(m)));
    const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
-   const nm=m=>{const k=layerKey(m);return k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body'})[k]||k};
+   const nm=m=>{const k=layerKey(m);return k.startsWith('shape:')?'Shape '+(+k.slice(6)+1):k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body'})[k]||k};
    bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:''}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
@@ -532,6 +541,9 @@ const Editor=(()=>{
   }else if(sel.t==='page'){
    const sw=(a,t,v,lbl)=>`<span class="count">${lbl}</span><button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${/^#[0-9a-f]{6}$/i.test(v||'')?v:'transparent'}"></button>`;
    html=`<span class="count">Page</span>${sw('pgbg','Background colour (the cream behind everything)',s.background,'Background')}${sw('pgacc','Accent colour (frame, bars and badges)',s.accent,'Accent')}${sw('pgink','Text colour for the whole page',s.ink,'Text')}${sw('pgfill','Fill the whole page with one colour',s.pageFill,'Cover')}<button class="txt" data-b="pgreset" title="Back to the template's own colours">Reset colours</button>${sep}`;
+  }else if(sel.t==='shape'){
+   const p=s.shapes?.[sel.i]||{},sw=(a,t,v)=>`<button class="swatch cp" data-b="${a}" title="${t}" aria-label="${t}" style="--sw:${shapeColourCss(v)}"></button>`;
+   html=`<span class="count">${p.src?'Picture frame':'Shape'}</span><select data-b="shapekind" aria-label="Shape">${Object.entries(GSNKit.SHAPE_KINDS).map(([v,n])=>`<option value="${v}" ${(p.kind||'rect')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>${p.src?'':sw('shapefill','Fill colour',p.fill)}${sw('shapeline','Outline colour',p.line)}<label class="rng">Outline<input type="range" min="0" max="12" value="${p.lineW||0}" data-b="shapelw"></label>${(p.kind||'rect')==='round'?`<label class="rng">Corners<input type="range" min="0" max="25" value="${p.radius??4}" data-b="shaperad"></label>`:''}<label class="rng">See-through<input type="range" min="10" max="100" value="${p.opacity??100}" data-b="shapeop"></label><button class="txt ${p.shadow?'on':''}" data-b="shapeshadow">Shadow</button><button class="txt" data-b="shapepic">${p.src?'Replace picture':'Add picture'}</button>${p.src?`<label class="rng">Zoom<input type="range" min="100" max="400" value="${p.z||100}" data-b="shapez"></label><button class="txt ${slotPan?'on':''}" data-b="slotpan" title="When on, dragging moves the picture inside the frame.">${slotPan?'Moving picture':'Move picture inside'}</button><button class="txt" data-b="shapenopic">Remove picture</button>`:''}${sep}`;
   }else if(sel.t==='part'){
    const p=s.parts?.[sel.k]||{};
    html=`<span class="count">Template item</span><button class="swatch cp" data-b="partfill" title="Fill colour" aria-label="Fill colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.fill||'')?p.fill:'transparent'}"></button><button class="swatch cp hl" data-b="partcolor" title="Text or icon colour" aria-label="Text or icon colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(p.color||'')?p.color:'transparent'}"><b>A</b></button><label class="rng">Size<input type="range" min="20" max="400" value="${Math.round((p.scale||1)*100)}" data-b="partscale"></label><label class="rng">See-through<input type="range" min="0" max="100" value="${p.opacity??100}" data-b="partop"></label><button class="txt ${p.hide?'on':''}" data-b="parthide">${p.hide?'Show':'Hide'}</button><button class="txt" data-b="partreset" title="Put it back as the template had it">Reset</button>${sep}`;
@@ -547,9 +559,9 @@ const Editor=(()=>{
    html=`<label class="rng">Size<input type="range" min="35" max="180" value="${s.artScale||100}" data-b="artsize"></label><label class="rng">Width<input type="range" min="35" max="300" value="${s.artStretchX||100}" data-b="artsx"></label><label class="rng">Height<input type="range" min="35" max="300" value="${s.artStretchY||100}" data-b="artsy"></label><select data-b="artlayer" aria-label="Image layer">${[['behind','Behind text'],['front','In front'],['background','Background']].map(([v,n])=>`<option value="${v}" ${(s.artLayer||'behind')===v?'selected':''}>${n}</option>`).join('')}</select><button data-b="replace" class="txt">Replace</button><button data-b="crop" class="txt" title="Crop this picture">Crop</button>${maskSelect(sel)}<button data-b="rmbg" class="txt" title="Remove the background">Remove background</button><select data-b="rmtol" aria-label="Background removal strength"><option value="28">Light</option><option value="48" selected>Medium</option><option value="72">Strong</option></select><button data-b="clearimg" class="txt">Reset</button>${sep}`;
   }
   if(sel.t!=='slot'&&sel.t!=='panel'&&sel.t!=='part'&&sel.t!=='page')html+=`${b('forward','up','Bring forward')}${b('backward','down','Send backward')}`;
-  if(sel.t==='text'||sel.t==='element')html+=b('dup','copy','Duplicate (Ctrl+D)');
+  if(sel.t==='text'||sel.t==='element'||sel.t==='shape')html+=b('dup','copy','Duplicate (Ctrl+D)');
   const g=groupFor(layerKey());if(g)html+='<button class="txt" data-b="ungroup">Ungroup</button>';
-  if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
+  if(sel.t==='text'||sel.t==='element'||sel.t==='shape'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
  }
@@ -749,6 +761,10 @@ const Editor=(()=>{
   if(a==='panelcol'){return colourPanel(t,slide().panel?.fill||'',c=>{commit(()=>{slide().panel={...(slide().panel||{}),fill:c||undefined,...(c&&slide().panel?.opacity===undefined?{opacity:100}:{})};if(!c)delete slide().panel.fill},'panelcol');drawBar()},{none:'Template colour'})}
   if(['pgbg','pgacc','pgink','pgfill'].includes(a)){const f={pgbg:'background',pgacc:'accent',pgink:'ink',pgfill:'pageFill'}[a];return colourPanel(t,slide()[f]||'',c=>{commit(()=>{if(c)slide()[f]=c;else delete slide()[f]},'page'+f);drawBar()},{none:'Template colour'})}
   if(a==='pgreset')return commit(()=>{for(const f of ['background','accent','ink','pageFill'])delete slide()[f]},'pagereset'),drawBar();
+  if(a==='shapefill'||a==='shapeline'){const i=sel.i,f=a==='shapefill'?'fill':'line';return colourPanel(t,slide().shapes?.[i]?.[f]||'',c=>{patchShape(i,{[f]:c||undefined},'shape'+f);drawBar()},{none:f==='fill'?'No fill':'No outline',...(f==='fill'?{auto:()=>{patchShape(i,{fill:'accent'},'shapefill');drawBar()}}:{})})}
+  if(a==='shapeshadow'){const i=sel.i;patchShape(i,{shadow:!slide().shapes?.[i]?.shadow},'shapeshadow');return drawBar()}
+  if(a==='shapepic'){const i=sel.i;return pickPicture(url=>{patchShape(i,{src:url,px:50,py:50,z:100},'shapepic');drawBar()})}
+  if(a==='shapenopic'){const i=sel.i;patchShape(i,{src:undefined,px:undefined,py:undefined,z:undefined},'shapenopic');return drawBar()}
   if(a==='partfill'||a==='partcolor'){const k=sel.k,f=a==='partfill'?'fill':'color';return colourPanel(t,slide().parts?.[k]?.[f]||'',c=>{commit(()=>{const o={...(slide().parts?.[k]||{})};if(c)o[f]=c;else delete o[f];slide().parts={...(slide().parts||{}),[k]:o}},'part'+f);drawBar()},{none:'Template colour'})}
   if(a==='parthide'){const k=sel.k;return commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),hide:!slide().parts?.[k]?.hide}}}),drawBar()}
   if(a==='partreset'){const k=sel.k;return commit(()=>{const o={...(slide().parts||{})};delete o[k];slide().parts=Object.keys(o).length?o:undefined;if(!slide().parts)delete slide().parts}),drawOverlay()}
@@ -779,6 +795,11 @@ const Editor=(()=>{
   else if(a==='artsize')commit(()=>{slide().artScale=+v},'artsize');
   else if(a==='artlayer')commit(()=>{slide().artLayer=v});
   else if(a==='mask'){const t={...sel};commit(()=>{const sl=slide();if(t.t==='art'){if(v)sl.artMask=v;else delete sl.artMask}else if(t.t==='slot')setSlot(t.k,{mask:v||undefined});else{const n=sl.elements.length,arr=Array.from({length:n},(_,i)=>sl.elementMasks?.[i]||'');arr[t.i]=v;sl.elementMasks=arr.some(Boolean)?arr:undefined;if(!sl.elementMasks)delete sl.elementMasks}},'mask')}
+  else if(a==='shapekind')patchShape(sel.i,{kind:v},'shapekind');
+  else if(a==='shapelw')patchShape(sel.i,{lineW:+v,line:slide().shapes?.[sel.i]?.line||'#111111'},'shapelw');
+  else if(a==='shaperad')patchShape(sel.i,{radius:+v},'shaperad');
+  else if(a==='shapeop')patchShape(sel.i,{opacity:+v},'shapeop');
+  else if(a==='shapez')patchShape(sel.i,{z:+v},'shapez');
   else if(a==='partscale'){const k=sel.k;commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),scale:+v/100}}},'partscale')}
   else if(a==='partop'){const k=sel.k;commit(()=>{slide().parts={...(slide().parts||{}),[k]:{...(slide().parts?.[k]||{}),opacity:+v}}},'partop')}
   else if(a==='panelop')commit(()=>{slide().panel={...(slide().panel||{}),opacity:+v}},'panelop');
@@ -791,9 +812,9 @@ const Editor=(()=>{
  let slotPan=false;
  function setSlot(k,patch){const s=slide();s.slots={...(s.slots||{}),[k]:{...(s.slots?.[k]||{}),...patch}}}
  function clearSlot(k){const s=slide();if(s.slots?.[k]){const {src,...rest}=s.slots[k];s.slots={...s.slots,[k]:rest}}if(slotDefs()[0]?.[0]===k)delete s.image}
- function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':s.t==='part'?'part:'+s.k:s.t==='page'?'page':'artwork'}
+ function layerKey(s=sel){return s.t==='slot'?'slot:'+s.k:s.t==='copy'?s.k:s.t==='text'?'text:'+s.i:s.t==='element'?'element:'+s.i:s.t==='panel'?'panel':s.t==='part'?'part:'+s.k:s.t==='page'?'page':s.t==='shape'?'shape:'+s.i:'artwork'}
  function fullOrder(){
-  const s=slide(),keys=[...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
+  const s=slide(),keys=[...(s.shapes||[]).map((_,i)=>'shape:'+i),...DEFAULT_ORDER,...(s.elements||[]).map((_,i)=>'element:'+i),...(s.texts||[]).map((_,i)=>'text:'+i)];
   const own=(s.layerOrder||[]).filter(k=>keys.includes(k));return [...own,...keys.filter(k=>!own.includes(k))];
  }
  function reorder(dir){
@@ -803,6 +824,7 @@ const Editor=(()=>{
   if(!sel)return;
   commit(()=>{const s=slide();
    if(sel.t==='text'){s.texts=[...s.texts,{...s.texts[sel.i],left:clamp(s.texts[sel.i].left+3,-50,150),top:clamp(s.texts[sel.i].top+3,-50,150)}];sel={t:'text',i:s.texts.length-1}}
+   else if(sel.t==='shape'){const a=s.shapes||[];if(a.length>=40)return toast('A page can hold 40 shapes.');const c={...a[sel.i],x:round(clamp(a[sel.i].x+3,-50,150)),y:round(clamp(a[sel.i].y+3,-50,150))};s.shapes=[...a,c];sel={t:'shape',i:a.length}}
    else if(sel.t==='element'){const n=s.elements.length;if(n>=24)return toast('A page can hold 24 elements.');const c=elementCenter(sel.i);
     s.elements=[...s.elements,s.elements[sel.i]];s.elementPositions=[...Array.from({length:n},(_,i)=>s.elementPositions?.[i]||elementCenter(i)),{x:clamp(c.x+3,0,100),y:clamp(c.y+3,0,100)}];
     s.elementSizes=[...Array.from({length:n},(_,i)=>s.elementSizes?.[i]??100),s.elementSizes?.[sel.i]??100];
@@ -818,8 +840,31 @@ const Editor=(()=>{
   else if(m.t==='copy'&&m.k!=='title')s[m.k]='';
   else if(m.t==='art'){delete s.image;s.motif='none'}
   else if(m.t==='slot')clearSlot(m.k);
+  else if(m.t==='shape'){s.shapes=(s.shapes||[]).filter((_,i)=>i!==m.i);if(!s.shapes.length)delete s.shapes;s.layerOrder=remap(s.layerOrder,'shape:',m.i);remapGroups(s,'shape:',m.i)}
   else if(m.t==='part')s.parts={...(s.parts||{}),[m.k]:{...(s.parts?.[m.k]||{}),hide:true}};
   else if(m.t==='panel')s.panel={...(s.panel||{}),hide:true};
+ }
+
+ /* ---------- free shapes and picture frames ---------- */
+ // A shape colour is a hex or a page colour name (accent, ink...). The bar shows the colour the page really uses for the name.
+ function shapeColourCss(v){
+  if(/^#[0-9a-f]{6}$/i.test(v||''))return v;
+  const map={accent:'--a',accent2:'--a2',onaccent:'--on-a',ink:'--fg',soft:'--card',line:'--line',paper:'--paper'};
+  const art=el.host.shadowRoot?.querySelector('.art');
+  return map[v]&&art?(getComputedStyle(art).getPropertyValue(map[v]).trim()||'transparent'):'transparent';
+ }
+ function patchShape(i,obj,key){
+  commit(()=>{const a=(slide().shapes||[]).map(x=>({...x}));if(!a[i])return;a[i]={...a[i],...obj};for(const k of Object.keys(a[i]))if(a[i][k]===undefined)delete a[i][k];slide().shapes=a},key);
+ }
+ function addShape(kind,opts={}){
+  const s=slide();if((s.shapes||[]).length>=40)return toast('A page can hold 40 shapes.');
+  const acc=/^#[0-9a-f]{6}$/i.test(s.accent||'')?s.accent:'#b0f000';
+  const at=(s.shapes||[]).length;
+  const w=opts.w??(kind==='oval'||kind==='diamond'||kind==='star'||kind==='triangle'?28:44),h=opts.h??(kind==='pill'?14:kind==='oval'||kind==='diamond'||kind==='star'||kind==='triangle'?22:opts.frame?28:20);
+  const shape={kind,x:round(clamp(50-w/2+at%4*2,-50,150)),y:round(clamp(46-h/2+at%4*2,-50,150)),w,h,...(opts.frame?{fill:'#d9d9de'}:{fill:acc,...(opts.outline?{line:'#111111',lineW:2.5}:{})}),...(kind==='round'?{radius:5}:{})};
+  commit(()=>{s.shapes=[...(s.shapes||[]),shape];sel={t:'shape',i:at};multi=[]});
+  drawOverlay();
+  if(opts.frame)pickPicture(url=>{patchShape(at,{src:url,px:50,py:50,z:100},'shapepic');drawOverlay()});
  }
  function deleteSel(){
   if(!sel)return;
@@ -1001,6 +1046,7 @@ const Editor=(()=>{
  function toolElements(body){
   const keys=Object.keys(GSNKit.slideElements);
   body.innerHTML=`<p class="hint">Click to add. Drag it into place; resize from the corner. Click the colour dot above the shape to change its colour.</p>
+  <h3>Boxes, pills and picture frames</h3><p class="hint">Place them anywhere. Resize from the right, bottom or corner handle; set fill, outline, corners and shadow in the bar above. A frame holds a picture you can move inside it.</p><div class="ed-egrid">${Object.entries(GSNKit.SHAPE_KINDS).map(([k,n])=>`<button data-addshape="${k}" title="Add ${esc(n)}" aria-label="Add ${esc(n)}"><i class="shp-ic shp-${k}"></i><span>${esc(n)}</span></button>`).join('')}<button data-addshape="round" data-frame="1" title="Picture frame (rounded)"><i class="shp-ic shp-round pic"></i><span>Picture frame</span></button><button data-addshape="pill" data-frame="1" title="Picture pill"><i class="shp-ic shp-pill pic"></i><span>Picture pill</span></button><button data-addshape="oval" data-frame="1" title="Picture oval"><i class="shp-ic shp-oval pic"></i><span>Picture oval</span></button><button data-addshape="rect" data-outline="1" title="Outlined box"><i class="shp-ic shp-rect line"></i><span>Outlined box</span></button></div>
   <h3>Colour shapes</h3><div class="ed-egrid">${['rect','rounded','circle','triangle','diamond','star','heart','chat'].map(k=>`<button data-elsolid="${k}" title="Solid ${esc(GSNKit.slideElements[k][0])}" aria-label="Add solid ${esc(GSNKit.slideElements[k][0])}"><svg viewBox="0 0 24 24" class="solid-ic" fill="${slide().accent&&/^#[0-9a-f]{6}$/i.test(slide().accent)?slide().accent:'#ac82f4'}" stroke="none">${GSNKit.slideElements[k][1]}</svg><span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>
   <h3>Lines, icons and illustrations</h3><div class="ed-egrid">${keys.map(k=>`<button data-el="${k}" title="${esc(GSNKit.slideElements[k][0])}" aria-label="Add ${esc(GSNKit.slideElements[k][0])}">${platformIcon(k)}<span>${esc(GSNKit.slideElements[k][0])}</span></button>`).join('')}</div>`;
  }
@@ -1181,14 +1227,103 @@ const Editor=(()=>{
   p.kicker=`${String(page+2).padStart(2,'0')} / NEW PAGE`;
   return p;
  }
+
+ /* ---------- Open page designs: every piece (text, boxes, pills, picture frames) is a normal layer the creator can move, resize, recolour or delete. ---------- */
+ // Pictures are studio photos until the creator replaces them. Colours are page colour names, so the design follows the pack's colours.
+ const OP_PIC={team:'gsn-1',team2:'gsn-21',lead:'gsn-3',lead2:'gsn-23',desk:'gsn-17',work:'gsn-15'};
+ function openCtx(){
+  const r=(design.size?.w||1080)/(design.size?.h||1350),Hh=100/r,g=clamp(1+(1.78-r)*.1,1,1.15);
+  // Helpers: sq(u) gives the height in percent of a square that is u wide; mid centres a line of text of height hu (in widths) in a band.
+  return {r,Hh,g,sq:u=>round(u/Hh*100),mid:(y,h,hu)=>round(y+(h-hu/Hh*100)/2)};
+ }
+ const OPEN_PAGES=[
+  ['o-pills','Pill cover','Picture on the left, title in outlined and filled pills.',c=>{const {g,mid}=c;return {
+   kicker:'BOLD DESIGN STUDIO',title:'Business',body:'Presented by: Your name',
+   textLayers:{kicker:{x:46,y:11,size:1.5*g,uppercase:true},title:{x:46,y:mid(34,26,9.5*g*1.15),size:9.5*g,boxWidth:50,align:'center'},body:{x:46,y:86,size:1.5*g,bold:true,boxWidth:50}},
+   texts:[{text:'Plan',left:46,top:mid(63,26,9.5*g*1.15),size:9.5*g,boxWidth:36,align:'center',color:'onaccent'},{text:'2030',left:84,top:11,size:1.5*g,boxWidth:12,align:'right'}],
+   shapes:[{kind:'round',x:4,y:13,w:34,h:78,radius:4,src:OP_PIC.team,line:'ink',lineW:6},{kind:'pill',x:46,y:34,w:50,h:26,line:'ink',lineW:6},{kind:'pill',x:46,y:63,w:36,h:26,fill:'accent'}]}}],
+  ['o-split','Title, text and picture','Words on the left, a large rounded picture on the right.',c=>{const {g}=c;return {
+   kicker:'BOLD DESIGN STUDIO',title:'Executive\nSummary',body:'Write two or three short paragraphs here. Say what matters first, then the proof.',
+   textLayers:{kicker:{x:6,y:12,size:1.5*g},title:{x:6,y:22,size:6.2*g,boxWidth:42,lineHeight:95},body:{x:6,y:56,size:1.35*g,boxWidth:40,lineHeight:140}},
+   shapes:[{kind:'round',x:54,y:9,w:42,h:80,radius:4,src:OP_PIC.team2,line:'ink',lineW:6}]}}],
+  ['o-stack','Stacked pill cards','Title and text left, three stacked pill cards on the right.',c=>{const {g,mid}=c;const cards=[['The Problem',8,0],['Target Audience',37,0],['Market Gap',66,1]];return {
+   kicker:'BOLD DESIGN STUDIO',title:'Problem\nStatement',body:'Add a short paragraph that sets up the three points on the right.',
+   textLayers:{kicker:{x:6,y:12,size:1.5*g},title:{x:6,y:24,size:6.2*g,boxWidth:42,lineHeight:95},body:{x:6,y:58,size:1.3*g,boxWidth:38,lineHeight:140}},
+   texts:cards.flatMap(([h,y,f])=>[{text:h,left:57,top:y+7,size:2.3*g,boxWidth:34,bold:true,...(f?{color:'onaccent'}:{})},{text:'Write one or two lines about this point.',left:57,top:y+15,size:1.15*g,boxWidth:34,lineHeight:135,...(f?{color:'onaccent'}:{})}]),
+   shapes:cards.map(([,y,f])=>({kind:'pill',x:52,y,w:44,h:26,line:'ink',lineW:2,...(f?{fill:'accent'}:{})}))}}],
+  ['o-products','Pictures and pill cards','Two picture pills above two pill cards.',c=>{const {g}=c;return {
+   kicker:'BOLD DESIGN STUDIO',title:'Product Offering',body:'One short paragraph that introduces the two products below.',
+   textLayers:{kicker:{x:5,y:9,size:1.5*g},title:{x:5,y:17,size:6*g,boxWidth:55},body:{x:62,y:15,size:1.2*g,boxWidth:34,lineHeight:140}},
+   texts:[{text:'Product 01',left:5,top:73,size:2.4*g,boxWidth:44,align:'center',bold:true},{text:'Say what it is and who it is for.',left:9,top:80,size:1.15*g,boxWidth:36,align:'center'},{text:'Product 02',left:51,top:73,size:2.4*g,boxWidth:44,align:'center',bold:true,color:'onaccent'},{text:'Say what it is and who it is for.',left:55,top:80,size:1.15*g,boxWidth:36,align:'center',color:'onaccent'}],
+   shapes:[{kind:'pill',x:5,y:36,w:44,h:28,src:OP_PIC.desk,line:'ink',lineW:6},{kind:'pill',x:51,y:36,w:44,h:28,src:OP_PIC.team,line:'ink',lineW:6},{kind:'pill',x:5,y:68,w:44,h:26,line:'ink',lineW:6},{kind:'pill',x:51,y:68,w:44,h:26,fill:'accent',line:'ink',lineW:6}]}}],
+  ['o-ovals','Three tall ovals','Centred title with three ovals for the three points.',c=>{const {g,sq}=c;const cols=[['Market Size',6,0],['Market Trends',36,0],['Target Audience',66,1]];return {
+   kicker:'BOLD DESIGN STUDIO',title:'Market Opportunity',body:'One sentence that frames the three points below it.',
+   textLayers:{kicker:{x:0,y:8,size:1.5*g,boxWidth:100,align:'center'},title:{x:0,y:14,size:6.5*g,boxWidth:100,align:'center'},body:{x:7,y:32,size:1.25*g,boxWidth:86,align:'center'}},
+   texts:cols.flatMap(([h,x,f])=>[{text:h,left:x+2,top:58,size:2*g,boxWidth:26,align:'center',bold:true,...(f?{color:'onaccent'}:{})},{text:'Add two short lines of detail.',left:x+3,top:66,size:1.05*g,boxWidth:24,align:'center',lineHeight:135,...(f?{color:'onaccent'}:{})}]),
+   shapes:cols.map(([,x,f])=>({kind:'oval',x,y:46,w:28,h:48,line:'ink',lineW:2,...(f?{fill:'accent'}:{})}))}}],
+  ['o-script','Script and caps cover','A script word over big capitals, with a colour block.',c=>{const {g,sq}=c;return {
+   kicker:'DIGITAL STRATEGY',title:'PROPOSAL',body:'',
+   textLayers:{kicker:{x:52,y:36,size:1.7*g,uppercase:true},title:{x:30,y:44,size:9.5*g,uppercase:true,boxWidth:68}},
+   texts:[{text:'project',left:18,top:20,size:12*g,font:'pacifico',boxWidth:60},{text:'PROJECT 2026',left:76,top:6,size:1.3*g,boxWidth:20,align:'center'},{text:'DIGITAL STRATEGIES',left:62,top:88,size:1.5*g,boxWidth:35,align:'right'}],
+   shapes:[{kind:'rect',x:50,y:42,w:34,h:25,fill:'accent'},{kind:'rect',x:3,y:90,w:57,h:1,fill:'ink'}]}}],
+  ['o-note','Title, note box and wide picture','Big title, a colour note box, and a picture across the bottom.',c=>{const {g}=c;return {
+   kicker:'PROPOSAL',title:'PROPOSAL\nBACKGROUND',body:'Say in two lines why this matters now.',
+   textLayers:{kicker:{x:5,y:10,size:1.4*g},title:{x:5,y:18,size:6.2*g,boxWidth:58,uppercase:true,lineHeight:92},body:{x:68,y:22,size:1.8*g,boxWidth:25,lineHeight:130,color:'onaccent'}},
+   shapes:[{kind:'rect',x:66,y:16,w:30,h:26,fill:'accent'},{kind:'rect',x:0,y:52,w:100,h:48,src:OP_PIC.team}]}}],
+  ['o-describe','Description with overview box','Title, picture, lead sentence and a call-out box.',c=>{const {g}=c;return {
+   kicker:'PROJECT',title:'GENERAL PROJECT\nDESCRIPTION',body:'Write a short paragraph with the detail behind the lead sentence.',
+   textLayers:{kicker:{x:5,y:9,size:1.4*g},title:{x:5,y:16,size:6*g,boxWidth:80,uppercase:true,lineHeight:92},body:{x:57,y:64,size:1.15*g,boxWidth:38,lineHeight:140}},
+   texts:[{text:'A one-sentence summary of what you will do and the result you expect.',left:57,top:44,size:2.1*g,boxWidth:39,lineHeight:130},{text:'PROJECT OVERVIEW',left:58,top:82,size:2.3*g,boxWidth:36,align:'center',bold:true,uppercase:true,color:'onaccent'}],
+   shapes:[{kind:'round',x:5,y:44,w:46,h:48,radius:3,src:OP_PIC.work},{kind:'rect',x:57,y:78,w:39,h:14,fill:'accent'}]}}],
+  ['o-method','Picture and method card','A tall picture beside a card with two icon rows.',c=>{const {g,sq}=c;return {
+   kicker:'PROJECT',title:'WORK METHODOLOGY',body:'',
+   textLayers:{kicker:{x:5,y:9,size:1.4*g},title:{x:5,y:16,size:6*g,boxWidth:90,uppercase:true}},
+   texts:[['Target market analysis',41],['Creative content development',64]].flatMap(([h,y])=>[{text:h,left:41,top:y,size:2.1*g,boxWidth:50,bold:true},{text:'Add one or two lines that explain this step.',left:41,top:y+9,size:1.2*g,boxWidth:50,lineHeight:135}]),
+   shapes:[{kind:'round',x:4,y:32,w:17,h:60,radius:4,src:OP_PIC.lead},{kind:'round',x:25,y:32,w:71,h:60,radius:4,line:'ink',lineW:5},{kind:'oval',x:31,y:42,w:7,h:sq(7),fill:'accent'},{kind:'oval',x:31,y:65,w:7,h:sq(7),fill:'accent'}]}}],
+  ['o-numbers','Three number columns','Three columns, each with a big figure, a label bar and text.',c=>{const {g}=c;const cols=[['$350','Content & design',7],['$700','Digital advertising',38],['$140','Tools & software',69]];return {
+   kicker:'PROPOSAL',title:'ESTIMATED BUDGET',body:'',
+   textLayers:{kicker:{x:5,y:9,size:1.4*g},title:{x:5,y:16,size:6*g,boxWidth:90,uppercase:true}},
+   texts:cols.flatMap(([n,l,x])=>[{text:n,left:x,top:34,size:5*g,bold:true,boxWidth:26},{text:l,left:x+1,top:46.5,size:2*g,boxWidth:24,color:'onaccent'},{text:'One short line about this cost.',left:x,top:55,size:1.1*g,boxWidth:26,lineHeight:135}]),
+   shapes:[...cols.map(([,,x])=>({kind:'rect',x:x-1,y:45.5,w:26,h:8,fill:'accent'})),{kind:'rect',x:0,y:68,w:100,h:32,src:OP_PIC.desk}]}}],
+  ['o-recap','Recap with picture band','Title and script word, a picture band and a colour block.',c=>{const {g}=c;return {
+   kicker:'PROPOSAL',title:'PROPOSAL RECAP',body:'Let’s start this project and make your business grow!',
+   textLayers:{kicker:{x:5,y:8,size:1.4*g},title:{x:5,y:14,size:5*g,boxWidth:52,uppercase:true},body:{x:6,y:72,size:2.3*g,boxWidth:36,lineHeight:130}},
+   texts:[{text:'thank you',left:60,top:12,size:7*g,font:'pacifico',boxWidth:38},{text:'With this plan we can reach more people, earn more trust and grow steadily.',left:50,top:68,size:2*g,boxWidth:44,lineHeight:130,color:'onaccent'}],
+   shapes:[{kind:'rect',x:0,y:32,w:100,h:30,src:OP_PIC.team2},{kind:'rect',x:46,y:62,w:54,h:34,fill:'accent'}]}}],
+  ['o-canvas','Open canvas','A clean page with a headline and a large soft panel to build on.',c=>{const {g}=c;return {
+   kicker:'YOUR LABEL',title:'Your headline',body:'Add a short line that sets up the page.',
+   textLayers:{kicker:{x:6,y:7,size:1.4*g},title:{x:6,y:12,size:5.5*g,boxWidth:88},body:{x:6,y:26,size:1.5*g,boxWidth:60,lineHeight:140}},
+   shapes:[{kind:'round',x:5,y:38,w:90,h:56,radius:3,fill:'soft',line:'line',lineW:1}]}}],
+  ['o-photo','Full picture with title pill','A picture across the whole page with the title on a colour pill.',c=>{const {g,mid}=c;return {
+   kicker:'YOUR LABEL',title:'Your headline',body:'',
+   textLayers:{kicker:{x:6,y:7,size:1.5*g},title:{x:9,y:mid(68,20,6.5*g*1.15),size:6.5*g,boxWidth:60,color:'onaccent'}},
+   shapes:[{kind:'rect',x:0,y:0,w:100,h:100,src:OP_PIC.lead2},{kind:'pill',x:5,y:68,w:68,h:20,fill:'accent'}]}}],
+ ];
+ function openPage(key){
+  const def=OPEN_PAGES.find(d=>d[0]===key);if(!def)return null;
+  const [p]=GSNKit.innerPages(design.template_id,'your topic','',['principle'],design.pages.length);
+  const src=design.pages[Math.min(Math.max(page,1),design.pages.length-2)]||design.pages[0];
+  if(src&&src!==design.pages[0])for(const k of ['background','ink','accent'])if(src[k]!==undefined)p[k]=src[k];
+  const spec=def[3](openCtx());
+  const text=(o)=>{for(const k of Object.keys(o))if(typeof o[k]==='number')o[k]=Math.round(o[k]*100)/100;return o};
+  const ctx=openCtx(),k=Math.max(1,ctx.Hh/56.25),sk=Math.sqrt(k);
+  for(const l of Object.values(spec.textLayers||{}))text(l);
+  for(const t of spec.texts||[]){if(!t.color)t.color='ink';text(t)}
+  for(const sh of spec.shapes||[]){
+   // Pills, ovals and cards keep their proportions on tall pages: they get a little taller, not as tall as the page.
+   if(k>1.1&&sh.w<100&&Math.abs(sh.w-sh.h*ctx.Hh/100)>1.5&&(sh.kind==='pill'||sh.kind==='oval'||(sh.kind==='round'&&!sh.src&&sh.h<45))){const h=sh.h/sk;sh.y+=(sh.h-h)/2;sh.h=h}
+   text(sh);
+  }
+  return {...p,...spec,deckLayout:'open',motif:p.motif,brandText:p.brandText};
+ }
  function addLayoutPage(layout){
   const n=design.pages.length;if(n>=30)return toast('A pack can have up to 30 pages.');
-  commit(()=>{const at=Math.min(page+1,n-1);design.pages.splice(at,0,layout==='copy'?JSON.parse(JSON.stringify(design.pages[page])):layoutPage(layout));page=at;sel=null;multi=[]});
+  commit(()=>{const at=Math.min(page+1,n-1);design.pages.splice(at,0,layout==='copy'?JSON.parse(JSON.stringify(design.pages[page])):layout.startsWith('o-')?openPage(layout):layoutPage(layout));page=at;sel=null;multi=[]});
   thumbs();render();
  }
  function openLayoutPicker(){
   const guide=GSNKit.LAYOUT_GUIDE;
-  openModal(`<h2>Add a page</h2><p class="hint">Choose a layout. It takes this pack's colours and photo, and you only write the words.</p><div class="ed-layouts">${Object.keys(LAYOUT_NAMES).map(k=>`<button class="ed-layout" data-layout="${k}"><b>${LAYOUT_NAMES[k]}</b><span>${esc(guide[k]||'')}</span></button>`).join('')}<button class="ed-layout" data-layout="copy"><b>Copy this page</b><span>An exact copy you can reword.</span></button></div><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
+  openModal(`<h2>Add a page</h2><p class="hint">Choose a layout. It takes this pack's colours and photo, and you only write the words.</p><div class="ed-layouts">${Object.keys(LAYOUT_NAMES).map(k=>`<button class="ed-layout" data-layout="${k}"><b>${LAYOUT_NAMES[k]}</b><span>${esc(guide[k]||'')}</span></button>`).join('')}<button class="ed-layout" data-layout="copy"><b>Copy this page</b><span>An exact copy you can reword.</span></button></div><h3 class="ed-lay-h">Open designs: move, resize or recolour every piece</h3><div class="ed-layouts">${OPEN_PAGES.map(d=>`<button class="ed-layout" data-layout="${d[0]}"><b>${esc(d[1])}</b><span>${esc(d[2])}</span></button>`).join('')}</div><div class="ed-actions"><button class="btn-light" data-act="closemodal">Cancel</button></div>`);
   el.modal.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{closeModal();addLayoutPage(b.dataset.layout)});
  }
  function toolPages(body){
@@ -1198,9 +1333,9 @@ const Editor=(()=>{
   <h3>Layers on this page</h3><ol class="ed-layers" id="edLayers"></ol>`;
   const ls=$('[data-layoutsel]',body);if(ls)ls.onchange=()=>{commit(()=>{slide().deckLayout=ls.value},'layout');thumbs([page])};
   $$('[data-f]',body).forEach(t=>t.oninput=()=>{const k=t.dataset.f;if(k==='title'&&!t.value.trim())return;commit(()=>{slide()[k]=t.value},'f'+k)});
-  const names=k=>k.startsWith('text:')?'Text: '+(s.texts[+k.slice(5)]?.text||'').slice(0,24):k.startsWith('element:')?GSNKit.canvasElementLabel(s.elements[+k.slice(8)])||'Element':k==='artwork'?'Image':COPY[k];
+  const names=k=>k.startsWith('shape:')?(s.shapes?.[+k.slice(6)]?.src?'Picture frame ':(GSNKit.SHAPE_KINDS[s.shapes?.[+k.slice(6)]?.kind]||'Box')+' ')+(+k.slice(6)+1):k.startsWith('text:')?'Text: '+(s.texts[+k.slice(5)]?.text||'').slice(0,24):k.startsWith('element:')?GSNKit.canvasElementLabel(s.elements[+k.slice(8)])||'Element':k==='artwork'?'Image':COPY[k];
   $('#edLayers').innerHTML=fullOrder().slice().reverse().filter(k=>names(k)).map(k=>`<li class="${sel&&layerKey()===k?'on':''}" data-layer="${k}"><span>${esc(names(k))}</span></li>`).join('');
-  $$('[data-layer]',body).forEach(li=>li.onclick=()=>{const k=li.dataset.layer;select(k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k})});
+  $$('[data-layer]',body).forEach(li=>li.onclick=()=>{const k=li.dataset.layer;select(k.startsWith('shape:')?{t:'shape',i:+k.slice(6)}:k.startsWith('text:')?{t:'text',i:+k.slice(5)}:k.startsWith('element:')?{t:'element',i:+k.slice(8)}:k==='artwork'?{t:'art'}:{t:'copy',k})});
  }
  function toolResize(body){
   body.innerHTML=`<p class="hint">Resize this design in place, or copy the whole design to another size.</p>${app.groups.map(g=>`<h3>${platformIcon(g.id==='trending'?'trend':g.id)} ${esc(g.name)}</h3>${app.presets.filter(p=>p.platform===g.id).map(p=>`<div class="ed-size ${p.id===design.platform?'on':''}"><span>${esc(p.name)}<small>${p.w}×${p.h}</small></span><button data-resize="${p.id}" ${p.id===design.platform?'disabled':''}>Resize</button><button data-copy="${p.id}">Copy to size</button></div>`).join('')}`).join('')}`;
@@ -1262,6 +1397,7 @@ const Editor=(()=>{
   if(e.target.closest('#edBar'))return onBar(e);
   const toolBtn=e.target.closest('[data-tool]');if(toolBtn){return tool===toolBtn.dataset.tool?closeTool():openTool(toolBtn.dataset.tool)}
   const tpl=e.target.closest('[data-tpl]');if(tpl){commit(()=>{design.template_id=+tpl.dataset.tpl});$$('.ed-tpl',el.fly).forEach(b=>b.classList.toggle('on',b===tpl));thumbs();return}
+  const ash=e.target.closest('[data-addshape]');if(ash){addShape(ash.dataset.addshape,{frame:!!ash.dataset.frame,outline:!!ash.dataset.outline});return}
   const sob=e.target.closest('[data-elsolid]');if(sob){addElement(sob.dataset.elsolid);const i=sel.i,s=slide(),acc=/^#[0-9a-f]{6}$/i.test(s.accent||'')?s.accent:'#ac82f4';commit(()=>{setList(s,'elementSolid',i,true,false);const x=[...(s.elementColors||[])];x[i]=acc;s.elementColors=Array.from({length:s.elements.length},(_,k)=>x[k]||'#25c8ff');setList(s,'elementSizes',i,160,100)},'solid');drawOverlay();return}
   const elb=e.target.closest('[data-el]');if(elb)return addElement(elb.dataset.el);
   const at=e.target.closest('[data-addtext]');if(at)return addText(at.dataset.addtext);

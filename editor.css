@@ -187,3 +187,11 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 
 .cp-rng{display:grid;grid-template-columns:1fr;gap:2px;margin-top:8px;font:700 .72rem 'Manrope',sans-serif;color:#5b4a55}.cp-rng input{width:100%}
 .cp-auto{background:#f3ecff}
+
+/* Icons in the 'Boxes, pills and picture frames' list */
+.shp-ic{display:block;width:34px;height:24px;margin:0 auto 2px;background:var(--ed-accent,#7c5cff);border-radius:0}
+.shp-ic.shp-round{border-radius:7px}.shp-ic.shp-pill{border-radius:999px}.shp-ic.shp-oval{border-radius:50%}
+.shp-ic.shp-diamond{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}.shp-ic.shp-triangle{clip-path:polygon(50% 0,100% 100%,0 100%)}
+.shp-ic.shp-star{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.shp-ic.pic{background:repeating-linear-gradient(135deg,#d9d9de 0 6px,#c5c5cc 6px 12px)}
+.shp-ic.line{background:transparent;border:2px solid var(--ed-accent,#7c5cff)}

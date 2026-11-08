@@ -175,3 +175,8 @@
 .num-on:not(.dk-steps):not(.dk-agenda):not(.dk-cards):not(.dk-recap) .dk-item[data-n]:before{content:attr(data-n)!important;display:inline-grid!important;place-items:center;min-width:1.7em;height:1.7em;margin-right:.6em;border-radius:50%;background:var(--a);color:var(--on-a);font-size:.85em;font-weight:800;vertical-align:middle;position:static;transform:none}
 /* The picture on list and story pages can be moved and resized from the editor. */
 .dk .dk-visual{translate:var(--dk-art-x,0) var(--dk-art-y,0);scale:var(--dk-art-s,1)}
+
+/* Open pages: nothing is placed for you. Headline, write-up and label start in the top-left corner and are moved by their own settings. */
+.dk-open .dk-copy{position:absolute;inset:0;display:block;padding:0;margin:0;gap:0;z-index:3;pointer-events:none}
+.dk-open .art-kicker,.dk-open .art-title,.dk-open .art-sub{position:absolute;left:0;top:0;margin:0;width:max-content;max-width:94cqw;display:block;pointer-events:auto}
+.dk-open .dk-visual,.dk-open .dk-thumb-wrap,.dk-open .dk-fx{display:none}
