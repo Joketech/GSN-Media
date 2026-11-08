@@ -360,17 +360,67 @@ const Editor=(()=>{
   const h=hit(e.clientX,e.clientY);if(!h||h.t==='art'||h.t==='element')return;
   select(h,true);if(['copy','text'].includes(h.t))startEdit();
  }
+ /* ---------- rich text: colour or highlight single words inside a text box ---------- */
+ // A word or phrase with its own colour is stored in the text as ⟦text colour|background|words⟧; the page draws it, and nothing else reads it.
+ const FMT=/⟦(#[0-9a-f]{6})?\|(#[0-9a-f]{6})?\|([^⟦⟧]*)⟧/gi;
+ const fmtStyle=(fg,bg)=>`${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}`;
+ function toHtml(raw){let out='',last=0,m;const s=String(raw??'');FMT.lastIndex=0;while((m=FMT.exec(s))){out+=esc(s.slice(last,m.index))+`<span class="fmt" data-fg="${m[1]||''}" data-bg="${m[2]||''}" style="${fmtStyle(m[1],m[2])}">${esc(m[3])}</span>`;last=m.index+m[0].length}return out+esc(s.slice(last))}
+ // One record per character (UTF-16 unit) with its colour and background: easy to colour any range and to write back.
+ function charsOf(root){
+  const out=[],nl=()=>out.push({ch:'\n',fg:'',bg:''});
+  const w=(n,fg,bg)=>{for(const c of n.childNodes){
+   if(c.nodeType===3){const v=c.nodeValue.replace(/ /g,' ').replace(/[⟦⟧]/g,'');for(let k=0;k<v.length;k++)out.push({ch:v[k],fg,bg})}
+   else if(c.nodeName==='BR')nl();
+   else if(c.nodeType===1){if(/^(DIV|P)$/.test(c.nodeName)&&out.length&&out[out.length-1].ch!=='\n')nl();w(c,c.dataset?.fg||fg,c.dataset?.bg||bg)}}};
+  w(root,'','');return out;
+ }
+ function charsToRaw(chars){
+  let out='',i=0;
+  while(i<chars.length){const {fg,bg}=chars[i];let j=i,t='';while(j<chars.length&&chars[j].fg===fg&&chars[j].bg===bg){t+=chars[j].ch;j++}
+   out+=(!fg&&!bg)?t:t.split('\n').map(l=>l?`⟦${fg}|${bg}|${l}⟧`:'').join('\n');i=j}
+  return out;
+ }
+ const rawOfRaw=raw=>{const chars=[];let last=0,m;const push=(t,fg,bg)=>{for(let k=0;k<t.length;k++)chars.push({ch:t[k],fg,bg})};FMT.lastIndex=0;while((m=FMT.exec(raw))){push(raw.slice(last,m.index),'','');push(m[3],m[1]||'',m[2]||'');last=m.index+m[0].length}push(raw.slice(last),'','');return chars};
+ // Plain text of one raw string (no markers): what a person reads, used for searching and size checks.
+ const plainOf=raw=>String(raw??'').replace(FMT,'$3');
+ function pointAt(root,off){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n,left=off,last=null;
+  while((n=w.nextNode())){last=n;if(left<=n.nodeValue.length)return {node:n,offset:left};left-=n.nodeValue.length}
+  return last?{node:last,offset:last.nodeValue.length}:{node:root,offset:0};
+ }
  function startEdit(){
+  if(editing)return;
   const node=nodeFor();if(!node||!sel||!['copy','text'].includes(sel.t))return;
   const target={...sel},pg=page;
+  const raw0=target.t==='copy'?design.pages[pg]?.[target.k]:design.pages[pg]?.texts?.[target.i]?.text;
   editing=true;el.over.innerHTML='';el.bar.hidden=true;el.over.style.pointerEvents='none';
-  if(target.t==='copy'){const raw=design.pages[pg]?.[target.k];if(typeof raw==='string'){node.textContent=raw;node.style.whiteSpace='pre-wrap';node.style.display='block'}}
-  node.contentEditable='plaintext-only';if(node.contentEditable!=='plaintext-only')node.contentEditable='true';
+  if(typeof raw0==='string'){node.innerHTML=toHtml(raw0);node.style.whiteSpace='pre-wrap';node.style.display='block'}
+  node.contentEditable='true';
   document.activeElement?.blur?.();node.style.outline='2px solid #7c5cff';node.style.cursor='text';node.style.userSelect='text';node.style.webkitUserSelect='text';node.focus();
-  const range=document.createRange();range.selectNodeContents(node);const sc=el.host.shadowRoot.getSelection?.()||getSelection();sc.removeAllRanges?.();sc.addRange?.(range);
+  const shadowSel=()=>el.host.shadowRoot.getSelection?.()||getSelection();
+  const range=document.createRange();range.selectNodeContents(node);const sc=shadowSel();sc.removeAllRanges?.();sc.addRange?.(range);
+  // The chosen words, as offsets into the text, remembered while the colour panel has the keyboard.
+  let saved=null;
+  const offsetIn=(container,off)=>{const r=document.createRange();r.selectNodeContents(node);r.setEnd(container,off);const d=document.createElement('div');d.appendChild(r.cloneContents());return charsOf(d).length};
+  const saveSel=()=>{const s2=shadowSel();if(!s2||!s2.rangeCount)return;const r=s2.getRangeAt(0);if(!node.contains(r.startContainer)||!node.contains(r.endContainer))return;saved={start:offsetIn(r.startContainer,r.startOffset),end:offsetIn(r.endContainer,r.endOffset)};if(saved.start>saved.end)saved={start:saved.end,end:saved.start}};
+  saveSel();
+  const bar=document.createElement('div');bar.className='ed-bar ed-etb';
+  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><button class="txt" data-e="clear" title="Remove colour and background from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
+  el.area.appendChild(bar);
+  const place=()=>{const ar=el.area.getBoundingClientRect(),r=node.getBoundingClientRect(),bw=bar.offsetWidth,bh=bar.offsetHeight;let x=r.left+r.width/2-ar.left-bw/2,y=r.top-ar.top-bh-12;if(y<8)y=r.bottom-ar.top+12;x=clamp(x,8,Math.max(8,ar.width-bw-8));y=clamp(y,8,Math.max(8,ar.height-bh-8));bar.style.left=(x+el.area.scrollLeft)+'px';bar.style.top=(y+el.area.scrollTop)+'px'};
+  place();
+  const curAttr=k=>{const ch=charsOf(node);if(!saved)return '';const i=Math.min(saved.start,ch.length-1);return ch[i]?.[k]||''};
+  const paintDots=()=>{for(const d of bar.querySelectorAll('[data-dot]')){const c=curAttr(d.dataset.dot);d.style.background=c||'transparent';d.style.outline=c?'':'1px dashed #999'}};paintDots();
+  const restore=(a,b)=>{const s2=shadowSel(),r=document.createRange(),p1=pointAt(node,a),p2=pointAt(node,b);r.setStart(p1.node,p1.offset);r.setEnd(p2.node,p2.offset);s2.removeAllRanges?.();s2.addRange?.(r);saved={start:a,end:b}};
+  const apply=patch=>{
+   const chars=charsOf(node);let a=saved?.start??0,b=saved?.end??0;if(a===b){a=0;b=chars.length}
+   for(let i=a;i<b&&i<chars.length;i++){const c=chars[i];if(c.ch==='\n')continue;if(patch.clear){c.fg='';c.bg=''}else{if('fg' in patch)c.fg=patch.fg||'';if('bg' in patch)c.bg=patch.bg||''}}
+   node.innerHTML=toHtml(charsToRaw(chars));restore(a,b);paintDots();place();
+  };
   const finish=cancel=>{
-   node.removeEventListener('blur',onBlur);node.removeEventListener('keydown',onKeyEdit);
-   const text=node.innerText.replace(/ /g,' ').replace(/\n{3,}/g,'\n\n').trim();
+   document.removeEventListener('pointerdown',away,true);node.removeEventListener('keydown',onKeyEdit);node.removeEventListener('paste',onPaste);node.removeEventListener('blur',onBlur);node.removeEventListener('pointerup',saveSel);node.removeEventListener('keyup',saveSel);
+   const text=charsToRaw(charsOf(node)).replace(/\n{3,}/g,'\n\n').trim();
+   bar.remove();document.querySelector('.ed-cpanel')?.remove();
    editing=false;el.over.style.pointerEvents='';
    if(!cancel){
     if(pg!==page||!design.pages[pg])return render();
@@ -381,15 +431,33 @@ const Editor=(()=>{
    }
    render({thumbs:[page]});
   };
-  const onBlur=()=>finish(false);
-  const onKeyEdit=ev=>{if(ev.key==='Escape'){ev.preventDefault();finish(false)}ev.stopPropagation()};
-  node.addEventListener('blur',onBlur);node.addEventListener('keydown',onKeyEdit);
+  const inside=t=>!!(t&&(bar.contains(t)||t.closest?.('.ed-cpanel')));
+  const away=ev=>{if(ev.composedPath().includes(node)||inside(ev.target))return;finish(false)};
+  const onBlur=ev=>{if(inside(ev.relatedTarget))return;setTimeout(()=>{if(editing&&!inside(document.activeElement)&&!node.matches(':focus'))finish(false)},0)};
+  const onPaste=ev=>{ev.preventDefault();document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text/plain'))};
+  const onKeyEdit=ev=>{
+   if(ev.key==='Escape'){ev.preventDefault();finish(false)}
+   else if(ev.key==='Enter'){ev.preventDefault();document.execCommand('insertText',false,'\n')}
+   ev.stopPropagation();
+  };
+  bar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault()});
+  bar.addEventListener('click',e=>{
+   const b=e.target.closest('[data-e]');if(!b)return;saveSel();const k=b.dataset.e;
+   if(k==='done')return finish(false);
+   if(k==='clear')return apply({clear:true});
+   const cur=curAttr(k),keep=saved?{...saved}:null;
+   colourPanel(b,cur,c=>{if(keep)saved=keep;apply({[k]:c||''});},{none:k==='fg'?'Back to the box colour':'No background'});
+  });
+  document.addEventListener('pointerdown',away,true);
+  node.addEventListener('blur',onBlur);node.addEventListener('keydown',onKeyEdit);node.addEventListener('paste',onPaste);node.addEventListener('pointerup',saveSel);node.addEventListener('keyup',saveSel);
  }
 
  /* ---------- contextual toolbar (only exists while something is selected) ---------- */
- function layerOf(k){const a=sel.t==='copy'?slide().textLayers?.[sel.k]:sel.t==='text'?slide().texts[sel.i]:null;return a||{}}
+ function layerOf(k){const m=multi.length>1?(multi.find(x=>x.t==='copy'||x.t==='text')||sel):sel;const a=m.t==='copy'?slide().textLayers?.[m.k]:m.t==='text'?slide().texts[m.i]:null;return a||{}}
  function patchLayer(patch,key){
-  commit(()=>{const s=slide();if(sel.t==='copy')s.textLayers={...s.textLayers,[sel.k]:{...(s.textLayers?.[sel.k]||{}),...patch}};else s.texts[sel.i]={...s.texts[sel.i],...patch}},key);
+  // With several text boxes selected (or grouped), a change goes to every one of them.
+  const ms=multi.length>1?multi.filter(m=>m.t==='copy'||m.t==='text'):[sel];
+  commit(()=>{const s=slide();for(const m of ms){if(m.t==='copy')s.textLayers={...s.textLayers,[m.k]:{...(s.textLayers?.[m.k]||{}),...patch}};else s.texts[m.i]={...s.texts[m.i],...patch}}},key);
  }
  function curSize(){
   const l=layerOf();if(Number.isFinite(l.size))return l.size;
@@ -405,18 +473,14 @@ const Editor=(()=>{
    const grouped=members().some(m=>groupFor(layerKey(m)));
    const oneGroup=grouped&&(()=>{const g=groupFor(layerKey(multi[0]));return g&&g.length===multi.length})();
    const nm=m=>{const k=layerKey(m);return k==='artwork'?'Picture':k.startsWith('slot:')?slotLabel(k.slice(5)):k.startsWith('text:')?'Text '+(+k.slice(5)+1):k.startsWith('element:')?'Shape '+(+k.slice(8)+1):({title:'Heading',sub:'Subtitle',kicker:'Label',brandText:'Brand',body:'Body'})[k]||k};
-   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
+   bar.innerHTML=`<span class="count">${oneGroup?'Group':multi.length+' selected'}</span>${oneGroup?'<span class="hint-s">Edit one item:</span>'+multi.map((m,n)=>`<button class="txt" data-b="solo" data-n="${n}">${esc(nm(m))}</button>`).join(''):''}${sep}${multi.every(m=>m.t==='copy'||m.t==='text')?textBarHtml(layerOf(),s,false)+sep:''}<button class="txt" data-b="group">Group</button>${grouped?'<button class="txt" data-b="ungroup">Ungroup</button>':''}${sep}${b('forward','up','Bring forward')}${b('backward','down','Send backward')}${b('del','trash','Delete selected')}`;
    const u=members().map(m=>nodeFor(m)?.getBoundingClientRect()).filter(Boolean);
    if(u.length){const L=Math.min(...u.map(r=>r.left)),T=Math.min(...u.map(r=>r.top)),R=Math.max(...u.map(r=>r.right)),B=Math.max(...u.map(r=>r.bottom));positionBar({left:L,top:T,right:R,bottom:B,width:R-L,height:B-T},pageBox())}
    return;
   }
   if(sel.t==='copy'||sel.t==='text'){
    const l=layerOf();
-   html=`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
-   <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
-   ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
-   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}<button class="txt" data-b="spacing" title="Letter and line spacing">Spacing</button>${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Highlight behind the text" aria-label="Text highlight colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
-   <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
+   html=textBarHtml(l,s,true);
   }else if(sel.t==='element'){
    html=`<label class="rng">Size<input type="range" min="25" max="500" value="${s.elementSizes?.[sel.i]||100}" data-b="elsize"></label><label class="rng">Width<input type="range" min="25" max="400" value="${s.elementStretchX?.[sel.i]||100}" data-b="elsx"></label><label class="rng">Height<input type="range" min="25" max="400" value="${s.elementStretchY?.[sel.i]||100}" data-b="elsy"></label>${isPhotoEl(s.elements[sel.i])?photoTools(s,sel.i):`<button class="swatch cp" data-b="elcolpop" title="Colour" aria-label="Shape colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(s.elementColors?.[sel.i]||'')?s.elementColors[sel.i]:'#25c8ff'}"></button><button class="txt ${s.elementSolid?.[sel.i]?'on':''}" data-b="elsolid" title="Switch between a solid colour shape and an outline">${s.elementSolid?.[sel.i]?'Solid':'Outline'}</button><button class="txt" data-b="elfillup" title="Fill this shape with your picture">Picture</button><button class="txt" data-b="elfilllib">Library</button>${s.elementFills?.[sel.i]?'<button class="txt" data-b="elfillclear">Remove picture</button>':''}`}<button class="txt" data-b="elcenter" title="Centre on the page">Centre</button>${sep}`;
   }else if(sel.t==='slot'){
@@ -431,6 +495,15 @@ const Editor=(()=>{
   if(sel.t==='text'||sel.t==='element'||sel.t==='art'||sel.t==='slot'||(sel.t==='copy'&&sel.k!=='title'))html+=b('del','trash',sel.t==='art'?'Delete image':sel.t==='slot'?'Remove picture (shows the studio photo again)':'Delete');
   bar.innerHTML=html;
   const r=nodeFor()?.getBoundingClientRect();if(r)positionBar(r,pageBox());
+ }
+ function textBarHtml(l,s,single){
+  const b=(act,ic,label,on)=>`<button class="${on?'on':''}" data-b="${act}" title="${label}" aria-label="${label}" aria-pressed="${!!on}">${icon(ic)}</button>`;
+  const sep='<i class="sep"></i>';
+  return `${single?`<button class="txt" data-b="edit" title="Type here (or press Enter)">Edit text</button>${sep}`:'<span class="hint-s">Applies to every selected text:</span>'}<select data-b="font" aria-label="Font">${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}" ${(l.font||'sans')===v?'selected':''}>${esc(n)}</option>`).join('')}</select>
+   <button data-b="smaller" aria-label="Smaller">−</button><output>${curSize()}</output><button data-b="bigger" aria-label="Bigger">+</button>${sep}
+   ${b('bold','bold','Bold',l.bold)}${b('italic','italic','Italic',l.italic)}${b('underline','underline','Underline',l.underline)}${b('uppercase','text','Uppercase',l.uppercase)}${sep}
+   ${b('align','alignLeft','Alignment: '+(l.align||'left'),false)}<button class="txt" data-b="spacing" title="Letter and line spacing">Spacing</button>${b('bullets','list','Bullets',l.bullets)}<button class="swatch cp" data-b="colorpop" title="Text colour" aria-label="Text colour" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.color||'')?l.color:s.ink||'#ffffff'}"></button><button class="swatch cp hl" data-b="hlpop" title="Background fill behind the text (padding and rounded corners inside)" aria-label="Text background fill" style="--sw:${/^#[0-9a-f]{6}$/i.test(l.bg||'')?l.bg:'transparent'}"><b>A</b></button>
+   <select data-b="effect" aria-label="Effect"><option value="">No effect</option>${['shadow','glow','outline'].map(v=>`<option ${l.effect===v?'selected':''}>${v}</option>`).join('')}</select>${sep}`;
  }
  function setFill(i,u){const s=slide(),n=s.elements.length,arr=Array.from({length:n},(_,j)=>s.elementFills?.[j]??null);arr[i]=u;if(arr.some(Boolean))s.elementFills=arr;else delete s.elementFills}
  const isPhotoEl=k=>typeof k==='string'&&/^data:image\//.test(k);
@@ -529,7 +602,9 @@ const Editor=(()=>{
   if(['bold','italic','underline','uppercase','bullets'].includes(a))return patchLayer({[a]:!l[a]}),drawBar();
   if(a==='align'){const order=['left','center','right','justify'];return patchLayer({align:order[(order.indexOf(l.align||'left')+1)%4]}),drawBar()}
   if(a==='colorpop')return colourPanel(t,l.color||slide().ink||'#ffffff',c=>{patchLayer({color:c},'color');drawBar()});
-  if(a==='hlpop')return colourPanel(t,l.bg||'',c=>{patchLayer({bg:c||undefined},'hl');drawBar()},{none:'No highlight'});
+  if(a==='hlpop')return colourPanel(t,l.bg||'',c=>{patchLayer({bg:c||undefined},'hl');drawBar()},{none:'No background',
+   auto:()=>{const acc=/^#[0-9a-f]{6}$/i.test(slide().accent||'')?slide().accent:'#ffd84d',n=parseInt(acc.slice(1),16),lum=(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255;patchLayer({bg:acc,color:lum>.6?'#101323':'#ffffff'},'hlauto');drawBar()},
+   sliders:[{key:'bgPad',label:'Padding',min:0,max:150,value:l.bgPad??100},{key:'bgRadius',label:'Rounded corners',min:0,max:100,value:l.bgRadius??35}],onSlide:(k,v)=>patchLayer({[k]:v},'hl'+k)});
   if(a==='elcolpop'){const i=sel.i;return colourPanel(t,slide().elementColors?.[i]||'#25c8ff',c=>{commit(()=>{const x=[...(slide().elementColors||[])];x[i]=c;slide().elementColors=Array.from({length:slide().elements.length},(_,k)=>x[k]||'#25c8ff')},'elcolor');drawBar()})}
   if(a==='elsolid'){const i=sel.i;commit(()=>setList(slide(),'elementSolid',i,!slide().elementSolid?.[i],false),'elsolid');return drawBar()}
   if(a==='solo'){const m=multi[+t.dataset.n];if(m){select(m,true)}return}
@@ -761,6 +836,8 @@ const Editor=(()=>{
   const cur=/^#[0-9a-f]{6}$/i.test(current)?current:'#ac82f4';
   box.innerHTML=`<div class="cp-row"><input type="text" class="cp-hex" maxlength="7" value="${/^#[0-9a-f]{6}$/i.test(current)?current:''}" placeholder="Try #00c4cc" aria-label="Hex colour"><input type="color" class="cp-native" value="${cur}" aria-label="Pick any colour">${window.EyeDropper?'<button class="cp-eye" title="Pick a colour from the screen" aria-label="Eyedropper">⌖</button>':''}</div>
   ${opt.none?`<button class="cp-none" data-cp="">${esc(opt.none)}</button>`:''}
+  ${opt.auto?'<button class="cp-none cp-auto" data-auto>Auto fill (uses the page accent colour)</button>':''}
+  ${(opt.sliders||[]).map(x=>`<label class="cp-rng">${esc(x.label)}<input type="range" min="${x.min}" max="${x.max}" value="${x.value}" data-sl="${x.key}"></label>`).join('')}
   ${designColours().length?`<h4>Colours in this design</h4><div class="cp-grid">${sw(designColours())}</div>`:''}
   ${kit().length?`<h4>Brand colours</h4><div class="cp-grid">${sw(kit())}</div>`:''}
   <h4>Standard colours</h4><div class="cp-grid">${sw(std)}</div>`;
@@ -769,6 +846,8 @@ const Editor=(()=>{
   box.style.left=Math.max(8,Math.min(innerWidth-bw-8,r.left))+'px';
   const below=r.bottom+8+bh<innerHeight;box.style.top=(below?r.bottom+8:Math.max(8,r.top-bh-8))+'px';
   const pick=c=>{done(c)};
+  box.querySelectorAll('[data-sl]').forEach(r=>r.oninput=()=>opt.onSlide?.(r.dataset.sl,+r.value));
+  box.querySelector('[data-auto]')?.addEventListener('click',()=>opt.auto?.());
   const hexIn=$('.cp-hex',box);
   hexIn.onchange=()=>{let v=hexIn.value.trim().toLowerCase();if(/^[0-9a-f]{6}$/.test(v))v='#'+v;if(/^#[0-9a-f]{6}$/.test(v))pick(v);else toast('Use a hex colour such as #00c4cc.')};
   $('.cp-native',box).oninput=ev=>{hexIn.value=ev.target.value;pick(ev.target.value)};

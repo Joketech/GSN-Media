@@ -181,3 +181,12 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 
 /* The rain layer paints the editor's backdrop, so the shell lets it show through. */
 body.in-editor .editor-root{background:transparent;animation:none}
+
+/* Colouring single words while typing */
+.ed-etb .dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:1px solid rgba(0,0,0,.25)}
+.ed-etb .txt.main{background:var(--maroon,#7c1d3c);color:#fff;border-radius:10px}
+.ed-etb{flex-wrap:wrap;max-width:calc(100% - 16px)}
+.fmt{border-radius:.3em}
+
+.cp-rng{display:grid;grid-template-columns:1fr;gap:2px;margin-top:8px;font:700 .72rem 'Manrope',sans-serif;color:#5b4a55}.cp-rng input{width:100%}
+.cp-auto{background:#f3ecff}
