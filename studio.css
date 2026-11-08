@@ -6,4 +6,6 @@
 .art .page-bg{position:absolute;inset:0;z-index:-1;pointer-events:none;background-size:cover;background-position:center;background-repeat:no-repeat}
 .art.page-has-bg:before,.art.page-has-bg:after{opacity:0!important}
 .art.page-hide-art .campaign-photo,.art.page-hide-art .dk-ph,.art.page-hide-art .slot-demo,.art.page-hide-art .campaign-visual>img{display:none!important}
+.art.page-hide-art .campaign-visual{visibility:hidden!important}
+.art.page-no-deco:before,.art.page-no-deco:after{display:none!important}
 .art [data-canvas-copy],.art .free-text{unicode-bidi:plaintext}

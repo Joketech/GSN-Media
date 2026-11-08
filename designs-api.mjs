@@ -67,6 +67,7 @@ function textOptions(o, name) {
     rotation: range(o.rotation, -360, 360, `${name}.rotation`), size: range(o.size, 1, 30, `${name}.size`),
     width: range(o.width, 50, 180, `${name}.width`), spacing: range(o.spacing, -10, 40, `${name}.spacing`), lineHeight: range(o.lineHeight, 70, 250, `${name}.lineHeight`),
     opacity: range(o.opacity, 10, 100, `${name}.opacity`),
+    hide: o.hide === true ? true : undefined,
     font: pickFont(o.font, `${name}.font`), align: pick(o.align, ['left', 'center', 'right', 'justify'], `${name}.align`),
     effect: pick(o.effect, ['shadow', 'glow', 'outline'], `${name}.effect`), motion: pick(o.motion, ['fade', 'pulse', 'rise'], `${name}.motion`),
     color: shapeColour(o.color, `${name}.color`), bg: hex(o.bg, `${name}.bg`), boxFill: hex(o.boxFill, `${name}.boxFill`), bgPad: range(o.bgPad, 0, 150, `${name}.bgPad`), bgRadius: range(o.bgRadius, 0, 100, `${name}.bgRadius`),
@@ -97,6 +98,7 @@ export function sanitizeSlide(s, index = 0) {
     x: range(s.x, -100, 100, `${where} x`), y: range(s.y, -100, 100, `${where} y`), size: range(s.size, 5, 18, `${where} size`),
     image: image(s.image, `${where} image`),
     pageFill: hex(s.pageFill, `${where} pageFill`), pageImage: image(s.pageImage, `${where} pageImage`),
+    hideDeco: s.hideDeco === undefined ? undefined : (typeof s.hideDeco === 'boolean' ? s.hideDeco : (() => { throw new DesignError(`${where} hideDeco must be true or false.`); })()),
     hideArt: s.hideArt === undefined ? undefined : (typeof s.hideArt === 'boolean' ? s.hideArt : (() => { throw new DesignError(`${where} hideArt must be true or false.`); })()),
     elementSizes: numberList(s.elementSizes, `${where} elementSizes`, 25, 500),
     elementStretchX: numberList(s.elementStretchX, `${where} elementStretchX`, 25, 400), elementStretchY: numberList(s.elementStretchY, `${where} elementStretchY`, 25, 400),
@@ -133,7 +135,7 @@ export function sanitizeSlide(s, index = 0) {
     for (const [key, v] of Object.entries(s.slots)) {
       if (!SLOT_KEY.test(key)) throw new DesignError(`${where} has an invalid slot name "${key}".`);
       if (!v || typeof v !== 'object' || Array.isArray(v)) throw new DesignError(`${where} slot ${key} must be an object.`);
-      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`), mask: pick(v.mask, MASKS, `${where} slot ${key} mask`), flip: range(v.flip, 0, 1, `${where} slot ${key} flip`) });
+      slide.slots[key] = clean({ src: image(v.src ?? v.image, `${where} slot ${key} picture`), x: range(v.x, -100, 100, `${where} slot ${key} x`), y: range(v.y, -100, 100, `${where} slot ${key} y`), z: range(v.z, 100, 400, `${where} slot ${key} z`), fx: range(v.fx, -100, 100, `${where} slot ${key} fx`), fy: range(v.fy, -100, 100, `${where} slot ${key} fy`), fs: range(v.fs, 30, 300, `${where} slot ${key} fs`), mask: pick(v.mask, MASKS, `${where} slot ${key} mask`), flip: range(v.flip, 0, 1, `${where} slot ${key} flip`), hide: v.hide === true ? true : undefined });
     }
   }
   if (s.motif !== undefined) {

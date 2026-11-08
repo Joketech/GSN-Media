@@ -207,3 +207,13 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .fontbtn{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .ed-marquee{position:absolute;border:1.5px solid #7c5cff;background:rgba(124,92,255,.12);pointer-events:none;z-index:5}
+
+.ed-pos{position:fixed;right:16px;top:90px;z-index:70;width:290px;max-height:calc(100vh - 120px);overflow:auto;background:#fff;border-radius:14px;box-shadow:0 14px 40px #2b123a40,0 0 0 1px #0001;padding:14px;color:#2a1a24}
+.pos-head{display:flex;justify-content:space-between;align-items:center;font:700 1rem 'DM Sans',sans-serif}
+.pos-tabs{display:flex;margin:10px 0;border-bottom:1px solid #0001}.pos-tabs button{flex:1;border:0;background:none;padding:8px;font:600 .85rem 'DM Sans',sans-serif;cursor:pointer;color:#777;border-bottom:2px solid transparent}.pos-tabs button.on{color:#222;border-color:#7a3cff}
+.ed-pos h4{margin:12px 0 6px;font:700 .8rem 'DM Sans',sans-serif}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pos-b{display:flex;align-items:center;gap:8px;border:1px solid #0002;background:#fff;border-radius:10px;padding:9px 10px;font:600 .8rem 'DM Sans',sans-serif;cursor:pointer;color:#2a1a24}.pos-b:hover{background:#f3eef5}
+.pos-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.pos-layers li{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:7px 9px;border-radius:8px;border:1px solid #0001;cursor:pointer;font:600 .8rem 'DM Sans',sans-serif}.pos-layers li.on{background:#ede4f7;border-color:#7a3cff}.pos-layers li.off{opacity:.6;cursor:default}
+.pos-eye{border:0;background:#f3eef5;border-radius:6px;padding:3px 8px;font:600 .7rem 'DM Sans',sans-serif;cursor:pointer}

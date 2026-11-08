@@ -287,9 +287,9 @@ function slotBox(t,slide,key,image,cls=''){
  const px=50+lim(st.x,-100,100,0)/2,py=50+lim(st.y,-100,100,0)/2,z=lim(st.z,100,400,100)/100;
  const demo=gsnPhoto(def[2]);
  const inner=src?`<img class="slot-img" src="${src}" alt="">`:`<i class="slot-demo gsn-photo" style="--photo-source:url('${demo.file}');--photo-position:${demo.position};--photo-size:${demo.size}"></i>`;
- const fx=lim(st.fx,-100,100,0),fy=lim(st.fy,-100,100,0),fs=lim(st.fs,30,300,100),flipSlot=st.flip===1?'scale:-1 1;':'';
+ const fx=lim(st.fx,-100,100,0),fy=lim(st.fy,-100,100,0),fs=lim(st.fs,30,300,100),flipSlot=st.flip===1?'scale:-1 1;':'',hideSlot=st.hide?'display:none!important;':'';
  const place=fx||fy||fs!==100?`translate:${fx}cqw ${fy}cqw;scale:${fs/100};`:'';
- return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="--px:${px}%;--py:${py}%;--z:${z};${place}"><div class="slot-fill" style="${flipSlot}">${inner}</div></div>`;
+ return `<div class="slot ${cls}" data-slot="${key}" role="img" aria-label="${esc(def[1])}" style="${hideSlot}--px:${px}%;--py:${py}%;--z:${z};${place}"><div class="slot-fill" style="${flipSlot}">${inner}</div></div>`;
 }
 // The cover of a photo layout. It uses the same parts as every other page (brand, kicker, title, text, footer), so selecting, moving and resizing text work as usual.
 function slotPage(t,slide,o){
@@ -356,7 +356,7 @@ function artBase(t,slide={},extra=''){
   const effect={shadow:'0 .09em .18em #0009',glow:'0 0 .35em currentColor',outline:'1px 1px #000,-1px -1px #000'}[options.effect];
   const motion={fade:'layer-fade',pulse:'layer-pulse',rise:'layer-rise'}[options.motion];
   const hl=(/^#[0-9a-f]{6}$/i.test(options.bg||'')?`--hl-bg:${options.bg};--hl-py:${Math.round(.28*clamp(options.bgPad,0,150,100))/100}em;--hl-px:${Math.round(.6*clamp(options.bgPad,0,150,100))/100}em;--hl-r:${clamp(options.bgRadius,0,100,35)/100}em;`:'')+(/^#[0-9a-f]{6}$/i.test(options.boxFill||'')?`background:${options.boxFill};`:'');
-  return `${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':Object.hasOwn(TOK,options.color)?'color:'+TOK[options.color]+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
+  return `${options.hide?'display:none!important;':''}${hl}${Number.isFinite(options.boxWidth)?'width:'+clamp(options.boxWidth,8,150,50)+'cqw;':''}${Number.isFinite(options.boxHeight)?'min-height:'+clamp(options.boxHeight,1,180,10)+'cqw;':''}${Number.isFinite(options.boxWidth)||Number.isFinite(options.boxHeight)?'box-sizing:border-box;max-width:none;flex:none;overflow-wrap:anywhere;':''}rotate:${clamp(options.rotation,-360,360,0)}deg;translate:${clamp(options.x,-100,100,0)}cqw ${clamp(options.y,-100,100,0)*heightFactor}cqw;${font?'font-family:'+font+';':''}${Number.isFinite(options.size)?'font-size:'+clamp(options.size,1,30,8)+'cqw;':''}scale:${clamp(options.width,50,180,100)/100} 1;transform-origin:left center;${hex(options.color,'')?'color:'+options.color+';':Object.hasOwn(TOK,options.color)?'color:'+TOK[options.color]+';':''}${options.bold?'font-weight:800;':''}${options.italic?'font-style:italic;':''}${decoration?'text-decoration:'+decoration+';':''}${options.uppercase?'text-transform:uppercase;':''}${['left','center','right','justify'].includes(options.align)?'text-align:'+options.align+';':''}${Number.isFinite(options.spacing)?'letter-spacing:'+clamp(options.spacing,-10,40,0)/100+'em;':''}${Number.isFinite(options.lineHeight)?'line-height:'+clamp(options.lineHeight,70,250,100)/100+';':''}opacity:${clamp(options.opacity,10,100,100)/100};${effect?'text-shadow:'+effect+';':''}${motion?'animation:'+motion+' 1s both;':''}`;
  }
  function textStyle(key){return textStyleFrom(slide.textLayers?.[key]);}
  const order=Array.isArray(slide.layerOrder)?slide.layerOrder:[];
@@ -472,10 +472,10 @@ function art(t,slide={},extra=''){
  const shapes=shapesHtml(slide);
  const dcss=designCss(slide,(fill||bg?1:0)+(shapes?1:0));
  if(dcss){const i=html.lastIndexOf('</div>');if(i>0)html=html.slice(0,i)+`<style>${dcss}</style>`+html.slice(i)}
- if(!fill&&!bg&&!slide.hideArt&&!shapes)return html;
+ if(!fill&&!bg&&!slide.hideArt&&!slide.hideDeco&&!shapes)return html;
  const end=html.indexOf('>');if(end<0||html.slice(0,end).indexOf('class="')<0)return html;
- const custom=fill||bg||slide.hideArt;
- const open=custom?html.slice(0,end).replace('class="','class="page-custom '+(slide.hideArt?'page-hide-art ':'')+(fill||bg?'page-has-bg ':'')):html.slice(0,end);
+ const custom=fill||bg||slide.hideArt||slide.hideDeco;
+ const open=custom?html.slice(0,end).replace('class="','class="page-custom '+(slide.hideArt?'page-hide-art ':'')+(slide.hideDeco?'page-no-deco ':'')+(fill||bg?'page-has-bg ':'')):html.slice(0,end);
  const layer=fill||bg?`<div class="page-bg" style="${fill?'background-color:'+fill+';':''}${bg?"background-image:url('"+bg+"');":''}"></div>`:'';
  return open+'>'+layer+shapes+html.slice(end+1);
 }
