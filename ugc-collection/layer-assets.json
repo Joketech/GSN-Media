@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "campaigns": [
+    {
+      "id": 0,
+      "kit": "layered-assets/000-kit.png",
+      "background": "layered-assets/000-background.png",
+      "regions": {"person": [0,85,575,925], "product": [590,380,400,350], "packaging": [1030,175,475,730]}
+    },
+    {
+      "id": 8,
+      "kit": "layered-assets/008-kit.png",
+      "background": "layered-assets/008-background.png",
+      "regions": {"person": [0,170,525,670], "product": [530,335,500,330], "packaging": [1060,355,465,350]}
+    },
+    {
+      "id": 10,
+      "kit": "layered-assets/010-kit.png",
+      "background": "layered-assets/010-background.png",
+      "regions": {"person": [0,80,510,920], "product": [490,300,590,420], "packaging": [1090,220,410,600]}
+    }
+  ]
+}

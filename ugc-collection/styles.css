@@ -74,3 +74,4 @@
 /* Keep a generous safety margin above faces in framed layouts. */
 .ad[class*="layout-"]:not([class*="approved-"]) .visual img{height:110%;object-fit:contain}
 .ad.layout-1:not([class*="approved-"]) .visual img{height:100%}
+.layer-link{display:inline-flex;align-items:center;font-size:12px;color:#594631;text-decoration:none;border:1px solid #cabcaa;border-radius:7px;padding:8px 10px;background:#fffaf1}

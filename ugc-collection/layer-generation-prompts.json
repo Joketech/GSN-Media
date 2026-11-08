@@ -1,0 +1,32 @@
+[
+  {
+    "id": 0,
+    "type": "kit",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: background-extraction and compositing. Create a production asset sheet on TRUE TRANSPARENT alpha, landscape 1536x1024, with exactly THREE equal vertical columns and a generous transparent gutter. No words, no panel numbers, no logos, no checkerboard, no scene background. LEFT column: the same smiling adult Black woman with short dark curly hair, ivory knitted cardigan, gold jewellery. Seated three-quarter portrait, natural hands resting low, NO cup or pouch held and no advertising object attached to her. CENTRE column: the same small ceramic ivory coffee cup filled with coffee, without hands or people. RIGHT column: the same blank ivory resealable coffee pouch, upright and front-facing, with natural folds and no hands. Each subject must be wholly inside its own column, with at least 6 percent clear margin on every edge, no overlap between columns, no shadows extending into other columns. Preserve the reference identity, outfit, product material and photographic realism. Do not create another full advertising poster. Isolate crisp detailed cutouts with clean hair and object edges. This sheet will be split into independent person/product/package assets, so absolutely no component may cross its column boundary."
+  },
+  {
+    "id": 0,
+    "type": "background",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: precise-object-edit. Return ONLY the clean empty background plate as a vertical 4:5 photorealistic commercial backdrop: the warm beige kitchen and wooden counter from the reference, softly sunlit, subtle plants and vertical wooden wall detail. Remove the person, cup and foreground coffee pouch completely. Keep its lighting, colour and perspective consistent with the reference. Reconstruct all formerly occluded background naturally. No text, no logo, no watermark. No people and no advertised products."
+  },
+  {
+    "id": 10,
+    "type": "kit",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: background-extraction and compositing. Create a production asset sheet on TRUE TRANSPARENT alpha, landscape 1536x1024, with exactly THREE equal vertical columns and a generous transparent gutter. No words, no panel numbers, no logos, no checkerboard, no scene background. LEFT column: the same adult East Asian woman with brown shoulder-length hair, orange knitted jumper, cream trousers and white trainers. Preserve her full-body seated crossed-leg pose, but remove the jar and lid from under her so she is an independent seated figure. CENTRE column: the same transparent open round jar of orange gel and its white round lid, without the woman or orange fruit. Preserve clean glass edges, transparent gel and lid shape. RIGHT column: one plain blank ivory rectangular skincare carton with subtle paper texture, front-facing, no lettering. Each subject must be wholly inside its own column, with at least 6 percent clear margin on every edge, no overlap between columns, no shadows extending into other columns. Preserve the reference identity, outfit, product material and photographic realism. Do not create another full advertising poster. Isolate crisp detailed cutouts with clean hair and object edges. This sheet will be split into independent person/product/package assets, so absolutely no component may cross its column boundary."
+  },
+  {
+    "id": 10,
+    "type": "background",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: precise-object-edit. Return ONLY the clean empty background plate as a vertical 4:5 photorealistic commercial backdrop: the same peach-orange studio seamless backdrop and glossy peach floor, with a soft orange glow, empty product space. Remove all people, jar, lid and fruit. Keep its lighting, colour and perspective consistent with the reference. Reconstruct all formerly occluded background naturally. No text, no logo, no watermark. No people and no advertised products."
+  },
+  {
+    "id": 8,
+    "type": "kit",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: background-extraction and compositing. Create a production asset sheet on TRUE TRANSPARENT alpha, landscape 1536x1024, with exactly THREE equal vertical columns and a generous transparent gutter. No words, no panel numbers, no logos, no checkerboard, no scene background. LEFT column: the same smiling adult Black woman with straight shoulder-length black hair and red blouse, seated front-facing portrait, with both hands naturally lowered and empty; remove the chicken she is holding, all food and table objects. CENTRE column: the same single white dinner plate of grilled chicken and jollof rice, without hands, people, salad bowl or drinks. An appetising realistic serving with crisp grill texture. RIGHT column: one plain light kraft paper takeaway food box with a closed lid, front-facing three-quarter view, without food or labels. Each subject must be wholly inside its own column, with at least 6 percent clear margin on every edge, no overlap between columns, no shadows extending into other columns. Preserve the reference identity, outfit, product material and photographic realism. Do not create another full advertising poster. Isolate crisp detailed cutouts with clean hair and object edges. This sheet will be split into independent person/product/package assets, so absolutely no component may cross its column boundary."
+  },
+  {
+    "id": 8,
+    "type": "background",
+    "prompt": "Edit target: the attached approved UGC photograph. Use case: precise-object-edit. Return ONLY the clean empty background plate as a vertical 4:5 photorealistic commercial backdrop: the same vibrant yellow seamless commercial studio background and yellow tabletop. Remove the woman and all food, dishes, chicken, salad and drinks; leave an empty yellow studio set. Keep its lighting, colour and perspective consistent with the reference. Reconstruct all formerly occluded background naturally. No text, no logo, no watermark. No people and no advertised products."
+  }
+]
