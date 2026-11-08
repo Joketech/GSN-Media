@@ -31,6 +31,7 @@ const App=(()=>{
   text:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
   shapes:'<rect x="3" y="12" width="9" height="9" rx="2"/><circle cx="16.5" cy="7.5" r="4.5"/><path d="m4 9 4-6 4 6Z"/>',
   upload:'<path d="M12 16V4m-4 4 4-4 4 4"/><path d="M4 15v5h16v-5"/>',
+  ideas:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/>',
   brand:'<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/><path d="M12 21c-2 0-2-2-.6-3.2 1.2-1 .4-2.6-1.4-2.6"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
@@ -106,7 +107,7 @@ const App=(()=>{
    if(editor){show('editor');await Editor.open(editor[1]);return}
    if(fresh){const t=Number(fresh[1]),p=fresh[2];if(!GSNKit.templates[t]||!preset(p)){location.replace('#templates');return}
     await createPack(t,[p],GSNKit.templates[t].cartoon||GSNKit.templates[t].slotKey?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
-   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','templates','designs','agents','schedule','team','people','settings'].includes(view)?view:'dashboard');
+   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','ideas','templates','designs','agents','schedule','team','people','settings'].includes(view)?view:'dashboard');
   }catch(error){toast(error.message,6000);if(editor||fresh)location.replace('#designs')}
  }
  async function start(){
