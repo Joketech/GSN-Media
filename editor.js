@@ -422,11 +422,11 @@ const Editor=(()=>{
  const FMT=/⟦(#[0-9a-f]{6})?\|([^|⟦⟧]*)\|([^⟦⟧]*)⟧/gi;
  // The middle part holds the background and, after semicolons, the word's own font (f), size in percent (s), italic (i) and bold (b): #ffd84d;f=pacifico;s=180;i=1
  const exParse=ex=>{const o={};for(const p of String(ex||'').split(';')){const [k,v]=p.split('=');if(k&&v!==undefined)o[k]=v}return o};
- const exText=o=>['f','s','i','b'].filter(k=>o[k]!==undefined&&o[k]!=='').map(k=>k+'='+o[k]).join(';');
+ const exText=o=>['f','s','i','b','u'].filter(k=>o[k]!==undefined&&o[k]!=='').map(k=>k+'='+o[k]).join(';');
  const segSplit=seg=>{const [b0,...rest]=String(seg||'').split(';');return {bg:/^#[0-9a-f]{6}$/i.test(b0)?b0:'',ex:exText(exParse(rest.join(';')))}};
  const fmtStyle=(fg,bg,ex)=>{
   const o=exParse(ex),font=GSNKit.gsnFonts.find(f=>f[0]===o.f)?.[2],sz=+o.s;
-  return `${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}${font?'font-family:'+font+';':''}${sz>=40&&sz<=400?'font-size:'+sz/100+'em;line-height:1;':''}${o.i==='1'?'font-style:italic;':''}${o.b==='1'?'font-weight:800;':o.b==='0'?'font-weight:400;':''}`;
+  return `${fg?'color:'+fg+';':''}${bg?'background:'+bg+';padding:.04em .28em;margin:0 -.28em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;':''}${font?'font-family:'+font+';':''}${sz>=40&&sz<=400?'font-size:'+sz/100+'em;line-height:1;':''}${o.i==='1'?'font-style:italic;':''}${o.u==='1'?'text-decoration:underline;':''}${o.b==='1'?'font-weight:800;':o.b==='0'?'font-weight:400;':''}`;
  };
  function toHtml(raw){let out='',last=0,m;const s=String(raw??'');FMT.lastIndex=0;while((m=FMT.exec(s))){const {bg,ex}=segSplit(m[2]);out+=esc(s.slice(last,m.index))+`<span class="fmt" data-fg="${m[1]||''}" data-bg="${bg}" data-ex="${ex}" style="${fmtStyle(m[1],bg,ex)}">${esc(m[3])}</span>`;last=m.index+m[0].length}return out+esc(s.slice(last))}
  // One record per character (UTF-16 unit) with its colour, background and own font settings: easy to style any range and to write back.
@@ -470,7 +470,7 @@ const Editor=(()=>{
   const saveSel=()=>{const s2=shadowSel();if(!s2||!s2.rangeCount)return;const r=s2.getRangeAt(0);if(!node.contains(r.startContainer)||!node.contains(r.endContainer))return;saved={start:offsetIn(r.startContainer,r.startOffset),end:offsetIn(r.endContainer,r.endOffset)};if(saved.start>saved.end)saved={start:saved.end,end:saved.start}};
   saveSel();
   const bar=document.createElement('div');bar.className='ed-bar ed-etb';
-  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><select data-e="font" aria-label="Font of the selected words"><option value="">Box font</option>${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}">${esc(n)}</option>`).join('')}</select><select data-e="size" aria-label="Size of the selected words"><option value="">Size</option>${[50,75,100,125,150,200,250,300,400].map(v=>`<option value="${v}">${v}%</option>`).join('')}</select><button class="txt" data-e="italic" title="Italic for the selected words"><i>I</i></button><button class="txt" data-e="bold" title="Bold for the selected words"><b>B</b></button><button class="txt" data-e="clear" title="Remove colour, background, font and size from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
+  bar.innerHTML=`<span class="hint-s">Select words, then:</span><button class="txt" data-e="fg" title="Colour of the selected words"><i class="dot" data-dot="fg"></i>Text colour</button><button class="txt" data-e="bg" title="Fill behind the selected words"><i class="dot" data-dot="bg"></i>Background</button><select data-e="font" aria-label="Font of the selected words"><option value="">Font</option>${GSNKit.gsnFonts.map(([v,n])=>`<option value="${v}">${esc(n)}</option>`).join('')}</select><select data-e="size" aria-label="Size of the selected words"><option value="">Size</option>${[50,75,100,125,150,200,250,300,400].map(v=>`<option value="${v}">${v}%</option>`).join('')}</select><button class="txt" data-e="italic" title="Italic for the selected words"><i>I</i></button><button class="txt" data-e="bold" title="Bold for the selected words"><b>B</b></button><button class="txt" data-e="underline" title="Underline for the selected words"><u>U</u></button><button class="txt" data-e="clear" title="Remove colour, background, font and size from the selected words">Clear</button><button class="txt main" data-e="done">Done</button>`;
   el.area.appendChild(bar);
   const place=()=>{const ar=el.area.getBoundingClientRect(),r=node.getBoundingClientRect(),bw=bar.offsetWidth,bh=bar.offsetHeight;let x=r.left+r.width/2-ar.left-bw/2,y=r.top-ar.top-bh-12;if(y<8)y=r.bottom-ar.top+12;x=clamp(x,8,Math.max(8,ar.width-bw-8));y=clamp(y,8,Math.max(8,ar.height-bh-8));bar.style.left=(x+el.area.scrollLeft)+'px';bar.style.top=(y+el.area.scrollTop)+'px'};
   place();
@@ -510,7 +510,7 @@ const Editor=(()=>{
    const b=e.target.closest('[data-e]');if(!b)return;saveSel();const k=b.dataset.e;
    if(k==='done')return finish(false);
    if(k==='clear')return apply({clear:true});
-   if(k==='italic'||k==='bold'){const ch=charsOf(node),i0=Math.min(saved?.start??0,ch.length-1),cur=exParse(ch[i0]?.ex);const key=k==='italic'?'i':'b',on=k==='italic'?cur.i==='1':cur.b==='1';return apply({ex:{[key]:on?(k==='bold'?'0':null):'1'}})}
+   if(k==='italic'||k==='bold'||k==='underline'){const ch=charsOf(node),i0=Math.min(saved?.start??0,ch.length-1),cur=exParse(ch[i0]?.ex);const key=k==='italic'?'i':k==='bold'?'b':'u',on=cur[key]==='1';return apply({ex:{[key]:on?(k==='bold'?'0':null):'1'}})}
    const cur=curAttr(k),keep=saved?{...saved}:null;
    colourPanel(b,cur,c=>{if(keep)saved=keep;apply({[k]:c||''});},{none:k==='fg'?'Back to the box colour':'No background'});
   });
