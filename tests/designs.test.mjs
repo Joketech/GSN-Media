@@ -150,6 +150,6 @@ test('100 comic templates have unique hooks, a main picture and a mascot slot',a
 test('the two text-behind-person templates are at the end and have named slots',async()=>{
  const {templateCatalog,starterSlides}=await import('../template-engine.mjs');
  const all=templateCatalog();const mine=all.filter(t=>t.name==='Text behind person'||t.name==='Split word');
- assert.deepEqual(mine.map(t=>t.id),[599,600]);
+ assert.equal(mine.map(t=>t.id).join(),'599,600');
  for(const t of mine){assert.ok(t.slots.some(x=>x.key==='main')&&t.slots.some(x=>x.key==='product'));assert.ok(starterSlides(t.id).length>=1)}
 });
