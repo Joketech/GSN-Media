@@ -1,7 +1,14 @@
 'use strict';
 /* Export: PNG / JPEG / PDF / HTML / MP4. Rendering helpers are lifted from the classic studio so output matches it exactly. */
 const Exporter=(()=>{
-function download(content,name,type='text/plain'){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+// Saves a file. PDFs and videos are handed over as a generic binary so a browser saves them instead of opening them in a tab (which shows the file as a web address).
+function download(content,name,type='text/plain'){
+ const save=/^(application\/pdf|video\/)/.test(type)?'application/octet-stream':type;
+ const url=URL.createObjectURL(new Blob([content],{type:save}));
+ const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';a.style.display='none';
+ document.body.appendChild(a);a.click();
+ setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},30000);
+}
 // Each photo sheet is a multi-megabyte picture. Convert it once and reuse the result for every page and every export.
 const photoSheets=new Map();
 function photoSheetData(file){
@@ -93,8 +100,8 @@ async function rasterDesignPage(card,css,width,height){
  return canvas;
 }
 
-function canvasImage(canvas,type){
- return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('Could not encode this format.')),type,.92));
+function canvasImage(canvas,type,quality=.96){
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('Could not encode this format.')),type,quality));
 }
 
 async function designPdf(canvases,width,height,scale){
@@ -107,7 +114,7 @@ async function designPdf(canvases,width,height,scale){
  object(1,['<< /Type /Catalog /Pages 2 0 R >>']);
  object(2,[`<< /Type /Pages /Count ${canvases.length} /Kids [${canvases.map((_,i)=>3+i*3+' 0 R').join(' ')}] >>`]);
  for(let index=0;index<canvases.length;index++){
-  const id=3+index*3, jpg=new Uint8Array(await (await canvasImage(canvases[index],'image/jpeg')).arrayBuffer());
+  const id=3+index*3, jpg=new Uint8Array(await (await canvasImage(canvases[index],'image/jpeg',.99)).arrayBuffer());
   const paint=`q ${pageWidth} 0 0 ${pageHeight} 0 0 cm /Im0 Do Q\n`;
   object(id,[`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im0 ${id+1} 0 R >> >> /Contents ${id+2} 0 R >>`]);
   object(id+1,[`<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`,jpg,'\nendstream']);
@@ -142,15 +149,44 @@ async function designVideoBlob(images){
 }
 async function downloadDesignVideo(images){download(await designVideoBlob(images),'gsn-design.mp4','video/mp4')}
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+ // A page set up for printing: one sheet per design page, exactly the design's size, text and shapes kept as real text and vectors.
+ async function printDoc(design,cards,style,name){
+  const w=design.size.w,h=design.size.h,body=cards.map(c=>`<section class="pg">${c}</section>`).join('');
+  return `<!doctype html><meta charset="utf-8"><title>${GSNKit.esc(name)}</title><style>${style}
+@page{size:${w}px ${h}px;margin:0}
+html,body{margin:0;padding:0;background:#fff}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important}
+.pg{width:${w}px;height:${h}px;overflow:hidden;position:relative;break-after:page;page-break-after:always}
+.pg:last-child{break-after:auto;page-break-after:auto}
+.pg .art{width:${w}px!important;height:${h}px!important;border-radius:0!important;margin:0!important}</style>${await inlineGsnPhotos(body)}`;
+ }
+ // Opens the browser's print window for the page set; choosing "Save as PDF" there gives a PDF with selectable text.
+ async function printDesign(doc,name){
+  const frame=document.createElement('iframe');
+  frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;left:-20000px;top:0;width:1200px;height:900px;border:0;visibility:hidden';
+  document.body.appendChild(frame);
+  await new Promise(resolve=>{frame.onload=resolve;frame.srcdoc=doc});
+  try{await frame.contentDocument.fonts.ready}catch{}
+  await Promise.all([...frame.contentDocument.images].map(i=>i.decode?.().catch(()=>{})));
+  await sleep(500);
+  const title=document.title;document.title=name;
+  const done=()=>{document.title=title;setTimeout(()=>frame.remove(),1000)};
+  frame.contentWindow.addEventListener('afterprint',done,{once:true});
+  frame.contentWindow.focus();frame.contentWindow.print();
+  setTimeout(()=>{if(document.title===name)done()},120000);
+ }
  const safe=s=>String(s||'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'design';
  async function css(cards){return campaignExportCss(cards)}
  // opts: {pages:[indices], type:'png'|'jpeg'|'pdf'|'mp4'|'html', scale:1|2, onProgress}
  async function run(design,{pages,type,scale=1,onProgress=()=>{}}){
+  // A PDF page is a picture, so it is always drawn at least twice as large to stay sharp when zoomed or printed.
+  if(type==='pdf')scale=Math.max(scale,2);
   const [rw,rh]=design.ratio.split(' / ').map(Number);
   const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
   const cards=pages.map(i=>KitHost.pageHtml(design,i));
-  const style=type==='html'?await css(cards.join('')):'';
+  const style=type==='html'||type==='pdftext'?await css(cards.join('')):'';
   const name=safe(design.title);
+  if(type==='pdftext'){await printDesign(await printDoc(design,cards,style,name),name);onProgress(cards.length,cards.length);return}
   if(type==='html'){
    const body=cards.map(c=>`<section class="frame">${c}</section>`).join('');
    download(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${GSNKit.esc(design.title)}</title><style>${style}body{margin:0;background:#111;display:grid;gap:24px;justify-items:center;padding:24px}.frame{width:min(100%,${design.size.w/2}px)}</style>${await inlineGsnPhotos(body)}`,`${name}.html`,'text/html');return}
@@ -174,5 +210,5 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
   const out=[];for(let i=0;i<canvases.length;i++)out.push({name:`${String(i+1).padStart(2,'0')}.png`,type:'image',blob:await canvasImage(canvases[i],'image/png')});
   return out;
  }
- return {run,renderBlobs,inlineGsnPhotos,rasterDesignPage,css};
+ return {run,renderBlobs,inlineGsnPhotos,rasterDesignPage,css,printDoc:async(design,pages)=>{const cards=pages.map(i=>KitHost.pageHtml(design,i));return printDoc(design,cards,await css(cards.join('')),safe(design.title))}};
 })();
