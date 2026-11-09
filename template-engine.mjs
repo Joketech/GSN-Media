@@ -11,11 +11,11 @@ const sheets=await Promise.all([['campaign','campaign-atlas.png'],['automation',
  const image=await readFile(new URL(file,import.meta.url));
  return {name,file,data:'data:image/png;base64,'+image.toString('base64')};
 }));
-const baseCss=(await Promise.all(['studio.css','premium.css','comic.css','greetings.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
+const baseCss=(await Promise.all(['studio.css','premium.css','slot-layouts.css','comic.css','greetings.css'].map(p=>readFile(new URL(p,import.meta.url),'utf8')))).join('\n').replace(/@import[^;]+;/g,'');
 const starterSource=source.slice(source.indexOf('// How many pages a template carries'),source.indexOf('function ensureSlides('));
 export function templateCatalog(){
  return vm.runInNewContext(photoSource+'\n'+definitions+starterSource+
-  'templates.map(t=>{const s=templateStarter(t.id);return {id:t.id,name:t.name,format:t.format,pages:s.length,layouts:s.map(p=>p.deckLayout),...(t.cartoon?{slides:s,ratio:"4 / 5"}:{})}})',{}, {timeout:3000});
+  'templates.map(t=>{const s=templateStarter(t.id);return {id:t.id,name:t.name,format:t.format,pages:s.length,layouts:s.map(p=>p.deckLayout),...(t.slots?{slots:t.slots.map(x=>({key:x[0],label:x[1]}))}:{}),...(t.cartoon?{slides:s,ratio:"4 / 5"}:{})}})',{}, {timeout:3000});
 }
 // Layout names with what each one expects in its body text.
 export function layoutGuide(){return vm.runInNewContext(starterSource+'LAYOUT_GUIDE',{},{timeout:1000});}

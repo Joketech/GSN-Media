@@ -26,11 +26,11 @@ ${definitions}
 ${agents}
 ${art}
 ${starter}
-window.GSNKit={LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
+window.GSNKit={SHAPE_KINDS,gsnFonts,gsnFontCats,LAYOUT_GUIDE,composePages,innerPages,templatePageCount,templates,palettes,agents,art,templateStarter,slideElements,esc,state,gsnPhoto,gsnCampaign,gsnLibraryPhoto,gsnTopics,canvasElementLabel};
 })();`;
 
   // CSS for the shadow roots that host each page. :root/body rules are retargeted to the shadow host.
-  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'comic.css', 'greetings.css', 'free-layers.css', 'inner-pages.css'].map(read));
+  const parts = await Promise.all(['studio.css', 'premium.css', 'artwork-library.css', 'free-layers.css', 'inner-pages.css', 'slot-layouts.css', 'comic.css', 'greetings.css'].map(read));
   const css = parts.join('\n')
     .replace(/@import[^;]+;/g, '')
     .replace(/:root\s*\{/g, ':host{')

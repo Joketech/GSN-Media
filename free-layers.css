@@ -11,3 +11,9 @@
   transform-origin:left center;
 }
 .art [data-canvas-text]{cursor:move}
+
+/* Free shapes and picture frames a creator adds to any page. */
+.slide-shapes{position:absolute;inset:0;pointer-events:none}
+.shape-el{position:absolute;overflow:hidden;container-type:size;pointer-events:auto;box-sizing:border-box;transform-origin:center}
+.shape-el .sp-lib{position:absolute;left:50%;top:50%;width:max(100cqw,100cqh);aspect-ratio:1;translate:var(--sp-x,0) var(--sp-y,0);transform:translate(-50%,-50%) scale(var(--sp-z,1));background:var(--photo-source) var(--photo-position)/var(--photo-size) no-repeat}
+.shape-el .sp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none;display:block}

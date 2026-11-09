@@ -19,7 +19,6 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       VOICE_WORKER_URL: ${VOICE_WORKER_URL:-http://voice:8091}
       VISUAL_WORKER_URL: ${VISUAL_WORKER_URL:-http://visuals:8091}
-      IMAGE_WORKER_URL: ${IMAGE_WORKER_URL:-http://images:8093}
       CUTOUT_WORKER_URL: ${CUTOUT_WORKER_URL:-http://cutout:8092}
       GSN_AGENT_TOKEN: ${GSN_AGENT_TOKEN:-}
       GSN_REQUIRE_KEY: ${GSN_REQUIRE_KEY:-}
@@ -43,8 +42,12 @@ services:
     image: gsn-studio-cutout:local
     restart: unless-stopped
     logging: *logging
+    environment:
+      NUMBA_CACHE_DIR: /tmp/numba
+      HOME: /tmp
     expose: ["8092"]
-    mem_limit: 2g
+    cpus: 3
+    mem_limit: 4g
     read_only: true
     tmpfs:
       - /tmp
@@ -62,11 +65,13 @@ services:
       DATA_DIR: /data
       HF_HOME: /models
       VOICE_MODEL: Qwen/Qwen3-TTS-12Hz-0.6B-Base
-      OMP_NUM_THREADS: "4"
+      OMP_NUM_THREADS: "2"
     volumes:
       - voice-data:/data
       - voice-models:/models
     expose: ["8091"]
+    cpus: 2
+    mem_limit: 4g
     security_opt: ["no-new-privileges:true"]
   visuals:
     profiles: [gpu]
@@ -87,29 +92,9 @@ services:
       - visual-models:/models
     expose: ["8091"]
     shm_size: 2gb
+    cpus: 2
+    mem_limit: 4g
     security_opt: ["no-new-privileges:true"]
-  images:
-    profiles: [images]
-    build:
-      context: .
-      dockerfile: services/Dockerfile.images
-    image: gsn-studio-images:local
-    restart: unless-stopped
-    logging: *logging
-    environment:
-      DATA_DIR: /data
-      HF_HOME: /models
-      IMAGE_MODEL: ${IMAGE_MODEL:-stable-diffusion-v1-5/stable-diffusion-v1-5}
-      IMAGE_DEVICE: cpu
-      OMP_NUM_THREADS: "4"
-    volumes:
-      - image-data:/data
-      - image-models:/models
-    expose: ["8093"]
-    mem_limit: 14g
-    cpus: 4
-    security_opt: ["no-new-privileges:true"]
-    cap_drop: [ALL]
   proxy:
     profiles: [public]
     image: caddy:2-alpine
@@ -128,8 +113,6 @@ services:
       app:
         condition: service_healthy
 volumes:
-  image-data:
-  image-models:
   app-data:
   voice-data:
   voice-models:

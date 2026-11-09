@@ -1,6 +1,13 @@
 name: Build GSN containers
 on:
+  # Every merge to main builds and publishes the images, so the server only needs a pull. The manual button still works.
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
   workflow_dispatch:
+concurrency:
+  group: build-containers-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
   packages: write
@@ -19,8 +26,6 @@ jobs:
             dockerfile: services/Dockerfile.visuals
           - component: cutout
             dockerfile: services/Dockerfile.cutout
-          - component: images
-            dockerfile: services/Dockerfile.images
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,16 +45,12 @@ jobs:
           node --check platforms.mjs
           node --check publisher.mjs
           node --check accounts.mjs
-          node --check image-generation.mjs
-          node --check image-creator.js
-          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs tests/cutout.test.mjs tests/accounts.test.mjs tests/images.test.mjs
+          node --test tests/v1.test.mjs tests/designs.test.mjs tests/publish.test.mjs tests/cutout.test.mjs tests/accounts.test.mjs tests/people.test.mjs
           python3 -m py_compile services/cutout_worker.py
           python3 -m py_compile services/inference_worker.py
-          python3 -m py_compile services/image_worker.py
-          python3 tests/image_worker_test.py
           python3 -m py_compile integrations/hermes/gsn.py
           python3 tests/worker_idempotency.py
-          docker compose --profile voice --profile gpu --profile public --profile images config --quiet
+          docker compose --profile voice --profile gpu --profile public config --quiet
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:

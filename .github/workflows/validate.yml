@@ -27,6 +27,7 @@ jobs:
           node --check library.js
           node --check dashboard.js
           node --check editor.js
+          node --check people.js
           node --check exporter.js
           node --check water.js
           node --check composer.js

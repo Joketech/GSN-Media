@@ -12,7 +12,7 @@
 
 ## Integration agent
 
-Merge this feature branch through your normal review process. Preserve the existing `.env`, access settings, workspaces and persistent data volume. The Dockerfile already copies the collection with the application; there are no new production dependencies or paid services. Keep the existing globe files and dashboard CSS unchanged. No merge to main or VPS deployment was performed by this handoff.
+Merge this feature branch through your normal review process. Preserve the existing `.env`, access settings, workspaces and persistent data volume. The Dockerfile already copies the collection with the application; there are no new production dependencies or paid services. Keep the existing globe files and dashboard CSS unchanged. The current-main integration preserves its People, Background, named image slots, accounts and publishing controls. The older image-generation add-on is excluded because the current project brief removed that service. This source has not yet been deployed to the VPS.
 
 Run from the repository root:
 
@@ -38,3 +38,7 @@ A plan is `{version:1,templateId,changes:[{layerId,values}]}`. Stable layer IDs 
 UGC editable projects currently save in IndexedDB on the user's device and can be downloaded as portable JSON. The main studio's server-backed archive is unchanged; UGC projects are not represented as archived main-studio designs yet. Submitted agent briefs retain their document snapshot in the workspace's persistent server queue.
 
 Task 4 was explicitly excluded by the user. No generated image was deleted or re-reviewed as part of that task.
+
+## Combined-source verification
+
+All 15 JavaScript test files in tests/ and ugc-collection/ passed individually after resolving against current main. The asset check still finds 200 products and no missing or exact duplicate campaign images. The merged browser preview verified Pictures loading 407 entries alongside People and Background, independent image insertion, selected replacement and undo/redo.

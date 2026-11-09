@@ -39,9 +39,9 @@ const greetingDesigns = greetingCollections.flatMap((collection,set)=>[
 ].map(spec=>({...spec,collection:collection.name})));
 
 function greetingStarter(templateId){
- const spec=greetingDesigns[templateId-500];
+ const spec=greetingDesigns[templateId-524];
  const palette=greetingCollections[spec.set];
- const motif='gsn-'+(1300+templateId-500);
+ const motif='gsn-'+(1300+templateId-524);
  const intro=spec.monthly?'WELCOME TO':spec.name==='Friday'?'THANK GOD IT’S FRIDAY':'A GREETING FROM GSN';
  const pages=[
   ['hook',spec.title,spec.wish,intro],

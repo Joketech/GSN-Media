@@ -3,21 +3,52 @@
 const Dashboard=(()=>{
  const {$,$$,esc,icon,platformIcon,api,toast,state,preset,ago}=App;
  const ui={view:'dashboard',query:'',format:'All',style:'All',tab:'Popular',designTab:'All',shown:12,built:false};
- // Agents are shown as living orbs with their initials, not as artwork.
- const agentTone={Mira:'#8b6cf0',Seline:'#ef6f9a',Spectra:'#1fb5c4',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#2fb98a'};
- const initials=name=>name.slice(0,2).toUpperCase();
- const agentAvatar=(name,i=0)=>`<span class="orb" style="--tone:${agentTone[name]||'#ddd'};--d:${(i*-.7).toFixed(1)}s" aria-hidden="true"><i class="orb-ring"></i><i class="orb-ring r2"></i><i class="orb-dot"></i><b>${initials(name)}</b></span>`;
- const navItems=[['dashboard','home','Home'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['team','user','Team']];
- const titles={dashboard:'Dashboard',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',team:'Team'};
+ // Each agent is a small glossy robot in its own colour. The robot glows while a job from that agent is running.
+ const agentTone={Mira:'#0f7a4a',Seline:'#ef6f9a',Spectra:'#e5383b',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#1fb5c4'};
+ let botCount=0;
+ const agentAvatar=(name,i=0)=>{const id='b'+(botCount++),tone=agentTone[name]||'#8b6cf0',ch=name.slice(0,2).toUpperCase();
+  return `<span class="bot" data-agent="${esc(name)}" style="--tone:${tone};--d:${(i*-.6).toFixed(1)}s" role="img" aria-label="${esc(name)}, agent"><svg viewBox="0 0 64 74" aria-hidden="true">
+<defs><linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e9eef8"/><stop offset="1" stop-color="#c9d4ea"/></linearGradient><radialGradient id="${id}h"><stop offset="0" stop-color="var(--tone)" stop-opacity=".55"/><stop offset="1" stop-color="var(--tone)" stop-opacity="0"/></radialGradient></defs>
+<ellipse class="halo" cx="32" cy="68" rx="22" ry="5" fill="url(#${id}h)"/>
+<g class="body"><path d="M16 49 Q32 41 48 49 Q53 63 32 67 Q11 63 16 49Z" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
+<ellipse cx="32" cy="55.5" rx="9.5" ry="7.6" fill="var(--tone)"/><text x="32" y="58.8" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="8.6" letter-spacing=".3" fill="#fff">${ch}</text></g>
+<g class="arm l"><ellipse cx="11" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(14 11 54)"/></g>
+<g class="arm r"><ellipse cx="53" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(-14 53 54)"/></g>
+<g class="head"><g class="ant"><line x1="32" y1="5" x2="32" y2="13" stroke="#c4cde0" stroke-width="2" stroke-linecap="round"/><circle class="tip" cx="32" cy="4.5" r="3" fill="var(--tone)"/></g>
+<circle cx="8.5" cy="27" r="4.5" fill="var(--tone)"/><circle cx="55.5" cy="27" r="4.5" fill="var(--tone)"/>
+<rect x="10" y="12" width="44" height="31" rx="15" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
+<rect x="15" y="18" width="34" height="19" rx="9.5" fill="#0d1530"/>
+<g class="eyes"><circle class="eye" cx="25" cy="27.5" r="4.4" fill="var(--tone)"/><circle class="eye" cx="39" cy="27.5" r="4.4" fill="var(--tone)"/>
+<circle class="glint" cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle class="glint" cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/></g></g>
+</svg></span>`};
+ // Which agents have a job running now. A job counts while it is not finished and was touched in the last 15 minutes.
+ let working=new Set(),pollTimer=0;
+ function applyWorking(){$$('.bot').forEach(b=>b.classList.toggle('working',working.has(b.dataset.agent.toLowerCase())))}
+ async function pollJobs(){
+  clearTimeout(pollTimer);
+  if(!['dashboard','agents'].includes(ui.view))return;
+  try{const {jobs}=await api('/jobs');const now=Date.now();
+   working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
+  pollTimer=setTimeout(pollJobs,6000);
+ }
+ const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
+ const titles={dashboard:'Dashboard',ideas:'Ideas',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
+ // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
+ const Motion={
+  on:true,
+  init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='off'?false:true:true;this.apply()},
+  apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')typeof Ripples!=='undefined'&&Ripples.resume();Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
+  set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
+ };
  function build(){
   const stage=$('#stage');
-  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas>
+  stage.innerHTML=`<div class="stage-bg" aria-hidden="true"></div><canvas class="water" aria-hidden="true"></canvas><canvas class="water-front" aria-hidden="true"></canvas>
   <header class="osbar glass" aria-label="Studio address bar">
    <div class="osgroup"><button class="osbtn" data-os="home" title="Back to the globe" aria-label="Back to the globe">${icon('globe')}</button><button class="osbtn" data-os="back" title="Back" aria-label="Back">${icon('back')}</button><button class="osbtn" data-os="forward" title="Forward" aria-label="Forward">${icon('forward')}</button></div>
    <div class="osaddress"><span class="osdot"></span><span>${esc(location.host||'gsn-media.studio')}</span><b id="osPath">/dashboard</b></div>
-   <div class="osgroup"><button class="osbtn" data-os="reload" title="Refresh" aria-label="Refresh">${icon('reload')}</button><button class="osbtn" data-os="share" title="Copy link" aria-label="Copy link">${icon('share')}</button><button class="osbtn" data-os="new" title="New pack" aria-label="New pack">${icon('plus')}</button><button class="osbtn" data-nav="designs" title="My designs" aria-label="My designs">${icon('layers')}</button></div>
+   <div class="osgroup"><button class="motion-switch" id="motionSwitch" role="switch" aria-checked="true" title="Animation and light: on"><span class="ms-track" aria-hidden="true"><i></i></span><span class="ms-label">Motion</span></button><button class="osbtn" data-os="reload" title="Refresh" aria-label="Refresh">${icon('reload')}</button><button class="osbtn" data-os="share" title="Copy link" aria-label="Copy link">${icon('share')}</button><button class="osbtn" data-os="new" title="New pack" aria-label="New pack">${icon('plus')}</button><button class="osbtn" data-nav="designs" title="My designs" aria-label="My designs">${icon('layers')}</button></div>
   </header>
   <aside class="rail glass-dark" aria-label="Studio navigation">${navItems.map(([id,ic,label])=>`<button data-nav="${id}" title="${label}" aria-label="${label}">${icon(ic)}</button>`).join('')}</aside>
   <main class="panel glass">
@@ -36,6 +67,7 @@ const Dashboard=(()=>{
   $('#filterBtn').addEventListener('click',()=>togglePop('filter'));$('#bellBtn').addEventListener('click',()=>togglePop('bell'));$('#userBtn').addEventListener('click',()=>togglePop('user'));
   document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))closePops()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePops();closeModal()}});
+  Motion.init();$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
   ui.built=true;
  }
  const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
@@ -86,7 +118,7 @@ const Dashboard=(()=>{
 
  function tabsFor(view){
   if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories']];
-  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors']];
+  if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Photo layouts','Layouts'],['Monthly','Monthly'],['Comic','Comic']];
   if(view==='schedule')return [['Calendar','Calendar'],['Review',`Needs review${Schedule.needsReview().length?' ('+Schedule.needsReview().length+')':''}`],['Setup','Setup']];
   if(view==='designs')return [['All','All'],['draft','Draft'],['review','In review'],['approved','Approved']];
   return [];
@@ -99,16 +131,19 @@ const Dashboard=(()=>{
  }
 
  function dashboardHtml(){
-  const list=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}).slice(0,14),p=curPreset();
+  // Home shows a mix of every style. If the chosen tab leaves nothing (3D agency and Business metaphors are all carousels), show the style anyway and say so.
+  let found=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}),note='';
+  if(!found.length&&ui.tab!=='Popular'){found=Library.filter({query:ui.query,format:ui.format,style:ui.style});if(found.length)note=`None of these are in the ${ui.tab} tab, so all of them are shown.`}
+  const list=ui.style==='All'?Library.mix(found,18):found.slice(0,18),p=curPreset();
   const agents=GSNKit.agents;
   return `<div class="dash"><section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
-   <article class="hero"><span class="hero-tag">Today’s pack</span><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
+   <article class="hero"><canvas class="hero-globe" aria-hidden="true"></canvas><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
    <article class="agents-card"><div class="sec-head"><h2>Your agents</h2><a href="#agents">See more ${icon('chevronRight')}</a></div>
     <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
-   ${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
+   ${note?`<p class="hint">${esc(note)}</p>`:''}${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
  const PAGE=24;
  function libraryHtml(){
@@ -144,7 +179,57 @@ const Dashboard=(()=>{
  }
  function agentsHtml(){
   return `<section class="hello"><h1>Agents</h1></section>
-  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p></div></article>`).join('')}</div>`;
+  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p><p class="act-stat" data-stat="${esc(name)}">Loading activity…</p></div></article>`).join('')}</div>
+  <section class="act-log"><div class="sec-head"><h2>What the agents did</h2></div><div id="actLog"><p class="act-empty">Loading…</p></div>
+  <p class="act-note">These are the agents' own records: each one logs its name, the task, the AI model and the time. Nothing here is estimated.</p></section>`;
+ }
+ // Fills the Agents page from the activity the agents logged themselves.
+ async function loadActivity(){
+  const log=$('#actLog');if(!log)return;
+  try{
+   const r=await api('/activity?limit=40');
+   $$('[data-stat]').forEach(n=>{const m=r.summary.find(x=>x.agent===n.dataset.stat);
+    if(!m||!m.last_at){n.innerHTML='<b>No activity yet</b>';return}
+    const models=Object.entries(m.models).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${esc(k)} ×${v}`).join(', ');
+    n.innerHTML=`<b>${m.done} done</b>${m.failed?` · ${m.failed} failed`:''} · last ${esc(ago(m.last_at))}<br><span>${esc(m.last_task)}${models?' · '+models:''}</span>`});
+   log.innerHTML=r.activity.length?`<table class="act-table"><thead><tr><th>Agent</th><th>Task</th><th>AI model</th><th>Result</th><th>When</th></tr></thead><tbody>${r.activity.map(a=>`<tr><td>${esc(a.agent)}</td><td>${esc(a.task)}${a.detail?`<small>${esc(a.detail)}</small>`:''}</td><td>${esc(a.model||'–')}</td><td><span class="act-pill ${esc(a.status)}">${esc(a.status)}</span></td><td title="${esc(a.created_at)}">${esc(ago(a.created_at))}</td></tr>`).join('')}</tbody></table>`:'<p class="act-empty">No activity yet. When the agents work, each task appears here with the AI model used and the time.</p>';
+  }catch(e){log.innerHTML=`<p class="act-empty">Could not load activity: ${esc(e.message)}</p>`;$$('[data-stat]').forEach(n=>n.textContent='')}
+ }
+ // Settings: the brand name, handle and voice every new design and every agent's writing starts from.
+ function configHtml(){
+  return `<section class="hello"><h1>Settings</h1></section>
+  <section class="cfg"><div class="cfg-form"><h2>Brand and voice</h2>
+   <p class="act-note">These flow into every new design, and the agents read them before they write, so the words always sound like your brand.</p>
+   <label>Brand name<input id="cfgName" type="text" maxlength="80" autocomplete="off"></label>
+   <label>Handle<input id="cfgHandle" type="text" maxlength="80" autocomplete="off" placeholder="@yourbrand"></label>
+   <label>Brand voice<textarea id="cfgVoice" rows="5" maxlength="1200" placeholder="How should the agents write? Tone, words to use, words to avoid."></textarea></label>
+   <label>Niche and audience<textarea id="cfgNiche" rows="2" maxlength="300" placeholder="What you post about, and who for."></textarea></label>
+   <label>Style of posting<textarea id="cfgStyle" rows="2" maxlength="600" placeholder="e.g. Short carousels, direct, one idea per post."></textarea></label>
+   <div class="cfg-colors"><h3>Brand colours</h3><p class="act-note">Every new design, from you or from the agents, starts in these colours. Leave the background or text colour off to keep each template's own.</p>
+    <div class="cfg-crow"><label>Accent<input id="cfgAccent" type="color" value="#ed6843"></label>
+     <label>Background<input id="cfgBg" type="color" value="#101323"><button type="button" class="btn-light" data-off="cfgBg">Template's own</button></label>
+     <label>Text<input id="cfgInk" type="color" value="#f8faff"><button type="button" class="btn-light" data-off="cfgInk">Template's own</button></label></div>
+    <label>My colour palette<span class="cfg-pal" id="cfgPal"></span></label><div class="cfg-crow"><input id="cfgPalNew" type="color" value="#1e6bff"><button type="button" class="btn-light" id="cfgPalAdd">Add to palette</button></div></div>
+   <div class="cfg-actions"><button class="btn-dark" id="cfgSave" disabled>Save</button><span class="act-note" id="cfgMsg">Loading…</span></div></div>
+   <div class="cfg-preview"><h2>Preview</h2><div class="cfg-page" id="cfgPage"></div><p class="act-note">This is how your brand name appears on a page.</p></div></section>`;
+ }
+ async function loadConfig(){
+  const name=$('#cfgName');if(!name)return;
+  const msg=$('#cfgMsg'),save=$('#cfgSave');
+  let pal=[],bgOn=false,inkOn=false,state_cfg=null;
+  const paintPal=()=>{pal=[...(state_cfg?.palette||pal)];const box=$('#cfgPal');if(box)box.innerHTML=pal.map((c,i)=>`<span class="cfg-sw" style="background:${c}" title="${c}"><button type="button" data-rm="${i}" aria-label="Remove ${c}">×</button></span>`).join('')||'<small>No colours yet.</small>'};
+  const paint=()=>{try{const d=KitHost.starterDesign(3,'4 / 5');d.brand={name:name.value||'Your brand',handle:$('#cfgHandle').value||name.value||'Your brand'};KitHost.mount($('#cfgPage'),KitHost.pageHtml(d,0))}catch{}};
+  try{
+   const c=await api('/config');
+   name.value=c.brand_name;$('#cfgHandle').value=c.handle;$('#cfgVoice').value=c.voice;$('#cfgNiche').value=c.niche||'';$('#cfgStyle').value=c.style||'';$('#cfgAccent').value=c.accent;state_cfg=c;paintPal();bgOn=!!c.background;inkOn=!!c.ink;if(c.background)$('#cfgBg').value=c.background;if(c.ink)$('#cfgInk').value=c.ink;
+   msg.textContent=c.is_default?'Showing the defaults. Save to make them yours.':`Last saved ${ago(c.updated_at)} by ${c.updated_by||'a manager'}.`;save.disabled=false;paint();
+   ['#cfgName','#cfgHandle'].forEach(i=>$(i).addEventListener('input',()=>{clearTimeout(paint.t);paint.t=setTimeout(paint,200)}));
+   $('#cfgBg').oninput=()=>{bgOn=true};$('#cfgInk').oninput=()=>{inkOn=true};
+   $$('[data-off]').forEach(b=>b.onclick=()=>{if(b.dataset.off==='cfgBg')bgOn=false;else inkOn=false;toast('Using the template\'s own colour. Save to apply.')});
+   $('#cfgPalAdd').onclick=()=>{const c=$('#cfgPalNew').value.toLowerCase();if(!pal.includes(c)&&pal.length<12)pal.push(c);state_cfg={...state_cfg,palette:pal};paintPal()};
+   $('#cfgPal').onclick=e=>{const b=e.target.closest('[data-rm]');if(b){pal.splice(+b.dataset.rm,1);state_cfg={...state_cfg,palette:pal};paintPal()}};
+   save.onclick=async()=>{save.disabled=true;try{const r=await api('/config',{method:'PUT',body:{brand_name:name.value,handle:$('#cfgHandle').value,voice:$('#cfgVoice').value,niche:$('#cfgNiche').value,style:$('#cfgStyle').value,accent:$('#cfgAccent').value,background:bgOn?$('#cfgBg').value:'',ink:inkOn?$('#cfgInk').value:'',palette:pal}});msg.textContent='Saved. New designs and the agents now use this.';toast('Brand settings saved.')}catch(e){msg.textContent=e.message;toast(e.message)}save.disabled=false};
+  }catch(e){msg.textContent='Could not load settings: '+e.message}
  }
  function drawDesignPreviews(){
   const grid=$('#dgrid');if(!grid)return;
@@ -163,14 +248,19 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
-  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true,glass:true});
+  drawTabs();refreshBell();const water=$('#stage .water');if(water)Water.start(water,{light:true,glass:true,sparse:false});
   const search=$('#search');if(search&&search.value!==ui.query)search.value=ui.query;
   const grid=$('#tgrid');if(ui.view==='templates'&&grid){Library.hydrate(grid,curPreset().ratio,$('#view'));wireLibrary()}else if(grid){const [rw,rh]=curPreset().ratio.split(' / ').map(Number);grid.style.setProperty('--ar',rw/rh);Library.hydrate(grid,curPreset().ratio)}
   if(ui.view==='designs')drawDesignPreviews();
+  if(ui.view==='settings')loadConfig();
+  if(ui.view==='agents')loadActivity();
+  applyWorking();pollJobs();if(ui.view==='dashboard')HeroGlobe.mount($('.hero-globe'));
+  if(ui.view==='people')People.mount($('#ppHost'));
+  if(ui.view==='ideas')Ideas.mount($('#ideasHost'));
  }
  async function show(view){
   ui.view=view;ui.shown=12;

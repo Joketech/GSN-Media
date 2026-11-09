@@ -1,6 +1,4 @@
 services:
-  images:
-    image: ${IMAGE_PREFIX:-ghcr.io/joketech/gsn-media}/images:${IMAGE_TAG:-latest}
   app:
     image: ${IMAGE_PREFIX:-ghcr.io/joketech/gsn-media}/app:${IMAGE_TAG:-latest}
   voice:

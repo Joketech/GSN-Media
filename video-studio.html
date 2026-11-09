@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSN Video Studio</title>
+<!--
+  GSN Video Studio - hand-coded, no libraries, no AI model, no cost per edit.
+  Turn the designed slides (PNG exports from the template studio) into Shorts, Reels, TikTok and LinkedIn videos:
+  slides with transitions and slow zoom, text on top, a music track, then export to a video file.
+  Everything runs in the browser. Open this file directly, or serve it next to the dashboard.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3a2a30;--ink2:#7b6a72;--accent:#8a2236;--accent2:#6a1527;--line:rgba(70,40,50,.14);--panel:rgba(255,255,255,.72);--panel2:rgba(255,251,249,.94);--pink:#fbe3e8;--sky:#e4ecff;--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:14px/1.35 var(--sans);color:var(--ink);background:linear-gradient(135deg,#dfe8fb 0%,#f6e6f0 55%,#e8dcf7 100%);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{position:fixed;inset:0;display:grid;grid-template-rows:56px 1fr 262px;grid-template-columns:268px 1fr 286px;gap:10px;padding:10px;grid-template-areas:"top top top" "media stage insp" "time time time"}
+.glass{background:var(--panel);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 14px 40px rgba(70,30,60,.12);backdrop-filter:blur(14px)}
+.top{grid-area:top;display:flex;align-items:center;gap:10px;padding:0 12px}
+.top h1{margin:0;font:700 1.35rem var(--serif);color:#4a2431;white-space:nowrap}
+.top .title{flex:1;max-width:320px;height:34px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff}
+.sp{flex:1}
+.btn{height:34px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:.82rem}
+.btn:hover{background:#fdf4f6}.btn:disabled{opacity:.4;cursor:default}
+.btn.main{background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;border-color:transparent}
+.btn.sm{height:28px;padding:0 9px;font-size:.76rem;border-radius:8px}
+.btn.on{background:#f3dde3;border-color:#d9a9b6}
+select.btn{padding-right:6px}
+.media{grid-area:media;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.insp{grid-area:insp;padding:12px;overflow:auto}
+h2{margin:0 0 6px;font:700 1.05rem var(--serif);color:#4a2431}
+h3{margin:12px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2)}
+.hint{color:var(--ink2);font-size:.76rem;margin:2px 0 6px}
+.drop{border:1.5px dashed #c9a2af;border-radius:12px;padding:12px;text-align:center;font-size:.78rem;color:var(--ink2);background:rgba(255,255,255,.5)}
+.drop.over{background:#fbe3e8}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bin{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bin button{padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;aspect-ratio:9/12;background:#fff center/cover no-repeat;position:relative}
+.bin button i{position:absolute;left:3px;bottom:3px;background:#0009;color:#fff;font:600 9px/1 var(--sans);padding:2px 4px;border-radius:4px;font-style:normal}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stage{grid-area:stage;display:flex;flex-direction:column;min-height:0;padding:10px;gap:8px}
+.view{flex:1;min-height:0;display:grid;place-items:center;position:relative;background:repeating-conic-gradient(#e9e1ee 0 25%,#f6f0f8 0 50%) 0 0/20px 20px;border-radius:12px;overflow:hidden}
+.view canvas{box-shadow:0 10px 40px rgba(30,10,40,.35);background:#000}
+.safe{position:absolute;pointer-events:none;border:1.5px dashed rgba(255,255,255,.85);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.0)}
+.transport{display:flex;align-items:center;gap:8px}
+.transport .time{font:600 .85rem ui-monospace,Consolas,monospace;min-width:116px}
+.transport .grow{flex:1}
+.pbtn{width:40px;height:40px;border-radius:50%;border:0;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;font-size:15px}
+.time-wrap{grid-area:time;display:flex;flex-direction:column;min-height:0}
+.tl-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tl-head label{font-size:.74rem;color:var(--ink2);display:flex;gap:6px;align-items:center}
+.tl{flex:1;overflow:auto;position:relative;min-height:0}
+.tl-inner{position:relative;min-width:100%}
+.ruler{height:24px;position:sticky;top:0;z-index:5;background:var(--panel2);border-bottom:1px solid var(--line);cursor:pointer}
+.ruler b{position:absolute;top:0;height:100%;border-left:1px solid #cdbac3;font:600 9.5px/1 var(--sans);padding:12px 0 0 3px;color:var(--ink2)}
+.track{position:relative;height:56px;border-bottom:1px solid var(--line)}
+.track:nth-child(odd){background:rgba(255,255,255,.35)}
+.tname{position:sticky;left:0;z-index:4;display:inline-block;margin:3px;padding:2px 7px;font:700 9px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:#4a2431;color:#fff;border-radius:6px;opacity:.85;pointer-events:none}
+.clip{position:absolute;top:6px;height:44px;border-radius:8px;border:2px solid transparent;overflow:hidden;color:#fff;font:600 10.5px/1.2 var(--sans);padding:3px 6px;cursor:grab;background:#6a4a5a center top/auto 220% no-repeat;box-shadow:0 2px 6px rgba(0,0,0,.22);user-select:none;touch-action:none}
+.clip.v{background-color:#7a3a4e}.clip.t{background:linear-gradient(135deg,#3b6fe0,#6a8cf3)}.clip.a{background:linear-gradient(135deg,#1f9e6e,#46c79a)}
+.clip.sel{border-color:#ffd84d;box-shadow:0 0 0 2px #8a2236,0 4px 12px rgba(0,0,0,.35)}
+.clip span{text-shadow:0 1px 3px #000c;pointer-events:none;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.clip .rh{position:absolute;right:0;top:0;bottom:0;width:9px;cursor:ew-resize;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55))}
+.clip .tr{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(135deg,#fff5 0 4px,#fff2 4px 8px);pointer-events:none}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#e53935;z-index:6;pointer-events:none}
+.playhead:before{content:'';position:absolute;top:0;left:-6px;border:7px solid transparent;border-top-color:#e53935}
+.field{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:6px;margin:5px 0;font-size:.78rem}
+.field input[type=range]{width:100%}
+.field input[type=text],.field input[type=number],.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:5px 7px;background:#fff}
+.field textarea{grid-column:1/-1;min-height:54px;resize:vertical}
+.field input[type=color]{width:100%;height:28px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff}
+.empty{color:var(--ink2);font-size:.8rem;padding:6px 0}
+.progress{position:fixed;inset:0;background:rgba(40,15,30,.55);display:none;place-items:center;z-index:50}
+.progress.on{display:grid}
+.progress div{background:#fff;border-radius:16px;padding:22px 28px;min-width:320px;text-align:center}
+.bar{height:10px;border-radius:6px;background:#eadde2;overflow:hidden;margin:12px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a42b43,#e0607a)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#3a1a28;color:#fff;border-radius:10px;padding:10px 16px;font-size:.82rem;opacity:0;pointer-events:none;transition:.2s;z-index:60}.toast.on{opacity:1}
+@media(max-width:1100px){.app{grid-template-columns:220px 1fr 240px}}
+@media(max-width:820px){
+body{overflow:auto}
+.app{position:absolute;inset:auto;top:0;left:0;right:0;min-height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto auto;grid-template-areas:"top" "stage" "time" "media" "insp";padding:8px;gap:8px}
+.top{flex-wrap:wrap;padding:8px 10px;height:auto}
+.top .title{max-width:none;min-width:120px}
+.stage{height:62vh;min-height:320px}
+.time-wrap{height:260px}
+.media,.insp{overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top glass">
+    <h1>GSN Video Studio</h1>
+    <input class="title" id="title" value="Untitled video" aria-label="Video name">
+    <select class="btn" id="aspect" aria-label="Video shape">
+      <option value="9:16">9:16 Shorts / Reels / TikTok</option>
+      <option value="1:1">1:1 Square post</option>
+      <option value="4:5">4:5 Instagram feed</option>
+      <option value="16:9">16:9 YouTube / LinkedIn</option>
+    </select>
+    <span class="sp"></span>
+    <button class="btn" id="undo" title="Undo (Ctrl+Z)">Undo</button>
+    <button class="btn" id="redo" title="Redo (Ctrl+Y)">Redo</button>
+    <button class="btn" id="saveProj">Save project</button>
+    <button class="btn" id="openProj">Open project</button>
+    <input type="file" id="projFile" accept=".json,application/json" hidden>
+    <select class="btn" id="quality" aria-label="Quality"><option value="720">720p</option><option value="1080">1080p</option><option value="540">540p (fast)</option></select>
+    <button class="btn main" id="export">Export video</button>
+  </header>
+
+  <aside class="media glass">
+    <div>
+      <h2>Media</h2>
+      <div class="drop" id="drop">Drop slides, clips or music here<br><small>The designed slides are PNG files exported from the template studio</small></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn sm" id="addImg">Add slides</button>
+        <button class="btn sm" id="addVid">Add video</button>
+        <button class="btn sm" id="addAud">Add music</button>
+        <button class="btn sm" id="demo">Load demo</button>
+      </div>
+      <input type="file" id="fImg" accept="image/*" multiple hidden>
+      <input type="file" id="fVid" accept="video/*" multiple hidden>
+      <input type="file" id="fAud" accept="audio/*" hidden>
+    </div>
+    <div>
+      <h3>Your media (click to add to the end)</h3>
+      <div class="bin" id="bin"></div>
+      <div class="empty" id="binEmpty">Nothing yet. Add slides to begin.</div>
+    </div>
+    <div>
+      <h3>Text on the video</h3>
+      <div class="presets">
+        <button class="btn sm" data-preset="hook">Big hook</button>
+        <button class="btn sm" data-preset="title">Title</button>
+        <button class="btn sm" data-preset="sub">Subtitle</button>
+        <button class="btn sm" data-preset="caption">Caption bar</button>
+        <button class="btn sm" data-preset="lower">Lower third</button>
+        <button class="btn sm" data-preset="cta">Call to action</button>
+      </div>
+      <p class="hint">Text is placed at the playhead. Select it on the timeline to edit.</p>
+    </div>
+  </aside>
+
+  <main class="stage glass">
+    <div class="view" id="view"><canvas id="cv" width="720" height="1280"></canvas><div class="safe" id="safe" hidden></div></div>
+    <div class="transport">
+      <button class="pbtn" id="play" aria-label="Play or pause">&#9654;</button>
+      <button class="btn sm" id="toStart" title="Back to start">|&lt;</button>
+      <span class="time" id="timeTxt">0:00.0 / 0:00.0</span>
+      <span class="grow"></span>
+      <label class="row" style="font-size:.76rem;gap:6px"><input type="checkbox" id="loop"> Loop</label>
+      <label class="row" style="font-size:.76rem;gap:6px"><input type="checkbox" id="safeOn"> App safe zones</label>
+    </div>
+  </main>
+
+  <aside class="insp glass" id="insp"></aside>
+
+  <section class="time-wrap glass">
+    <div class="tl-head">
+      <button class="btn sm" id="split" title="Split the selected slide at the playhead (S)">Split</button>
+      <button class="btn sm" id="dup" title="Duplicate (Ctrl+D)">Duplicate</button>
+      <button class="btn sm" id="del" title="Delete (Delete)">Delete</button>
+      <span class="sp"></span>
+      <label>Zoom <input type="range" id="zoom" min="20" max="220" value="70"></label>
+      <span class="hint" style="margin:0">Space = play. S = split. Drag slides to reorder. Drag the right edge to change length.</span>
+    </div>
+    <div class="tl" id="tl"><div class="tl-inner" id="tlin"></div></div>
+  </section>
+</div>
+
+<div class="progress" id="prog"><div><h2 id="progT">Exporting your video</h2><div class="bar"><i id="progBar"></i></div><p class="hint" id="progS">The video plays through once while it is recorded. Keep this tab open.</p><button class="btn" id="progCancel">Cancel</button></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* ============================ State ============================ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ASPECTS={'9:16':[9,16],'1:1':[1,1],'4:5':[4,5],'16:9':[16,9]};
+const TRANS={none:'None',fade:'Fade',slideleft:'Slide from right',slideup:'Slide from below',zoom:'Zoom in',wipe:'Wipe'};
+const KB={none:'None',in:'Slow zoom in',out:'Slow zoom out',left:'Pan left',right:'Pan right'};
+const FONTS={sans:'DM Sans, Arial, sans-serif',serif:'Cormorant Garamond, Georgia, serif',bold:'Manrope, Arial Black, sans-serif',mono:'Consolas, monospace'};
+let P={title:'Untitled video',aspect:'9:16',bg:'#101323',clips:[],texts:[],music:null};
+let media=[];            // the bin: {id,type,name,url,dur,el}
+let sel=null;            // {k:'clip'|'text'|'music',id}
+let T=0,playing=false,pxs=70,uid=1,undoS=[],redoS=[],exporting=false;
+const cv=$('#cv'),ctx=cv.getContext('2d');
+const imgCache=new Map(),vidEls=new Map();
+let audioEl=null,actx=null,spk=null,expDest=null,srcNodes=new Map();
+
+const id=()=>'i'+(uid++);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=t-m*60;return m+':'+(s<10?'0':'')+s.toFixed(1)};
+function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),ms)}
+
+/* ============================ History ============================ */
+function snap(){return JSON.stringify({P,sel})}
+function commit(){undoS.push(JSON.stringify(P));if(undoS.length>80)undoS.shift();redoS=[];layout();draw();buildTL();buildInsp()}
+function restore(s){P=JSON.parse(s);lastSaved=s;sel=null;syncAspect();layout();draw();buildTL();buildInsp()}
+$('#undo').onclick=()=>{if(!undoS.length)return;redoS.push(JSON.stringify(P));restore(undoS.pop())};
+$('#redo').onclick=()=>{if(!redoS.length)return;undoS.push(JSON.stringify(P));restore(redoS.pop())};
+
+/* ============================ Timeline maths ============================ */
+function layout(){
+  let t=0,prevDur=0;
+  P.clips.forEach((c,i)=>{
+    const ov=i>0&&c.trans!=='none'?Math.min(c.tdur,c.dur*.6,prevDur*.6):0;
+    c.start=Math.max(0,t-ov);c.end=c.start+c.dur;c.ov=ov;t=c.end;prevDur=c.dur;
+  });
+  P.total=Math.max(.5,t,...P.texts.map(x=>x.start+x.dur),P.music?P.music.start+P.music.dur:0);
+}
+function sizeFor(q){const [a,b]=ASPECTS[P.aspect],short=+q;return a<=b?[Math.round(short*(a/Math.min(a,b))),Math.round(short*(b/Math.min(a,b)))]:[Math.round(short*(a/Math.min(a,b))),short]}
+function setCanvas(q){const [w,h]=sizeFor(q);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}fit()}
+function fit(){const v=$('#view'),r=v.getBoundingClientRect(),k=Math.min((r.width-24)/cv.width,(r.height-24)/cv.height);cv.style.width=Math.max(50,cv.width*k)+'px';cv.style.height=Math.max(50,cv.height*k)+'px';buildSafe&&buildSafe()}
+function syncAspect(){$('#aspect').value=P.aspect;$('#title').value=P.title;setCanvas(exporting?$('#quality').value:540)}
+
+/* ============================ Media loading ============================ */
+function fileToUrl(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}
+function loadImg(url){if(imgCache.has(url))return imgCache.get(url);const im=new Image();im.onload=()=>{draw();buildTL()};im.src=url;imgCache.set(url,im);return im}
+function vidFor(url){if(vidEls.has(url))return vidEls.get(url);const v=document.createElement('video');v.src=url;v.preload='auto';v.playsInline=true;v.crossOrigin='anonymous';v.addEventListener('seeked',()=>{if(!playing)draw()});v.addEventListener('loadeddata',()=>draw());vidEls.set(url,v);return v}
+async function addFiles(files,kind){
+  for(const f of files){
+    const type=f.type.startsWith('video/')?'video':f.type.startsWith('audio/')?'audio':f.type.startsWith('image/')?'image':null;
+    if(!type){toast('"'+f.name+'" is not a picture, video or audio file.');continue}
+    if(kind&&type!==kind&&!(kind==='image'&&type==='image'))continue;
+    let url;
+    try{url=type==='image'?await fileToUrl(f):URL.createObjectURL(f)}catch{toast('Could not read '+f.name);continue}
+    const m={id:id(),type,name:f.name,url,dur:type==='image'?3:0};
+    if(type!=='image'){m.dur=await new Promise(res=>{const e=document.createElement(type==='video'?'video':'audio');e.preventDefault;e.onloadedmetadata=()=>res(e.duration||5);e.onerror=()=>res(5);e.src=url})}
+    if(type==='image')loadImg(url);
+    media.push(m);
+  }
+  buildBin();
+}
+function buildBin(){
+  $('#binEmpty').hidden=media.length>0;
+  $('#bin').innerHTML=media.map(m=>`<button data-m="${m.id}" title="${m.name}" style="${m.type==='image'?`background-image:url('${m.url}')`:'background:'+(m.type==='video'?'#3b2a4a':'#1f6e55')}"><i>${m.type==='image'?'slide':m.type==='video'?'video '+m.dur.toFixed(0)+'s':'music'}</i></button>`).join('');
+}
+$('#bin').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;const m=media.find(x=>x.id===b.dataset.m);addToTimeline(m)};
+function addToTimeline(m){
+  if(m.type==='audio'){P.music={src:m.url,name:m.name,start:0,dur:m.dur,vol:.8,fadeOut:1.5};commit();toast('Music added. It starts at 0:00.');return}
+  const c={id:id(),type:m.type,src:m.url,name:m.name,dur:m.type==='video'?Math.min(m.dur,12):3,trans:P.clips.length?'fade':'none',tdur:.6,kb:m.type==='image'?'in':'none',fit:'cover',vol:1,trim:0};
+  P.clips.push(c);sel={k:'clip',id:c.id};commit();
+}
+['fImg','fVid','fAud'].forEach(f=>$('#'+f).onchange=async e=>{await addFiles([...e.target.files],f==='fImg'?'image':f==='fVid'?'video':'audio');e.target.value=''});
+$('#addImg').onclick=()=>$('#fImg').click();$('#addVid').onclick=()=>$('#fVid').click();$('#addAud').onclick=()=>$('#fAud').click();
+const dz=$('#drop');
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{if(e.dataTransfer?.types?.includes('Files')){e.preventDefault();dz.classList.add('over')}}));
+['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{dz.classList.remove('over')}));
+document.addEventListener('drop',async e=>{if(!e.dataTransfer?.files?.length)return;e.preventDefault();await addFiles([...e.dataTransfer.files])});
+document.addEventListener('paste',async e=>{const fs=[...(e.clipboardData?.files||[])];if(fs.length&&!e.target.closest('input,textarea'))await addFiles(fs)});
+
+/* Demo slides drawn here, so the studio can be tried without any files. */
+function demoSlide(i,title,sub,c1,c2){
+  const c=document.createElement('canvas');c.width=1080;c.height=1920;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,1080,1920);g.addColorStop(0,c1);g.addColorStop(1,c2);x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  x.fillStyle='rgba(255,255,255,.08)';for(let k=0;k<7;k++){x.beginPath();x.arc(120+k*150,300+k*210,160+k*18,0,7);x.fill()}
+  x.fillStyle='#fff';x.font='800 120px Manrope, Arial';x.textAlign='left';
+  title.split('\n').forEach((l,k)=>x.fillText(l,90,820+k*140));
+  x.font='500 52px DM Sans, Arial';x.globalAlpha=.9;sub.split('\n').forEach((l,k)=>x.fillText(l,90,1180+k*70));
+  x.globalAlpha=1;x.font='700 36px DM Sans, Arial';x.fillText('GSN MEDIA  ·  0'+i,90,1780);
+  return c.toDataURL('image/png');
+}
+$('#demo').onclick=async()=>{
+  const defs=[['Seven signs your\nagent stack is\nover-engineered','Slide 1 · the hook','#2a1a4a','#8a2236'],['Sign 1\nToo many tools','Each tool adds a hand-off\nthat nobody owns.','#10223f','#25a8e0'],['Sign 2\nNo human\napproval step','Nothing should go online\nwithout a person saying yes.','#12351f','#2fb36b'],['Your move','Follow for part two.\nLink in bio.','#4a1a2a','#e0607a']];
+  media=[];P={title:'Demo: seven signs',aspect:'9:16',bg:'#101323',clips:[],texts:[],music:null};
+  defs.forEach((d,i)=>{const url=demoSlide(i+1,...d);loadImg(url);const m={id:id(),type:'image',name:'demo-'+(i+1)+'.png',url,dur:3};media.push(m);P.clips.push({id:id(),type:'image',src:url,name:m.name,dur:i===3?3.5:3,trans:i?['fade','slideleft','zoom'][i-1]:'none',tdur:.6,kb:['in','out','left','in'][i],fit:'cover',vol:1,trim:0})});
+  P.texts.push({id:id(),text:'Stop over-engineering',start:.3,dur:2.4,x:50,y:20,size:7,color:'#ffffff',weight:800,font:'bold',anim:'rise',align:'center',box:'',shadow:true});
+  P.texts.push({id:id(),text:'Follow GSN Media',start:9.3,dur:3,x:50,y:84,size:6,color:'#ffffff',weight:700,font:'bold',anim:'fade',align:'center',box:'#8a2236',shadow:false});
+  buildBin();syncAspect();undoS=[];commit();toast('Demo loaded. Press Play.');
+};
+
+/* ============================ Text ============================ */
+const PRESETS={
+  hook:{text:'Stop scrolling',size:9,weight:800,font:'bold',y:30,anim:'rise',box:'',shadow:true},
+  title:{text:'Your title here',size:7,weight:700,font:'serif',y:22,anim:'fade',box:'',shadow:true},
+  sub:{text:'A short subtitle',size:4.2,weight:500,font:'sans',y:34,anim:'fade',box:'',shadow:true},
+  caption:{text:'Caption goes here',size:4.4,weight:700,font:'sans',y:80,anim:'fade',box:'#000000',shadow:false},
+  lower:{text:'Name · Role',size:4,weight:600,font:'sans',y:86,anim:'rise',box:'#8a2236',shadow:false},
+  cta:{text:'Follow for more',size:6,weight:800,font:'bold',y:84,anim:'rise',box:'#ffd84d',shadow:false,color:'#2a1a14'}
+};
+$$('[data-preset]').forEach(b=>b.onclick=()=>{
+  const p=PRESETS[b.dataset.preset];const t={id:id(),text:p.text,start:clamp(T,0,Math.max(0,P.total-.5)),dur:2.5,x:50,y:p.y,size:p.size,color:p.color||'#ffffff',weight:p.weight,font:p.font,anim:p.anim,align:'center',box:p.box,shadow:p.shadow};
+  P.texts.push(t);sel={k:'text',id:t.id};commit();
+});
+
+/* ============================ Drawing ============================ */
+function coverRect(iw,ih,w,h,fit){const s=fit==='contain'?Math.min(w/iw,h/ih):Math.max(w/iw,h/ih);return [(w-iw*s)/2,(h-ih*s)/2,iw*s,ih*s]}
+function drawClip(c,t,alpha,tr){
+  const w=cv.width,h=cv.height,p=clamp((t-c.start)/c.dur,0,1);
+  let src=null,iw,ih;
+  if(c.type==='image'){const im=loadImg(c.src);if(im.complete&&im.naturalWidth){src=im;iw=im.naturalWidth;ih=im.naturalHeight}}
+  else{const v=vidFor(c.src);if(v.readyState>=2&&v.videoWidth){src=v;iw=v.videoWidth;ih=v.videoHeight}}
+  if(!src){ctx.fillStyle='#222';ctx.fillRect(0,0,w,h);return}
+  let [x,y,dw,dh]=coverRect(iw,ih,w,h,c.fit);
+  let sc=1,tx=0;
+  if(c.kb==='in')sc=1+.12*p;else if(c.kb==='out')sc=1.12-.12*p;else if(c.kb==='left'){sc=1.1;tx=(.5-p)*w*.08}else if(c.kb==='right'){sc=1.1;tx=(p-.5)*w*.08}
+  ctx.save();
+  let ox=0,oy=0,al=alpha,zs=1;
+  if(tr){const e=tr*tr*(3-2*tr);
+    if(c.trans==='fade')al=e;
+    else if(c.trans==='slideleft')ox=(1-e)*w;
+    else if(c.trans==='slideup')oy=(1-e)*h;
+    else if(c.trans==='zoom'){al=e;zs=1.25-.25*e}
+    else if(c.trans==='wipe'){ctx.beginPath();ctx.rect(0,0,w*e,h);ctx.clip()}}
+  ctx.globalAlpha=al;ctx.translate(w/2+ox,h/2+oy);ctx.scale(sc*zs,sc*zs);ctx.translate(-w/2+tx,-h/2);
+  if(c.fit==='contain'){ctx.fillStyle=P.bg;ctx.fillRect(-w,-h,3*w,3*h)}
+  ctx.drawImage(src,x,y,dw,dh);ctx.restore();
+}
+function wrap(text,maxW){
+  const out=[];for(const para of String(text).split('\n')){let line='';for(const word of para.split(/\s+/)){const t=line?line+' '+word:word;if(ctx.measureText(t).width>maxW&&line){out.push(line);line=word}else line=t}out.push(line)}return out;
+}
+function drawText(tx,t){
+  const w=cv.width,h=cv.height,local=t-tx.start,a=clamp(local/.4,0,1)*clamp((tx.dur-local)/.4,0,1);
+  if(local<0||local>tx.dur)return;
+  const fs=tx.size/100*w;ctx.save();
+  ctx.font=`${tx.weight} ${fs}px ${FONTS[tx.font]||FONTS.sans}`;ctx.textAlign=tx.align||'center';ctx.textBaseline='middle';
+  const lines=wrap(tx.text,w*.84),lh=fs*1.18,bh=lines.length*lh;
+  let ax=tx.x/100*w,ay=tx.y/100*h;
+  if(tx.anim==='rise')ay+=(1-clamp(local/.5,0,1))*fs*.8;
+  ctx.globalAlpha=tx.anim==='none'?1:a;
+  const widest=Math.max(...lines.map(l=>ctx.measureText(l).width));
+  if(tx.box){const pad=fs*.35,bx=tx.align==='left'?ax:tx.align==='right'?ax-widest:ax-widest/2;ctx.fillStyle=tx.box;ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,ay-bh/2-pad*.6,widest+pad*2,bh+pad*1.2,fs*.22):ctx.rect(bx-pad,ay-bh/2-pad*.6,widest+pad*2,bh+pad*1.2);ctx.fill()}
+  ctx.fillStyle=tx.color;if(tx.shadow){ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=fs*.18;ctx.shadowOffsetY=fs*.05}
+  lines.forEach((l,i)=>ctx.fillText(l,ax,ay-bh/2+lh*(i+.5)));
+  ctx.restore();
+}
+function draw(){
+  const w=cv.width,h=cv.height;ctx.fillStyle=P.bg;ctx.fillRect(0,0,w,h);
+  const act=P.clips.filter(c=>T>=c.start&&T<c.end);
+  act.forEach((c,i)=>{const tr=c.ov?clamp((T-c.start)/c.ov,0,1):1;drawClip(c,T,1,i>0||c.ov?tr:1)});
+  P.texts.forEach(x=>drawText(x,T));
+  updateTime();syncPlayhead();
+}
+function updateTime(){$('#timeTxt').textContent=fmt(T)+' / '+fmt(P.total)}
+
+/* ============================ Playback ============================ */
+function ensureAudioGraph(){
+  if(actx)return;actx=new (window.AudioContext||window.webkitAudioContext)();spk=actx.createGain();spk.connect(actx.destination);expDest=actx.createMediaStreamDestination();
+}
+function route(el,key){
+  ensureAudioGraph();if(srcNodes.has(key))return srcNodes.get(key);
+  try{const s=actx.createMediaElementSource(el),g=actx.createGain();s.connect(g);g.connect(spk);g.connect(expDest);srcNodes.set(key,g);return g}catch{return null}
+}
+function syncMedia(){
+  // Music
+  if(P.music){
+    if(!audioEl||audioEl.dataset.src!==P.music.src){audioEl=new Audio(P.music.src);audioEl.dataset.src=P.music.src;audioEl.preload='auto'}
+    const lt=T-P.music.start,g=route(audioEl,'music');
+    const fo=P.music.fadeOut||0,left=P.music.start+P.music.dur-T,fade=fo>0?clamp(left/fo,0,1):1;
+    const vol=clamp(P.music.vol*fade,0,1);if(g)g.gain.value=vol;else audioEl.volume=vol;
+    if(playing&&lt>=0&&lt<P.music.dur){if(audioEl.paused||Math.abs(audioEl.currentTime-lt)>.35){audioEl.currentTime=lt;audioEl.play().catch(()=>{})}}else if(!audioEl.paused)audioEl.pause();
+  }else if(audioEl&&!audioEl.paused)audioEl.pause();
+  // Video clips
+  P.clips.forEach(c=>{
+    if(c.type!=='video')return;const v=vidFor(c.src),inside=T>=c.start&&T<c.end,lt=c.trim+(T-c.start);
+    const g=route(v,'v'+c.src);if(g)g.gain.value=c.vol;else v.volume=clamp(c.vol,0,1);
+    if(inside){
+      if(playing){if(v.paused||Math.abs(v.currentTime-lt)>.4){v.currentTime=lt;v.play().catch(()=>{})}}
+      else{if(Math.abs(v.currentTime-lt)>.05)v.currentTime=lt;if(!v.paused)v.pause()}
+    }else if(!v.paused)v.pause();
+  });
+}
+let last=0;
+function tick(now){
+  if(!playing)return;
+  const dt=Math.min(.1,(now-last)/1000);last=now;T+=dt;
+  if(T>=P.total){if($('#loop').checked&&!exporting){T=0}else{T=P.total;pause();draw();syncMedia();if(exporting)finishExport();return}}
+  syncMedia();draw();requestAnimationFrame(tick);
+}
+function play(){if(!P.clips.length&&!P.texts.length)return toast('Add a slide first.');if(playing)return;if(T>=P.total-.05)T=0;playing=true;ensureAudioGraph();actx.resume?.();last=performance.now();$('#play').innerHTML='&#10074;&#10074;';requestAnimationFrame(tick)}
+function pause(){playing=false;$('#play').innerHTML='&#9654;';syncMedia()}
+$('#play').onclick=()=>playing?pause():play();
+$('#toStart').onclick=()=>{T=0;syncMedia();draw()};
+function seek(t){T=clamp(t,0,P.total);syncMedia();draw()}
+
+/* ============================ Timeline UI ============================ */
+function buildTL(){
+  const W=Math.max(P.total*pxs+160,$('#tl').clientWidth);
+  let h=`<div class="ruler" id="ruler" style="width:${W}px">`;
+  for(let s=0;s<=Math.ceil(W/pxs);s++)h+=`<b style="left:${s*pxs}px">${s}s</b>`;
+  h+='</div>';
+  h+=`<div class="track" style="width:${W}px" data-track="v"><span class="tname">Slides and clips</span>`+P.clips.map(c=>{
+    const th=c.type==='image'?`background-image:url('${c.src}');`:'';
+    return `<div class="clip v ${sel?.id===c.id?'sel':''}" data-k="clip" data-id="${c.id}" style="left:${c.start*pxs}px;width:${Math.max(18,c.dur*pxs)}px;${th}">${c.ov?`<div class="tr" style="width:${c.ov*pxs}px"></div>`:''}<span>${esc(c.name||c.type)}</span><div class="rh" data-rh="1"></div></div>`}).join('')+'</div>';
+  h+=`<div class="track" style="width:${W}px" data-track="t"><span class="tname">Text</span>`+P.texts.map(x=>`<div class="clip t ${sel?.id===x.id?'sel':''}" data-k="text" data-id="${x.id}" style="left:${x.start*pxs}px;width:${Math.max(18,x.dur*pxs)}px"><span>${esc(x.text)}</span><div class="rh" data-rh="1"></div></div>`).join('')+'</div>';
+  h+=`<div class="track" style="width:${W}px" data-track="a"><span class="tname">Music</span>`+(P.music?`<div class="clip a ${sel?.k==='music'?'sel':''}" data-k="music" data-id="music" style="left:${P.music.start*pxs}px;width:${Math.max(18,P.music.dur*pxs)}px"><span>${esc(P.music.name)}</span></div>`:'')+'</div>';
+  h+='<div class="playhead" id="ph"></div>';
+  $('#tlin').style.width=W+'px';$('#tlin').innerHTML=h;syncPlayhead();
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function syncPlayhead(){const ph=$('#ph');if(ph)ph.style.left=(T*pxs)+'px'}
+$('#zoom').oninput=e=>{pxs=+e.target.value;buildTL()};
+function timeAt(ev){const r=$('#tlin').getBoundingClientRect();return Math.max(0,(ev.clientX-r.left)/pxs)}
+$('#tlin').addEventListener('pointerdown',ev=>{
+  const clip=ev.target.closest('.clip'),track=ev.target.closest('.track');
+  if(ev.target.closest('#ruler')||(!clip&&track)){
+    const mv=e=>seek(timeAt(e));mv(ev);const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};addEventListener('pointermove',mv);addEventListener('pointerup',up);
+    if(!clip){sel=null;buildTL();buildInsp()}return;
+  }
+  if(!clip)return;
+  const k=clip.dataset.k,cid=clip.dataset.id;sel={k,id:cid};
+  const obj=k==='clip'?P.clips.find(c=>c.id===cid):k==='text'?P.texts.find(c=>c.id===cid):P.music;
+  const resize=!!ev.target.dataset.rh,x0=ev.clientX,start0=k==='clip'?obj.start:obj.start,dur0=obj.dur,idx0=P.clips.indexOf(obj);
+  let moved=false;const before=JSON.stringify(P);
+  buildTL();buildInsp();
+  const mv=e=>{
+    const dx=(e.clientX-x0)/pxs;if(Math.abs(e.clientX-x0)>3)moved=true;if(!moved)return;
+    if(resize){
+      let nd=Math.max(.3,dur0+dx);if(k==='clip'&&obj.type==='video')nd=Math.min(nd,vidFor(obj.src).duration-obj.trim||nd);obj.dur=nd;
+    }else if(k==='clip'){
+      // Reorder: put the slide where its centre now sits.
+      const centre=start0+dur0/2+dx;let to=P.clips.filter(c=>c!==obj&&(c.start+c.dur/2)<centre).length;
+      const from=P.clips.indexOf(obj);if(to!==from){P.clips.splice(from,1);P.clips.splice(to,0,obj)}
+    }else{obj.start=Math.max(0,start0+dx)}
+    layout();buildTL();draw();
+  };
+  const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);if(moved&&JSON.stringify(P)!==before){undoS.push(before);redoS=[];layout();buildTL();buildInsp();draw()}};
+  addEventListener('pointermove',mv);addEventListener('pointerup',up);
+});
+function selObj(){if(!sel)return null;return sel.k==='clip'?P.clips.find(c=>c.id===sel.id):sel.k==='text'?P.texts.find(c=>c.id===sel.id):P.music}
+$('#del').onclick=delSel;
+function delSel(){if(!sel)return;if(sel.k==='clip')P.clips=P.clips.filter(c=>c.id!==sel.id);else if(sel.k==='text')P.texts=P.texts.filter(c=>c.id!==sel.id);else P.music=null;sel=null;commit()}
+$('#dup').onclick=dupSel;
+function dupSel(){const o=selObj();if(!o)return;if(sel.k==='clip'){const c={...o,id:id()};P.clips.splice(P.clips.indexOf(o)+1,0,c);sel={k:'clip',id:c.id}}else if(sel.k==='text'){const c={...o,id:id(),start:o.start+.3};P.texts.push(c);sel={k:'text',id:c.id}}commit()}
+$('#split').onclick=splitSel;
+function splitSel(){
+  const o=selObj();if(!o||sel.k!=='clip')return toast('Select a slide or clip first, then put the playhead inside it.');
+  if(T<=o.start+.2||T>=o.end-.2)return toast('Move the playhead inside the selected slide, away from its edges.');
+  const first=o.dur;const d1=T-o.start;const b={...o,id:id(),dur:o.dur-d1,trans:'none',trim:o.type==='video'?o.trim+d1:0};
+  o.dur=d1;P.clips.splice(P.clips.indexOf(o)+1,0,b);sel={k:'clip',id:b.id};commit();
+}
+
+/* ============================ Inspector ============================ */
+function opts(map,cur){return Object.entries(map).map(([k,v])=>`<option value="${k}" ${cur===k?'selected':''}>${v}</option>`).join('')}
+function buildInsp(){
+  const o=selObj(),el=$('#insp');
+  if(!o){el.innerHTML=`<h2>Video</h2><p class="hint">Select something on the timeline to change it.</p>
+  <div class="field"><label>Background</label><input type="color" data-p="bg" value="${P.bg}"></div>
+  <p class="hint">Shows behind slides that do not fill the whole frame.</p>
+  <h3>How it works</h3><p class="hint">1. Add the slides you designed in the template studio.<br>2. Pick a transition and a slow zoom for each.<br>3. Add text and a music track.<br>4. Press Export video.</p>`;
+    el.querySelector('[data-p=bg]').oninput=e=>{P.bg=e.target.value;draw()};el.querySelector('[data-p=bg]').onchange=()=>commit();return}
+  if(sel.k==='clip'){
+    el.innerHTML=`<h2>${o.type==='video'?'Video clip':'Slide'}</h2><p class="hint">${esc(o.name||'')}</p>
+    <div class="field"><label>Length (s)</label><input type="number" min=".3" step=".1" data-f="dur" value="${o.dur.toFixed(1)}"></div>
+    <div class="field"><label>Transition in</label><select data-f="trans">${opts(TRANS,o.trans)}</select></div>
+    <div class="field"><label>Transition (s)</label><input type="range" min=".2" max="1.5" step=".1" data-f="tdur" value="${o.tdur}"></div>
+    ${o.type==='image'?`<div class="field"><label>Motion</label><select data-f="kb">${opts(KB,o.kb)}</select></div>`:`<div class="field"><label>Volume</label><input type="range" min="0" max="1" step=".05" data-f="vol" value="${o.vol}"></div>`}
+    <div class="field"><label>Fit</label><select data-f="fit"><option value="cover" ${o.fit==='cover'?'selected':''}>Fill the frame</option><option value="contain" ${o.fit==='contain'?'selected':''}>Show whole picture</option></select></div>`;
+  }else if(sel.k==='text'){
+    el.innerHTML=`<h2>Text</h2>
+    <div class="field"><textarea data-f="text">${esc(o.text)}</textarea></div>
+    <div class="field"><label>Starts at (s)</label><input type="number" min="0" step=".1" data-f="start" value="${o.start.toFixed(1)}"></div>
+    <div class="field"><label>Length (s)</label><input type="number" min=".3" step=".1" data-f="dur" value="${o.dur.toFixed(1)}"></div>
+    <div class="field"><label>Font</label><select data-f="font">${opts({sans:'DM Sans',serif:'Cormorant Garamond',bold:'Manrope Bold',mono:'Mono'},o.font)}</select></div>
+    <div class="field"><label>Size</label><input type="range" min="2" max="16" step=".2" data-f="size" value="${o.size}"></div>
+    <div class="field"><label>Weight</label><select data-f="weight">${[400,500,600,700,800].map(w=>`<option ${o.weight==w?'selected':''}>${w}</option>`).join('')}</select></div>
+    <div class="field"><label>Colour</label><input type="color" data-f="color" value="${o.color}"></div>
+    <div class="field"><label>Box behind</label><input type="color" data-f="box" value="${o.box||'#000000'}"></div>
+    <div class="row"><button class="btn sm" id="noBox">No box</button><label class="row" style="font-size:.76rem;gap:6px"><input type="checkbox" data-f="shadow" ${o.shadow?'checked':''}> Shadow</label></div>
+    <div class="field"><label>Left / right</label><input type="range" min="5" max="95" data-f="x" value="${o.x}"></div>
+    <div class="field"><label>Up / down</label><input type="range" min="4" max="96" data-f="y" value="${o.y}"></div>
+    <div class="field"><label>Align</label><select data-f="align">${opts({left:'Left',center:'Centre',right:'Right'},o.align)}</select></div>
+    <div class="field"><label>Movement</label><select data-f="anim">${opts({none:'None',fade:'Fade in and out',rise:'Rise and fade'},o.anim)}</select></div>`;
+  }else{
+    el.innerHTML=`<h2>Music</h2><p class="hint">${esc(o.name)}</p>
+    <div class="field"><label>Starts at (s)</label><input type="number" min="0" step=".1" data-f="start" value="${o.start.toFixed(1)}"></div>
+    <div class="field"><label>Volume</label><input type="range" min="0" max="1" step=".05" data-f="vol" value="${o.vol}"></div>
+    <div class="field"><label>Fade out (s)</label><input type="range" min="0" max="5" step=".25" data-f="fadeOut" value="${o.fadeOut||0}"></div>
+    <button class="btn sm" id="fitMusic">Make the video as long as the music</button>`;
+  }
+  el.querySelectorAll('[data-f]').forEach(inp=>{
+    const apply=final=>{
+      const f=inp.dataset.f;let v=inp.type==='checkbox'?inp.checked:inp.value;
+      if(inp.type==='number'||inp.type==='range'||f==='weight')v=+v;
+      if(f==='box'&&inp.type==='color'&&o.box===''&&!final&&false)return;
+      o[f]=v;if(f==='dur')o.dur=Math.max(.3,+v);layout();draw();buildTL();if(final)commitKeep()
+    };
+    inp.oninput=()=>{if(inp.tagName==='TEXTAREA'||inp.type==='range'||inp.type==='color')apply(false)};
+    inp.onchange=()=>apply(true);
+  });
+  $('#noBox')&&($('#noBox').onclick=()=>{o.box='';commit()});
+  $('#fitMusic')&&($('#fitMusic').onclick=()=>{const tot=P.clips.reduce((s,c)=>s+c.dur,0);if(!P.clips.length)return;const k=o.dur/tot;if(k<.5||k>4)toast('That would change slide lengths a lot.');P.clips.forEach(c=>c.dur=Math.max(.5,c.dur*k));commit()});
+}
+function commitKeep(){undoS.push(lastSaved);if(undoS.length>80)undoS.shift();redoS=[];lastSaved=JSON.stringify(P);layout();draw();buildTL()}
+let lastSaved=JSON.stringify(P);
+const _commit=commit;commit=function(){_commit();lastSaved=JSON.stringify(P)};
+
+/* ============================ Top bar ============================ */
+$('#aspect').onchange=e=>{P.aspect=e.target.value;setCanvas(540);commit();buildSafe()};
+$('#title').oninput=e=>{P.title=e.target.value};
+$('#safeOn').onchange=buildSafe;
+function buildSafe(){const s=$('#safe');s.hidden=!$('#safeOn').checked;if(s.hidden)return;const r=cv.getBoundingClientRect(),v=$('#view').getBoundingClientRect();
+  // Shorts, Reels and TikTok cover the top ~12% and the bottom ~22%, and the right edge. Keep text inside the dashed box.
+  Object.assign(s.style,{left:(r.left-v.left+r.width*.05)+'px',top:(r.top-v.top+r.height*.12)+'px',width:(r.width*.78)+'px',height:(r.height*.64)+'px'})}
+addEventListener('resize',()=>{fit();buildTL()});
+$('#saveProj').onclick=()=>{
+  const out={format:'gsn-video-studio',version:1,project:P,note:'Slides and music are embedded; video clips must be added again after opening.'};
+  const emb=JSON.parse(JSON.stringify(P));emb.clips.forEach(c=>{if(c.type==='video'){c.src='';c.missing=true}});
+  out.project=emb;
+  const b=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(P.title||'video').replace(/[^\w\-]+/g,'_')+'.gsnvideo.json';a.click();toast('Project saved.');
+};
+$('#openProj').onclick=()=>$('#projFile').click();
+$('#projFile').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const j=JSON.parse(await f.text());if(j.format!=='gsn-video-studio')throw 0;P=j.project;P.clips=(P.clips||[]).filter(c=>!c.missing);P.texts=P.texts||[];sel=null;
+    P.clips.forEach(c=>{if(c.type==='image')loadImg(c.src)});media=P.clips.filter(c=>c.type==='image').map(c=>({id:id(),type:'image',name:c.name,url:c.src,dur:3}));buildBin();syncAspect();undoS=[];commit();toast('Project opened.')}
+  catch{toast('That is not a GSN video project file.')}
+};
+
+/* ============================ Export ============================ */
+let rec=null,chunks=[],cancelExport=false;
+function pickMime(){
+  const c=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  return c.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||'';
+}
+$('#export').onclick=async()=>{
+  if(!P.clips.length)return toast('Add a slide first.');
+  if(!window.MediaRecorder)return toast('This browser cannot record video. Use Chrome, Edge or Firefox.');
+  pause();exporting=true;cancelExport=false;setCanvas($('#quality').value);T=0;syncMedia();draw();
+  ensureAudioGraph();await actx.resume();
+  const mime=pickMime(),stream=cv.captureStream(30);
+  if(P.music||P.clips.some(c=>c.type==='video'))expDest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+  chunks=[];rec=new MediaRecorder(stream,{mimeType:mime||undefined,videoBitsPerSecond:$('#quality').value==='1080'?9e6:5e6});
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{
+    exporting=false;setCanvas(540);draw();$('#prog').classList.remove('on');
+    if(cancelExport)return toast('Export cancelled.');
+    const type=rec.mimeType||'video/webm',ext=type.includes('mp4')?'mp4':'webm',b=new Blob(chunks,{type}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download=(P.title||'video').replace(/[^\w\-]+/g,'_')+'.'+ext;a.click();toast('Video saved ('+ext.toUpperCase()+', '+(b.size/1048576).toFixed(1)+' MB).',5000);
+  };
+  $('#prog').classList.add('on');$('#progBar').style.width='0%';
+  rec.start(250);playing=false;play();
+  const prog=setInterval(()=>{if(!exporting){clearInterval(prog);return}$('#progBar').style.width=(100*T/P.total)+'%'},200);
+};
+function finishExport(){try{rec.state!=='inactive'&&rec.stop()}catch{}}
+$('#progCancel').onclick=()=>{cancelExport=true;pause();finishExport()};
+
+/* ============================ Keys ============================ */
+addEventListener('keydown',e=>{
+  if(e.target.closest('input,textarea,select'))return;
+  const mod=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
+  if(e.code==='Space'){e.preventDefault();playing?pause():play()}
+  else if(mod&&k==='z'){e.preventDefault();(e.shiftKey?$('#redo'):$('#undo')).click()}
+  else if(mod&&k==='y'){e.preventDefault();$('#redo').click()}
+  else if(mod&&k==='d'){e.preventDefault();dupSel()}
+  else if(k==='delete'||k==='backspace'){e.preventDefault();delSel()}
+  else if(k==='s'&&!mod){splitSel()}
+  else if(k==='arrowleft'){seek(T-(e.shiftKey?1:1/30))}
+  else if(k==='arrowright'){seek(T+(e.shiftKey?1:1/30))}
+});
+
+/* ============================ Start ============================ */
+setCanvas(540);layout();buildBin();buildTL();buildInsp();draw();
+window.GSNVideo={get project(){return P},addToTimeline,seek,play,pause,get total(){return P.total}};
+</script>
+</body>
+</html>
