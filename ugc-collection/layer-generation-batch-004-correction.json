@@ -1,0 +1,4 @@
+{
+  "id": 11,
+  "prompt": "Use case: background-extraction. Correct the attached transparent three-column asset sheet. Keep exactly the same woman identity, lilac blouse, open empty hand, cream disk and white/orange sunscreen tube. Move and scale the entire woman and hand left so every finger is wholly within x20..610, with a clean transparent gutter x620..719. Move cream disk entirely within x740..1100. Tube entirely x1200..1490. Full canvas1536x1024. Actual transparent alpha outside objects. No slivers or pixels of the cream disk may enter the person column. No text, no environment, no glow. Preserve realistic photography and all fingertips."
+}

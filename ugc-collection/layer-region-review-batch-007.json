@@ -1,0 +1,338 @@
+[
+  {
+    "id": 33,
+    "regions": {
+      "person": [
+        16,
+        184,
+        468,
+        701
+      ],
+      "product": [
+        506,
+        182,
+        548,
+        687
+      ],
+      "packaging": [
+        1054,
+        143,
+        462,
+        705
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      348
+    ],
+    "needsReview": true
+  },
+  {
+    "id": 34,
+    "regions": {
+      "person": [
+        98,
+        14,
+        482,
+        1010
+      ],
+      "product": [
+        739,
+        69,
+        157,
+        872
+      ],
+      "packaging": [
+        1119,
+        60,
+        237,
+        888
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 35,
+    "regions": {
+      "person": [
+        58,
+        28,
+        824,
+        984
+      ],
+      "product": [
+        882,
+        476,
+        158,
+        318
+      ],
+      "packaging": [
+        1040,
+        281,
+        470,
+        554
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      255
+    ],
+    "needsReview": true
+  },
+  {
+    "id": 36,
+    "regions": {
+      "person": [
+        46,
+        149,
+        595,
+        792
+      ],
+      "product": [
+        641,
+        224,
+        422,
+        643
+      ],
+      "packaging": [
+        1110,
+        220,
+        355,
+        627
+      ]
+    },
+    "opaqueGutterPixels": [
+      24,
+      0
+    ],
+    "needsReview": true
+  },
+  {
+    "id": 37,
+    "regions": {
+      "person": [
+        38,
+        44,
+        471,
+        980
+      ],
+      "product": [
+        521,
+        279,
+        460,
+        477
+      ],
+      "packaging": [
+        1049,
+        292,
+        431,
+        446
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 38,
+    "regions": {
+      "person": [
+        42,
+        126,
+        474,
+        834
+      ],
+      "product": [
+        522,
+        326,
+        501,
+        413
+      ],
+      "packaging": [
+        1055,
+        334,
+        410,
+        397
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 39,
+    "regions": {
+      "person": [
+        15,
+        111,
+        485,
+        863
+      ],
+      "product": [
+        500,
+        272,
+        568,
+        514
+      ],
+      "packaging": [
+        1084,
+        344,
+        429,
+        364
+      ]
+    },
+    "opaqueGutterPixels": [
+      52,
+      0
+    ],
+    "needsReview": true
+  },
+  {
+    "id": 40,
+    "regions": {
+      "person": [
+        60,
+        54,
+        440,
+        944
+      ],
+      "product": [
+        500,
+        195,
+        466,
+        634
+      ],
+      "packaging": [
+        1045,
+        217,
+        432,
+        601
+      ]
+    },
+    "opaqueGutterPixels": [
+      180,
+      0
+    ],
+    "needsReview": true
+  },
+  {
+    "id": 41,
+    "regions": {
+      "person": [
+        22,
+        183,
+        507,
+        682
+      ],
+      "product": [
+        529,
+        394,
+        573,
+        386
+      ],
+      "packaging": [
+        1118,
+        285,
+        387,
+        498
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 42,
+    "regions": {
+      "person": [
+        0,
+        183,
+        632,
+        841
+      ],
+      "product": [
+        703,
+        110,
+        224,
+        828
+      ],
+      "packaging": [
+        1074,
+        108,
+        357,
+        821
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 43,
+    "regions": {
+      "person": [
+        44,
+        80,
+        539,
+        915
+      ],
+      "product": [
+        658,
+        243,
+        360,
+        540
+      ],
+      "packaging": [
+        1111,
+        234,
+        378,
+        554
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      0
+    ],
+    "needsReview": false
+  },
+  {
+    "id": 44,
+    "regions": {
+      "person": [
+        5,
+        130,
+        557,
+        818
+      ],
+      "product": [
+        595,
+        300,
+        445,
+        482
+      ],
+      "packaging": [
+        1040,
+        338,
+        478,
+        440
+      ]
+    },
+    "opaqueGutterPixels": [
+      0,
+      220
+    ],
+    "needsReview": true
+  }
+]

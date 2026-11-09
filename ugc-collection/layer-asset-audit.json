@@ -1,0 +1,1661 @@
+{
+  "preparedCampaigns": 69,
+  "campaigns": [
+    {
+      "id": 0,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.322,
+          "dataUrlLength": 1335206
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.602,
+          "dataUrlLength": 252886
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.239,
+          "dataUrlLength": 582274
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.431,
+          "dataUrlLength": 988614
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.436,
+          "dataUrlLength": 438134
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.17,
+          "dataUrlLength": 677238
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.274,
+          "dataUrlLength": 1101562
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.464,
+          "dataUrlLength": 920438
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.19,
+          "dataUrlLength": 585974
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.369,
+          "dataUrlLength": 983450
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.35,
+          "dataUrlLength": 461118
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.196,
+          "dataUrlLength": 666998
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.345,
+          "dataUrlLength": 1223450
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.252,
+          "dataUrlLength": 715886
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.245,
+          "dataUrlLength": 709822
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.484,
+          "dataUrlLength": 1093502
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.508,
+          "dataUrlLength": 324318
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.245,
+          "dataUrlLength": 448146
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.644,
+          "dataUrlLength": 993482
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.593,
+          "dataUrlLength": 533814
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.286,
+          "dataUrlLength": 493458
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.432,
+          "dataUrlLength": 725734
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.424,
+          "dataUrlLength": 381266
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.434,
+          "dataUrlLength": 257690
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.35,
+          "dataUrlLength": 714850
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.393,
+          "dataUrlLength": 419494
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.363,
+          "dataUrlLength": 334414
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.432,
+          "dataUrlLength": 782938
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.344,
+          "dataUrlLength": 508198
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.229,
+          "dataUrlLength": 344670
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.573,
+          "dataUrlLength": 843554
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.424,
+          "dataUrlLength": 479290
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.148,
+          "dataUrlLength": 377366
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.411,
+          "dataUrlLength": 1274702
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.238,
+          "dataUrlLength": 353390
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.348,
+          "dataUrlLength": 313654
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.456,
+          "dataUrlLength": 1055602
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.323,
+          "dataUrlLength": 301962
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.3,
+          "dataUrlLength": 364218
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.398,
+          "dataUrlLength": 682198
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.395,
+          "dataUrlLength": 230586
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.201,
+          "dataUrlLength": 402574
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.291,
+          "dataUrlLength": 1319090
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.732,
+          "dataUrlLength": 326994
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.261,
+          "dataUrlLength": 367382
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.482,
+          "dataUrlLength": 1175646
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.135,
+          "dataUrlLength": 243970
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.106,
+          "dataUrlLength": 259702
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.374,
+          "dataUrlLength": 1853090
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.153,
+          "dataUrlLength": 197262
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.097,
+          "dataUrlLength": 209546
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.341,
+          "dataUrlLength": 1431698
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.168,
+          "dataUrlLength": 301782
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.439,
+          "dataUrlLength": 468206
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.377,
+          "dataUrlLength": 1532474
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.432,
+          "dataUrlLength": 414142
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.093,
+          "dataUrlLength": 424402
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.289,
+          "dataUrlLength": 1366186
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.613,
+          "dataUrlLength": 528766
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.077,
+          "dataUrlLength": 434038
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.364,
+          "dataUrlLength": 1094018
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.362,
+          "dataUrlLength": 581054
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.077,
+          "dataUrlLength": 483650
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.306,
+          "dataUrlLength": 956866
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.166,
+          "dataUrlLength": 470462
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.098,
+          "dataUrlLength": 314158
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.482,
+          "dataUrlLength": 581434
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.259,
+          "dataUrlLength": 1778122
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.194,
+          "dataUrlLength": 512086
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.388,
+          "dataUrlLength": 1013502
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.256,
+          "dataUrlLength": 466086
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.054,
+          "dataUrlLength": 362998
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.534,
+          "dataUrlLength": 914038
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.107,
+          "dataUrlLength": 214382
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.096,
+          "dataUrlLength": 341490
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.372,
+          "dataUrlLength": 1403810
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.53,
+          "dataUrlLength": 408074
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.093,
+          "dataUrlLength": 416346
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.294,
+          "dataUrlLength": 1058454
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.31,
+          "dataUrlLength": 436114
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.419,
+          "dataUrlLength": 473162
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.285,
+          "dataUrlLength": 1263090
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.336,
+          "dataUrlLength": 1023726
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.116,
+          "dataUrlLength": 455418
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.376,
+          "dataUrlLength": 651494
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.257,
+          "dataUrlLength": 753254
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.189,
+          "dataUrlLength": 482230
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.284,
+          "dataUrlLength": 897102
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.035,
+          "dataUrlLength": 792982
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.328,
+          "dataUrlLength": 256122
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.365,
+          "dataUrlLength": 1336630
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.299,
+          "dataUrlLength": 422738
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.06,
+          "dataUrlLength": 393230
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.434,
+          "dataUrlLength": 1119890
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.253,
+          "dataUrlLength": 362298
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.09,
+          "dataUrlLength": 388750
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.364,
+          "dataUrlLength": 955534
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.098,
+          "dataUrlLength": 231546
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.098,
+          "dataUrlLength": 269774
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.547,
+          "dataUrlLength": 687402
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.458,
+          "dataUrlLength": 691182
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.189,
+          "dataUrlLength": 706914
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.347,
+          "dataUrlLength": 1069622
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.443,
+          "dataUrlLength": 257002
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.077,
+          "dataUrlLength": 504122
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.347,
+          "dataUrlLength": 717814
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.094,
+          "dataUrlLength": 684978
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.308,
+          "dataUrlLength": 659406
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.299,
+          "dataUrlLength": 1025322
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.443,
+          "dataUrlLength": 466678
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.145,
+          "dataUrlLength": 333538
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.307,
+          "dataUrlLength": 992474
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.237,
+          "dataUrlLength": 509502
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.072,
+          "dataUrlLength": 400094
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.364,
+          "dataUrlLength": 816242
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.289,
+          "dataUrlLength": 502474
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.128,
+          "dataUrlLength": 365142
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.304,
+          "dataUrlLength": 971190
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.283,
+          "dataUrlLength": 653342
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.245,
+          "dataUrlLength": 290646
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.36,
+          "dataUrlLength": 638594
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.417,
+          "dataUrlLength": 590810
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.135,
+          "dataUrlLength": 417418
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.38,
+          "dataUrlLength": 729706
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.288,
+          "dataUrlLength": 550914
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.133,
+          "dataUrlLength": 331330
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.564,
+          "dataUrlLength": 1084722
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.401,
+          "dataUrlLength": 250766
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.033,
+          "dataUrlLength": 617998
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.371,
+          "dataUrlLength": 1088826
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.065,
+          "dataUrlLength": 281442
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.074,
+          "dataUrlLength": 382458
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.318,
+          "dataUrlLength": 917962
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.274,
+          "dataUrlLength": 349654
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.379,
+          "dataUrlLength": 383954
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.378,
+          "dataUrlLength": 445882
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.472,
+          "dataUrlLength": 252558
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.299,
+          "dataUrlLength": 192246
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.339,
+          "dataUrlLength": 923026
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.188,
+          "dataUrlLength": 290806
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.123,
+          "dataUrlLength": 238858
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.405,
+          "dataUrlLength": 714998
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.058,
+          "dataUrlLength": 310302
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.099,
+          "dataUrlLength": 308966
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.455,
+          "dataUrlLength": 574330
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.384,
+          "dataUrlLength": 433162
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.166,
+          "dataUrlLength": 316738
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.37,
+          "dataUrlLength": 729522
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.196,
+          "dataUrlLength": 246162
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.139,
+          "dataUrlLength": 200446
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.403,
+          "dataUrlLength": 962138
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.186,
+          "dataUrlLength": 534566
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.175,
+          "dataUrlLength": 405322
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.527,
+          "dataUrlLength": 375326
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.383,
+          "dataUrlLength": 463114
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.249,
+          "dataUrlLength": 359702
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.458,
+          "dataUrlLength": 477042
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.445,
+          "dataUrlLength": 549622
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.195,
+          "dataUrlLength": 193214
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.329,
+          "dataUrlLength": 537854
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.291,
+          "dataUrlLength": 845134
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.147,
+          "dataUrlLength": 424638
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.422,
+          "dataUrlLength": 601554
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.237,
+          "dataUrlLength": 583962
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.12,
+          "dataUrlLength": 217370
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.362,
+          "dataUrlLength": 678338
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.425,
+          "dataUrlLength": 567822
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.162,
+          "dataUrlLength": 265122
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.341,
+          "dataUrlLength": 677870
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.236,
+          "dataUrlLength": 848046
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.187,
+          "dataUrlLength": 296118
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.384,
+          "dataUrlLength": 520882
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.356,
+          "dataUrlLength": 521242
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.163,
+          "dataUrlLength": 157358
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.352,
+          "dataUrlLength": 636014
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.254,
+          "dataUrlLength": 161746
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.51,
+          "dataUrlLength": 289402
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.34,
+          "dataUrlLength": 850218
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.382,
+          "dataUrlLength": 175022
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.135,
+          "dataUrlLength": 175554
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.445,
+          "dataUrlLength": 542462
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.682,
+          "dataUrlLength": 232138
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.272,
+          "dataUrlLength": 468390
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.354,
+          "dataUrlLength": 1189298
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.304,
+          "dataUrlLength": 411746
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.24,
+          "dataUrlLength": 246490
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.364,
+          "dataUrlLength": 751054
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.201,
+          "dataUrlLength": 113594
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.336,
+          "dataUrlLength": 289810
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.389,
+          "dataUrlLength": 657970
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.475,
+          "dataUrlLength": 344762
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.269,
+          "dataUrlLength": 349898
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.304,
+          "dataUrlLength": 1106334
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.436,
+          "dataUrlLength": 96606
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.206,
+          "dataUrlLength": 311698
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.343,
+          "dataUrlLength": 1106122
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.326,
+          "dataUrlLength": 345954
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.111,
+          "dataUrlLength": 271094
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.261,
+          "dataUrlLength": 903666
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.316,
+          "dataUrlLength": 179994
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.201,
+          "dataUrlLength": 434894
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.34,
+          "dataUrlLength": 842626
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.674,
+          "dataUrlLength": 216946
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.189,
+          "dataUrlLength": 282990
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "size": [
+        1536,
+        1024
+      ],
+      "regions": [
+        {
+          "role": "person",
+          "clearFraction": 0.429,
+          "dataUrlLength": 714238
+        },
+        {
+          "role": "product",
+          "clearFraction": 0.295,
+          "dataUrlLength": 600554
+        },
+        {
+          "role": "packaging",
+          "clearFraction": 0.197,
+          "dataUrlLength": 264506
+        }
+      ]
+    }
+  ]
+}
