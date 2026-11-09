@@ -1,7 +1,14 @@
 'use strict';
 /* Export: PNG / JPEG / PDF / HTML / MP4. Rendering helpers are lifted from the classic studio so output matches it exactly. */
 const Exporter=(()=>{
-function download(content,name,type='text/plain'){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+// Saves a file. PDFs and videos are handed over as a generic binary so a browser saves them instead of opening them in a tab (which shows the file as a web address).
+function download(content,name,type='text/plain'){
+ const save=/^(application\/pdf|video\/)/.test(type)?'application/octet-stream':type;
+ const url=URL.createObjectURL(new Blob([content],{type:save}));
+ const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';a.style.display='none';
+ document.body.appendChild(a);a.click();
+ setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},30000);
+}
 // Each photo sheet is a multi-megabyte picture. Convert it once and reuse the result for every page and every export.
 const photoSheets=new Map();
 function photoSheetData(file){
