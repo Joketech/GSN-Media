@@ -1,3 +1,4 @@
+import {handleCharacters} from './character-collection/characters.mjs';
 import {handleUGCStatic} from './ugc-collection/integration.mjs';
 import {handleCreation} from './ai-proxy.mjs';
 import {createV1} from './v1-api.mjs';
@@ -48,6 +49,7 @@ const server=http.createServer(async(req,res)=>{
  if(url.pathname==='/api/health'&&req.method==='GET')return send(res,200,{ok:true,app:'gsn-studio'});
  if(await v1.handle(req,res,url))return;
  if(await handleUGCStatic(req,res,url))return;
+ if(await handleCharacters(req,res,url))return;
  if(await handleCreation(req,res,url))return;
  if(url.pathname==='/api/voices'&&req.method==='GET'){try{return send(res,200,await synthesize({action:'voices'}))}catch(e){return send(res,503,{error:e.message})}}
  if(url.pathname==='/api/voice'&&req.method==='POST'){
