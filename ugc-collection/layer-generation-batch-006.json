@@ -1,0 +1,122 @@
+[
+  {
+    "id": 21,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, woman in navy hijab, ivory cable-knit sweater and grey trousers, seated relaxed empty-handed. CENTER, fully x740..1090 and y30..990, navy velvet cushion with pale blue geometric embroidery. RIGHT, fully x1220..1490 and y30..990, blank navy cushion gift carton with pale label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 21,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: navy and icy blue living-room studio, blue sofa and glass side table, curved light arch. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 22,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, Black woman with neat braids, ivory blouse and cobalt trousers, standing empty-handed. CENTER, fully x740..1090 and y30..990, cream woven rug with cobalt stripes, draped over invisible support to show texture. RIGHT, fully x1220..1490 and y30..990, rolled matching rug wrapped with blank cream paper band. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 22,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: cobalt and white studio with white circular dais and white arch. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 23,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, South Asian bearded man in sage sweater and ivory trousers, crouching empty-handed. CENTER, fully x740..1090 and y30..990, round walnut wall clock with cream face and simple black hands and markers. RIGHT, fully x1220..1490 and y30..990, blank sage square clock shipping carton with cream label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 23,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: pistachio studio with deep green fluted arch, stone floor and leafy plants at edges. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 24,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, only adult Black hands with sage cable-knit cuffs, one above and one below, empty hands. CENTER, fully x740..1090 and y30..990, clear glass scented candle with ivory wax and small lit wick. RIGHT, fully x1220..1490 and y30..990, blank sage candle gift box with cream label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 24,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: sage and ivory stone tabletop, pale stone rings and leafy plant edge. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 25,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, Korean man with short black hair, cream knit sweater and charcoal trousers, seated empty-handed. CENTER, fully x740..1090 and y30..990, clear reed diffuser bottle with golden liquid, black collar and long black reeds. RIGHT, fully x1220..1490 and y30..990, blank charcoal diffuser carton with warm cream label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 25,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: charcoal and warm cream industrial studio, stone plinth and large cream arch. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 26,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, South Asian woman with wavy dark bob, modest cream embroidered long-sleeve dress, waist-up empty-handed. CENTER, fully x740..1090 and y30..990, clear fluted glass flower vase with scalloped rim, empty vase. RIGHT, fully x1220..1490 and y30..990, open blank kraft gift box with ivory tissue. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 26,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: caramel and ivory studio with an empty gold-edged mirror left, marble tabletop and fluted copper wall right. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 27,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, Black man with short locs, cream sweater and sage trousers, seated empty-handed with no throw on lap. CENTER, fully x740..1090 and y30..990, teal and cream woven throw blanket with fringe, neatly draped. RIGHT, fully x1220..1490 and y30..990, folded matching throw wrapped with blank ivory paper band. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 27,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: teal and mint geometric studio with empty cream armchair and mint floor. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 28,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, curly brown-haired adult woman, modest burgundy sweater and rose trousers, standing empty-handed. CENTER, fully x740..1090 and y30..990, round decorative mirror with intertwined gold rim, neutral grey glass reflecting no person. RIGHT, fully x1220..1490 and y30..990, blank rose mirror shipping carton with cream label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 28,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: rose and burgundy fashion studio with stone round plinth and small vase at far left. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 29,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, mature Black woman with silver curls in modest cream and bronze patterned dress, seated empty-handed. CENTER, fully x740..1090 and y30..990, walnut bookshelf with simple books and decorative objects, whole bookshelf visible. RIGHT, fully x1220..1490 and y30..990, flat-packed blank kraft furniture carton with ivory label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 29,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: cream and bronze artisanal studio, cream armchair left, bronze arch and pale floor, no bookshelf in background. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 30,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, South Asian bearded man in sage shirt and dark-green apron, waist-up empty-handed. CENTER, fully x740..1090 and y30..990, compact teal personal blender with clear blending cup filled with fruit, no hands. RIGHT, fully x1220..1490 and y30..990, blank mint blender carton with cream label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 30,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: teal and mint geometric kitchen studio, stone counter and terrazzo plinth. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 31,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, Black woman with short natural curls, modest burgundy floral blouse and burgundy apron, standing empty-handed. CENTER, fully x740..1090 and y30..990, stainless-steel electric kettle with black handle and lid. RIGHT, fully x1220..1490 and y30..990, blank burgundy kettle carton with pale rose label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 31,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: rose and burgundy kitchen studio with pink round stone plinth and fluted arch. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  },
+  {
+    "id": 32,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Reference is an existing campaign; preserve adult identity, outfit and product art direction. Make ONE1536x1024 transparent photographic asset sheet. Three isolated groups with wide transparent gutters: LEFT, fully x20..590 and y30..990, Korean man with short black hair, cream sweater and brown apron, crouching empty-handed. CENTER, fully x740..1090 and y30..990, ivory air fryer with black upper panel and copper handle. RIGHT, fully x1220..1490 and y30..990, blank cream air-fryer carton with bronze label. Scale down objects to fit, all fingers and edges intact. No product, package or food may be part of person cutout. No overlap or stray adjacent pixels. Real skin and materials, genuine transparent alpha, clean edges, no colored glow, no background, no text logos or watermark."
+  },
+  {
+    "id": 32,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Empty vertical4:5 photorealistic studio plate matching reference: cream and bronze kitchen studio with warm stone counter and fluted stone pillars. Remove every person, hand, advertised product, package and reflection of people. Upper35% quiet wall for editable headline. Premium real textures and physically believable studio light. No text logos watermark."
+  }
+]

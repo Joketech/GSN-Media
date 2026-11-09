@@ -1,0 +1,8202 @@
+[
+  {
+    "id": 0,
+    "name": "Roast coffee / Editorial window / Serif journal",
+    "stage": "Editorial window",
+    "typography": "Serif journal",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": true,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 1,
+    "name": "Matcha powder / Full studio / Centred statement",
+    "stage": "Full studio",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 2,
+    "name": "Coconut water / Right image / left note / Magazine title",
+    "stage": "Right image / left note",
+    "typography": "Magazine title",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[10,10.5,80,16],[4,36,22,42],[7,94,63,4],\"28% 0 0 0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 3,
+    "name": "Breakfast granola / Lower showroom / Utility label",
+    "stage": "Lower showroom",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 4,
+    "name": "Dark chocolate / Angled print / Italic editorial",
+    "stage": "Angled print",
+    "typography": "Italic editorial",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"1%\",\"tilt\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 5,
+    "name": "Honey / Left image / right note / Oversized headline",
+    "stage": "Left image / right note",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[5,10.5,90,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 6,
+    "name": "Olive oil / Tall narrow stage / Right-aligned feature",
+    "stage": "Tall narrow stage",
+    "typography": "Right-aligned feature",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 7,
+    "name": "Jollof rice / Landscape photograph / Stacked masthead",
+    "stage": "Landscape photograph",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 8,
+    "name": "Grilled chicken / Open left edge / Modern catalogue",
+    "stage": "Open left edge",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": true,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"0 30% 0 0\",\"line\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 9,
+    "name": "Artisan pizza / Upper gallery / Compact poster",
+    "stage": "Upper gallery",
+    "typography": "Compact poster",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[22,94,71,4],\"0\",\"line\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 10,
+    "name": "Gel moisturiser / Arched portrait / Serif journal",
+    "stage": "Arched portrait",
+    "typography": "Serif journal",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": true,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 11,
+    "name": "Sunscreen / Floating print / Centred statement",
+    "stage": "Floating print",
+    "typography": "Centred statement",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 12,
+    "name": "Shampoo / Inset gallery / Magazine title",
+    "stage": "Inset gallery",
+    "typography": "Magazine title",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"2%\",\"double\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 13,
+    "name": "Body lotion / Upper gallery / Utility label",
+    "stage": "Upper gallery",
+    "typography": "Utility label",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 14,
+    "name": "Toothpaste / Asymmetric arch / Italic editorial",
+    "stage": "Asymmetric arch",
+    "typography": "Italic editorial",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"32% 0 32% 0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 15,
+    "name": "Deodorant / Right image / left note / Oversized headline",
+    "stage": "Right image / left note",
+    "typography": "Oversized headline",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[5,10.5,90,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 16,
+    "name": "Lip balm / Lower showroom / Right-aligned feature",
+    "stage": "Lower showroom",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 17,
+    "name": "Perfume / Tall narrow stage / Stacked masthead",
+    "stage": "Tall narrow stage",
+    "typography": "Stacked masthead",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 18,
+    "name": "Beard trimmer / Open right edge / Modern catalogue",
+    "stage": "Open right edge",
+    "typography": "Modern catalogue",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"30% 0 0 0\",\"line\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 19,
+    "name": "Hair dryer / Angled print / Compact poster",
+    "stage": "Angled print",
+    "typography": "Compact poster",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"1%\",\"tilt\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 20,
+    "name": "Table lamp / Left image / right note / Serif journal",
+    "stage": "Left image / right note",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 21,
+    "name": "Decorative cushion / Rounded capsule / Centred statement",
+    "stage": "Rounded capsule",
+    "typography": "Centred statement",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 22,
+    "name": "Woven rug / Full studio / Magazine title",
+    "stage": "Full studio",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 23,
+    "name": "Wall clock / Angled print / Utility label",
+    "stage": "Angled print",
+    "typography": "Utility label",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 24,
+    "name": "Scented candle / Rounded display / Italic editorial",
+    "stage": "Rounded display",
+    "typography": "Italic editorial",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"10%\",\"inset\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 25,
+    "name": "Reed diffuser / Inset gallery / Oversized headline",
+    "stage": "Inset gallery",
+    "typography": "Oversized headline",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 26,
+    "name": "Glass flower vase / Upper gallery / Right-aligned feature",
+    "stage": "Upper gallery",
+    "typography": "Right-aligned feature",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 27,
+    "name": "Woven throw / Lower showroom / Stacked masthead",
+    "stage": "Lower showroom",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 28,
+    "name": "Decorative mirror / Centre medallion / Modern catalogue",
+    "stage": "Centre medallion",
+    "typography": "Modern catalogue",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"50%\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 29,
+    "name": "Bookshelf / Asymmetric arch / Compact poster",
+    "stage": "Asymmetric arch",
+    "typography": "Compact poster",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"32% 0 32% 0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 30,
+    "name": "Personal blender / Right image / left note / Serif journal",
+    "stage": "Right image / left note",
+    "typography": "Serif journal",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 31,
+    "name": "Electric kettle / Open left edge / Centred statement",
+    "stage": "Open left edge",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 32,
+    "name": "Air fryer / Floating print / Magazine title",
+    "stage": "Floating print",
+    "typography": "Magazine title",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"0\",\"paper\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 33,
+    "name": "Cast iron frying pan / Asymmetric arch / Utility label",
+    "stage": "Asymmetric arch",
+    "typography": "Utility label",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 34,
+    "name": "Chef knife / Narrow editorial / Italic editorial",
+    "stage": "Narrow editorial",
+    "typography": "Italic editorial",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[22,94,71,4],\"0\",\"paper\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 35,
+    "name": "Wooden chopping board / Full studio / Oversized headline",
+    "stage": "Full studio",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 36,
+    "name": "Measuring cups / Angled print / Right-aligned feature",
+    "stage": "Angled print",
+    "typography": "Right-aligned feature",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 37,
+    "name": "Ceramic dinner plate / Upper gallery / Stacked masthead",
+    "stage": "Upper gallery",
+    "typography": "Stacked masthead",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 38,
+    "name": "Ceramic mug / Landscape photograph / Modern catalogue",
+    "stage": "Landscape photograph",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,63,4],\"0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 39,
+    "name": "Reusable lunch box / Rounded display / Compact poster",
+    "stage": "Rounded display",
+    "typography": "Compact poster",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"10%\",\"inset\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 40,
+    "name": "Wireless headphones / Inset gallery / Serif journal",
+    "stage": "Inset gallery",
+    "typography": "Serif journal",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 41,
+    "name": "Portable speaker / Open right edge / Centred statement",
+    "stage": "Open right edge",
+    "typography": "Centred statement",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 42,
+    "name": "Smartwatch / Rounded capsule / Magazine title",
+    "stage": "Rounded capsule",
+    "typography": "Magazine title",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"40%\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 43,
+    "name": "E-reader / Rounded display / Utility label",
+    "stage": "Rounded display",
+    "typography": "Utility label",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 44,
+    "name": "Instant camera / Wide display / Italic editorial",
+    "stage": "Wide display",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"8% 8% 0 0\",\"rule\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 45,
+    "name": "Mechanical keyboard / Floating print / Oversized headline",
+    "stage": "Floating print",
+    "typography": "Oversized headline",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 46,
+    "name": "Wireless mouse / Asymmetric arch / Right-aligned feature",
+    "stage": "Asymmetric arch",
+    "typography": "Right-aligned feature",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 47,
+    "name": "Portable power bank / Angled print / Stacked masthead",
+    "stage": "Angled print",
+    "typography": "Stacked masthead",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 48,
+    "name": "Virtual reality headset / Tall narrow stage / Modern catalogue",
+    "stage": "Tall narrow stage",
+    "typography": "Modern catalogue",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"1%\",\"line\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 49,
+    "name": "Home projector / Narrow editorial / Compact poster",
+    "stage": "Narrow editorial",
+    "typography": "Compact poster",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[22,94,71,4],\"0\",\"paper\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 50,
+    "name": "Leather crossbody bag / Full studio / Serif journal",
+    "stage": "Full studio",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 51,
+    "name": "White trainers / Centre medallion / Centred statement",
+    "stage": "Centre medallion",
+    "typography": "Centred statement",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 52,
+    "name": "Silk scarf / Open left edge / Magazine title",
+    "stage": "Open left edge",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"0 30% 0 0\",\"line\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 53,
+    "name": "Denim jacket / Narrow editorial / Utility label",
+    "stage": "Narrow editorial",
+    "typography": "Utility label",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 54,
+    "name": "Linen shirt / Editorial window / Italic editorial",
+    "stage": "Editorial window",
+    "typography": "Italic editorial",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 55,
+    "name": "Sun hat / Rounded capsule / Oversized headline",
+    "stage": "Rounded capsule",
+    "typography": "Oversized headline",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 56,
+    "name": "Wool cardigan / Rounded display / Right-aligned feature",
+    "stage": "Rounded display",
+    "typography": "Right-aligned feature",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 57,
+    "name": "Tailored blazer / Asymmetric arch / Stacked masthead",
+    "stage": "Asymmetric arch",
+    "typography": "Stacked masthead",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 58,
+    "name": "Leather belt / Lower showroom / Modern catalogue",
+    "stage": "Lower showroom",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 59,
+    "name": "Acetate sunglasses / Wide display / Compact poster",
+    "stage": "Wide display",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"8% 8% 0 0\",\"rule\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 60,
+    "name": "Gold hoop earrings / Floating print / Serif journal",
+    "stage": "Floating print",
+    "typography": "Serif journal",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 61,
+    "name": "Pendant necklace / Landscape photograph / Centred statement",
+    "stage": "Landscape photograph",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 62,
+    "name": "Pearl bracelet / Open right edge / Magazine title",
+    "stage": "Open right edge",
+    "typography": "Magazine title",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"30% 0 0 0\",\"line\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 63,
+    "name": "Enamel brooch / Wide display / Utility label",
+    "stage": "Wide display",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 64,
+    "name": "Cufflinks / Arched portrait / Italic editorial",
+    "stage": "Arched portrait",
+    "typography": "Italic editorial",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"45% 45% 0 0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 65,
+    "name": "Decorative hair clip / Open left edge / Oversized headline",
+    "stage": "Open left edge",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 66,
+    "name": "Stacking rings / Narrow editorial / Right-aligned feature",
+    "stage": "Narrow editorial",
+    "typography": "Right-aligned feature",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 67,
+    "name": "Anklet / Rounded display / Stacked masthead",
+    "stage": "Rounded display",
+    "typography": "Stacked masthead",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 68,
+    "name": "Jewellery travel case / Upper gallery / Modern catalogue",
+    "stage": "Upper gallery",
+    "typography": "Modern catalogue",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,63,4],\"0\",\"line\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 69,
+    "name": "Watch strap / Editorial window / Compact poster",
+    "stage": "Editorial window",
+    "typography": "Compact poster",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 70,
+    "name": "Yoga mat / Rounded capsule / Serif journal",
+    "stage": "Rounded capsule",
+    "typography": "Serif journal",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 71,
+    "name": "Resistance bands / Tall narrow stage / Centred statement",
+    "stage": "Tall narrow stage",
+    "typography": "Centred statement",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 72,
+    "name": "Adjustable dumbbell / Centre medallion / Magazine title",
+    "stage": "Centre medallion",
+    "typography": "Magazine title",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"50%\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 73,
+    "name": "Kettlebell / Editorial window / Utility label",
+    "stage": "Editorial window",
+    "typography": "Utility label",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 74,
+    "name": "Foam roller / Left image / right note / Italic editorial",
+    "stage": "Left image / right note",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[22,94,71,4],\"0 28% 0 0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 75,
+    "name": "Pilates ring / Open right edge / Oversized headline",
+    "stage": "Open right edge",
+    "typography": "Oversized headline",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 76,
+    "name": "Skipping rope / Wide display / Right-aligned feature",
+    "stage": "Wide display",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 77,
+    "name": "Medicine ball / Narrow editorial / Stacked masthead",
+    "stage": "Narrow editorial",
+    "typography": "Stacked masthead",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 78,
+    "name": "Balance board / Angled print / Modern catalogue",
+    "stage": "Angled print",
+    "typography": "Modern catalogue",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"1%\",\"tilt\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 79,
+    "name": "Pull-up bar / Arched portrait / Compact poster",
+    "stage": "Arched portrait",
+    "typography": "Compact poster",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"45% 45% 0 0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 80,
+    "name": "Cabin suitcase / Open left edge / Serif journal",
+    "stage": "Open left edge",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 81,
+    "name": "Travel backpack / Lower showroom / Centred statement",
+    "stage": "Lower showroom",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 82,
+    "name": "Passport wallet / Landscape photograph / Magazine title",
+    "stage": "Landscape photograph",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[10,10.5,80,16],[7,82,86,9],[7,94,63,4],\"0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 83,
+    "name": "Neck pillow / Arched portrait / Utility label",
+    "stage": "Arched portrait",
+    "typography": "Utility label",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 84,
+    "name": "Packing cubes / Right image / left note / Italic editorial",
+    "stage": "Right image / left note",
+    "typography": "Italic editorial",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[22,94,71,4],\"28% 0 0 0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 85,
+    "name": "Toiletry organiser / Centre medallion / Oversized headline",
+    "stage": "Centre medallion",
+    "typography": "Oversized headline",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 86,
+    "name": "Compact umbrella / Editorial window / Right-aligned feature",
+    "stage": "Editorial window",
+    "typography": "Right-aligned feature",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 87,
+    "name": "Luggage weighing scale / Wide display / Stacked masthead",
+    "stage": "Wide display",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 88,
+    "name": "Luggage tag / Asymmetric arch / Modern catalogue",
+    "stage": "Asymmetric arch",
+    "typography": "Modern catalogue",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"32% 0 32% 0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 89,
+    "name": "Travel plug adapter / Left image / right note / Compact poster",
+    "stage": "Left image / right note",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[22,94,71,4],\"0 28% 0 0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 90,
+    "name": "Bath salts / Open right edge / Serif journal",
+    "stage": "Open right edge",
+    "typography": "Serif journal",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 91,
+    "name": "Cotton bathrobe / Upper gallery / Centred statement",
+    "stage": "Upper gallery",
+    "typography": "Centred statement",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 92,
+    "name": "Artisan soap bar / Tall narrow stage / Magazine title",
+    "stage": "Tall narrow stage",
+    "typography": "Magazine title",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"1%\",\"line\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 93,
+    "name": "Shower cap / Left image / right note / Utility label",
+    "stage": "Left image / right note",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 94,
+    "name": "Natural loofah / Inset gallery / Italic editorial",
+    "stage": "Inset gallery",
+    "typography": "Italic editorial",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"2%\",\"double\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 95,
+    "name": "Bath mat / Landscape photograph / Oversized headline",
+    "stage": "Landscape photograph",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[5,10.5,90,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 96,
+    "name": "Cotton towel / Arched portrait / Right-aligned feature",
+    "stage": "Arched portrait",
+    "typography": "Right-aligned feature",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 97,
+    "name": "Bath tray / Editorial window / Stacked masthead",
+    "stage": "Editorial window",
+    "typography": "Stacked masthead",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 98,
+    "name": "Handheld shower head / Rounded display / Modern catalogue",
+    "stage": "Rounded display",
+    "typography": "Modern catalogue",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"10%\",\"inset\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 99,
+    "name": "Foot spa / Right image / left note / Compact poster",
+    "stage": "Right image / left note",
+    "typography": "Compact poster",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[22,94,71,4],\"28% 0 0 0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 100,
+    "name": "Watering can / Centre medallion / Serif journal",
+    "stage": "Centre medallion",
+    "typography": "Serif journal",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 101,
+    "name": "Hand trowel / Angled print / Centred statement",
+    "stage": "Angled print",
+    "typography": "Centred statement",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 102,
+    "name": "Gardening gloves / Lower showroom / Magazine title",
+    "stage": "Lower showroom",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      10,
+      11,
+      80,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[10,11,80,22],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 103,
+    "name": "Plant pot / Right image / left note / Utility label",
+    "stage": "Right image / left note",
+    "typography": "Utility label",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 104,
+    "name": "Pruning shears / Full studio / Italic editorial",
+    "stage": "Full studio",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 105,
+    "name": "Garden hose / Tall narrow stage / Oversized headline",
+    "stage": "Tall narrow stage",
+    "typography": "Oversized headline",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 106,
+    "name": "Succulent plant / Left image / right note / Right-aligned feature",
+    "stage": "Left image / right note",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 107,
+    "name": "Herb seed kit / Arched portrait / Stacked masthead",
+    "stage": "Arched portrait",
+    "typography": "Stacked masthead",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 108,
+    "name": "Bird feeder / Narrow editorial / Modern catalogue",
+    "stage": "Narrow editorial",
+    "typography": "Modern catalogue",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,63,4],\"0\",\"paper\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 109,
+    "name": "Compost caddy / Inset gallery / Compact poster",
+    "stage": "Inset gallery",
+    "typography": "Compact poster",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"2%\",\"double\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 110,
+    "name": "Dog leash / Landscape photograph / Serif journal",
+    "stage": "Landscape photograph",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 111,
+    "name": "Cat bed / Asymmetric arch / Centred statement",
+    "stage": "Asymmetric arch",
+    "typography": "Centred statement",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 112,
+    "name": "Pet feeding bowl / Upper gallery / Magazine title",
+    "stage": "Upper gallery",
+    "typography": "Magazine title",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[10,10.5,80,14],[7,78,86,10],[7,94,63,4],\"0\",\"line\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 113,
+    "name": "Pet grooming brush / Inset gallery / Utility label",
+    "stage": "Inset gallery",
+    "typography": "Utility label",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 114,
+    "name": "Cat scratching post / Floating print / Italic editorial",
+    "stage": "Floating print",
+    "typography": "Italic editorial",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"paper\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 115,
+    "name": "Aquarium / Lower showroom / Oversized headline",
+    "stage": "Lower showroom",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      5,
+      11,
+      90,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[5,11,90,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 116,
+    "name": "Pet treat pouch / Right image / left note / Right-aligned feature",
+    "stage": "Right image / left note",
+    "typography": "Right-aligned feature",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 117,
+    "name": "Pet carrier / Left image / right note / Stacked masthead",
+    "stage": "Left image / right note",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 118,
+    "name": "Dog chew toy / Wide display / Modern catalogue",
+    "stage": "Wide display",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"8% 8% 0 0\",\"rule\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 119,
+    "name": "Pet collar / Full studio / Compact poster",
+    "stage": "Full studio",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 120,
+    "name": "Hardcover notebook / Tall narrow stage / Serif journal",
+    "stage": "Tall narrow stage",
+    "typography": "Serif journal",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 121,
+    "name": "Fountain pen / Rounded display / Centred statement",
+    "stage": "Rounded display",
+    "typography": "Centred statement",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 122,
+    "name": "Planner binder / Angled print / Magazine title",
+    "stage": "Angled print",
+    "typography": "Magazine title",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"1%\",\"tilt\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 123,
+    "name": "Desk stapler / Full studio / Utility label",
+    "stage": "Full studio",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 124,
+    "name": "Desk organiser / Rounded capsule / Italic editorial",
+    "stage": "Rounded capsule",
+    "typography": "Italic editorial",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"40%\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 125,
+    "name": "Bookends / Upper gallery / Oversized headline",
+    "stage": "Upper gallery",
+    "typography": "Oversized headline",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[5,10.5,90,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 126,
+    "name": "Laptop stand / Inset gallery / Right-aligned feature",
+    "stage": "Inset gallery",
+    "typography": "Right-aligned feature",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 127,
+    "name": "Desktop whiteboard / Right image / left note / Stacked masthead",
+    "stage": "Right image / left note",
+    "typography": "Stacked masthead",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 128,
+    "name": "Paperclip set / Editorial window / Modern catalogue",
+    "stage": "Editorial window",
+    "typography": "Modern catalogue",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 129,
+    "name": "Letter tray / Floating print / Compact poster",
+    "stage": "Floating print",
+    "typography": "Compact poster",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0\",\"paper\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 130,
+    "name": "Watercolour set / Lower showroom / Serif journal",
+    "stage": "Lower showroom",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 131,
+    "name": "Colour pencils / Narrow editorial / Centred statement",
+    "stage": "Narrow editorial",
+    "typography": "Centred statement",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 132,
+    "name": "Sketchbook / Asymmetric arch / Magazine title",
+    "stage": "Asymmetric arch",
+    "typography": "Magazine title",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"32% 0 32% 0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 133,
+    "name": "Calligraphy kit / Floating print / Utility label",
+    "stage": "Floating print",
+    "typography": "Utility label",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 134,
+    "name": "Crochet kit / Open left edge / Italic editorial",
+    "stage": "Open left edge",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0 30% 0 0\",\"line\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 135,
+    "name": "Sewing machine / Angled print / Oversized headline",
+    "stage": "Angled print",
+    "typography": "Oversized headline",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 136,
+    "name": "Pottery wheel / Full studio / Right-aligned feature",
+    "stage": "Full studio",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 137,
+    "name": "Art easel / Inset gallery / Stacked masthead",
+    "stage": "Inset gallery",
+    "typography": "Stacked masthead",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 138,
+    "name": "Embroidery hoop / Arched portrait / Modern catalogue",
+    "stage": "Arched portrait",
+    "typography": "Modern catalogue",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"45% 45% 0 0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 139,
+    "name": "Modelling clay / Rounded capsule / Compact poster",
+    "stage": "Rounded capsule",
+    "typography": "Compact poster",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"40%\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 140,
+    "name": "Camping tent / Upper gallery / Serif journal",
+    "stage": "Upper gallery",
+    "typography": "Serif journal",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[7,94,86,4],\"0\",\"line\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 141,
+    "name": "Sleeping bag / Wide display / Centred statement",
+    "stage": "Wide display",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 142,
+    "name": "Camping lantern / Rounded display / Magazine title",
+    "stage": "Rounded display",
+    "typography": "Magazine title",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"10%\",\"inset\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 143,
+    "name": "Vacuum flask / Rounded capsule / Utility label",
+    "stage": "Rounded capsule",
+    "typography": "Utility label",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 144,
+    "name": "Hiking boots / Open right edge / Italic editorial",
+    "stage": "Open right edge",
+    "typography": "Italic editorial",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"30% 0 0 0\",\"line\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 145,
+    "name": "Binoculars / Asymmetric arch / Oversized headline",
+    "stage": "Asymmetric arch",
+    "typography": "Oversized headline",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 146,
+    "name": "Picnic basket / Floating print / Right-aligned feature",
+    "stage": "Floating print",
+    "typography": "Right-aligned feature",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 147,
+    "name": "Folding camping chair / Full studio / Stacked masthead",
+    "stage": "Full studio",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 148,
+    "name": "Cooler box / Left image / right note / Modern catalogue",
+    "stage": "Left image / right note",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,63,4],\"0 28% 0 0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 149,
+    "name": "Hammock / Open left edge / Compact poster",
+    "stage": "Open left edge",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"0 30% 0 0\",\"line\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 150,
+    "name": "Cycling helmet / Angled print / Serif journal",
+    "stage": "Angled print",
+    "typography": "Serif journal",
+    "photo": [
+      10,
+      33,
+      80,
+      52
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "tilt",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,33,80,52],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"tilt\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 151,
+    "name": "Bicycle pump / Editorial window / Centred statement",
+    "stage": "Editorial window",
+    "typography": "Centred statement",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 152,
+    "name": "Cycling gloves / Narrow editorial / Magazine title",
+    "stage": "Narrow editorial",
+    "typography": "Magazine title",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[10,10.5,80,16],[82,34,15,49],[7,94,63,4],\"0\",\"paper\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 153,
+    "name": "Bicycle light / Open left edge / Utility label",
+    "stage": "Open left edge",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 154,
+    "name": "Sports water bottle / Centre medallion / Italic editorial",
+    "stage": "Centre medallion",
+    "typography": "Italic editorial",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"50%\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 155,
+    "name": "Bicycle lock / Rounded display / Oversized headline",
+    "stage": "Rounded display",
+    "typography": "Oversized headline",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 156,
+    "name": "Puncture repair kit / Rounded capsule / Right-aligned feature",
+    "stage": "Rounded capsule",
+    "typography": "Right-aligned feature",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 157,
+    "name": "Bicycle bell / Floating print / Stacked masthead",
+    "stage": "Floating print",
+    "typography": "Stacked masthead",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0\",\"paper\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 158,
+    "name": "Cycle pannier / Right image / left note / Modern catalogue",
+    "stage": "Right image / left note",
+    "typography": "Modern catalogue",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,63,4],\"28% 0 0 0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 159,
+    "name": "Bicycle saddle / Open right edge / Compact poster",
+    "stage": "Open right edge",
+    "typography": "Compact poster",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"30% 0 0 0\",\"line\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 160,
+    "name": "Cordless vacuum / Asymmetric arch / Serif journal",
+    "stage": "Asymmetric arch",
+    "typography": "Serif journal",
+    "photo": [
+      5,
+      29,
+      90,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "32% 0 32% 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[5,29,90,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"32% 0 32% 0\",\"none\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 161,
+    "name": "Floor mop / Arched portrait / Centred statement",
+    "stage": "Arched portrait",
+    "typography": "Centred statement",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 162,
+    "name": "Broom / Wide display / Magazine title",
+    "stage": "Wide display",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"8% 8% 0 0\",\"rule\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 163,
+    "name": "Dish brush / Open right edge / Utility label",
+    "stage": "Open right edge",
+    "typography": "Utility label",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 164,
+    "name": "Laundry basket / Landscape photograph / Italic editorial",
+    "stage": "Landscape photograph",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[22,94,71,4],\"0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 165,
+    "name": "Ironing board / Narrow editorial / Oversized headline",
+    "stage": "Narrow editorial",
+    "typography": "Oversized headline",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[5,10.5,90,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 166,
+    "name": "Fabric steamer / Open left edge / Right-aligned feature",
+    "stage": "Open left edge",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 167,
+    "name": "Clothes pegs / Rounded capsule / Stacked masthead",
+    "stage": "Rounded capsule",
+    "typography": "Stacked masthead",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"40%\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 168,
+    "name": "Lint roller / Inset gallery / Modern catalogue",
+    "stage": "Inset gallery",
+    "typography": "Modern catalogue",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"2%\",\"double\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 169,
+    "name": "Clothes drying rack / Centre medallion / Compact poster",
+    "stage": "Centre medallion",
+    "typography": "Compact poster",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"50%\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 170,
+    "name": "Cordless drill / Rounded display / Serif journal",
+    "stage": "Rounded display",
+    "typography": "Serif journal",
+    "photo": [
+      4,
+      31,
+      92,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "10%",
+    "frame": "inset",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,31,92,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"10%\",\"inset\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 171,
+    "name": "Claw hammer / Left image / right note / Centred statement",
+    "stage": "Left image / right note",
+    "typography": "Centred statement",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[7,10.5,86,16],[74,36,22,42],[7,94,86,4],\"0 28% 0 0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 172,
+    "name": "Screwdriver set / Editorial window / Magazine title",
+    "stage": "Editorial window",
+    "typography": "Magazine title",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 173,
+    "name": "Tape measure / Centre medallion / Utility label",
+    "stage": "Centre medallion",
+    "typography": "Utility label",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 174,
+    "name": "Adjustable spanner / Tall narrow stage / Italic editorial",
+    "stage": "Tall narrow stage",
+    "typography": "Italic editorial",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"1%\",\"line\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 175,
+    "name": "Pliers / Wide display / Oversized headline",
+    "stage": "Wide display",
+    "typography": "Oversized headline",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 176,
+    "name": "Spirit level / Open right edge / Right-aligned feature",
+    "stage": "Open right edge",
+    "typography": "Right-aligned feature",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 177,
+    "name": "Toolbox / Open left edge / Stacked masthead",
+    "stage": "Open left edge",
+    "typography": "Stacked masthead",
+    "photo": [
+      0,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0 30% 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"0 30% 0 0\",\"line\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 178,
+    "name": "Protective goggles / Full studio / Modern catalogue",
+    "stage": "Full studio",
+    "typography": "Modern catalogue",
+    "photo": [
+      0,
+      27,
+      100,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,27,100,64],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"0\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 179,
+    "name": "Extension cable / Landscape photograph / Compact poster",
+    "stage": "Landscape photograph",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[22,94,71,4],\"0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 180,
+    "name": "Chess set / Narrow editorial / Serif journal",
+    "stage": "Narrow editorial",
+    "typography": "Serif journal",
+    "photo": [
+      4,
+      28,
+      76,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      82,
+      34,
+      15,
+      49
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,28,76,61],[7,10.5,86,16],[82,34,15,49],[7,94,86,4],\"0\",\"paper\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 181,
+    "name": "Jigsaw puzzle / Right image / left note / Centred statement",
+    "stage": "Right image / left note",
+    "typography": "Centred statement",
+    "photo": [
+      28,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      4,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "28% 0 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[28,29,72,61],[7,10.5,86,16],[4,36,22,42],[7,94,86,4],\"28% 0 0 0\",\"none\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 182,
+    "name": "Playing cards / Arched portrait / Magazine title",
+    "stage": "Arched portrait",
+    "typography": "Magazine title",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[10,10.5,80,16],[7,86,86,6],[7,94,63,4],\"45% 45% 0 0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 183,
+    "name": "Domino set / Landscape photograph / Utility label",
+    "stage": "Landscape photograph",
+    "typography": "Utility label",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 184,
+    "name": "Family board game / Lower showroom / Italic editorial",
+    "stage": "Lower showroom",
+    "typography": "Italic editorial",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 185,
+    "name": "Dice set / Editorial window / Oversized headline",
+    "stage": "Editorial window",
+    "typography": "Oversized headline",
+    "photo": [
+      4,
+      30,
+      92,
+      56
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[4,30,92,56],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 186,
+    "name": "Building blocks / Centre medallion / Right-aligned feature",
+    "stage": "Centre medallion",
+    "typography": "Right-aligned feature",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 187,
+    "name": "Wooden yo-yo / Open right edge / Stacked masthead",
+    "stage": "Open right edge",
+    "typography": "Stacked masthead",
+    "photo": [
+      12,
+      32,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "30% 0 0 0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[12,32,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"30% 0 0 0\",\"line\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 188,
+    "name": "Kite / Floating print / Modern catalogue",
+    "stage": "Floating print",
+    "typography": "Modern catalogue",
+    "photo": [
+      8,
+      32,
+      84,
+      54
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0",
+    "frame": "paper",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,32,84,54],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"0\",\"paper\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 189,
+    "name": "Flying disc / Tall narrow stage / Compact poster",
+    "stage": "Tall narrow stage",
+    "typography": "Compact poster",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[22,94,71,4],\"1%\",\"line\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  },
+  {
+    "id": 190,
+    "name": "Ukulele / Wide display / Serif journal",
+    "stage": "Wide display",
+    "typography": "Serif journal",
+    "photo": [
+      0,
+      30,
+      100,
+      57
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "8% 8% 0 0",
+    "frame": "rule",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 400,
+    "header": 0,
+    "footerStyle": "rule",
+    "mark": "line",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,30,100,57],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"8% 8% 0 0\",\"rule\",\"Georgia\",\"left\",400,0,\"rule\",\"line\"]"
+  },
+  {
+    "id": 191,
+    "name": "Tambourine / Inset gallery / Centred statement",
+    "stage": "Inset gallery",
+    "typography": "Centred statement",
+    "photo": [
+      13,
+      32,
+      74,
+      53
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "2%",
+    "frame": "double",
+    "font": "Arial",
+    "align": "center",
+    "weight": 800,
+    "header": 1,
+    "footerStyle": "pill",
+    "mark": "disc",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[13,32,74,53],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"2%\",\"double\",\"Arial\",\"center\",800,1,\"pill\",\"disc\"]"
+  },
+  {
+    "id": 192,
+    "name": "Kalimba / Left image / right note / Magazine title",
+    "stage": "Left image / right note",
+    "typography": "Magazine title",
+    "photo": [
+      0,
+      29,
+      72,
+      61
+    ],
+    "hook": [
+      10,
+      10.5,
+      80,
+      16
+    ],
+    "description": [
+      74,
+      36,
+      22,
+      42
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "0 28% 0 0",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "right",
+    "weight": 400,
+    "header": 2,
+    "footerStyle": "split",
+    "mark": "corner",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,29,72,61],[10,10.5,80,16],[74,36,22,42],[7,94,63,4],\"0 28% 0 0\",\"none\",\"Georgia\",\"right\",400,2,\"split\",\"corner\"]"
+  },
+  {
+    "id": 193,
+    "name": "Digital audio recorder / Tall narrow stage / Utility label",
+    "stage": "Tall narrow stage",
+    "typography": "Utility label",
+    "photo": [
+      17,
+      28,
+      66,
+      64
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "1%",
+    "frame": "line",
+    "font": "monospace",
+    "align": "left",
+    "weight": 700,
+    "header": 3,
+    "footerStyle": "outline",
+    "mark": "cross",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[17,28,66,64],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"1%\",\"line\",\"monospace\",\"left\",700,3,\"outline\",\"cross\"]"
+  },
+  {
+    "id": 194,
+    "name": "Studio microphone / Upper gallery / Italic editorial",
+    "stage": "Upper gallery",
+    "typography": "Italic editorial",
+    "photo": [
+      7,
+      27,
+      86,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      14
+    ],
+    "description": [
+      7,
+      78,
+      86,
+      10
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "line",
+    "font": "Georgia",
+    "align": "center",
+    "weight": 500,
+    "header": 4,
+    "footerStyle": "tab",
+    "mark": "arc",
+    "italic": true,
+    "reference": false,
+    "geometryKey": "[[7,27,86,49],[7,10.5,86,14],[7,78,86,10],[22,94,71,4],\"0\",\"line\",\"Georgia\",\"center\",500,4,\"tab\",\"arc\"]"
+  },
+  {
+    "id": 195,
+    "name": "Music stand / Arched portrait / Oversized headline",
+    "stage": "Arched portrait",
+    "typography": "Oversized headline",
+    "photo": [
+      8,
+      29,
+      84,
+      60
+    ],
+    "hook": [
+      5,
+      10.5,
+      90,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "45% 45% 0 0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "left",
+    "weight": 900,
+    "header": 5,
+    "footerStyle": "bar",
+    "mark": "square",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[8,29,84,60],[5,10.5,90,16],[7,86,86,6],[7,94,86,4],\"45% 45% 0 0\",\"none\",\"Arial\",\"left\",900,5,\"bar\",\"square\"]"
+  },
+  {
+    "id": 196,
+    "name": "Mechanical metronome / Landscape photograph / Right-aligned feature",
+    "stage": "Landscape photograph",
+    "typography": "Right-aligned feature",
+    "photo": [
+      0,
+      32,
+      100,
+      49
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      82,
+      86,
+      9
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "Arial",
+    "align": "right",
+    "weight": 700,
+    "header": 6,
+    "footerStyle": "rule",
+    "mark": "bracket",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,32,100,49],[7,10.5,86,16],[7,82,86,9],[7,94,86,4],\"0\",\"none\",\"Arial\",\"right\",700,6,\"rule\",\"bracket\"]"
+  },
+  {
+    "id": 197,
+    "name": "Harmonica / Centre medallion / Stacked masthead",
+    "stage": "Centre medallion",
+    "typography": "Stacked masthead",
+    "photo": [
+      6,
+      31,
+      88,
+      55
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      86,
+      4
+    ],
+    "radius": "50%",
+    "frame": "none",
+    "font": "Georgia",
+    "align": "left",
+    "weight": 700,
+    "header": 7,
+    "footerStyle": "pill",
+    "mark": "ring",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[6,31,88,55],[7,10.5,86,16],[7,86,86,6],[7,94,86,4],\"50%\",\"none\",\"Georgia\",\"left\",700,7,\"pill\",\"ring\"]"
+  },
+  {
+    "id": 198,
+    "name": "Maracas / Rounded capsule / Modern catalogue",
+    "stage": "Rounded capsule",
+    "typography": "Modern catalogue",
+    "photo": [
+      10,
+      28,
+      80,
+      61
+    ],
+    "hook": [
+      7,
+      10.5,
+      86,
+      16
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      7,
+      94,
+      63,
+      4
+    ],
+    "radius": "40%",
+    "frame": "none",
+    "font": "Arial",
+    "align": "center",
+    "weight": 500,
+    "header": 8,
+    "footerStyle": "split",
+    "mark": "dash",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[10,28,80,61],[7,10.5,86,16],[7,86,86,6],[7,94,63,4],\"40%\",\"none\",\"Arial\",\"center\",500,8,\"split\",\"dash\"]"
+  },
+  {
+    "id": 199,
+    "name": "Hand drum / Lower showroom / Compact poster",
+    "stage": "Lower showroom",
+    "typography": "Compact poster",
+    "photo": [
+      0,
+      39,
+      100,
+      48
+    ],
+    "hook": [
+      7,
+      11,
+      86,
+      22
+    ],
+    "description": [
+      7,
+      86,
+      86,
+      6
+    ],
+    "footer": [
+      22,
+      94,
+      71,
+      4
+    ],
+    "radius": "0",
+    "frame": "none",
+    "font": "monospace",
+    "align": "right",
+    "weight": 700,
+    "header": 9,
+    "footerStyle": "tab",
+    "mark": "diamond",
+    "italic": false,
+    "reference": false,
+    "geometryKey": "[[0,39,100,48],[7,11,86,22],[7,86,86,6],[22,94,71,4],\"0\",\"none\",\"monospace\",\"right\",700,9,\"tab\",\"diamond\"]"
+  }
+]

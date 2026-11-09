@@ -148,7 +148,7 @@ const Dashboard=(()=>{
  const PAGE=24;
  function libraryHtml(){
   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,Math.max(ui.shown,PAGE)),p=curPreset(),gone=Library.hiddenCount();
-  return `<section class="hello"><h1>Template library</h1>${chipsHtml()}</section>
+  return `<section class="hello"><h1>Template library</h1>${chipsHtml()}<a class="btn-light" href="/ugc/">UGC collection · 200 single-page designs ↗</a></section>
   <p class="lead"><b id="libCount">${all.length}</b> templates. Every one starts with a Hook, continues with write-up pages and ends with a call to action. Showing the ${esc(p.name)} size (${p.w}×${p.h}). Scroll to see them all.${gone?` <button class="linklike" data-act="restore">Restore ${gone} removed</button>`:''}</p>
   ${list.length?`<div class="tgrid tgrid-wide" id="tgrid">${list.map(t=>Library.cardHtml(t,p,{removable:true})).join('')}</div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}
   <div class="more" id="libMore" ${all.length>list.length?'':'hidden'}>Loading more templates…</div>`;

@@ -1,0 +1,4735 @@
+{
+  "version": 1,
+  "campaigns": [
+    {
+      "id": 0,
+      "kit": "layered-assets/000-kit.png",
+      "background": "layered-assets/000-background.png",
+      "regions": {
+        "person": [
+          0,
+          85,
+          575,
+          925
+        ],
+        "product": [
+          590,
+          380,
+          400,
+          350
+        ],
+        "packaging": [
+          1030,
+          175,
+          475,
+          730
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "kit": "layered-assets/001-kit.png",
+      "background": "layered-assets/001-background.png",
+      "regions": {
+        "person": [
+          0,
+          100,
+          550,
+          850
+        ],
+        "product": [
+          560,
+          350,
+          460,
+          400
+        ],
+        "packaging": [
+          1030,
+          140,
+          495,
+          740
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 36,
+          "width": 52,
+          "height": 59
+        },
+        "product": {
+          "x": 37,
+          "y": 71,
+          "width": 36,
+          "height": 22
+        },
+        "packaging": {
+          "x": 58,
+          "y": 39,
+          "width": 37,
+          "height": 49
+        },
+        "hook": {
+          "fontSize": 6.8,
+          "color": "#f1fff8"
+        },
+        "brand": {
+          "color": "#f1fff8"
+        },
+        "category": {
+          "color": "#f1fff8"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "kit": "layered-assets/002-kit.png",
+      "background": "layered-assets/002-background.png",
+      "regions": {
+        "person": [
+          0,
+          90,
+          550,
+          850
+        ],
+        "product": [
+          560,
+          90,
+          520,
+          830
+        ],
+        "packaging": [
+          1110,
+          80,
+          400,
+          850
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 48,
+          "y": 35,
+          "width": 49,
+          "height": 48
+        },
+        "product": {
+          "x": 3,
+          "y": 45,
+          "width": 46,
+          "height": 43
+        },
+        "packaging": {
+          "x": 65,
+          "y": 68,
+          "width": 23,
+          "height": 23
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.8,
+          "color": "#fff0ed"
+        },
+        "brand": {
+          "color": "#fff0ed"
+        },
+        "category": {
+          "color": "#fff0ed"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 3,
+      "kit": "layered-assets/003-kit.png",
+      "background": "layered-assets/003-background.png",
+      "regions": {
+        "person": [
+          0,
+          170,
+          560,
+          750
+        ],
+        "product": [
+          560,
+          350,
+          470,
+          400
+        ],
+        "packaging": [
+          1050,
+          180,
+          470,
+          700
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 2,
+          "y": 36,
+          "width": 59,
+          "height": 52
+        },
+        "product": {
+          "x": 12,
+          "y": 67,
+          "width": 47,
+          "height": 23
+        },
+        "packaging": {
+          "x": 62,
+          "y": 43,
+          "width": 34,
+          "height": 44
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "kit": "layered-assets/004-kit.png",
+      "background": "layered-assets/004-background.png",
+      "regions": {
+        "person": [
+          0,
+          30,
+          565,
+          960
+        ],
+        "product": [
+          570,
+          130,
+          470,
+          800
+        ],
+        "packaging": [
+          1090,
+          100,
+          420,
+          850
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 1,
+          "y": 35,
+          "width": 50,
+          "height": 56
+        },
+        "product": {
+          "x": 47,
+          "y": 39,
+          "width": 34,
+          "height": 48
+        },
+        "packaging": {
+          "x": 79,
+          "y": 58,
+          "width": 18,
+          "height": 30
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.7
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 6,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "y": 26,
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "y": 45,
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 5,
+      "kit": "layered-assets/005-kit-v2.png",
+      "background": "layered-assets/005-background.png",
+      "regions": {
+        "person": [
+          0,
+          80,
+          580,
+          850
+        ],
+        "product": [
+          610,
+          420,
+          450,
+          340
+        ],
+        "packaging": [
+          1130,
+          220,
+          390,
+          610
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 42,
+          "y": 36,
+          "width": 57,
+          "height": 54
+        },
+        "product": {
+          "x": 5,
+          "y": 74,
+          "width": 39,
+          "height": 16
+        },
+        "packaging": {
+          "x": 8,
+          "y": 40,
+          "width": 34,
+          "height": 40
+        },
+        "hook": {
+          "fontSize": 6.7,
+          "color": "#fff7ec"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 6,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "y": 39
+        },
+        "package-name": {
+          "y": 54
+        },
+        "brand": {
+          "color": "#fff7ec"
+        },
+        "category": {
+          "color": "#fff7ec"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "kit": "layered-assets/006-kit.png",
+      "background": "layered-assets/006-background.png",
+      "regions": {
+        "person": [
+          0,
+          40,
+          565,
+          960
+        ],
+        "product": [
+          590,
+          230,
+          530,
+          550
+        ],
+        "packaging": [
+          1160,
+          30,
+          290,
+          940
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 2,
+          "y": 37,
+          "width": 39,
+          "height": 50
+        },
+        "product": {
+          "x": 15,
+          "y": 71,
+          "width": 41,
+          "height": 19
+        },
+        "packaging": {
+          "x": 54,
+          "y": 37,
+          "width": 39,
+          "height": 50
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.8
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 6,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "y": 38
+        },
+        "package-name": {
+          "y": 54
+        }
+      }
+    },
+    {
+      "id": 7,
+      "kit": "layered-assets/007-kit.png",
+      "background": "layered-assets/007-background.png",
+      "regions": {
+        "person": [
+          0,
+          180,
+          540,
+          650
+        ],
+        "product": [
+          550,
+          410,
+          515,
+          310
+        ],
+        "packaging": [
+          1080,
+          400,
+          456,
+          330
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 40,
+          "width": 57,
+          "height": 50
+        },
+        "product": {
+          "x": 33,
+          "y": 68,
+          "width": 65,
+          "height": 23
+        },
+        "packaging": {
+          "x": 69,
+          "y": 57,
+          "width": 29,
+          "height": 18
+        },
+        "hook": {
+          "fontSize": 7.1
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 6,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "y": 28,
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "y": 47,
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 8,
+      "kit": "layered-assets/008-kit.png",
+      "background": "layered-assets/008-background.png",
+      "regions": {
+        "person": [
+          0,
+          170,
+          525,
+          670
+        ],
+        "product": [
+          530,
+          335,
+          500,
+          330
+        ],
+        "packaging": [
+          1060,
+          355,
+          465,
+          350
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "kit": "layered-assets/009-kit.png",
+      "background": "layered-assets/009-background.png",
+      "regions": {
+        "person": [
+          0,
+          180,
+          550,
+          650
+        ],
+        "product": [
+          560,
+          360,
+          480,
+          380
+        ],
+        "packaging": [
+          1080,
+          330,
+          440,
+          440
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 43,
+          "y": 36,
+          "width": 56,
+          "height": 48
+        },
+        "product": {
+          "x": 0,
+          "y": 66,
+          "width": 68,
+          "height": 25
+        },
+        "packaging": {
+          "x": 7,
+          "y": 58,
+          "width": 31,
+          "height": 26
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 7.1
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 6,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "y": 28,
+          "fontSize": 1.4,
+          "color": "#243b2d"
+        },
+        "package-name": {
+          "y": 46,
+          "fontSize": 1.4,
+          "color": "#243b2d"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "kit": "layered-assets/010-kit.png",
+      "background": "layered-assets/010-background.png",
+      "regions": {
+        "person": [
+          0,
+          80,
+          510,
+          920
+        ],
+        "product": [
+          490,
+          300,
+          590,
+          420
+        ],
+        "packaging": [
+          1090,
+          220,
+          410,
+          600
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "kit": "layered-assets/011-kit-v2.png",
+      "background": "layered-assets/011-background.png",
+      "regions": {
+        "person": [
+          0,
+          100,
+          700,
+          820
+        ],
+        "product": [
+          710,
+          300,
+          420,
+          420
+        ],
+        "packaging": [
+          1180,
+          180,
+          330,
+          700
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 2,
+          "y": 38,
+          "width": 64,
+          "height": 52
+        },
+        "product": {
+          "x": 40,
+          "y": 72,
+          "width": 23,
+          "height": 18
+        },
+        "packaging": {
+          "x": 68,
+          "y": 40,
+          "width": 25,
+          "height": 45
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.7
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        }
+      }
+    },
+    {
+      "id": 12,
+      "kit": "layered-assets/012-kit-v2.png",
+      "background": "layered-assets/012-background.png",
+      "regions": {
+        "person": [
+          0,
+          160,
+          610,
+          780
+        ],
+        "product": [
+          680,
+          390,
+          410,
+          320
+        ],
+        "packaging": [
+          1210,
+          120,
+          290,
+          800
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 39,
+          "width": 60,
+          "height": 49
+        },
+        "product": {
+          "x": 40,
+          "y": 74,
+          "width": 27,
+          "height": 16
+        },
+        "packaging": {
+          "x": 69,
+          "y": 40,
+          "width": 24,
+          "height": 47
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#243b2d",
+          "fontSize": 1.5,
+          "y": 38
+        },
+        "package-name": {
+          "color": "#243b2d",
+          "fontSize": 1.5,
+          "y": 54
+        }
+      }
+    },
+    {
+      "id": 13,
+      "kit": "layered-assets/013-kit.png",
+      "background": "layered-assets/013-background.png",
+      "regions": {
+        "person": [
+          120,
+          11,
+          319,
+          1006
+        ],
+        "product": [
+          624,
+          400,
+          373,
+          313
+        ],
+        "packaging": [
+          1135,
+          95,
+          351,
+          836
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 64,
+          "y": 36,
+          "width": 25,
+          "height": 55
+        },
+        "product": {
+          "x": 4,
+          "y": 71,
+          "width": 41,
+          "height": 18
+        },
+        "packaging": {
+          "x": 12,
+          "y": 39,
+          "width": 34,
+          "height": 45
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.7,
+          "y": 38
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.7,
+          "y": 54
+        }
+      }
+    },
+    {
+      "id": 14,
+      "kit": "layered-assets/014-kit.png",
+      "background": "layered-assets/014-background.png",
+      "regions": {
+        "person": [
+          10,
+          84,
+          690,
+          919
+        ],
+        "product": [
+          700,
+          122,
+          283,
+          880
+        ],
+        "packaging": [
+          1157,
+          118,
+          340,
+          837
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 45,
+          "y": 37,
+          "width": 52,
+          "height": 51
+        },
+        "product": {
+          "x": 34,
+          "y": 50,
+          "width": 13,
+          "height": 36
+        },
+        "packaging": {
+          "x": 4,
+          "y": 42,
+          "width": 29,
+          "height": 44
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.7
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.7
+        }
+      }
+    },
+    {
+      "id": 15,
+      "kit": "layered-assets/015-kit.png",
+      "background": "layered-assets/015-background.png",
+      "regions": {
+        "person": [
+          8,
+          79,
+          589,
+          908
+        ],
+        "product": [
+          709,
+          210,
+          309,
+          606
+        ],
+        "packaging": [
+          1154,
+          190,
+          327,
+          626
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 43,
+          "height": 50
+        },
+        "product": {
+          "x": 44,
+          "y": 41,
+          "width": 23,
+          "height": 44
+        },
+        "packaging": {
+          "x": 72,
+          "y": 52,
+          "width": 23,
+          "height": 33
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.5,
+          "y": 40
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.5,
+          "y": 57
+        }
+      }
+    },
+    {
+      "id": 16,
+      "kit": "layered-assets/016-kit.png",
+      "background": "layered-assets/016-background.png",
+      "regions": {
+        "person": [
+          7,
+          83,
+          821,
+          938
+        ],
+        "product": [
+          890,
+          141,
+          190,
+          754
+        ],
+        "packaging": [
+          1247,
+          126,
+          201,
+          769
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 65,
+          "height": 52
+        },
+        "product": {
+          "x": 60,
+          "y": 40,
+          "width": 17,
+          "height": 47
+        },
+        "packaging": {
+          "x": 80,
+          "y": 58,
+          "width": 16,
+          "height": 30
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.5,
+          "y": 40
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.5,
+          "y": 57
+        }
+      }
+    },
+    {
+      "id": 17,
+      "kit": "layered-assets/017-kit.png",
+      "background": "layered-assets/017-background.png",
+      "regions": {
+        "person": [
+          6,
+          63,
+          619,
+          961
+        ],
+        "product": [
+          696,
+          305,
+          275,
+          448
+        ],
+        "packaging": [
+          1068,
+          331,
+          457,
+          496
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 3,
+          "y": 37,
+          "width": 54,
+          "height": 53
+        },
+        "product": {
+          "x": 52,
+          "y": 41,
+          "width": 32,
+          "height": 41
+        },
+        "packaging": {
+          "x": 71,
+          "y": 71,
+          "width": 27,
+          "height": 18
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#ffffff",
+          "fontSize": 1.7
+        },
+        "package-name": {
+          "color": "#ffffff",
+          "fontSize": 1.7
+        }
+      }
+    },
+    {
+      "id": 18,
+      "kit": "layered-assets/018-kit.png",
+      "background": "layered-assets/018-background.png",
+      "regions": {
+        "person": [
+          2,
+          64,
+          751,
+          939
+        ],
+        "product": [
+          753,
+          120,
+          279,
+          858
+        ],
+        "packaging": [
+          1157,
+          115,
+          330,
+          805
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 61,
+          "height": 53
+        },
+        "product": {
+          "x": 55,
+          "y": 39,
+          "width": 22,
+          "height": 49
+        },
+        "packaging": {
+          "x": 79,
+          "y": 60,
+          "width": 18,
+          "height": 28
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#243b2d",
+          "fontSize": 1.5
+        },
+        "package-name": {
+          "color": "#243b2d",
+          "fontSize": 1.5
+        }
+      }
+    },
+    {
+      "id": 19,
+      "kit": "layered-assets/019-kit.png",
+      "background": "layered-assets/019-background.png",
+      "regions": {
+        "person": [
+          3,
+          46,
+          609,
+          958
+        ],
+        "product": [
+          635,
+          133,
+          417,
+          792
+        ],
+        "packaging": [
+          1109,
+          121,
+          387,
+          792
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 46,
+          "y": 37,
+          "width": 52,
+          "height": 52
+        },
+        "product": {
+          "x": 3,
+          "y": 41,
+          "width": 40,
+          "height": 45
+        },
+        "packaging": {
+          "x": 14,
+          "y": 75,
+          "width": 24,
+          "height": 15
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.5
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.5
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "kit": "layered-assets/020-kit.png",
+      "background": "layered-assets/020-background.png",
+      "regions": {
+        "person": [
+          7,
+          114,
+          613,
+          788
+        ],
+        "product": [
+          627,
+          218,
+          442,
+          689
+        ],
+        "packaging": [
+          1137,
+          189,
+          365,
+          716
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 55,
+          "height": 52
+        },
+        "product": {
+          "x": 50,
+          "y": 41,
+          "width": 43,
+          "height": 47
+        },
+        "packaging": {
+          "x": 4,
+          "y": 71,
+          "width": 22,
+          "height": 18
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.9
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.5
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.5
+        }
+      }
+    },
+    {
+      "id": 21,
+      "kit": "layered-assets/021-kit.png",
+      "background": "layered-assets/021-background.png",
+      "regions": {
+        "person": [
+          24,
+          105,
+          522,
+          796
+        ],
+        "product": [
+          587,
+          325,
+          444,
+          420
+        ],
+        "packaging": [
+          1071,
+          321,
+          434,
+          423
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 56,
+          "height": 51
+        },
+        "product": {
+          "x": 49,
+          "y": 53,
+          "width": 44,
+          "height": 29
+        },
+        "packaging": {
+          "x": 66,
+          "y": 76,
+          "width": 28,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 22,
+      "kit": "layered-assets/022-kit.png",
+      "background": "layered-assets/022-background.png",
+      "regions": {
+        "person": [
+          30,
+          40,
+          340,
+          930
+        ],
+        "product": [
+          410,
+          210,
+          820,
+          710
+        ],
+        "packaging": [
+          1250,
+          145,
+          220,
+          805
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 63,
+          "y": 38,
+          "width": 30,
+          "height": 51
+        },
+        "product": {
+          "x": 0,
+          "y": 48,
+          "width": 68,
+          "height": 40
+        },
+        "packaging": {
+          "x": 4,
+          "y": 42,
+          "width": 17,
+          "height": 41
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 23,
+      "kit": "layered-assets/023-kit.png",
+      "background": "layered-assets/023-background.png",
+      "regions": {
+        "person": [
+          27,
+          121,
+          505,
+          855
+        ],
+        "product": [
+          532,
+          268,
+          477,
+          504
+        ],
+        "packaging": [
+          1044,
+          299,
+          454,
+          437
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 48,
+          "height": 51
+        },
+        "product": {
+          "x": 43,
+          "y": 42,
+          "width": 52,
+          "height": 42
+        },
+        "packaging": {
+          "x": 68,
+          "y": 76,
+          "width": 28,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 24,
+      "kit": "layered-assets/024-kit.png",
+      "background": "layered-assets/024-background.png",
+      "regions": {
+        "person": [
+          6,
+          137,
+          590,
+          717
+        ],
+        "product": [
+          646,
+          324,
+          321,
+          393
+        ],
+        "packaging": [
+          1068,
+          304,
+          400,
+          406
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 40,
+          "width": 43,
+          "height": 46
+        },
+        "product": {
+          "x": 40,
+          "y": 48,
+          "width": 33,
+          "height": 35
+        },
+        "packaging": {
+          "x": 75,
+          "y": 55,
+          "width": 22,
+          "height": 29
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 25,
+      "kit": "layered-assets/025-kit.png",
+      "background": "layered-assets/025-background.png",
+      "regions": {
+        "person": [
+          41,
+          79,
+          659,
+          930
+        ],
+        "product": [
+          761,
+          178,
+          335,
+          692
+        ],
+        "packaging": [
+          1195,
+          123,
+          303,
+          743
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 55,
+          "height": 52
+        },
+        "product": {
+          "x": 51,
+          "y": 40,
+          "width": 28,
+          "height": 48
+        },
+        "packaging": {
+          "x": 79,
+          "y": 55,
+          "width": 18,
+          "height": 33
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 26,
+      "kit": "layered-assets/026-kit.png",
+      "background": "layered-assets/026-background.png",
+      "regions": {
+        "person": [
+          25,
+          110,
+          540,
+          820
+        ],
+        "product": [
+          600,
+          275,
+          360,
+          550
+        ],
+        "packaging": [
+          970,
+          340,
+          566,
+          440
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 55,
+          "height": 50
+        },
+        "product": {
+          "x": 51,
+          "y": 44,
+          "width": 43,
+          "height": 43
+        },
+        "packaging": {
+          "x": 65,
+          "y": 77,
+          "width": 31,
+          "height": 12
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 27,
+      "kit": "layered-assets/027-kit.png",
+      "background": "layered-assets/027-background.png",
+      "regions": {
+        "person": [
+          13,
+          139,
+          617,
+          813
+        ],
+        "product": [
+          676,
+          133,
+          434,
+          805
+        ],
+        "packaging": [
+          1171,
+          291,
+          340,
+          443
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 43,
+          "y": 38,
+          "width": 54,
+          "height": 51
+        },
+        "product": {
+          "x": 0,
+          "y": 42,
+          "width": 42,
+          "height": 46
+        },
+        "packaging": {
+          "x": 5,
+          "y": 72,
+          "width": 30,
+          "height": 17
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 28,
+      "kit": "layered-assets/028-kit.png",
+      "background": "layered-assets/028-background.png",
+      "regions": {
+        "person": [
+          20,
+          45,
+          325,
+          950
+        ],
+        "product": [
+          375,
+          200,
+          600,
+          615
+        ],
+        "packaging": [
+          1020,
+          205,
+          490,
+          600
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 38,
+          "width": 26,
+          "height": 51
+        },
+        "product": {
+          "x": 3,
+          "y": 42,
+          "width": 68,
+          "height": 44
+        },
+        "packaging": {
+          "x": 62,
+          "y": 74,
+          "width": 33,
+          "height": 15
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 29,
+      "kit": "layered-assets/029-kit.png",
+      "background": "layered-assets/029-background.png",
+      "regions": {
+        "person": [
+          11,
+          211,
+          456,
+          694
+        ],
+        "product": [
+          532,
+          148,
+          492,
+          715
+        ],
+        "packaging": [
+          1074,
+          579,
+          455,
+          295
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 52,
+          "width": 43,
+          "height": 37
+        },
+        "product": {
+          "x": 43,
+          "y": 38,
+          "width": 53,
+          "height": 49
+        },
+        "packaging": {
+          "x": 3,
+          "y": 78,
+          "width": 33,
+          "height": 11
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 30,
+      "kit": "layered-assets/030-kit.png",
+      "background": "layered-assets/030-background.png",
+      "regions": {
+        "person": [
+          15,
+          75,
+          674,
+          886
+        ],
+        "product": [
+          719,
+          213,
+          312,
+          722
+        ],
+        "packaging": [
+          1136,
+          149,
+          343,
+          784
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 56,
+          "height": 51
+        },
+        "product": {
+          "x": 53,
+          "y": 43,
+          "width": 27,
+          "height": 45
+        },
+        "packaging": {
+          "x": 80,
+          "y": 57,
+          "width": 18,
+          "height": 31
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 31,
+      "kit": "layered-assets/031-kit.png",
+      "background": "layered-assets/031-background.png",
+      "regions": {
+        "person": [
+          11,
+          54,
+          569,
+          955
+        ],
+        "product": [
+          608,
+          312,
+          405,
+          490
+        ],
+        "packaging": [
+          1058,
+          283,
+          458,
+          513
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 57,
+          "y": 38,
+          "width": 40,
+          "height": 51
+        },
+        "product": {
+          "x": 2,
+          "y": 48,
+          "width": 54,
+          "height": 37
+        },
+        "packaging": {
+          "x": 4,
+          "y": 76,
+          "width": 29,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 32,
+      "kit": "layered-assets/032-kit.png",
+      "background": "layered-assets/032-background.png",
+      "regions": {
+        "person": [
+          63,
+          140,
+          529,
+          792
+        ],
+        "product": [
+          654,
+          350,
+          357,
+          411
+        ],
+        "packaging": [
+          1112,
+          326,
+          366,
+          439
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 49,
+          "y": 45,
+          "width": 46,
+          "height": 40
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 24,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.4
+        }
+      }
+    },
+    {
+      "id": 33,
+      "kit": "layered-assets/033-kit.png",
+      "background": "layered-assets/033-background.png",
+      "regions": {
+        "person": [
+          16,
+          184,
+          468,
+          701
+        ],
+        "product": [
+          495,
+          180,
+          465,
+          690
+        ],
+        "packaging": [
+          985,
+          140,
+          530,
+          710
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 40,
+          "width": 45,
+          "height": 48
+        },
+        "product": {
+          "x": 37,
+          "y": 40,
+          "width": 46,
+          "height": 48
+        },
+        "packaging": {
+          "x": 74,
+          "y": 63,
+          "width": 23,
+          "height": 25
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 34,
+      "kit": "layered-assets/034-kit.png",
+      "background": "layered-assets/034-background.png",
+      "regions": {
+        "person": [
+          98,
+          14,
+          482,
+          1010
+        ],
+        "product": [
+          739,
+          69,
+          157,
+          872
+        ],
+        "packaging": [
+          1119,
+          60,
+          237,
+          888
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 48,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 40,
+          "width": 14,
+          "height": 49
+        },
+        "packaging": {
+          "x": 73,
+          "y": 49,
+          "width": 20,
+          "height": 39
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 35,
+      "kit": "layered-assets/035-kit.png",
+      "background": "layered-assets/035-background.png",
+      "regions": {
+        "person": [
+          55,
+          25,
+          330,
+          990
+        ],
+        "product": [
+          450,
+          195,
+          445,
+          630
+        ],
+        "packaging": [
+          930,
+          275,
+          580,
+          560
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 38,
+          "width": 25,
+          "height": 51
+        },
+        "product": {
+          "x": 4,
+          "y": 41,
+          "width": 60,
+          "height": 47
+        },
+        "packaging": {
+          "x": 45,
+          "y": 76,
+          "width": 28,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 36,
+      "kit": "layered-assets/036-kit-v2.png",
+      "background": "layered-assets/036-background.png",
+      "regions": {
+        "person": [
+          20,
+          145,
+          480,
+          800
+        ],
+        "product": [
+          600,
+          245,
+          420,
+          620
+        ],
+        "packaging": [
+          1145,
+          235,
+          365,
+          620
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 55,
+          "height": 51
+        },
+        "product": {
+          "x": 49,
+          "y": 43,
+          "width": 33,
+          "height": 44
+        },
+        "packaging": {
+          "x": 79,
+          "y": 56,
+          "width": 18,
+          "height": 32
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 37,
+      "kit": "layered-assets/037-kit.png",
+      "background": "layered-assets/037-background.png",
+      "regions": {
+        "person": [
+          38,
+          44,
+          471,
+          980
+        ],
+        "product": [
+          521,
+          279,
+          460,
+          477
+        ],
+        "packaging": [
+          1049,
+          292,
+          431,
+          446
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 69,
+          "y": 38,
+          "width": 28,
+          "height": 51
+        },
+        "product": {
+          "x": 3,
+          "y": 42,
+          "width": 65,
+          "height": 42
+        },
+        "packaging": {
+          "x": 11,
+          "y": 77,
+          "width": 29,
+          "height": 12
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 38,
+      "kit": "layered-assets/038-kit.png",
+      "background": "layered-assets/038-background.png",
+      "regions": {
+        "person": [
+          42,
+          126,
+          474,
+          834
+        ],
+        "product": [
+          522,
+          326,
+          501,
+          413
+        ],
+        "packaging": [
+          1055,
+          334,
+          410,
+          397
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 39,
+          "width": 52,
+          "height": 50
+        },
+        "product": {
+          "x": 47,
+          "y": 49,
+          "width": 49,
+          "height": 36
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 39,
+      "kit": "layered-assets/039-kit.png",
+      "background": "layered-assets/039-background.png",
+      "regions": {
+        "person": [
+          15,
+          111,
+          478,
+          863
+        ],
+        "product": [
+          493,
+          272,
+          575,
+          514
+        ],
+        "packaging": [
+          1084,
+          344,
+          429,
+          364
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 48,
+          "height": 51
+        },
+        "product": {
+          "x": 42,
+          "y": 50,
+          "width": 55,
+          "height": 37
+        },
+        "packaging": {
+          "x": 67,
+          "y": 76,
+          "width": 30,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 40,
+      "kit": "layered-assets/040-kit.png",
+      "background": "layered-assets/040-background.png",
+      "regions": {
+        "person": [
+          60,
+          54,
+          330,
+          944
+        ],
+        "product": [
+          460,
+          195,
+          506,
+          634
+        ],
+        "packaging": [
+          1045,
+          217,
+          432,
+          601
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 69,
+          "y": 38,
+          "width": 28,
+          "height": 51
+        },
+        "product": {
+          "x": 2,
+          "y": 42,
+          "width": 62,
+          "height": 44
+        },
+        "packaging": {
+          "x": 3,
+          "y": 76,
+          "width": 28,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 41,
+      "kit": "layered-assets/041-kit.png",
+      "background": "layered-assets/041-background.png",
+      "regions": {
+        "person": [
+          22,
+          183,
+          507,
+          682
+        ],
+        "product": [
+          529,
+          394,
+          573,
+          386
+        ],
+        "packaging": [
+          1118,
+          285,
+          387,
+          498
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 58,
+          "height": 51
+        },
+        "product": {
+          "x": 45,
+          "y": 60,
+          "width": 52,
+          "height": 29
+        },
+        "packaging": {
+          "x": 73,
+          "y": 42,
+          "width": 24,
+          "height": 23
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 42,
+      "kit": "layered-assets/042-kit.png",
+      "background": "layered-assets/042-background.png",
+      "regions": {
+        "person": [
+          0,
+          183,
+          632,
+          841
+        ],
+        "product": [
+          703,
+          110,
+          224,
+          828
+        ],
+        "packaging": [
+          1074,
+          108,
+          357,
+          821
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 40,
+          "width": 43,
+          "height": 47
+        },
+        "product": {
+          "x": 43,
+          "y": 39,
+          "width": 16,
+          "height": 49
+        },
+        "packaging": {
+          "x": 66,
+          "y": 42,
+          "width": 30,
+          "height": 46
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 43,
+      "kit": "layered-assets/043-kit.png",
+      "background": "layered-assets/043-background.png",
+      "regions": {
+        "person": [
+          44,
+          80,
+          539,
+          915
+        ],
+        "product": [
+          658,
+          243,
+          360,
+          540
+        ],
+        "packaging": [
+          1111,
+          234,
+          378,
+          554
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 32,
+          "height": 43
+        },
+        "packaging": {
+          "x": 79,
+          "y": 59,
+          "width": 18,
+          "height": 29
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 44,
+      "kit": "layered-assets/044-kit.png",
+      "background": "layered-assets/044-background.png",
+      "regions": {
+        "person": [
+          5,
+          130,
+          557,
+          818
+        ],
+        "product": [
+          580,
+          300,
+          375,
+          482
+        ],
+        "packaging": [
+          960,
+          338,
+          558,
+          440
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 54,
+          "height": 51
+        },
+        "product": {
+          "x": 48,
+          "y": 46,
+          "width": 46,
+          "height": 40
+        },
+        "packaging": {
+          "x": 70,
+          "y": 76,
+          "width": 27,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        },
+        "package-name": {
+          "color": "#34251f",
+          "fontSize": 1.3
+        }
+      }
+    },
+    {
+      "id": 45,
+      "kit": "layered-assets/045-kit.png",
+      "background": "layered-assets/045-background.png",
+      "regions": {
+        "person": [
+          8,
+          315,
+          455,
+          424
+        ],
+        "product": [
+          466,
+          442,
+          543,
+          233
+        ],
+        "packaging": [
+          1028,
+          413,
+          494,
+          250
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 37,
+          "width": 61,
+          "height": 35
+        },
+        "product": {
+          "x": 3,
+          "y": 68,
+          "width": 91,
+          "height": 20
+        },
+        "packaging": {
+          "x": 65,
+          "y": 49,
+          "width": 30,
+          "height": 16
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 46,
+      "kit": "layered-assets/046-kit.png",
+      "background": "layered-assets/046-background.png",
+      "regions": {
+        "person": [
+          56,
+          132,
+          512,
+          869
+        ],
+        "product": [
+          653,
+          295,
+          302,
+          527
+        ],
+        "packaging": [
+          1100,
+          313,
+          339,
+          503
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 46,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 41,
+          "width": 27,
+          "height": 47
+        },
+        "packaging": {
+          "x": 75,
+          "y": 58,
+          "width": 22,
+          "height": 29
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 47,
+      "kit": "layered-assets/047-kit.png",
+      "background": "layered-assets/047-background.png",
+      "regions": {
+        "person": [
+          65,
+          204,
+          480,
+          705
+        ],
+        "product": [
+          647,
+          285,
+          313,
+          533
+        ],
+        "packaging": [
+          1133,
+          228,
+          324,
+          600
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 48,
+      "kit": "layered-assets/048-kit.png",
+      "background": "layered-assets/048-background.png",
+      "regions": {
+        "person": [
+          45,
+          68,
+          330,
+          928
+        ],
+        "product": [
+          442,
+          359,
+          596,
+          428
+        ],
+        "packaging": [
+          1109,
+          272,
+          376,
+          532
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 70,
+          "y": 37,
+          "width": 27,
+          "height": 52
+        },
+        "product": {
+          "x": 0,
+          "y": 49,
+          "width": 68,
+          "height": 38
+        },
+        "packaging": {
+          "x": 5,
+          "y": 75,
+          "width": 25,
+          "height": 14
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 49,
+      "kit": "layered-assets/049-kit.png",
+      "background": "layered-assets/049-background.png",
+      "regions": {
+        "person": [
+          25,
+          214,
+          535,
+          700
+        ],
+        "product": [
+          566,
+          524,
+          466,
+          235
+        ],
+        "packaging": [
+          1086,
+          478,
+          409,
+          300
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 50,
+      "kit": "layered-assets/050-kit.png",
+      "background": "layered-assets/050-background.png",
+      "regions": {
+        "person": [
+          18,
+          70,
+          501,
+          948
+        ],
+        "product": [
+          519,
+          464,
+          544,
+          389
+        ],
+        "packaging": [
+          1081,
+          335,
+          435,
+          481
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 51,
+      "kit": "layered-assets/051-kit.png",
+      "background": "layered-assets/051-background.png",
+      "regions": {
+        "person": [
+          0,
+          384,
+          491,
+          371
+        ],
+        "product": [
+          507,
+          326,
+          514,
+          437
+        ],
+        "packaging": [
+          1035,
+          279,
+          485,
+          488
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 45,
+          "width": 44,
+          "height": 39
+        },
+        "product": {
+          "x": 40,
+          "y": 45,
+          "width": 56,
+          "height": 40
+        },
+        "packaging": {
+          "x": 71,
+          "y": 74,
+          "width": 26,
+          "height": 15
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#ffffff"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#ffffff"
+        }
+      }
+    },
+    {
+      "id": 52,
+      "kit": "layered-assets/052-kit-v2.png",
+      "background": "layered-assets/052-background.png",
+      "regions": {
+        "person": [
+          69,
+          211,
+          433,
+          642
+        ],
+        "product": [
+          620,
+          240,
+          401,
+          605
+        ],
+        "packaging": [
+          1166,
+          365,
+          329,
+          324
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 53,
+      "kit": "layered-assets/053-kit.png",
+      "background": "layered-assets/053-background.png",
+      "regions": {
+        "person": [
+          97,
+          56,
+          318,
+          953
+        ],
+        "product": [
+          428,
+          217,
+          545,
+          577
+        ],
+        "packaging": [
+          1016,
+          345,
+          481,
+          444
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 37,
+          "width": 25,
+          "height": 52
+        },
+        "product": {
+          "x": 0,
+          "y": 41,
+          "width": 65,
+          "height": 46
+        },
+        "packaging": {
+          "x": 44,
+          "y": 76,
+          "width": 29,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 54,
+      "kit": "layered-assets/054-kit.png",
+      "background": "layered-assets/054-background.png",
+      "regions": {
+        "person": [
+          100,
+          80,
+          347,
+          928
+        ],
+        "product": [
+          528,
+          245,
+          466,
+          562
+        ],
+        "packaging": [
+          1094,
+          399,
+          388,
+          309
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 37,
+          "width": 25,
+          "height": 52
+        },
+        "product": {
+          "x": 2,
+          "y": 42,
+          "width": 60,
+          "height": 44
+        },
+        "packaging": {
+          "x": 6,
+          "y": 76,
+          "width": 30,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 55,
+      "kit": "layered-assets/055-kit.png",
+      "background": "layered-assets/055-background.png",
+      "regions": {
+        "person": [
+          17,
+          196,
+          458,
+          684
+        ],
+        "product": [
+          501,
+          371,
+          550,
+          400
+        ],
+        "packaging": [
+          1110,
+          393,
+          375,
+          323
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 56,
+      "kit": "layered-assets/056-kit.png",
+      "background": "layered-assets/056-background.png",
+      "regions": {
+        "person": [
+          31,
+          167,
+          461,
+          756
+        ],
+        "product": [
+          498,
+          220,
+          556,
+          583
+        ],
+        "packaging": [
+          1085,
+          411,
+          417,
+          369
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 57,
+      "kit": "layered-assets/057-kit.png",
+      "background": "layered-assets/057-background.png",
+      "regions": {
+        "person": [
+          102,
+          71,
+          297,
+          928
+        ],
+        "product": [
+          531,
+          166,
+          487,
+          610
+        ],
+        "packaging": [
+          1123,
+          415,
+          365,
+          234
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 37,
+          "width": 25,
+          "height": 52
+        },
+        "product": {
+          "x": 2,
+          "y": 40,
+          "width": 61,
+          "height": 47
+        },
+        "packaging": {
+          "x": 5,
+          "y": 76,
+          "width": 27,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 58,
+      "kit": "layered-assets/058-kit.png",
+      "background": "layered-assets/058-background.png",
+      "regions": {
+        "person": [
+          94,
+          34,
+          327,
+          980
+        ],
+        "product": [
+          604,
+          447,
+          345,
+          204
+        ],
+        "packaging": [
+          1113,
+          314,
+          361,
+          482
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 59,
+      "kit": "layered-assets/059-kit.png",
+      "background": "layered-assets/059-background.png",
+      "regions": {
+        "person": [
+          21,
+          134,
+          459,
+          866
+        ],
+        "product": [
+          543,
+          442,
+          486,
+          188
+        ],
+        "packaging": [
+          1099,
+          442,
+          399,
+          190
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 49,
+          "height": 51
+        },
+        "product": {
+          "x": 43,
+          "y": 57,
+          "width": 54,
+          "height": 29
+        },
+        "packaging": {
+          "x": 69,
+          "y": 77,
+          "width": 28,
+          "height": 12
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 60,
+      "kit": "layered-assets/060-kit.png",
+      "background": "layered-assets/060-background.png",
+      "regions": {
+        "person": [
+          12,
+          301,
+          499,
+          486
+        ],
+        "product": [
+          610,
+          377,
+          405,
+          299
+        ],
+        "packaging": [
+          1112,
+          277,
+          401,
+          496
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 42,
+          "width": 43,
+          "height": 45
+        },
+        "product": {
+          "x": 42,
+          "y": 46,
+          "width": 38,
+          "height": 35
+        },
+        "packaging": {
+          "x": 76,
+          "y": 64,
+          "width": 21,
+          "height": 24
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 61,
+      "kit": "layered-assets/061-kit.png",
+      "background": "layered-assets/061-background.png",
+      "regions": {
+        "person": [
+          22,
+          123,
+          621,
+          819
+        ],
+        "product": [
+          680,
+          338,
+          353,
+          490
+        ],
+        "packaging": [
+          1145,
+          511,
+          354,
+          307
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 62,
+      "kit": "layered-assets/062-kit.png",
+      "background": "layered-assets/062-background.png",
+      "regions": {
+        "person": [
+          24,
+          209,
+          516,
+          677
+        ],
+        "product": [
+          621,
+          451,
+          293,
+          189
+        ],
+        "packaging": [
+          1029,
+          406,
+          486,
+          311
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 63,
+      "kit": "layered-assets/063-kit.png",
+      "background": "layered-assets/063-background.png",
+      "regions": {
+        "person": [
+          55,
+          33,
+          315,
+          980
+        ],
+        "product": [
+          559,
+          344,
+          388,
+          352
+        ],
+        "packaging": [
+          1122,
+          312,
+          363,
+          453
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 64,
+      "kit": "layered-assets/064-kit.png",
+      "background": "layered-assets/064-background.png",
+      "regions": {
+        "person": [
+          0,
+          104,
+          601,
+          909
+        ],
+        "product": [
+          678,
+          501,
+          322,
+          115
+        ],
+        "packaging": [
+          1108,
+          316,
+          365,
+          427
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 39,
+          "width": 48,
+          "height": 49
+        },
+        "product": {
+          "x": 49,
+          "y": 48,
+          "width": 45,
+          "height": 30
+        },
+        "packaging": {
+          "x": 68,
+          "y": 75,
+          "width": 29,
+          "height": 14
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 65,
+      "kit": "layered-assets/065-kit.png",
+      "background": "layered-assets/065-background.png",
+      "regions": {
+        "person": [
+          26,
+          129,
+          548,
+          843
+        ],
+        "product": [
+          639,
+          367,
+          446,
+          342
+        ],
+        "packaging": [
+          1171,
+          275,
+          311,
+          480
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 66,
+      "kit": "layered-assets/066-kit.png",
+      "background": "layered-assets/066-background.png",
+      "regions": {
+        "person": [
+          56,
+          150,
+          489,
+          821
+        ],
+        "product": [
+          608,
+          490,
+          408,
+          170
+        ],
+        "packaging": [
+          1100,
+          317,
+          374,
+          512
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 51,
+          "height": 51
+        },
+        "product": {
+          "x": 47,
+          "y": 43,
+          "width": 49,
+          "height": 43
+        },
+        "packaging": {
+          "x": 72,
+          "y": 76,
+          "width": 25,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 67,
+      "kit": "layered-assets/067-kit.png",
+      "background": "layered-assets/067-background.png",
+      "regions": {
+        "person": [
+          31,
+          182,
+          529,
+          723
+        ],
+        "product": [
+          584,
+          392,
+          425,
+          296
+        ],
+        "packaging": [
+          1143,
+          373,
+          348,
+          349
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 0,
+          "y": 38,
+          "width": 49,
+          "height": 51
+        },
+        "product": {
+          "x": 45,
+          "y": 45,
+          "width": 50,
+          "height": 41
+        },
+        "packaging": {
+          "x": 71,
+          "y": 76,
+          "width": 26,
+          "height": 13
+        },
+        "hook": {
+          "font": "Georgia",
+          "fontSize": 6.5,
+          "color": "#ffffff"
+        },
+        "brand": {
+          "color": "#ffffff"
+        },
+        "category": {
+          "color": "#ffffff"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    },
+    {
+      "id": 68,
+      "kit": "layered-assets/068-kit.png",
+      "background": "layered-assets/068-background.png",
+      "regions": {
+        "person": [
+          71,
+          32,
+          322,
+          973
+        ],
+        "product": [
+          507,
+          282,
+          479,
+          529
+        ],
+        "packaging": [
+          1126,
+          388,
+          339,
+          350
+        ]
+      },
+      "layout": {
+        "person": {
+          "x": 72,
+          "y": 37,
+          "width": 25,
+          "height": 52
+        },
+        "product": {
+          "x": 2,
+          "y": 46,
+          "width": 65,
+          "height": 39
+        },
+        "packaging": {
+          "x": 5,
+          "y": 76,
+          "width": 27,
+          "height": 13
+        },
+        "hook": {
+          "font": "Arial",
+          "fontSize": 6.5,
+          "color": "#28241e"
+        },
+        "brand": {
+          "color": "#28241e"
+        },
+        "category": {
+          "color": "#28241e"
+        },
+        "description": {
+          "x": 7,
+          "y": 29,
+          "width": 86,
+          "height": 7,
+          "fontSize": 2.4,
+          "color": "#28241e",
+          "fill": "#fff7e8"
+        },
+        "package-brand": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        },
+        "package-name": {
+          "fontSize": 1.3,
+          "color": "#34251f"
+        }
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {createCampaignQueue,handleCampaignRequest} from './ugc-collection/ugc-jobs.mjs';
 import {mkdir,readFile,writeFile,rename,readdir,stat,unlink} from 'node:fs/promises';
 import {createReadStream} from 'node:fs';
 import path from 'node:path';
@@ -26,6 +27,7 @@ const decode=(value,max)=>{if(typeof value!=='string'||!value||value.length>Math
 
 export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.env.GSN_DATA_DIR||path.resolve('data/v1'),token=process.env.GSN_AGENT_TOKEN||'',voiceUrl=process.env.VOICE_WORKER_URL||'',visualUrl=process.env.VISUAL_WORKER_URL||'',cutoutUrl=process.env.CUTOUT_WORKER_URL||'http://cutout:8092',fetchImpl=fetch,openUi=process.env.GSN_REQUIRE_KEY!=='1'}={}){
  const accounts=createAccounts({dataDir,now:clock});
+ const ugcQueues=new Map();
  const publisher=createPublisher({dataDir,fetchImpl,env:publishEnv,now:clock,credentials:ws=>accounts.credentials(ws)});
  const inWs=(r,ws)=>(r.workspace_id||'main')===ws;
  const optHex=(v,n)=>{if(v===''||v===null)return '';if(typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v))return v.toLowerCase();throw new InputError(`${n} must be a colour like #ed6843, or empty.`)};
@@ -171,6 +173,11 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(!ctx){if(accounts.enabled())throw new InputError('Sign in to continue.',401);if(!token&&!openUi)throw new InputError('V1 access key is not configured. Run deploy/setup-v1.sh.',503);throw new InputError(openUi?'Open the studio in your browser, or send the agent access key as a Bearer token.':'Studio access key required.',401);}
   if(!ctx.ws)throw new InputError('Your account is not in a workspace yet. Ask an administrator to add you to one.',403);
   const who=ctx.who,ws=ctx.ws;
+  if(url.pathname.startsWith('/api/v1/ugc/')){
+   const key=createHash('sha256').update(ws).digest('hex');
+   if(!ugcQueues.has(key))ugcQueues.set(key,createCampaignQueue({directory:path.join(dataDir,'ugc-briefs',key),token,clock}));
+   return handleCampaignRequest(req,res,ugcQueues.get(key),{prefix:'/api/v1/ugc',workerAuthorized:ctx.role==='agent'&&!ctx.user&&!!req.headers.authorization?.startsWith('Bearer ')});
+  }
   if(url.pathname==='/api/v1/session'&&req.method==='DELETE'){const sid=req.headers.cookie?.match(/gsn_session=([a-f0-9]{64})/)?.[1];sessions.delete(sid);res.setHeader('Set-Cookie','gsn_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0');json(res,200,{ok:true});return true;}
   if(await publisher.handle(req,res,url,who,{json:(r,c,v)=>json(r,c,v),body,InputError,ws,actor:ctx.actor}))return true;
   if(url.pathname==='/api/v1/health'&&req.method==='GET'){const workers={};await Promise.all([['voice',voiceUrl],['visuals',visualUrl],['cutout',cutoutUrl]].map(async([k,base])=>{try{if(!base)throw Error('Not configured.');const r=await fetchImpl(new URL('/health',base),{signal:AbortSignal.timeout(6000)});if(!r.ok)throw Error(`HTTP ${r.status}`);workers[k]=await r.json();}catch(e){workers[k]={ready:false,message:e.message};}}));json(res,200,{version:'1.0.0',workers,storage:'persistent',agent_api:true,designs:true,open_ui:openUi,scheduler:'Hermes manages schedules'});return true;}

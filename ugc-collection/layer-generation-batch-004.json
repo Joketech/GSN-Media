@@ -1,0 +1,32 @@
+[
+  {
+    "id": 7,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Convert the reference campaign into a horizontal1536x1024 photographic asset sheet on true transparent alpha. Three disconnected editable groups with wide empty transparent gutters. LEFT x20..510: same adult woman in a beige hijab and modest orange long-sleeve blouse, smiling chin resting on one hand, waist-up, empty hands and no plate. CENTER x650..1010: white shallow plate piled with jollof rice and two grilled chicken pieces, garnish, no person or hands. RIGHT x1140..1490: blank cream takeaway food box with plain orange sleeve, closed. Scale each object down enough to remain wholly within its specified column and y30..990. Preserve reference person identity, realistic skin, clothing, lighting and product materials. No advertised product in the person layer. No baked environment, text, watermark, logos, colored glow, or overlapping columns. Clean alpha edges. ALL three groups separately isolated."
+  },
+  {
+    "id": 7,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference existing campaign. Create its empty vertical4:5 photorealistic background plate: orange studio wall with sculptural peach curved panels and warm stone counter, small terracotta vase far right. Remove every person, hand, food, advertised product and package. Preserve premium textures and natural commercial lighting. Keep upper third calm empty wall for editable headline. No text logos or watermark."
+  },
+  {
+    "id": 9,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Convert the reference campaign into a horizontal1536x1024 photographic asset sheet on true transparent alpha. Three disconnected editable groups with wide empty transparent gutters. LEFT x20..510: same adult dark-haired bearded man in cream rolled-sleeve shirt and green apron, waist-up seated, smiling with folded empty hands, no pizza or food. CENTER x650..1010: one whole artisan margherita pizza on a round wooden serving board, tomatoes basil blistered crust, no hands. RIGHT x1140..1490: closed blank olive-green square cardboard pizza box with a large cream blank label on lid. Scale each object down enough to remain wholly within its specified column and y30..990. Preserve reference person identity, realistic skin, clothing, lighting and product materials. No advertised product in the person layer. No baked environment, text, watermark, logos, colored glow, or overlapping columns. Clean alpha edges. ALL three groups separately isolated."
+  },
+  {
+    "id": 9,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference existing campaign. Create its empty vertical4:5 photorealistic background plate: deep olive-green studio wall, pale moss stone arch at left, trailing plant far left, sage stone countertop. Remove every person, hand, food, advertised product and package. Preserve premium textures and natural commercial lighting. Keep upper third calm empty wall for editable headline. No text logos or watermark."
+  },
+  {
+    "id": 11,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Convert the reference campaign into a horizontal1536x1024 photographic asset sheet on true transparent alpha. Three disconnected editable groups with wide empty transparent gutters. LEFT x20..510: same adult curly brown-haired woman in modest lilac ruffled long-sleeve blouse, waist-up leaning forward, smiling, right hand extended empty with open fingers and no tube. CENTER x650..1010: small broad translucent smear of white sunscreen cream on a clear acrylic round disk. RIGHT x1140..1490: one blank white sunscreen squeeze tube standing cap-down with amber orange flip cap. Scale each object down enough to remain wholly within its specified column and y30..990. Preserve reference person identity, realistic skin, clothing, lighting and product materials. No advertised product in the person layer. No baked environment, text, watermark, logos, colored glow, or overlapping columns. Clean alpha edges. ALL three groups separately isolated."
+  },
+  {
+    "id": 11,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference existing campaign. Create its empty vertical4:5 photorealistic background plate: lavender and plum sculptural studio with an empty dark-purple freestanding phone-shaped frame left and lavender round pedestal right. Remove every person, hand, food, advertised product and package. Preserve premium textures and natural commercial lighting. Keep upper third calm empty wall for editable headline. No text logos or watermark."
+  }
+]

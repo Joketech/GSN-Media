@@ -1,0 +1,5 @@
+{
+  "id": 5,
+  "type": "kit-v2",
+  "prompt": "Use case: background-extraction. Fix the reference transparent asset sheet for independent editing. Keep same adult silver-curled Black woman in mustard blouse and apron, same bowl of honey and dipper, and same jar. Arrange three groups with MUCH wider completely transparent vertical gutters: person entirely within x=20..510 (scale her down so both elbows visible); honey bowl and dipper entirely within x=650..1010; jar entirely within x=1140..1490. Horizontal canvas1536x1024, genuine transparent alpha, no colored glow. Every object must fit its assigned box. No overlap between columns or stray object pixels in the gutters. Keep person empty-handed and no food in person column. Jar blank label. No text, logos or background."
+}

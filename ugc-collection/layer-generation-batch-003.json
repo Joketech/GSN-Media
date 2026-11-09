@@ -1,0 +1,32 @@
+[
+  {
+    "id": 4,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Edit the reference campaign into ONE horizontal 1536x1024 photographic asset sheet on actual transparent alpha. Three completely disconnected groups across separate columns: LEFT the same fully clothed adult woman with brown curls and modest plum blouse and plum trousers, leaning with chin on hand, waist-up, empty hands; CENTER one glossy dark chocolate bar with segmented squares plus three broken dark chocolate chunks; RIGHT one blank plum paper chocolate-bar sleeve with a small gold foil edge. Preserve reference identity, clothing, natural texture and lighting. All objects fully visible, no crop at canvas edges. Fit LEFT within x20..500, CENTER x550..1000, RIGHT x1060..1510 with 40px transparent gutters and generous top/bottom margin. No object may cross into another group. No baked environment, colored glow, text, logos or watermark. Fine clean alpha cutouts without halos. Person layer must not contain any advertised product, package or food."
+  },
+  {
+    "id": 4,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference is existing commercial campaign. Create a vertical 4:5 empty photographic background plate: deep plum studio wall, lavender curved stone panels and lavender stone plinth, small folded purple velvet at lower right. Remove all people, hands, advertised product, containers and food. Preserve premium art direction and natural light. Keep upper third calm for editable headline. No words, logos or watermark. Real material textures and original composition."
+  },
+  {
+    "id": 5,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Edit the reference campaign into ONE horizontal 1536x1024 photographic asset sheet on actual transparent alpha. Three completely disconnected groups across separate columns: LEFT the same mature Black woman with natural silver curls and mustard yellow eyelet blouse and gingham apron, smiling, waist-up, hands resting together with no honey dipper or food in hands; CENTER a small clear glass bowl of amber honey with a wooden honey dipper laid across its rim, no hands; RIGHT one clear glass honey jar filled with golden honey, plain lid, blank cream rectangular front label. Preserve reference identity, clothing, natural texture and lighting. All objects fully visible, no crop at canvas edges. Fit LEFT within x20..500, CENTER x550..1000, RIGHT x1060..1510 with 40px transparent gutters and generous top/bottom margin. No object may cross into another group. No baked environment, colored glow, text, logos or watermark. Fine clean alpha cutouts without halos. Person layer must not contain any advertised product, package or food."
+  },
+  {
+    "id": 5,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference is existing commercial campaign. Create a vertical 4:5 empty photographic background plate: warm terracotta and orange sculptural studio with orange arch at right, stone pedestal counter, small vase with white blossoms far left. Remove all people, hands, advertised product, containers and food. Preserve premium art direction and natural light. Keep upper third calm for editable headline. No words, logos or watermark. Real material textures and original composition."
+  },
+  {
+    "id": 6,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Edit the reference campaign into ONE horizontal 1536x1024 photographic asset sheet on actual transparent alpha. Three completely disconnected groups across separate columns: LEFT only the same two adult hands and forearms from the reference, teal tailored sleeves with white cuffs: one hand above poised to grip cap and the other hand below cupped to support bottle, separated from all products, no face or body; CENTER a shallow white ceramic tasting dish with golden olive oil and a small olive branch beside it; RIGHT one tall rectangular dark green glass olive oil bottle filled with golden oil, gold screw cap, blank cream rectangular front label. Preserve reference identity, clothing, natural texture and lighting. All objects fully visible, no crop at canvas edges. Fit LEFT within x20..500, CENTER x550..1000, RIGHT x1060..1510 with 40px transparent gutters and generous top/bottom margin. No object may cross into another group. No baked environment, colored glow, text, logos or watermark. Fine clean alpha cutouts without halos. Person layer must not contain any advertised product, package or food."
+  },
+  {
+    "id": 6,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Reference is existing commercial campaign. Create a vertical 4:5 empty photographic background plate: pale blue tabletop still life, large rough teal slate slab angled diagonally at lower two thirds, a few olive leaves at the far edges. Remove all people, hands, advertised product, containers and food. Preserve premium art direction and natural light. Keep upper third calm for editable headline. No words, logos or watermark. Real material textures and original composition."
+  }
+]

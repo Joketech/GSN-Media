@@ -1,0 +1,92 @@
+[
+  {
+    "id": 12,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same mature Black woman with silver curls, modest sage long-sleeve textured blouse, waist-up, hand gently touching her curls, other hand empty. CENTER fully x740..1100 and y30..990: a clear shallow dish holding translucent shampoo gel. RIGHT fully x1220..1490 and y30..990: blank pale sage shampoo pump bottle. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 12,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: forest-green and sage studio, fluted green pedestal, leafy plant at right. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 13,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same short brown-haired adult man, cream striped mustard and brown knitted polo, brown trousers, relaxed standing empty-handed. CENTER fully x740..1100 and y30..990: a small swirl of body lotion on an amber glass disk. RIGHT fully x1220..1490 and y30..990: blank ivory body-lotion pump bottle with chocolate pump. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 13,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: mustard and chocolate retro studio, brown terrazzo plinth at left, brown fluted panel right. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 14,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same smiling adult woman in navy hijab and modest sky-blue blouse, waist-up, empty hands, one resting by cheek. CENTER fully x740..1100 and y30..990: white toothbrush with neat small toothpaste ribbon, no hands. RIGHT fully x1220..1490 and y30..990: blank white toothpaste squeeze tube with white cap. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 14,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: sky-blue and deep ink studio with blue arch left and rough blue stone plinth. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 15,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: only two adult Black hands with yellow ruffled long-sleeve cuffs, one hand open above and one below, no product held. CENTER fully x740..1100 and y30..990: uncapped white deodorant stick with rounded exposed balm. RIGHT fully x1220..1490 and y30..990: blank white deodorant container with its white cap on. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 15,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: lemon-yellow overhead flatlay with charcoal stone slab and a lemon wedge at far edge. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 16,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same adult South Asian bearded man with wavy dark hair, lilac knit cardigan over white shirt, ivory trousers, relaxed waist-up pose empty-handed. CENTER fully x740..1100 and y30..990: uncapped pink lip-balm stick with exposed balm. RIGHT fully x1220..1490 and y30..990: blank white cylindrical lip-balm tube with pink cap fitted. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 16,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: pink and orchid sculptural studio with pink textured stone block and small orchid blooms at edges. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 17,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same adult Black woman with short natural curls and modest red ruffled long-sleeve blouse, gold earrings, smiling waist-up empty-handed. CENTER fully x740..1100 and y30..990: clear square perfume bottle with golden liquid and faceted glass cap. RIGHT fully x1220..1490 and y30..990: blank red perfume gift box open with red tissue paper. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 17,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: yellow and red luxury vanity studio, EMPTY red oval mirror right with no reflection of a person, yellow pedestal. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 18,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same adult Korean man with short black hair, navy modest pajama shirt with white piping, waist-up smiling empty-handed pointing to his right. CENTER fully x740..1100 and y30..990: black electric beard trimmer with silver blades, no hand. RIGHT fully x1220..1490 and y30..990: blank navy product carton with pale-blue label panel. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 18,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: navy and icy-blue technology studio, blue stone podiums and one curved pale-blue light strip. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 19,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same adult South Asian woman with wavy dark bob, white fully closed modest robe with blue piping and blue belt, waist-up smiling with empty hands. CENTER fully x740..1100 and y30..990: cobalt blue hair dryer with black concentrator nozzle, cord neatly coiled. RIGHT fully x1220..1490 and y30..990: blank cobalt hair-dryer carton with white front label panel. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 19,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: cobalt and white sculptural studio with white arch and fluted blue pedestal. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  },
+  {
+    "id": 20,
+    "type": "kit",
+    "prompt": "Use case: background-extraction. Use reference to create one 1536x1024 photorealistic transparent RGBA asset sheet. Three separate editable groups with CLEAR wide vertical gutters. LEFT group fully within x20..570 and y30..990: same adult man with short brown hair, cream sweater with red stripes and dark trousers, waist-up leaning forward one hand open, no lamp. CENTER fully x740..1100 and y30..990: red ceramic table lamp with warm cream linen shade, full lamp. RIGHT fully x1220..1490 and y30..990: blank red-and-cream lamp carton with a large pale label panel. Scale down to stay inside the assigned boxes; all fingers and object edges fully visible. Preserve reference person's adult identity, clothing and natural skin/material texture. The person must have NO advertised product, package or food. No overlap or stray pixels from another group. Genuine clean transparent alpha, no colored glow, no backdrop, no text, logo or watermark."
+  },
+  {
+    "id": 20,
+    "type": "background",
+    "prompt": "Use case: precise-object-edit. Use reference campaign as art-direction input. Create its empty vertical4:5 photorealistic studio background plate: sunshine-yellow and red studio, EMPTY freestanding phone-shaped frame left, red circular pedestal right, small green plant far left. Remove all people, hands, faces and reflections of people, advertised products and packages. Keep upper 35 percent quiet wall for editable headline. Premium real material textures, natural studio lighting. No text logos or watermark."
+  }
+]
