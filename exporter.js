@@ -93,8 +93,8 @@ async function rasterDesignPage(card,css,width,height){
  return canvas;
 }
 
-function canvasImage(canvas,type){
- return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('Could not encode this format.')),type,.92));
+function canvasImage(canvas,type,quality=.96){
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('Could not encode this format.')),type,quality));
 }
 
 async function designPdf(canvases,width,height,scale){
@@ -107,7 +107,7 @@ async function designPdf(canvases,width,height,scale){
  object(1,['<< /Type /Catalog /Pages 2 0 R >>']);
  object(2,[`<< /Type /Pages /Count ${canvases.length} /Kids [${canvases.map((_,i)=>3+i*3+' 0 R').join(' ')}] >>`]);
  for(let index=0;index<canvases.length;index++){
-  const id=3+index*3, jpg=new Uint8Array(await (await canvasImage(canvases[index],'image/jpeg')).arrayBuffer());
+  const id=3+index*3, jpg=new Uint8Array(await (await canvasImage(canvases[index],'image/jpeg',.99)).arrayBuffer());
   const paint=`q ${pageWidth} 0 0 ${pageHeight} 0 0 cm /Im0 Do Q\n`;
   object(id,[`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im0 ${id+1} 0 R >> >> /Contents ${id+2} 0 R >>`]);
   object(id+1,[`<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`,jpg,'\nendstream']);
@@ -146,6 +146,8 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
  async function css(cards){return campaignExportCss(cards)}
  // opts: {pages:[indices], type:'png'|'jpeg'|'pdf'|'mp4'|'html', scale:1|2, onProgress}
  async function run(design,{pages,type,scale=1,onProgress=()=>{}}){
+  // A PDF page is a picture, so it is always drawn at least twice as large to stay sharp when zoomed or printed.
+  if(type==='pdf')scale=Math.max(scale,2);
   const [rw,rh]=design.ratio.split(' / ').map(Number);
   const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
   const cards=pages.map(i=>KitHost.pageHtml(design,i));

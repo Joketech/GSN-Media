@@ -1526,7 +1526,7 @@ const Editor=(()=>{
   openModal(`<form id="edDl"><h2>Download</h2>
   <label class="field">File type<select id="dlType"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="pdf">PDF (all pages)</option>${mp4?'<option value="mp4">MP4 video</option>':''}<option value="html">HTML</option></select></label>
   <label class="field">Pages<select id="dlPages"><option value="all">All ${n} pages</option><option value="current">This page (${page+1})</option></select></label>
-  <label class="field">Size<select id="dlScale"><option value="1">${design.size.w}×${design.size.h}</option><option value="2">2× larger</option></select></label>
+  <label class="field">Size<select id="dlScale"><option value="1">${design.size.w}×${design.size.h}</option><option value="2" selected>2× larger (sharp)</option><option value="3">3× larger (extra sharp)</option></select></label>
   <p class="hint" id="dlMsg"></p><div class="modal-actions"><span class="spacer"></span><button type="button" class="btn-light" data-act="closemodal">Cancel</button><button class="btn-maroon" type="submit">Download</button></div></form>`);
   $('#edDl').onsubmit=async e=>{e.preventDefault();const b=e.submitter,msg=$('#dlMsg');b.disabled=true;
    const pages=$('#dlPages').value==='all'?design.pages.map((_,i)=>i):[page];
