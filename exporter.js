@@ -149,6 +149,32 @@ async function designVideoBlob(images){
 }
 async function downloadDesignVideo(images){download(await designVideoBlob(images),'gsn-design.mp4','video/mp4')}
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+ // A page set up for printing: one sheet per design page, exactly the design's size, text and shapes kept as real text and vectors.
+ async function printDoc(design,cards,style,name){
+  const w=design.size.w,h=design.size.h,body=cards.map(c=>`<section class="pg">${c}</section>`).join('');
+  return `<!doctype html><meta charset="utf-8"><title>${GSNKit.esc(name)}</title><style>${style}
+@page{size:${w}px ${h}px;margin:0}
+html,body{margin:0;padding:0;background:#fff}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important}
+.pg{width:${w}px;height:${h}px;overflow:hidden;position:relative;break-after:page;page-break-after:always}
+.pg:last-child{break-after:auto;page-break-after:auto}
+.pg .art{width:${w}px!important;height:${h}px!important;border-radius:0!important;margin:0!important}</style>${await inlineGsnPhotos(body)}`;
+ }
+ // Opens the browser's print window for the page set; choosing "Save as PDF" there gives a PDF with selectable text.
+ async function printDesign(doc,name){
+  const frame=document.createElement('iframe');
+  frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;left:-20000px;top:0;width:1200px;height:900px;border:0;visibility:hidden';
+  document.body.appendChild(frame);
+  await new Promise(resolve=>{frame.onload=resolve;frame.srcdoc=doc});
+  try{await frame.contentDocument.fonts.ready}catch{}
+  await Promise.all([...frame.contentDocument.images].map(i=>i.decode?.().catch(()=>{})));
+  await sleep(500);
+  const title=document.title;document.title=name;
+  const done=()=>{document.title=title;setTimeout(()=>frame.remove(),1000)};
+  frame.contentWindow.addEventListener('afterprint',done,{once:true});
+  frame.contentWindow.focus();frame.contentWindow.print();
+  setTimeout(()=>{if(document.title===name)done()},120000);
+ }
  const safe=s=>String(s||'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'design';
  async function css(cards){return campaignExportCss(cards)}
  // opts: {pages:[indices], type:'png'|'jpeg'|'pdf'|'mp4'|'html', scale:1|2, onProgress}
@@ -158,8 +184,9 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
   const [rw,rh]=design.ratio.split(' / ').map(Number);
   const W=Math.round(design.size.w*scale),H=Math.round(design.size.h*scale);
   const cards=pages.map(i=>KitHost.pageHtml(design,i));
-  const style=type==='html'?await css(cards.join('')):'';
+  const style=type==='html'||type==='pdftext'?await css(cards.join('')):'';
   const name=safe(design.title);
+  if(type==='pdftext'){await printDesign(await printDoc(design,cards,style,name),name);onProgress(cards.length,cards.length);return}
   if(type==='html'){
    const body=cards.map(c=>`<section class="frame">${c}</section>`).join('');
    download(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${GSNKit.esc(design.title)}</title><style>${style}body{margin:0;background:#111;display:grid;gap:24px;justify-items:center;padding:24px}.frame{width:min(100%,${design.size.w/2}px)}</style>${await inlineGsnPhotos(body)}`,`${name}.html`,'text/html');return}
@@ -183,5 +210,5 @@ async function downloadDesignVideo(images){download(await designVideoBlob(images
   const out=[];for(let i=0;i<canvases.length;i++)out.push({name:`${String(i+1).padStart(2,'0')}.png`,type:'image',blob:await canvasImage(canvases[i],'image/png')});
   return out;
  }
- return {run,renderBlobs,inlineGsnPhotos,rasterDesignPage,css};
+ return {run,renderBlobs,inlineGsnPhotos,rasterDesignPage,css,printDoc:async(design,pages)=>{const cards=pages.map(i=>KitHost.pageHtml(design,i));return printDoc(design,cards,await css(cards.join('')),safe(design.title))}};
 })();
