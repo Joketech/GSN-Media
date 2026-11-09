@@ -1,3 +1,4 @@
+import {handleUGCStatic} from './ugc-collection/integration.mjs';
 import {handleCreation} from './ai-proxy.mjs';
 import {createV1} from './v1-api.mjs';
 import {buildKit} from './template-kit.mjs';
@@ -33,6 +34,7 @@ const server=http.createServer(async(req,res)=>{
  if(req.headers.origin&&!['http://localhost:'+localPort,'http://127.0.0.1:'+localPort,'http://localhost:4187','http://127.0.0.1:4187','http://localhost:4188','http://127.0.0.1:4188',process.env.SITE_DOMAIN?'https://'+process.env.SITE_DOMAIN:null].filter(Boolean).includes(req.headers.origin))return send(res,403,{error:'Cross-origin requests are not permitted'});
  if(url.pathname==='/api/health'&&req.method==='GET')return send(res,200,{ok:true,app:'gsn-studio'});
  if(await v1.handle(req,res,url))return;
+ if(await handleUGCStatic(req,res,url))return;
  if(await handleCreation(req,res,url))return;
  if(url.pathname==='/api/voices'&&req.method==='GET'){try{return send(res,200,await synthesize({action:'voices'}))}catch(e){return send(res,503,{error:e.message})}}
  if(url.pathname==='/api/voice'&&req.method==='POST'){

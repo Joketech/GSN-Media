@@ -5,12 +5,13 @@
 const Editor=(()=>{
  const {$,$$,esc,icon,api,toast,state:app,preset,platformIcon}=App;
  const COPY={title:'Headline',body:'Write-up',kicker:'Label',brandText:'Brand line',footerText:'Footer'};
- const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['text','text','Text'],['uploads','upload','Uploads'],['imagegen','image','Create image'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
+ const TOOLS=[['templates','templates','Templates'],['elements','shapes','Elements'],['pictures','image','Pictures'],['text','text','Text'],['uploads','upload','Uploads'],['imagegen','image','Create image'],['brand','brand','Brand'],['pages','list','Page content'],['resize','grid','Resize']];
  const DEFAULT_ORDER=['artwork','brandText','kicker','title','body','footerText'];
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const round=v=>Math.round(v*100)/100;
  let design=null,page=0,sel=null,multi=[],zoom=1,tool=null,dockOpen=false,editing=false,undo=[],redo=[],saveTimer=0,polling=0,saving=false,dirty=false,conflict=false,thumbTimer=0,uploads=[],raf=0,lastCoalesce='',lastCoalesceAt=0,drag=null,spaceKey='';
  let el={};
+ const pictureState={query:'',role:'',shown:24};
  const slide=()=>design.pages[page];
  const role=i=>i===0?'Hook':i===design.pages.length-1?'CTA':`Page ${i+1}`;
 
@@ -625,7 +626,7 @@ const Editor=(()=>{
   const label=TOOLS.find(t=>t[0]===id)[2];
   el.root.classList.add('has-fly');el.fly.hidden=false;el.fly.innerHTML=`<header><h2>${label}</h2><button class="ed-icon" data-act="closetool" aria-label="Close ${label}">${icon('close')}</button></header><div class="ed-flybody" id="edFlyBody"></div>`;
   const body=$('#edFlyBody');
-  ({templates:toolTemplates,elements:toolElements,text:toolText,uploads:toolUploads,brand:toolBrand,pages:toolPages,resize:toolResize,imagegen:toolImageGeneration})[id](body);
+  ({templates:toolTemplates,elements:toolElements,pictures:toolPictures,text:toolText,uploads:toolUploads,brand:toolBrand,pages:toolPages,resize:toolResize,imagegen:toolImageGeneration})[id](body);
   requestAnimationFrame(fit);
  }
  function toolTemplates(body){
@@ -669,6 +670,23 @@ const Editor=(()=>{
   const spec={heading:{text:'Add a heading',size:9,bold:true},sub:{text:'Add a subheading',size:5.5,bold:true},body:{text:'Add a little bit of body text',size:3.6}}[kind];
   commit(()=>{s.texts=[...(s.texts||[]),{...spec,left:12,top:42,boxWidth:70}];sel={t:'text',i:s.texts.length-1}});
   drawOverlay();requestAnimationFrame(startEdit);
+ }
+ // The UGC catalogue adds to the library; it never replaces existing template assets.
+ async function toolPictures(body){
+  body.innerHTML=`<label class="ed-search">${icon('search')}<input id="ugcPictureSearch" placeholder="Search products or pictures" aria-label="Search picture library"></label><label>Image type<select id="ugcPictureRole"><option value="">All pictures</option><option value="person">People only</option><option value="product">Products only</option><option value="packaging">Packaging only</option><option value="campaign">Full campaign photos</option></select></label><p class="hint" id="ugcPictureCount">Loading picture library…</p><div class="ed-ugrid" id="ugcPictures"></div><button class="btn-light" id="ugcPictureMore" hidden>Load more pictures</button>`;
+  try{
+   const response=await fetch('/api/ugc/catalog');if(!response.ok)throw Error('Picture library is unavailable.');const catalogue=await response.json();if(!body.isConnected)return;
+   let shown=pictureState.shown;const search=body.querySelector('#ugcPictureSearch'),role=body.querySelector('#ugcPictureRole'),grid=body.querySelector('#ugcPictures'),more=body.querySelector('#ugcPictureMore');search.value=pictureState.query;role.value=pictureState.role;
+   const draw=()=>{const q=search.value.trim().toLowerCase(),list=catalogue.pictures.filter(p=>(!role.value||p.role===role.value)&&(!q||`${p.name} ${p.category}`.toLowerCase().includes(q)));body.querySelector('#ugcPictureCount').textContent=`${list.length} pictures. Add several, or replace only the selected image. Full campaign photos contain both person and product.`;grid.innerHTML=list.slice(0,shown).map(p=>`<div class="ed-up">${p.region?`<svg viewBox="${p.region.join(' ')}" style="width:100%;height:120px;background:#ede9e2" aria-label="${esc(p.name)}"><image href="${p.url}" width="${p.sheetSize[0]}" height="${p.sheetSize[1]}"></image></svg>`:`<img src="${p.url}" alt="${esc(p.name)}" loading="lazy">`}<small>${esc(p.name)}</small><div><button data-ugc-picture="${p.id}" data-mode="add">Add</button><button data-ugc-picture="${p.id}" data-mode="replace">Replace selected</button></div></div>`).join('');more.hidden=list.length<=shown;};
+   search.oninput=role.onchange=()=>{shown=24;Object.assign(pictureState,{query:search.value,role:role.value,shown});draw()};more.onclick=()=>{shown+=24;pictureState.shown=shown;draw()};
+   grid.onclick=async e=>{const button=e.target.closest('[data-ugc-picture]');if(!button)return;const picture=catalogue.pictures.find(p=>p.id===button.dataset.ugcPicture),target=sel?{...sel}:null,targetDesign=design.id,targetPage=page,targetSource=target?.t==='art'?slide().image:target?.t==='element'?slide().elements[target.i]:null;
+    if(button.dataset.mode==='replace'&&(!target||(target.t!=='art'&&!(target.t==='element'&&isPhotoEl(slide().elements[target.i])))))return toast('Select an image on the page before choosing Replace selected.');
+    button.disabled=true;try{const response=await fetch(picture.url);if(!response.ok)throw Error('Picture could not load.');const bitmap=await createImageBitmap(await response.blob()),region=picture.region||[0,0,bitmap.width,bitmap.height];let limit=1400,source;
+     for(let attempt=0;attempt<8;attempt++){const scale=Math.min(1,limit/Math.max(region[2],region[3])),c=document.createElement('canvas');c.width=Math.round(region[2]*scale);c.height=Math.round(region[3]*scale);c.getContext('2d').drawImage(bitmap,...region,0,0,c.width,c.height);source=c.toDataURL('image/webp',.92);if(source.length<1_300_000)break;limit*=.8;}bitmap.close();if(source.length>=1_300_000)throw Error('This picture exceeds the design image limit.');
+     if(design?.id!==targetDesign||page!==targetPage)throw Error('The active page changed. Choose the picture again on the page you want to edit.');if(button.dataset.mode==='replace'){const current=target.t==='art'?slide().image:slide().elements[target.i];if(current!==targetSource)throw Error('The selected image changed while this picture was loading. Select it again.');applyPhoto(target,source)}else addElement(source);toast(button.dataset.mode==='replace'?'Selected image replaced. Undo is available.':'Picture added. You can add another.');
+    }catch(error){toast(error.message)}finally{button.disabled=false}
+   };draw();
+  }catch(error){if(body.isConnected)body.querySelector('#ugcPictureCount').textContent=error.message;}
  }
  function toolUploads(body){
   body.innerHTML=`<p class="hint">Photos are saved with the design on the server.</p><label class="ed-drop"><input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden id="edFile">${icon('upload')}<b>Upload images</b><small>PNG, JPG or WebP</small></label><div class="ed-ugrid" id="edUg"></div>`;
