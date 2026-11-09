@@ -4,9 +4,23 @@
 const Ideas=(()=>{
  const {esc,api,toast,ago}=App;
  const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)];
- const S={host:null,screen:'home',mode:null,id:null,filter:'all',requests:[],opts:null,cfg:null,poll:null,tick:null,busy:false};
+ const S={host:null,screen:'home',mode:null,id:null,filter:'all',search:'',requests:[],opts:null,cfg:null,poll:null,tick:null,busy:false};
  const fmt=o=>o?o.source==='measured'?`adds about ${o.seconds} seconds (measured from your recent runs)`:`adds roughly ${o.min}–${o.max} seconds (estimate until enough runs are timed)`:'';
  const stop=()=>{clearInterval(S.poll);clearInterval(S.tick);S.poll=S.tick=null};
+ const agentName=()=>S.opts?.agent?.name||'Lyra';
+ /* Total wait for the chosen switches: measured seconds where the studio has timed enough runs, otherwise the estimate range. */
+ const range=o=>!o?[0,0]:o.source==='measured'?[o.seconds,o.seconds]:[o.min,o.max];
+ const human=s=>s<90?`${s} seconds`:`${Math.round(s/60*2)/2} minutes`;
+ function eta(f){
+  const parts=[range(S.opts?.base)];if(f.perplexity)parts.push(range(S.opts?.perplexity));if(f.steroid)parts.push(range(S.opts?.steroid));
+  const lo=parts.reduce((a,p)=>a+p[0],0),hi=parts.reduce((a,p)=>a+p[1],0);
+  return lo===hi?`about ${human(lo)}`:`about ${human(lo)} to ${human(hi)}`;
+ }
+ function statusPill(){
+  const a=S.opts?.agent;if(!a)return '';
+  return a.online?`<span class="idea-status on" title="The research agent is checking for new requests.">● ${esc(a.name)} is online</span>`
+   :`<span class="idea-status off" title="${a.last_seen?'Last seen '+esc(ago(a.last_seen)):'Not seen yet'}">● ${esc(a.name)} is offline. Requests wait here until the research agent is back.</span>`;
+ }
 
  function html(){return '<section class="hello"><h1>Ideas</h1></section><div id="ideasHost" class="idea-host"><p class="act-note">Loading…</p></div>'}
  async function mount(host){
@@ -24,23 +38,27 @@ const Ideas=(()=>{
 
  /* ---------- switches (shared by compose and refine) ---------- */
  function switches(){return `<div class="idea-switches">
-  <label class="idea-sw"><input type="checkbox" id="swPerp"><span><b>Research with Perplexity</b><small>Looks up live web facts to make your ideas more accurate and current. Useful for fact-heavy topics. <em>${esc(fmt(S.opts?.perplexity))}.</em></small></span></label>
-  <label class="idea-sw"><input type="checkbox" id="swSteroid"><span><b>Steroid mode</b><small>Adds stronger attention-grabbing writing and an extra self-review and rewrite to improve the ideas. <em>${esc(fmt(S.opts?.steroid))}.</em></small></span></label></div>`}
+  <label class="idea-sw"><input type="checkbox" id="swPerp"><span><b>Research with Perplexity</b><small>Looks up live web facts to make your ideas more accurate and current. Useful for fact-heavy topics. Perplexity-style deep search on your own server: 5+ searches, full pages read, facts cross-checked, and every idea shows its sources. <em>${esc(fmt(S.opts?.perplexity))}.</em></small></span></label>
+  <label class="idea-sw"><input type="checkbox" id="swSteroid"><span><b>Steroid mode</b><small>Adds stronger attention-grabbing writing and an extra self-review and rewrite to improve the ideas. <em>${esc(fmt(S.opts?.steroid))}.</em></small></span></label><p class="idea-eta" id="ideaEta" aria-live="polite"></p></div>`}
  const flags=()=>({perplexity:!!q('#swPerp')?.checked,steroid:!!q('#swSteroid')?.checked});
+ function wireEta(){const el=q('#ideaEta');if(!el)return;const show=()=>{el.textContent=`Estimated wait with these choices: ${eta(flags())}.`};qa('#swPerp,#swSteroid').forEach(x=>x.addEventListener('change',show));show()}
 
  /* ---------- home: the two doors and the board ---------- */
  function drawHome(){
   const all=S.requests.flatMap(r=>r.ideas.map(i=>({...i,rid:r.id,rmode:r.mode,rprompt:r.prompt,at:r.completed_at||r.created_at})));
   const count=s=>all.filter(i=>i.status===s).length;
   const open=S.requests.filter(r=>r.status==='pending'||r.status==='working');
-  const list=S.filter==='all'?S.requests:S.requests.filter(r=>r.ideas.some(i=>i.status===S.filter));
-  S.host.innerHTML=`<div class="idea-doors">
-   <button class="idea-door" data-go="own"><span class="idea-door-n">1</span><b>Your idea</b><small>Describe the content you want. Lyra researches it and gives you 5 ideas on that topic.</small></button>
-   <button class="idea-door alt" data-go="generate"><span class="idea-door-n">2</span><b>Generate ideas</b><small>No idea in mind? Lyra writes 5 that fit your brand, your niche and your voice.</small></button></div>
-   ${open.length?`<div class="idea-open">${open.map(r=>`<button class="idea-chip" data-open="${r.id}">⏳ Lyra is working on “${esc(r.mode==='own'?r.prompt.slice(0,60):'ideas for your brand')}”</button>`).join('')}</div>`:''}
+  const term=S.search.trim().toLowerCase(),match=r=>!term||[r.prompt,r.feedback,...r.ideas.flatMap(i=>[i.title,i.hook,i.angle])].join(' ').toLowerCase().includes(term);
+  const list=(S.filter==='all'?S.requests:S.requests.filter(r=>r.ideas.some(i=>i.status===S.filter))).filter(match);
+  S.host.innerHTML=`${statusPill()}<div class="idea-doors">
+   <button class="idea-door" data-go="own"><span class="idea-door-n">1</span><b>Your idea</b><small>Describe the content you want. ${esc(agentName())} researches it and gives you 5 ideas on that topic.</small></button>
+   <button class="idea-door alt" data-go="generate"><span class="idea-door-n">2</span><b>Generate ideas</b><small>No idea in mind? ${esc(agentName())} writes 5 that fit your brand, your niche and your voice.</small></button></div>
+   ${open.length?`<div class="idea-open">${open.map(r=>`<button class="idea-chip" data-open="${r.id}">⏳ ${esc(agentName())} is working on “${esc(r.mode==='own'?r.prompt.slice(0,60):'ideas for your brand')}”</button>`).join('')}</div>`:''}
    <div class="idea-board"><div class="idea-tabs" role="tablist">${[['all','All requests',S.requests.length],['picked','Picked',count('picked')],['rejected','Rejected',count('rejected')],['new','Not decided',count('new')],['used','Used in a post',count('used')]].map(([k,l,n])=>`<button role="tab" aria-selected="${S.filter===k}" data-filter="${k}">${l} <i>${n}</i></button>`).join('')}</div>
+   <label class="idea-search"><input id="ideaSearch" type="search" placeholder="Search your ideas, including the ones you rejected" aria-label="Search your ideas" value="${esc(S.search)}"></label>
    ${list.length?list.map(r=>`<button class="idea-row" data-open="${r.id}"><span class="idea-row-t">${esc(r.mode==='own'?r.prompt:'Ideas for your brand')}${r.parent_id?' <em>· refined</em>':''}</span><small>${r.status==='done'?r.ideas.length+' ideas':r.status} · ${esc(ago(r.created_at))}${r.perplexity?' · Perplexity':''}${r.steroid?' · Steroid':''}</small></button>`).join(''):`<p class="empty">${S.requests.length?'Nothing here yet.':'Every idea you generate is kept here, including the ones you reject, so you can come back and post them later.'}</p>`}</div>`;
   S.host.onclick=e=>{const g=e.target.closest('[data-go]');if(g)return show('compose',g.dataset.go);const o=e.target.closest('[data-open]');if(o)return show('request',o.dataset.open);const f=e.target.closest('[data-filter]');if(f){S.filter=f.dataset.filter;draw()}};
+  const sb=q('#ideaSearch',S.host);if(sb)sb.oninput=()=>{S.search=sb.value;const at=sb.selectionStart;draw();const n=q('#ideaSearch',S.host);if(n){n.focus();n.setSelectionRange(at,at)}};
  }
 
  /* ---------- compose ---------- */
@@ -48,15 +66,16 @@ const Ideas=(()=>{
   const own=S.mode==='own',c=S.cfg,needBrand=!own&&!c.niche;
   S.host.innerHTML=`<button class="idea-back" data-back>← Back to Ideas</button><div class="idea-compose cfg-form">
    <h2>${own?'Your idea':'Generate ideas'}</h2>
-   ${own?`<p class="act-note">Write whatever you want. Lyra researches it and gives you 5 ideas on the same topic.</p>
+   ${own?`<p class="act-note">Write whatever you want. ${esc(agentName())} researches it and gives you 5 ideas on the same topic.</p>
    <label>What kind of content do you want?<textarea id="ideaPrompt" rows="6" maxlength="2000" placeholder="e.g. Why small teams should keep a human in the loop when they automate customer replies"></textarea></label>`
-   :`<p class="act-note">${needBrand?'First time here? Tell Lyra about your brand once, so she can come up with ideas without you having a topic in mind.':'Lyra will write 5 ideas that fit this brand. Change anything below and it is saved for next time.'}</p>
+   :`<p class="act-note">${needBrand?'First time here? Tell '+esc(agentName())+' about your brand once, so the agent can come up with ideas without you having a topic in mind.':esc(agentName())+' will write 5 ideas that fit this brand. Change anything below and it is saved for next time.'}</p>
    <label>Your niche and audience<textarea id="ideaNiche" rows="3" maxlength="300" placeholder="e.g. AI automation for small agencies and their clients">${esc(c.niche||'')}</textarea></label>
    <label>Your voice and tone<textarea id="ideaVoice" rows="3" maxlength="1200">${esc(c.voice||'')}</textarea></label>
    <label>Style of posting you want<textarea id="ideaStyle" rows="3" maxlength="600" placeholder="e.g. Short carousels, direct, one idea per post">${esc(c.style||'')}</textarea></label>`}
    ${switches()}
-   <div class="cfg-actions"><button class="btn-dark" id="ideaGo">${own?'Get 5 ideas':'Generate 5 ideas'}</button><span class="act-note" id="ideaMsg"></span></div></div>`;
+   ${S.opts?.agent&&!S.opts.agent.online?`<p class="idea-status off">● ${esc(agentName())} is offline right now. You can still send this; it waits on your board until the agent is back.</p>`:''}<div class="cfg-actions"><button class="btn-dark" id="ideaGo">${own?'Get 5 ideas':'Generate 5 ideas'}</button><span class="act-note" id="ideaMsg"></span></div></div>`;
   S.host.onclick=e=>{if(e.target.closest('[data-back]'))show('home')};
+  wireEta();
   q('#ideaGo').onclick=async()=>{
    const go=q('#ideaGo'),msg=q('#ideaMsg');go.disabled=true;msg.textContent='';
    try{
@@ -75,13 +94,14 @@ const Ideas=(()=>{
   const r=cur();if(!r){show('home');return}
   const head=`<button class="idea-back" data-back>← Back to Ideas</button><div class="idea-head"><h2>${esc(r.mode==='own'?r.prompt:'Ideas for your brand')}</h2><small>${r.parent_id?'Refined · ':''}${r.perplexity?'Perplexity · ':''}${r.steroid?'Steroid mode · ':''}${esc(ago(r.created_at))}</small></div>`;
   if(r.status==='pending'||r.status==='working'){
-   S.host.innerHTML=head+`<div class="idea-wait"><div class="idea-dots"><i></i><i></i><i></i></div><b>${r.status==='pending'?'Waiting for Lyra to pick this up…':'Lyra is researching and writing…'}</b><small id="ideaClock"></small><p class="act-note">You can leave this page. The ideas will be on your board when they are ready.</p></div>`;
-   S.host.onclick=e=>{if(e.target.closest('[data-back]'))show('home')};
+   S.host.innerHTML=head+`<div class="idea-wait"><div class="idea-dots"><i></i><i></i><i></i></div><b>${r.status==='pending'?'Waiting for '+esc(agentName())+' to pick this up…':esc(agentName())+' is researching and writing…'}</b><small id="ideaClock"></small><p class="act-note">You can leave this page. The ideas will be on your board when they are ready.</p>${statusPill()}${r.status==='pending'?'<div class="cfg-actions"><button class="btn-light" data-cancel>Cancel this request</button></div>':''}</div>`;
+   S.host.onclick=async e=>{if(e.target.closest('[data-back]'))return show('home');
+    if(e.target.closest('[data-cancel]')){try{await api(`/ideas/requests/${r.id}`,{method:'DELETE'});await refresh();toast('Request cancelled.');show('home')}catch(er){toast(er.message)}}};
    const t0=Date.parse(r.created_at),clock=()=>{const s=Math.max(0,Math.round((Date.now()-t0)/1000)),el=q('#ideaClock');if(el)el.textContent=`${s} seconds so far`};clock();S.tick=setInterval(clock,1000);
-   S.poll=setInterval(async()=>{try{await refresh();const n=cur();if(!n||n.status!==r.status){draw()}}catch{}},4000);return;
+   S.poll=setInterval(async()=>{try{const was=!!S.opts?.agent?.online;[S.opts]=await Promise.all([api('/ideas/options'),refresh()]);const n=cur();if(!n||n.status!==r.status||was!==!!S.opts?.agent?.online){draw()}}catch{}},4000);return;
   }
   if(r.status==='failed'){
-   S.host.innerHTML=head+`<div class="idea-wait fail"><b>Lyra could not finish this one.</b><p class="act-note">${esc(r.error||'Unknown error.')}</p><div class="cfg-actions"><button class="btn-dark" data-retry>Try again</button></div></div>`;
+   S.host.innerHTML=head+`<div class="idea-wait fail"><b>${esc(agentName())} could not finish this one.</b><p class="act-note">${esc(r.error||'Unknown error.')}</p><div class="cfg-actions"><button class="btn-dark" data-retry>Try again</button></div></div>`;
    S.host.onclick=async e=>{if(e.target.closest('[data-back]'))return show('home');if(e.target.closest('[data-retry]')){try{const n=await api('/ideas/requests',{method:'POST',body:{parent_id:r.id,perplexity:r.perplexity,steroid:r.steroid}});await refresh();show('request',n.id)}catch(er){toast(er.message)}}};
    return;
   }
@@ -90,17 +110,18 @@ const Ideas=(()=>{
     <h3>${esc(i.title)}</h3><p class="idea-hook">“${esc(i.hook)}”</p><p>${esc(i.angle)}</p>${i.why_it_works?`<p class="idea-why"><b>Why it works</b> ${esc(i.why_it_works)}</p>`:''}
     ${i.sources.length?`<p class="idea-src"><b>Sources</b> ${i.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>`).join(' · ')}</p>`:''}
     ${i.review_note?`<p class="idea-note">Review note: ${esc(i.review_note)}</p>`:''}
-    <footer><button class="btn-dark" data-mark="picked">${i.status==='picked'?'Picked ✓':'Pick this'}</button><button class="btn-light" data-mark="${i.status==='rejected'?'new':'rejected'}">${i.status==='rejected'?'Undo reject':'Reject'}</button><button class="btn-light" data-make>Make a post</button></footer></article>`).join('')}</div>
-   <div class="idea-refine cfg-form"><h2>Not quite right?</h2><p class="act-note">Tell Lyra what to change. She will not repeat these five.</p>
+    <footer><button class="btn-dark" data-mark="picked">${i.status==='picked'?'Picked ✓':'Pick this'}</button><button class="btn-light" data-mark="${i.status==='rejected'?'new':'rejected'}">${i.status==='rejected'?'Undo reject':'Reject'}</button><button class="btn-light" data-make>Make a post</button><button class="btn-light" data-copy>Copy</button></footer></article>`).join('')}</div>
+   <div class="idea-refine cfg-form"><h2>Not quite right?</h2><p class="act-note">Tell ${esc(agentName())} what to change. The agent will not repeat these five.</p>
     <label>What should change?<textarea id="ideaFb" rows="3" maxlength="600" placeholder="e.g. Bolder, less about tools, more about people"></textarea></label>${switches()}
     <div class="cfg-actions"><button class="btn-dark" id="ideaRefine">Refine ideas</button><span class="act-note" id="ideaMsg"></span></div></div>`;
-  qa('#swPerp,#swSteroid').forEach(x=>x.checked=x.id==='swPerp'?r.perplexity:r.steroid);
+  qa('#swPerp,#swSteroid').forEach(x=>x.checked=x.id==='swPerp'?r.perplexity:r.steroid);wireEta();
   S.host.onclick=async e=>{
    if(e.target.closest('[data-back]'))return show('home');
    const card=e.target.closest('.idea-card'),n=card?Number(card.dataset.n):-1;
    const mk=e.target.closest('[data-mark]');
    if(mk&&card){try{const u=await api(`/ideas/requests/${r.id}/ideas/${n}`,{method:'PATCH',body:{status:mk.dataset.mark}});Object.assign(r,u);draw()}catch(er){toast(er.message)}return}
    if(e.target.closest('[data-make]')&&card){await makePost(r,n);return}
+   if(e.target.closest('[data-copy]')&&card){const i=r.ideas[n];const txt=[i.title,i.hook,i.angle,i.sources.length?'Sources: '+i.sources.map(s=>s.url).join(' '):''].filter(Boolean).join('\n');try{await navigator.clipboard.writeText(txt);toast('Idea copied.')}catch{toast('Copy is not available in this browser.')}return}
   };
   q('#ideaRefine').onclick=async()=>{const b=q('#ideaRefine'),m=q('#ideaMsg');b.disabled=true;m.textContent='';
    try{const x=await api('/ideas/requests',{method:'POST',body:{parent_id:r.id,feedback:q('#ideaFb').value,...flags()}});await refresh();show('request',x.id)}catch(er){m.textContent=er.message;b.disabled=false}};
