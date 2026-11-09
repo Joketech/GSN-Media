@@ -19,14 +19,23 @@ async function setup(){
 test('instructions fix what Perplexity and Steroid mean',()=>{
  const base={mode:'own',prompt:'AI in sales',brand:{brand_name:'GSN',handle:'@gsn',voice:'Clear',niche:'',style:''},previous:[],perplexity:false,steroid:false};
  const plain=ideaInstructions(base);assert.match(plain,/exactly 5/);assert.match(plain,/AI in sales/);assert.match(plain,/Do not claim any live research/);assert.doesNotMatch(plain,/STEROID/);
- const both=ideaInstructions({...base,perplexity:true,steroid:true});assert.match(both,/at least 3 live web searches with Perplexity/);assert.match(both,/8 candidate ideas/);assert.match(both,/sources/);
+ const both=ideaInstructions({...base,perplexity:true,steroid:true});assert.match(both,/DEEP WEB RESEARCH is ON/);assert.match(both,/at least 5 different web_search/);assert.match(both,/at least 3 of the most relevant full pages with web_extract/);assert.match(both,/2 independent sources/);assert.doesNotMatch(both,/Sonar/);assert.match(both,/8 candidate ideas/);assert.match(both,/sources/);
  const refine=ideaInstructions({...base,parent_id:'x',previous:['Old idea'],feedback:'more bold'});assert.match(refine,/"Old idea"/);assert.match(refine,/more bold/);
  const gen=ideaInstructions({...base,mode:'generate',prompt:'',brand:{...base.brand,niche:'B2B SaaS'}});assert.match(gen,/B2B SaaS/);
 });
 test('only people ask for ideas and only the agent answers',async()=>{
  const t=await setup();try{
   assert.equal((await t.agent('/ideas/requests','POST',{mode:'own',prompt:'x'})).status,403,'an agent cannot ask');
-  assert.deepEqual(await (await t.agent('/ideas/options')).json(),{perplexity:{min:20,max:45,source:'estimate'},steroid:{min:25,max:50,source:'estimate'}});
+  assert.deepEqual(await (await t.agent('/ideas/options')).json(),{perplexity:{min:60,max:120,source:'estimate'},steroid:{min:30,max:60,source:'estimate'},base:{min:20,max:45,source:'estimate'},agent:{name:'Lyra',online:false,last_seen:null}});
+  // the agent counts as online once it looks for work, and offline again after 90 seconds of silence
+  await t.agent('/ideas/requests?status=pending');assert.equal((await (await t.human('/ideas/options')).json()).agent.online,true);
+  t.tick(91);assert.equal((await (await t.human('/ideas/options')).json()).agent.online,false);
+  // a waiting request can be cancelled; one the agent is already working on cannot
+  const a=await (await t.human('/ideas/requests','POST',{mode:'own',prompt:'Cancel me'})).json();
+  assert.equal((await t.human(`/ideas/requests/${a.id}`,'DELETE')).status,200);
+  const b=await (await t.human('/ideas/requests','POST',{mode:'own',prompt:'Keep me'})).json();
+  await t.agent(`/ideas/requests/${b.id}/claim`,'POST',{});
+  assert.equal((await t.human(`/ideas/requests/${b.id}`,'DELETE')).status,409);
  }finally{await t.close()}
 });
 
