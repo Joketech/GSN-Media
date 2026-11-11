@@ -1,0 +1,14 @@
+{
+  "baseline": "8c7e553621f2cc06615f404bec9b732e70ed7ee9",
+  "checked": 556,
+  "missing": [],
+  "changed": [
+    "editor.js",
+    "server.mjs"
+  ],
+  "graphics": 108,
+  "animatedVariants": 108,
+  "testFiles": 15,
+  "testsPassed": 57,
+  "scope": "Local verification before committing the character collection"
+}
