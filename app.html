@@ -7,7 +7,7 @@
 <title>GSN Media · Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@400;700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Oswald:wght@400;700&family=Bebas+Neue&family=DM+Serif+Display&family=Pacifico&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Anton&family=Caveat:wght@400;700&family=Cairo:wght@400;700&family=Heebo:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap">
+
 <link rel="stylesheet" href="portal.css">
 <link rel="stylesheet" href="realism.css">
 <link rel="stylesheet" href="app.css">
@@ -24,7 +24,9 @@
 <div id="editorRoot" class="editor-root" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/template-kit.js"></script>
-<script>(function(){try{var seen={};(window.GSNKit&&GSNKit.gsnFonts||[]).forEach(function(f){if(!f[3]||seen[f[3]])return;seen[f[3]]=1;var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+f[3]+"&display=swap";document.head.appendChild(l)})}catch(e){}})()</script>
+<script>(function(){function go(){try{var seen={},fam=[];(window.GSNKit&&GSNKit.gsnFonts||[]).forEach(function(f){if(f[3]&&!seen[f[3]]){seen[f[3]]=1;fam.push(f[3])}});["Inter:wght@400;700","Poppins:wght@400;700","Montserrat:wght@400;700","Playfair+Display:wght@400;700","Lora:wght@400;700","Oswald:wght@400;700","Bebas+Neue","DM+Serif+Display","Pacifico","Great+Vibes","Dancing+Script:wght@400;700","Anton","Caveat:wght@400;700","Cairo:wght@400;700","Heebo:wght@400;700","Noto+Sans+Devanagari:wght@400;700","Noto+Sans+Bengali:wght@400;700","Noto+Sans+Thai:wght@400;700","Noto+Sans+SC:wght@400;700","Noto+Sans+JP:wght@400;700","Noto+Sans+KR:wght@400;700"].forEach(function(x){if(fam.indexOf(x)<0)fam.push(x)});for(var i=0;i<fam.length;i+=25){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+fam.slice(i,i+25).join("&family=")+"&display=swap";document.head.appendChild(l)}}catch(e){}}
+function later(){(window.requestIdleCallback||function(f){setTimeout(f,800)})(go,{timeout:3000})}
+if(document.readyState==="complete")later();else addEventListener("load",later)})()</script>
 <script src="kit-host.js"></script>
 <script src="water.js"></script>
 <script src="ripples.js"></script>
