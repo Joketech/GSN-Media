@@ -140,7 +140,7 @@ const Water=(()=>{
  // Drops also run over the globe card. That card is opaque, so its drops are drawn here and show the card's own picture
  // (the globe and the hand) upside down, instead of the room behind the window.
  let heroImg=null,heroScene=null,mLayer=null,mlCtx=null,mKey='',mStale=true;
- function loadHero(){if(heroImg)return;heroImg=new Image();heroImg.src='hero-realistic.png';heroImg.onload=()=>{mKey=''}}
+ function loadHero(){if(heroImg)return;heroImg=new Image();heroImg.src='hero-realistic.jpg';heroImg.onload=()=>{mKey=''}}
  function copyMirror(){
   if(!mirror||!mirror.isConnected||!front)return;
   loadHero();
