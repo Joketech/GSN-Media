@@ -145,7 +145,7 @@ const Dashboard=(()=>{
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
    ${note?`<p class="hint">${esc(note)}</p>`:''}${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
- function ugcHtml(){return '<section class="hello"><h1>UGC collection</h1><a class="btn-light" href="/ugc/" target="_blank" rel="noopener">Open full page ↗</a></section><iframe class="ugc-frame" src="/ugc/?embed=1" title="UGC collection, 200 single-page designs" loading="lazy"></iframe>'}
+ function ugcHtml(){return '<section class="hello"><h1>UGC collection</h1></section><iframe class="ugc-frame" src="/ugc/?embed=1" title="UGC collection, 200 single-page designs" loading="lazy"></iframe>'}
  const PAGE=24;
  function libraryHtml(){
   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,Math.max(ui.shown,PAGE)),p=curPreset(),gone=Library.hiddenCount();
