@@ -31,8 +31,8 @@ const Dashboard=(()=>{
    working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
   pollTimer=setTimeout(pollJobs,6000);
  }
- const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['templates','templates','Templates'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
- const titles={dashboard:'Dashboard',ideas:'Ideas',templates:'Templates',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
+ const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['templates','templates','Templates'],['ugc','templates','UGC'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
+ const titles={dashboard:'Dashboard',ideas:'Ideas',templates:'Templates',ugc:'UGC collection',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
@@ -145,10 +145,11 @@ const Dashboard=(()=>{
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
    ${note?`<p class="hint">${esc(note)}</p>`:''}${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
  }
+ function ugcHtml(){return '<section class="hello"><h1>UGC collection</h1><a class="btn-light" href="/ugc/" target="_blank" rel="noopener">Open full page ↗</a></section><iframe class="ugc-frame" src="/ugc/?embed=1" title="UGC collection, 200 single-page designs" loading="lazy"></iframe>'}
  const PAGE=24;
  function libraryHtml(){
   const all=Library.filter({query:ui.query,format:ui.format,style:ui.style}),list=all.slice(0,Math.max(ui.shown,PAGE)),p=curPreset(),gone=Library.hiddenCount();
-  return `<section class="hello"><h1>Template library</h1>${chipsHtml()}<a class="btn-light" href="/ugc/">UGC collection · 200 single-page designs ↗</a></section>
+  return `<section class="hello"><h1>Template library</h1>${chipsHtml()}<a class="btn-light" href="#ugc">UGC collection · 200 single-page designs</a></section>
   <p class="lead"><b id="libCount">${all.length}</b> templates. Every one starts with a Hook, continues with write-up pages and ends with a call to action. Showing the ${esc(p.name)} size (${p.w}×${p.h}). Scroll to see them all.${gone?` <button class="linklike" data-act="restore">Restore ${gone} removed</button>`:''}</p>
   ${list.length?`<div class="tgrid tgrid-wide" id="tgrid">${list.map(t=>Library.cardHtml(t,p,{removable:true})).join('')}</div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}
   <div class="more" id="libMore" ${all.length>list.length?'':'hidden'}>Loading more templates…</div>`;
@@ -248,7 +249,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():ui.view==='ugc'?ugcHtml():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
