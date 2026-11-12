@@ -1,4 +1,4 @@
-import {createDocument,validateDocument,cloneDocument,applyCampaignPlan,layerBox} from './layer-model.mjs';
+import {createDocument,createPhotoDocument,validateDocument,cloneDocument,applyCampaignPlan,layerBox} from './layer-model.mjs';
 import {COMPOSITIONS,applyComposition} from './compositions.mjs';
 const $=s=>document.querySelector(s),canvas=$('#canvas');
 let doc,starter,selected='hook',undo=[],redo=[],drag=null,saveTimer,pendingImage=null,pendingImport='plan',revision=0,pendingJob=null,readyPlan=null;
@@ -69,4 +69,71 @@ async function cropKit(asset){const img=new Image();await new Promise((resolve,r
 async function request(path,body){if(location.pathname.startsWith('/ugc/'))path=path.replace('/api/ugc/','/api/v1/ugc/');let workspace='';try{workspace=localStorage.getItem('gsn_ws')||''}catch{}const workspaceHeaders=workspace?{'X-GSN-Workspace':workspace}:{};const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json',...workspaceHeaders},body:JSON.stringify(body)}:{headers:workspaceHeaders}),p=await r.json();if(!r.ok)throw Error(p.error||'Request failed.');return p}
 async function pollAgent(){if(!pendingJob)return;try{const job=await request('/api/ugc/briefs/'+pendingJob.id);$('#agent-status').textContent=job.message||job.state;if(job.state==='complete'){readyPlan=job.plan;const unchanged=revision===pendingJob.revision;pendingJob=null;if(unchanged){const applied=mutate(next=>applyCampaignPlan(next,readyPlan));$('#agent-status').textContent=applied?'Agent plan applied. Undo is available.':'The agent plan could not be applied. '+$('#message').textContent}else{$('#agent-status').textContent='Agent plan ready. Your design changed; apply it when ready.';const button=document.createElement('button');button.textContent='Apply ready agent plan';button.onclick=()=>mutate(next=>applyCampaignPlan(next,readyPlan));$('#agent-status').append(button)}return}if(job.state==='failed'){pendingJob=null;return}}catch(e){$('#agent-status').textContent=e.message}setTimeout(pollAgent,3500)}
 $('#ask-mira').onclick=async()=>{const brief=$('#brief').value.trim();if(!brief)return say('Write your campaign instructions first.');try{const job=await request('/api/ugc/briefs',{templateId:id,brief,document:doc});pendingJob={id:job.id,revision};$('#agent-status').textContent=job.message;pollAgent()}catch(e){$('#agent-status').textContent=e.message}};
-try{if(!campaign)throw Error('Unknown campaign.');const assets=await fetch('layer-assets.json').then(r=>r.json()),asset=assets.campaigns.find(a=>a.id===id);if(!asset)throw Error('Independent assets for this campaign are not prepared yet. Its original ad remains available in the collection.');$('#campaign-name').textContent=campaign.product+' · Independent layers';starter=createDocument(campaign,await cropKit(asset),asset.layout||{});let previous;try{previous=await stored('readonly')}catch(e){say(e.message)}doc=previous?validateDocument(previous):cloneDocument(starter);const composition=COMPOSITIONS.find(c=>c.id===id);if(composition){$('#composition-control').hidden=false;$('#composition option[value=product]').textContent=composition.name;}zoom();render();$('#save-status').textContent=previous?'Saved on this device':'Layered starter ready'}catch(e){$('#save-status').textContent='Not ready';say(e.message);canvas.textContent=e.message}
+try{if(!campaign)throw Error('Unknown campaign.');const assets=await fetch('layer-assets.json').then(r=>r.json()),asset=assets.campaigns.find(a=>a.id===id);$('#campaign-name').textContent=campaign.product+(asset?' · Independent layers':' · Layers');if(asset)starter=createDocument(campaign,await cropKit(asset),asset.layout||{});else{starter=createPhotoDocument(campaign,'assets/ad-'+String(id).padStart(3,'0')+'.png');say('This design is one finished photograph, so its person and product cannot be moved separately. You can edit all the wording and replace the whole picture with Background, below the layers list.')}let previous;try{previous=await stored('readonly')}catch(e){say(e.message)}doc=previous?validateDocument(previous):cloneDocument(starter);const composition=COMPOSITIONS.find(c=>c.id===id);if(composition){$('#composition-control').hidden=false;$('#composition option[value=product]').textContent=composition.name;}zoom();render();$('#save-status').textContent=previous?'Saved on this device':'Layered starter ready'}catch(e){$('#save-status').textContent='Not ready';say(e.message);canvas.textContent=e.message}
+
+// Background tools: any picture from this device or phone, a flat colour, a gradient, or one of the studio's own pictures.
+function setBackground(src){const bg=doc.layers.find(l=>l.role==='background');if(!bg)return say('This design has no background layer.');if(bg.locked)return say('Unlock the background layer first.');mutate(next=>{const l=next.layers.find(x=>x.role==='background');l.src=src;l.visible=true;l.fit='cover';selected=l.id})}
+function paintToData(fn){const c=document.createElement('canvas');c.width=1080;c.height=1350;fn(c.getContext('2d'));return c.toDataURL('image/webp',.92)}
+$('#bg-upload').onclick=()=>{pendingImage=doc.layers.find(l=>l.role==='background')?.id||null;$('#image-file').value='';$('#image-file').click()};
+$('#bg-colour').oninput=e=>{const v=e.target.value;setBackground(paintToData(g=>{g.fillStyle=v;g.fillRect(0,0,1080,1350)}))};
+function gradient(){const a=$('#bg-grad-a').value,b=$('#bg-grad-b').value;setBackground(paintToData(g=>{const gr=g.createLinearGradient(0,0,0,1350);gr.addColorStop(0,a);gr.addColorStop(1,b);g.fillStyle=gr;g.fillRect(0,0,1080,1350)}))}
+$('#bg-grad-a').onchange=gradient;$('#bg-grad-b').onchange=gradient;
+$('#bg-library').onclick=()=>{const box=$('#bg-gallery');box.hidden=!box.hidden;if(box.dataset.ready)return;box.dataset.ready='1';box.innerHTML=Array.from({length:55},(_,i)=>`<button data-photo="${i}" aria-label="Picture ${i+1}"><img loading="lazy" src="/gsn-photo-${i}.png" alt=""></button>`).join('')+['/room-bg.jpg','/landscape-bg.jpg'].map(u=>`<button data-photo-url="${u}"><img loading="lazy" src="${u}" alt=""></button>`).join('');box.onclick=async ev=>{const b=ev.target.closest('button');if(!b)return;const url=b.dataset.photoUrl||`/gsn-photo-${b.dataset.photo}.png`;try{setBackground(await portableImage(url))}catch(err){say(err.message)}}};
+
+// Make a background from words. The server decides which picture service to use; agents can call the same endpoint.
+function shrink(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{const s=Math.min(1,1800/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/webp',.92))};img.onerror=()=>reject(Error('The picture could not be read.'));img.src=src})}
+let imgStatus=null;const pref=()=>{try{return JSON.parse(localStorage.getItem('gsn-image-choice')||'{}')}catch{return {}}},keep=v=>{try{localStorage.setItem('gsn-image-choice',JSON.stringify(v))}catch{}};
+function costNow(){if(!imgStatus)return;const s=$('#bg-service').value,o=imgStatus.openai;$('#bg-openai').hidden=s!=='openai';$('#bg-cost').textContent=s==='openai'?o.costs[$('#bg-model').value]?.[$('#bg-quality').value]||'':(imgStatus.providers.find(p=>p.id===s)?.cost||'');keep({service:s,model:$('#bg-model').value,quality:$('#bg-quality').value})}
+fetch('/api/v1/images/status',{headers:(()=>{try{const w=localStorage.getItem('gsn_ws');return w?{'X-GSN-Workspace':w}:{}}catch{return {}}})()}).then(r=>r.json()).then(s=>{imgStatus=s;const p=pref(),sv=$('#bg-service');sv.innerHTML=s.providers.map(x=>`<option value="${x.id}" ${x.available?'':'disabled'}>${escape(x.label)}${x.available?'':' – not set up'}</option>`).join('');
+ const want=s.providers.find(x=>x.id===p.service&&x.available)?p.service:s.default;if(want&&want!=='off')sv.value=want;
+ $('#bg-model').innerHTML=s.openai.models.map(m=>`<option ${m===(p.model||s.openai.default_model)?'selected':''}>${escape(m)}</option>`).join('');$('#bg-quality').value=p.quality||s.openai.default_quality;
+ if(!s.ready){$('#bg-cost').textContent='Not set up yet, so nothing is charged. See docs/IMAGE-GENERATION.md for how to switch a service on.'}else costNow()}).catch(()=>{$('#bg-cost').textContent='Cost depends on how this server is set up.'});
+for(const id of ['#bg-service','#bg-model','#bg-quality'])$(id).onchange=costNow;
+$('#bg-generate').onclick=async()=>{const prompt=$('#bg-prompt').value.trim(),b=$('#bg-generate');if(prompt.length<3)return say('Describe the background first, for example: warm terracotta studio wall with soft morning light.');b.disabled=true;b.textContent='Generating…';say('Generating your background. This can take up to a minute.');try{const svc=$('#bg-service').value;if(!svc)throw Error('Pick a service first.');const out=await request('/api/v1/images/generate',{prompt,aspect:'portrait',provider:svc,...(svc==='openai'?{model:$('#bg-model').value,quality:$('#bg-quality').value}:{})});setBackground(await shrink(out.image));say('Background generated.')}catch(err){say(err.message)}finally{b.disabled=false;b.textContent='Generate background'}};
+
+// GSN library: the same pictures the dashboard editor offers (campaign photos, people, products, packaging, letters and numbers), plus your uploads and brand people.
+const lib={tab:'pictures',catalogue:null,uploads:null,people:null,shown:24};
+const wsHeaders=()=>{try{const w=localStorage.getItem('gsn_ws');return w?{'X-GSN-Workspace':w}:{}}catch{return {}}};
+async function libLoad(){
+ const m=$('#lib-msg');m.textContent='';
+ try{
+  if(lib.tab==='pictures'&&!lib.catalogue){const r=await fetch('/api/ugc/catalog');if(!r.ok)throw Error('The picture library is unavailable.');const c=await r.json();try{const cr=await fetch('/characters/catalog.json');if(cr.ok)c.pictures.push(...await cr.json())}catch{}lib.catalogue=c.pictures}
+  if(lib.tab==='uploads'&&!lib.uploads){const r=await fetch('/api/v1/uploads',{headers:wsHeaders()});if(!r.ok)throw Error('Your uploads could not be loaded.');lib.uploads=(await r.json()).uploads.map(u=>({id:u.id,name:'Upload '+u.id.slice(0,6),url:u.url}))}
+  if(lib.tab==='people'&&!lib.people){const r=await fetch('/api/v1/people',{headers:wsHeaders()});if(!r.ok)throw Error('Brand people could not be loaded.');lib.people=(await r.json()).people.map(p=>({id:p.id,name:p.name,url:p.image_url}))}
+ }catch(err){m.textContent=err.message}
+ libDraw();
+}
+function libItems(){
+ const q=$('#lib-search').value.trim().toLowerCase(),role=$('#lib-role').value;
+ const all=lib.tab==='pictures'?lib.catalogue||[]:lib.tab==='uploads'?lib.uploads||[]:lib.people||[];
+ return all.filter(p=>(lib.tab!=='pictures'||!role||p.role===role)&&(!q||q.split(/\s+/).every(w=>`${p.name} ${p.category||''} ${p.glyph||''}`.toLowerCase().includes(w))));
+}
+function libDraw(){
+ $('#lib-role').hidden=lib.tab!=='pictures';
+ const list=libItems(),grid=$('#lib-grid'),sel=layer(),canReplace=sel&&sel.kind==='image'&&!sel.locked;
+ $('#lib-count').textContent=`${list.length} ${lib.tab==='pictures'?'pictures':lib.tab==='uploads'?'uploads':'brand people'}. Use one as the background, add it as a new layer, or replace the selected picture.`;
+ grid.innerHTML=list.slice(0,lib.shown).map(p=>`<div class="lib-item"><div class="thumb">${p.region?`<svg viewBox="${p.region.join(' ')}" style="width:100%;height:130px" aria-label="${escape(p.name)}"><image href="${p.url}" width="${p.sheetSize[0]}" height="${p.sheetSize[1]}"></image></svg>`:`<img loading="lazy" src="${p.url}" alt="${escape(p.name)}">`}</div><small title="${escape(p.name)}">${escape(p.name)}</small><div class="acts"><button data-use="${escape(p.id)}" data-mode="background">Background</button><button data-use="${escape(p.id)}" data-mode="add">Add layer</button>${canReplace?`<button data-use="${escape(p.id)}" data-mode="replace">Replace selected</button>`:''}</div></div>`).join('');
+ $('#lib-more').hidden=list.length<=lib.shown;
+ document.querySelectorAll('#lib-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===lib.tab));
+}
+// Turn a library picture into a portable image (cropping a sheet region when needed).
+async function libImage(p){
+ const r=await fetch(p.url,{headers:p.url.startsWith('/api/v1/')?wsHeaders():{}});if(!r.ok)throw Error('That picture could not be loaded.');
+ const bitmap=await createImageBitmap(await r.blob());
+ try{const [sx,sy,sw,sh]=p.region||[0,0,bitmap.width,bitmap.height],scale=Math.min(1,1800/Math.max(sw,sh)),c=document.createElement('canvas');c.width=Math.round(sw*scale);c.height=Math.round(sh*scale);c.getContext('2d').drawImage(bitmap,sx,sy,sw,sh,0,0,c.width,c.height);return {src:c.toDataURL('image/webp',.93),w:c.width,h:c.height}}finally{bitmap.close()}
+}
+$('#open-library').onclick=()=>{$('#library').showModal();libLoad()};
+$('#lib-close').onclick=()=>$('#library').close();
+$('#lib-tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;lib.tab=b.dataset.tab;lib.shown=24;libLoad()};
+$('#lib-search').oninput=$('#lib-role').onchange=()=>{lib.shown=24;libDraw()};
+$('#lib-more').onclick=()=>{lib.shown+=24;libDraw()};
+$('#lib-grid').onclick=async e=>{
+ const b=e.target.closest('[data-use]');if(!b)return;const p=libItems().find(x=>x.id===b.dataset.use);if(!p)return;const msg=$('#lib-msg');msg.textContent='Loading picture…';
+ try{
+  const img=await libImage(p);
+  if(b.dataset.mode==='background')setBackground(img.src);
+  else if(b.dataset.mode==='replace'){const t=selected;mutate(next=>{const l=next.layers.find(x=>x.id===t);if(!l||l.kind!=='image'||l.locked)throw Error('Select an unlocked image layer first.');l.src=img.src})}
+  else mutate(next=>{const id='image-'+crypto.randomUUID().slice(0,8),ratio=img.w/img.h*doc.height/doc.width,w=ratio>=1?50:50*ratio,h=ratio>=1?50/ratio:50;next.layers.push({id,role:'product',kind:'image',src:img.src,x:50-w/2,y:50-h/2,width:w,height:h,rotation:0,opacity:1,visible:true,locked:false,fit:'contain'});selected=id});
+  msg.textContent='Added. Pick another, or close the library.';$('#library').close();
+ }catch(err){msg.textContent=err.message}
+};

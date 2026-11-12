@@ -12,6 +12,7 @@ import {PRESETS,PLATFORM_GROUPS} from './platforms.mjs';
 import {createAccounts} from './accounts.mjs';
 import {createPublisher} from './publisher.mjs';
 import {createIdeas} from './ideas-api.mjs';
+import {createImageTools} from './image-tools.mjs';
 
 const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
@@ -47,6 +48,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const save=async(id,data)=>{const temp=file(id,'tmp');await writeFile(temp,JSON.stringify(data),{mode:0o600});await rename(temp,file(id));};
  const serial=fn=>{const p=mutation.then(fn);mutation=p.catch(()=>{});return p;};
  async function list(type){await ready;const values=[];for(const name of await readdir(dataDir)){if(!name.endsWith('.json'))continue;try{const value=await load(name.slice(0,-5));if(value.record_type===type)values.push(value);}catch{}}return values.sort((a,b)=>b.created_at.localeCompare(a.created_at));}
+ const imageTools=createImageTools({dataDir,fetchImpl,env:publishEnv,visualUrl,now:clock,InputError,json,body});
  const ideas=createIdeas({list:t=>list(t),load,save,serial,inWs,InputError,text,json,body,clock,getConfig,file,unlink});
  const publicJob=j=>{const {fingerprint,...value}=j;return value;};
  const sameSite=req=>{const f=req.headers['sec-fetch-site'];if(f)return f==='same-origin';const o=req.headers.origin||req.headers.referer;try{return !!o&&new URL(o).host===req.headers.host}catch{return false}};
@@ -189,6 +191,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   if(url.pathname==='/api/v1/layouts'&&req.method==='GET'){json(res,200,{layouts:layoutGuide()});return true;}
   const tm=url.pathname.match(/^\/api\/v1\/templates\/(\d{1,3})$/);
   if(tm&&req.method==='GET'){const id=Number(tm[1]);if(id>=designTemplateCount)throw new InputError('Template not found.',404);json(res,200,{id,pages:starterSlides(id),layouts:layoutGuide()});return true;}
+  if(await imageTools.handle(req,res,url,ctx))return true;
   if(url.pathname==='/api/v1/cutout'&&req.method==='POST'){
    // Background removal: several models run privately and are returned side by side. Open to the owner and to agents.
    const p=await body(req);if(!cutoutUrl)throw new InputError('The cutout worker is not configured. Set CUTOUT_WORKER_URL.',503);
