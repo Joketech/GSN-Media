@@ -1344,6 +1344,12 @@ const Editor=(()=>{
   <p class="hint">Use your own picture behind the page, or hide the template's own picture.</p>
   <div class="ed-row"><button class="btn-light" id="edBgUp">Upload picture</button><button class="btn-light" id="edBgLib">GSN pictures</button></div>
   ${uploads.length?`<div class="ed-ugrid">${uploads.slice(0,8).map((u,i)=>`<div class="ed-up"><img src="${u}" alt="Upload ${i+1}" data-bgup="${i}" title="Use as page background"></div>`).join('')}</div>`:''}
+  <h3>Make a picture from words</h3>
+  <label class="ed-gen">Service<select id="edGenSvc"><option>Checking…</option></select></label>
+  <div id="edGenAi" hidden><label class="ed-gen">Model<select id="edGenModel"></select></label><label class="ed-gen">Quality<select id="edGenQ"><option>low</option><option>medium</option><option>high</option></select></label></div>
+  <p class="hint" id="edGenCost">Checking the cost…</p>
+  <label class="ed-gen">Describe the background<textarea id="edGenPrompt" rows="3" maxlength="800" placeholder="e.g. warm terracotta studio wall, soft morning light"></textarea></label>
+  <button class="btn-light" id="edGenGo">Generate background</button>
   <label class="ed-check"><input type="checkbox" id="edHide" ${s.hideArt?'checked':''}> Hide the template's picture</label>
   <button class="btn-light" id="edBgClear">Remove page colour and picture</button>`;
   $('#edBgAll').onchange=e=>{applyAll=e.target.checked};
@@ -1356,6 +1362,29 @@ const Editor=(()=>{
   $('#edBgUp').onclick=()=>pickImage(u=>{set({pageImage:u});toolBackground(body)});
   $('#edBgLib').onclick=()=>libraryPick(u=>{uploads.unshift(u);set({pageImage:u});toolBackground(body)});
   $$('[data-bgup]',body).forEach(i=>i.onclick=()=>{set({pageImage:uploads[+i.dataset.bgup]})});
+  // Picture from words. The studio decides which service answers; the cost of the current choice is always shown.
+  (async()=>{
+   const svc=$('#edGenSvc',body),cost=$('#edGenCost',body);let st;
+   try{st=await api('/images/status')}catch{cost.textContent='Cost depends on how this server is set up.';return}
+   if(!body.isConnected)return;
+   let pref={};try{pref=JSON.parse(localStorage.getItem('gsn-image-choice')||'{}')}catch{}
+   svc.innerHTML=st.providers.map(x=>`<option value="${x.id}" ${x.available?'':'disabled'}>${esc(x.label)}${x.available?'':' – not set up'}</option>`).join('');
+   svc.value=st.providers.find(x=>x.id===pref.service&&x.available)?pref.service:st.default;
+   $('#edGenModel',body).innerHTML=st.openai.models.map(m=>`<option ${m===(pref.model||st.openai.default_model)?'selected':''}>${esc(m)}</option>`).join('');$('#edGenQ',body).value=pref.quality||st.openai.default_quality;
+   const show=()=>{const s=svc.value;$('#edGenAi',body).hidden=s!=='openai';cost.textContent=!st.ready?'Not set up yet, so nothing is charged. Ask the owner to set up a picture service (docs/IMAGE-GENERATION.md).':s==='openai'?st.openai.costs[$('#edGenModel',body).value]?.[$('#edGenQ',body).value]||'':st.providers.find(p=>p.id===s)?.cost||'';try{localStorage.setItem('gsn-image-choice',JSON.stringify({service:s,model:$('#edGenModel',body).value,quality:$('#edGenQ',body).value}))}catch{}};
+   for(const id of ['#edGenSvc','#edGenModel','#edGenQ'])$(id,body).onchange=show;show();
+  })();
+  $('#edGenGo').onclick=async()=>{
+   const go=$('#edGenGo'),prompt=$('#edGenPrompt').value.trim(),s=$('#edGenSvc').value;
+   if(prompt.length<3)return toast('Describe the background first, for example: warm terracotta studio wall with soft morning light.');
+   if(!s||s==='Checking…')return toast('Pick a picture service first.');
+   go.disabled=true;go.textContent='Generating…';
+   try{
+    const out=await api('/images/generate',{method:'POST',body:{prompt,aspect:'portrait',provider:s,...(s==='openai'?{model:$('#edGenModel').value,quality:$('#edGenQ').value}:{})}});
+    const blob=await (await fetch(out.image)).blob(),file=new File([blob],'generated.'+(blob.type.split('/')[1]||'png'),{type:blob.type});
+    const u=await compress(file);addUpload(u);set({pageImage:u});toolBackground(body);toast('Background generated. Undo to go back.');
+   }catch(error){toast(error.message,7000)}finally{if(go.isConnected){go.disabled=false;go.textContent='Generate background'}}
+  };
   $('#edHide').onchange=e=>set({hideArt:e.target.checked||undefined});
   $('#edBgClear').onclick=()=>{set({pageFill:undefined,pageImage:undefined,hideArt:undefined});toolBackground(body)};
  }
