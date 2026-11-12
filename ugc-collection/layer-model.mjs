@@ -99,16 +99,3 @@ export function createPhotoDocument(campaign,photo) {
     text('cta',campaign.cta,7,90,86,6,2.7,{fill:accent,color:'#ffffff',align:'center',bold:true}),
   ]});
 }
-
-// Designs split automatically from their photograph: a clean background plus whatever person and product layers could be cut out.
-export function createPartsDocument(campaign,parts) {
-  const [paper,ink,accent]=campaign.palette;
-  const base=(id,role,kind,x,y,width,height,extra={})=>({id,role,kind,x,y,width,height,rotation:0,opacity:1,visible:true,locked:false,...extra});
-  const text=(id,value,x,y,w,h,size,extra={})=>base(id,'text','text',x,y,w,h,{text:value,font:'Arial',fontSize:size,color:ink,fill:null,align:'left',bold:false,...extra});
-  const layers=[base('background','background','image',0,0,100,100,{src:parts.background,fit:'cover'})];
-  for(const role of ['person','product']){const p=parts.layers?.[role];if(p)layers.push(base(role,role,'image',p.x,p.y,p.width,p.height,{src:p.src,fit:'contain'}))}
-  layers.push(text('brand','YOUR BRAND',7,3.5,86,3,1.8,{bold:true}),text('category',campaign.category.toUpperCase(),7,7.7,86,3,1.6),
-    text('hook',campaign.hook,7,12,86,16,7.2,{bold:true}),text('description',campaign.description,7,34,86,6,2.5,{fill:paper}),
-    text('cta',campaign.cta,7,90,86,6,2.7,{fill:accent,color:'#ffffff',align:'center',bold:true}));
-  return validateDocument({version:1,templateId:campaign.id,width:1080,height:1350,layers});
-}

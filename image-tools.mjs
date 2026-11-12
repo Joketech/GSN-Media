@@ -1,12 +1,10 @@
-// Picture tools for the studio: (1) write a prompt, get a picture back (used for backgrounds); (2) split a finished UGC photograph into layers.
-// Both are open to the owner and to agents (Bearer token) through the same /api/v1 door as everything else.
-import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
-import path from 'node:path';
+// Picture tools for the studio: write a prompt, get a picture back (used for backgrounds).
+// Open to the owner and to agents (Bearer token) through the same /api/v1 door as everything else.
 
 const SIZES={portrait:{w:1024,h:1536,ratio:'9:16',openai:'1024x1536'},square:{w:1024,h:1024,ratio:'1:1',openai:'1024x1024'},landscape:{w:1536,h:1024,ratio:'16:9',openai:'1536x1024'}};
 const BACKGROUND_SUFFIX=' Background scenery only: no people, no text, no logos, no watermark. Leave calm open space for a product advert.';
 
-export function createImageTools({dataDir,fetchImpl=fetch,env=process.env,cutoutUrl='',visualUrl='',now=Date.now,InputError,json,body,adsRoot=new URL('./ugc-collection/assets/',import.meta.url)}){
+export function createImageTools({dataDir,fetchImpl=fetch,env=process.env,visualUrl='',now=Date.now,InputError,json,body}){
  const hits=new Map();
  const limit=()=>Math.max(1,Number(env.IMAGE_GEN_HOURLY_LIMIT)||40);
  function provider(){
@@ -16,6 +14,22 @@ export function createImageTools({dataDir,fetchImpl=fetch,env=process.env,cutout
   if(env.IMAGE_GEN_KEY)return 'openai';
   if(visualUrl)return 'worker';
   return 'off';
+ }
+ const model=()=>env.IMAGE_GEN_MODEL||'gpt-image-2.5-sunburst',quality=()=>['low','medium','high'].includes(env.IMAGE_GEN_QUALITY)?env.IMAGE_GEN_QUALITY:'low';
+
+ // What a picture costs, in plain words, shown next to the button. Figures are from OpenAI's published price pages (checked Nov 2026).
+ function cost(){
+  const use=provider();
+  if(env.IMAGE_GEN_COST_NOTE)return env.IMAGE_GEN_COST_NOTE;
+  if(use==='worker')return 'No per-picture charge. It runs on your own GPU server, so you only pay for that server.';
+  if(use==='pollinations')return 'Free. Quality and speed vary, and your description is sent to the Pollinations website.';
+  if(use==='openai'){
+   const m=model();
+   if(/gpt-image-1\.5/.test(m))return `Costs money: about $${{low:'0.013',medium:'0.05',high:'0.20'}[quality()]} per picture at ${quality()} quality (OpenAI list price for ${m}, portrait). Charged to your OpenAI account.`;
+   if(/gpt-image-2\.5|sunburst|flare/.test(m))return `Costs money: roughly $0.005 per picture at low quality, up to about $0.17 at the highest quality (portrait; estimates, because OpenAI bills ${m} by tokens, $30 per million output tokens). This server uses ${quality()} quality. Charged to your OpenAI account.`;
+   return `Costs money: charged per picture by the service at ${env.IMAGE_GEN_URL||'api.openai.com'} for model ${m}. Check its price list before using it often. Set IMAGE_GEN_COST_NOTE to show the exact price here.`;
+  }
+  return 'Not set up yet, so nothing is charged.';
  }
  const how=()=>({
   openai:'An OpenAI-style image service (IMAGE_GEN_URL and IMAGE_GEN_KEY).',
@@ -27,7 +41,7 @@ export function createImageTools({dataDir,fetchImpl=fetch,env=process.env,cutout
  const sniff=b=>{const u=new Uint8Array(b.slice(0,12));if(u[0]===0x89&&u[1]===0x50)return 'image/png';if(u[0]===0xff&&u[1]===0xd8)return 'image/jpeg';if(u[0]===0x52&&u[1]===0x49&&u[8]===0x57)return 'image/webp';return null};
  async function viaOpenAi(prompt,size){
   const base=(env.IMAGE_GEN_URL||'https://api.openai.com/v1').replace(/\/$/,'');
-  const r=await fetchImpl(`${base}/images/generations`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.IMAGE_GEN_KEY||''}`},body:JSON.stringify({model:env.IMAGE_GEN_MODEL||'gpt-image-1',prompt,size:size.openai,n:1}),signal:AbortSignal.timeout(180000)});
+  const r=await fetchImpl(`${base}/images/generations`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.IMAGE_GEN_KEY||''}`},body:JSON.stringify({model:model(),quality:quality(),prompt,size:size.openai,n:1}),signal:AbortSignal.timeout(180000)});
   const out=await r.json().catch(()=>({}));
   if(!r.ok)throw new InputError(`The image service refused the request${out.error?.message?': '+String(out.error.message).slice(0,200):''}.`,502);
   const item=out.data?.[0];
@@ -65,34 +79,12 @@ export function createImageTools({dataDir,fetchImpl=fetch,env=process.env,cutout
   recent.push(t);hits.set(key,recent);
   const full=p.purpose==='picture'?prompt:prompt+BACKGROUND_SUFFIX;
   const image=use==='openai'?await viaOpenAi(full,size):use==='pollinations'?await viaPollinations(full,size):use==='worker'?await viaWorker(full,size):(()=>{throw new InputError('Unknown IMAGE_GEN_PROVIDER.',503)})();
-  return {image,provider:use,aspect:p.aspect??'portrait',width:size.w,height:size.h,prompt:full};
- }
- // ----- UGC split: the finished photograph becomes background, person and product layers (computed once, kept on disk).
- const splitFile=id=>path.join(dataDir,`ugc-split-${String(id).padStart(3,'0')}.json`);
- const inflight=new Map();
- async function split(id){
-  if(!Number.isInteger(id)||id<0||id>199)throw new InputError('id must be a design number from 0 to 199.');
-  try{return JSON.parse(await readFile(splitFile(id),'utf8'))}catch{}
-  if(inflight.has(id))return inflight.get(id);
-  const work=(async()=>{
-   if(!cutoutUrl)throw new InputError('The cutout worker is not configured, so this design cannot be split into layers.',503);
-   let photo;try{photo=await readFile(new URL(`ad-${String(id).padStart(3,'0')}.png`,adsRoot))}catch{throw new InputError('This design has no photograph yet.',404)}
-   const r=await fetchImpl(new URL('/split',cutoutUrl),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_base64:photo.toString('base64')}),signal:AbortSignal.timeout(240000)}).catch(()=>null);
-   if(!r)throw new InputError('The cutout worker is not reachable. Check that its container is running.',503);
-   const out=await r.json().catch(()=>({}));if(!r.ok||!out.background_base64)throw new InputError(out.error||'The cutout worker could not split this design.',r.status===404?503:502);
-   const pct=(v,t)=>Math.round(v/t*10000)/100,layers={};
-   for(const [role,l] of Object.entries(out.layers||{}))if(l)layers[role]={src:`data:image/webp;base64,${l.webp_base64}`,x:pct(l.x,out.width),y:pct(l.y,out.height),width:pct(l.w,out.width),height:pct(l.h,out.height)};
-   const rec={id,width:out.width,height:out.height,background:`data:image/jpeg;base64,${out.background_base64}`,layers,made_at:new Date(now()).toISOString()};
-   await mkdir(dataDir,{recursive:true,mode:0o700});const tmp=splitFile(id)+'.tmp';await writeFile(tmp,JSON.stringify(rec),{mode:0o600});await rename(tmp,splitFile(id));
-   return rec;
-  })().finally(()=>inflight.delete(id));
-  inflight.set(id,work);return work;
+  return {image,provider:use,cost:cost(),aspect:p.aspect??'portrait',width:size.w,height:size.h,prompt:full};
  }
  async function handle(req,res,url,ctx){
-  if(url.pathname==='/api/v1/images/status'&&req.method==='GET'){json(res,200,{provider:provider(),ready:provider()!=='off',description:how(),limit_per_hour:limit()});return true}
+  if(url.pathname==='/api/v1/images/status'&&req.method==='GET'){json(res,200,{provider:provider(),ready:provider()!=='off',description:how(),cost:cost(),limit_per_hour:limit()});return true}
   if(url.pathname==='/api/v1/images/generate'&&req.method==='POST'){json(res,200,await generate(await body(req),ctx));return true}
-  if(url.pathname==='/api/v1/ugc-split'&&req.method==='POST'){const p=await body(req);json(res,200,await split(p.id));return true}
   return false;
  }
- return {handle,generate,split,provider};
+ return {handle,generate,provider};
 }

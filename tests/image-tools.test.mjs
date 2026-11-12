@@ -13,7 +13,7 @@ test('generate uses the OpenAI-style service and adds the background suffix',asy
   let seen;
   const t=await make({IMAGE_GEN_KEY:'k',IMAGE_GEN_URL:'http://x/v1'},async(url,o)=>{seen={url,body:JSON.parse(o.body),auth:o.headers.Authorization};return {ok:true,json:async()=>({data:[{b64_json:png.toString('base64')}]})}});
   const out=await t.generate({prompt:'warm wall'},{ws:'main'});
-  assert.equal(seen.url,'http://x/v1/images/generations');assert.equal(seen.auth,'Bearer k');assert.equal(seen.body.size,'1024x1536');
+  assert.equal(seen.url,'http://x/v1/images/generations');assert.equal(seen.auth,'Bearer k');assert.equal(seen.body.size,'1024x1536');assert.equal(seen.body.model,'gpt-image-2.5-sunburst');assert.equal(seen.body.quality,'low');assert.match(out.cost,/Costs money/);
   assert.match(seen.body.prompt,/no people, no text/);assert.match(out.image,/^data:image\/png;base64,/);assert.equal(out.provider,'openai');
 });
 test('generate says how to set it up when no service is configured',async()=>{
@@ -40,10 +40,11 @@ test('the studio picture worker path submits, polls and fetches the result',asyn
   const out=await t.generate({prompt:'sunset wall',aspect:'square'},{ws:'main'});
   assert.equal(out.provider,'worker');assert.equal(calls.length,3);assert.match(out.image,/^data:image\/png/);
 });
-test('split rejects bad ids and works through the cutout worker once, then caches',async()=>{
-  let n=0;
-  const t=await make({},async(url,o)=>{n++;assert.match(String(url),/\/split$/);return {ok:true,json:async()=>({width:100,height:200,background_base64:'AAAA',layers:{person:{webp_base64:'BBBB',x:10,y:20,w:50,h:100}}})}},{cutoutUrl:'http://cutout:8092'});
-  await assert.rejects(()=>t.split(500),/0 to 199/);
-  const a=await t.split(150);assert.equal(a.layers.person.x,10);assert.equal(a.layers.person.height,50);assert.match(a.background,/^data:image\/jpeg/);
-  await t.split(150);assert.equal(n,1);
+test('the cost note is spelled out for every service',async()=>{
+    const grab=async env=>{let out;const t=await make(env,async()=>{},{json:(r,c,v)=>{out=v}});await t.handle({method:'GET'},{},new URL('http://x/api/v1/images/status'),{});return out};
+  assert.match((await grab({IMAGE_GEN_KEY:'k'})).cost,/Costs money: roughly \$0\.005/);
+  assert.match((await grab({IMAGE_GEN_KEY:'k',IMAGE_GEN_MODEL:'gpt-image-1.5',IMAGE_GEN_QUALITY:'medium'})).cost,/\$0\.05 per picture/);
+  assert.match((await grab({IMAGE_GEN_PROVIDER:'pollinations'})).cost,/Free/);
+  assert.match((await grab({IMAGE_GEN_COST_NOTE:'$0.02 each'})).cost,/\$0\.02 each/);
+  assert.match((await grab({})).cost,/nothing is charged/);
 });

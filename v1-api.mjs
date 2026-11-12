@@ -48,7 +48,7 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
  const save=async(id,data)=>{const temp=file(id,'tmp');await writeFile(temp,JSON.stringify(data),{mode:0o600});await rename(temp,file(id));};
  const serial=fn=>{const p=mutation.then(fn);mutation=p.catch(()=>{});return p;};
  async function list(type){await ready;const values=[];for(const name of await readdir(dataDir)){if(!name.endsWith('.json'))continue;try{const value=await load(name.slice(0,-5));if(value.record_type===type)values.push(value);}catch{}}return values.sort((a,b)=>b.created_at.localeCompare(a.created_at));}
- const imageTools=createImageTools({dataDir,fetchImpl,env:publishEnv,cutoutUrl,visualUrl,now:clock,InputError,json,body});
+ const imageTools=createImageTools({dataDir,fetchImpl,env:publishEnv,visualUrl,now:clock,InputError,json,body});
  const ideas=createIdeas({list:t=>list(t),load,save,serial,inWs,InputError,text,json,body,clock,getConfig,file,unlink});
  const publicJob=j=>{const {fingerprint,...value}=j;return value;};
  const sameSite=req=>{const f=req.headers['sec-fetch-site'];if(f)return f==='same-origin';const o=req.headers.origin||req.headers.referer;try{return !!o&&new URL(o).host===req.headers.host}catch{return false}};
