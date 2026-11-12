@@ -1,7 +1,7 @@
 # Pictures from words (background generation)
 
 The UGC editor's **Generate background** button and the agents' `POST /api/v1/images/generate` use one server-side setting.
-Choose one of these in `/opt/gsn-media/.env`, then restart the app.
+Set up one or more of these in `/opt/gsn-media/.env`, then restart the app. Every service you set up appears in the editor's **Service** menu, so you can switch between them for each picture (the choice is remembered). The OpenAI-style service also has a **Model** menu (`IMAGE_GEN_MODELS`, comma-separated, default `gpt-image-2.5-sunburst,gpt-image-1.5`) and a **Quality** menu. The cost of the current choice is always shown under the menus. The free service is available unless you set `IMAGE_GEN_FREE=off`.
 
 1. **An OpenAI-style image service (easiest on a CPU-only VPS).** Set `IMAGE_GEN_KEY`. Optional: `IMAGE_GEN_URL` (any compatible
    server, default OpenAI), `IMAGE_GEN_MODEL` (default `gpt-image-2.5-sunburst`) and `IMAGE_GEN_QUALITY` (`low`, `medium` or `high`; default `low`).
