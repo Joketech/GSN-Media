@@ -9,8 +9,8 @@ GSN Media is a social-media template studio. Six agents automate designing and p
 | Mira | Orchestrates the others and talks to the owner (Telegram when connected). Sends work to the right agent, summarises results. | Approve, publish or change settings. |
 | Lyra | Researches and writes content ideas (Ideas tab). Uses live web search when asked. | Build designs or post. |
 | Seline | Writes slide copy, captions and hashtags in the brand voice. | Invent facts. Post. |
-| Spectra | Builds designs from the 599 templates through the designs API. | Change the template catalog or code. |
-| Flux | Animates finished designs and videos. | Post. |
+| Spectra | Builds designs from the 599 templates through the designs API. May make backgrounds and pictures from a written description with `POST /api/v1/images/generate`. | Change the template catalog or code. |
+| Flux | Animates finished designs and videos. May make pictures from a written description with `POST /api/v1/images/generate`. | Post. |
 | Relay | Prepares scheduled posts and sends approved ones. | Approve, retry, cancel approved posts or flip live/paused switches (the API returns 403/409). |
 
 Use only your own role. If a task belongs to another agent, hand it to Mira.

@@ -54,6 +54,84 @@ def coverage(out):
     return float((a > 127).mean()), float((centre > 127).mean())
 
 
+def _largest(mask, min_share):
+    import cv2
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), connectivity=8)
+    keep = np.zeros(mask.shape, bool)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] >= min_share * mask.size:
+            keep |= lab == i
+    return keep
+
+
+def _piece(img, alpha, mask, pad=2):
+    """Crop one layer out of the photo: colours from the photo, transparency from the model, limited to mask."""
+    import cv2
+    ys, xs = np.where(mask)
+    if len(xs) == 0:
+        return None
+    x0, x1 = max(0, xs.min() - pad), min(mask.shape[1], xs.max() + 1 + pad)
+    y0, y1 = max(0, ys.min() - pad), min(mask.shape[0], ys.max() + 1 + pad)
+    soft = cv2.GaussianBlur(mask.astype(np.float32), (0, 0), 0.8) * (alpha.astype(np.float32) / 255.0 * 0.5 + 0.5)
+    rgba = np.dstack([np.asarray(img.convert("RGB")), (np.clip(soft, 0, 1) * 255).astype(np.uint8)])[y0:y1, x0:x1]
+    buf = io.BytesIO()
+    Image.fromarray(rgba, "RGBA").save(buf, "WEBP", quality=93, method=4)
+    return {"webp_base64": base64.b64encode(buf.getvalue()).decode(), "x": int(x0), "y": int(y0), "w": int(x1 - x0), "h": int(y1 - y0)}
+
+
+def _fill_smooth(rgb, hole):
+    """Fill the gaps with a smooth blend of the colours around them (push-pull pyramid), which reads as a clean studio
+    backdrop where classic inpainting smears blotches."""
+    import cv2
+    h, w = hole.shape
+    wt = (hole == 0).astype(np.float32)
+    col = rgb.astype(np.float32) * wt[:, :, None]
+    levels = []
+    c, k = col, wt
+    while min(c.shape[:2]) > 4:
+        levels.append((c, k))
+        c = cv2.resize(c, (max(1, c.shape[1] // 2), max(1, c.shape[0] // 2)), interpolation=cv2.INTER_AREA)
+        k = cv2.resize(k, (c.shape[1], c.shape[0]), interpolation=cv2.INTER_AREA)
+    mean = (col.sum((0, 1)) / max(wt.sum(), 1.0))
+    cur = np.where(k[:, :, None] > 0.02, c / np.maximum(k[:, :, None], 1e-4), mean)
+    for c, k in reversed(levels):
+        up = cv2.resize(cur, (c.shape[1], c.shape[0]), interpolation=cv2.INTER_LINEAR)
+        own = c / np.maximum(k[:, :, None], 1e-4)
+        a = np.clip(k * 4, 0, 1)[:, :, None]
+        cur = np.where(k[:, :, None] > 0.02, own, up) * a + up * (1 - a)
+    cur = cv2.GaussianBlur(cur, (0, 0), 6)
+    return np.clip(cur, 0, 255).astype(np.uint8)
+
+
+def split_layers(raw):
+    """Split a finished advert photograph into background, person and product layers.
+    Person = people model. Product = everything else the general model keeps in front. Background = the photo with both
+    removed and the gaps filled from their surroundings, so it can be replaced or moved away from without a ghost."""
+    import cv2
+    img = load_image(raw)
+    w, h = img.size
+    fg_alpha = np.asarray(cut(img, "detail").getchannel("A"))
+    pp_alpha = np.asarray(cut(img, "people").getchannel("A"))
+    person = _largest(pp_alpha >= 128, 0.015)
+    person_d = cv2.dilate(person.astype(np.uint8), np.ones((9, 9), np.uint8)) > 0
+    rest = (fg_alpha >= 128) & ~person_d
+    rest = cv2.morphologyEx(rest.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8)) > 0
+    product = _largest(rest, 0.004)
+    layers = {}
+    if person.any():
+        layers["person"] = _piece(img, pp_alpha, person)
+    if product.any():
+        layers["product"] = _piece(img, fg_alpha, product)
+    hole = (person | product).astype(np.uint8)
+    hole = cv2.dilate(hole, np.ones((25, 25), np.uint8))
+    filled = _fill_smooth(np.asarray(img.convert("RGB")), hole)
+    feather = cv2.GaussianBlur(hole.astype(np.float32), (0, 0), 3)[:, :, None]
+    out = np.asarray(img.convert("RGB")).astype(np.float32) * (1 - feather) + filled.astype(np.float32) * feather
+    buf = io.BytesIO()
+    Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).save(buf, "JPEG", quality=90)
+    return {"width": w, "height": h, "background_base64": base64.b64encode(buf.getvalue()).decode(), "layers": layers}
+
+
 def encode(out):
     buf = io.BytesIO()
     out.save(buf, "PNG", optimize=False)
@@ -101,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(404, {"error": "Not found."})
 
     def do_POST(self):
-        if self.path != "/cut":
+        if self.path not in ("/cut", "/split"):
             return self.reply(404, {"error": "Not found."})
         try:
             size = int(self.headers.get("Content-Length", "0"))
@@ -109,6 +187,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(413, {"error": "Send an image of up to 24 MB."})
             body = json.loads(self.rfile.read(size))
             raw = base64.b64decode(body.get("image_base64", ""), validate=True)
+            if self.path == "/split":
+                return self.reply(200, split_layers(raw))
             engine = body.get("engine", "auto")
             if engine not in ("auto", "all", *ENGINES):
                 return self.reply(400, {"error": "engine must be auto, all, detail, people or scene."})

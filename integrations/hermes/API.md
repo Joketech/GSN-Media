@@ -57,6 +57,12 @@ Agents cannot approve, post now, retry, cancel approved posts, or change live/pa
 
 POST `/cutout` with `{"image":"<base64 or data URL>","engine":"all"}` runs the studio's private cutout worker and returns `{width,height,candidates:[{engine,label,foreground,centre,ok,suggested,png_base64}]}`. Engines: `detail` (general objects, fine edges), `people` (people and what they hold), `scene` (whole subject groups) and `all` (default, runs each). `suggested` marks the candidate an automatic heuristic prefers: it keeps most of the middle of the picture without keeping the whole photo. Models disagree on hard photos, so an agent that cares should compare `foreground`/`centre` or leave the choice to a human in the editor. Images up to 16 megapixels; about 2 to 6 seconds per model on CPU. Use the returned PNG as an uploaded photo element in a design.
 
+## Pictures from words, and UGC layers
+- `GET /images/status` says whether picture generation is set up (`{provider, ready, description, limit_per_hour}`).
+- `POST /images/generate` with `{"prompt":"warm terracotta studio wall, soft light","aspect":"portrait|square|landscape","purpose":"background|picture"}` returns `{image:"data:image/...;base64,...", provider, width, height, prompt}`. `background` (the default) adds "no people, no text, no logos" to the prompt. Allowed for agents (Spectra and Flux). The result can be large: shrink it to a JPEG/WebP under 1.4 MB before putting it in a design slot. There is an hourly limit per workspace; a 429 means wait. If it answers 503 the owner has not set up a picture service yet; say so, do not retry.
+- `POST /ugc-split` with `{"id":150}` (0–199) cuts a UGC design's photograph into `background` (JPEG), `layers.person` and `layers.product` (WebP with transparency, each with `x,y,width,height` in percent). Computed once and cached; the first call can take up to a minute.
+- Log picture work in `/activity` like any other task, with the model or service named in `detail`.
+
 ## Brand people, photo layouts and picture slots
 
 **Photo layouts** are templates 400-411 (screen ring, profile and person, stage, brand road, frosted window, magazine cover, outline word, look up, sepia split, giant letters, agency stripe, two frames). Each one has **named picture slots**. `GET /templates` lists them for each layout as `slots: [{key, label}]`; the first slot is the page's main picture.
