@@ -389,3 +389,5 @@ body[data-role=editor] .pp-del{display:none}
 .cfg-pal{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cfg-sw{position:relative;width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #0003;display:inline-block}
 .cfg-sw button{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;border:0;background:#3a1a28;color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0}
 .ed-src-row{display:flex;gap:10px;flex-wrap:wrap}.ed-src-row i{font-style:normal;opacity:.7;margin-left:4px}.ed-src-up{margin-top:6px}
+
+.ugc-frame{display:block;width:100%;height:calc(100vh - 170px);min-height:560px;border:0;border-radius:18px;background:#fff}
