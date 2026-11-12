@@ -3,7 +3,7 @@ export const ROLES = ['background', 'person', 'product', 'packaging', 'text'];
 const IDS = /^[a-z][a-z0-9-]{0,63}$/;
 const HEX = /^#[0-9a-f]{6}$/i;
 const IMAGE = /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i;
-const FILE = /^layered-assets\/\d{3}-(?:background|person|product|packaging)\.png$/;
+const FILE = /^(?:layered-assets\/\d{3}-(?:background|person|product|packaging)|assets\/ad-\d{3})\.png$/;
 const editable = new Set(['x','y','width','height','rotation','opacity','visible','locked','src','text','color','fill','font','fontSize','align','tint','tintStrength','bold','fit']);
 const numeric = {x:[-100,200],y:[-100,200],width:[1,200],height:[1,200],rotation:[-360,360],opacity:[0,1],fontSize:[1,30],tintStrength:[0,1]};
 export function cloneDocument(doc) { return {...doc, layers:doc.layers.map(l=>({...l}))}; }
@@ -84,4 +84,18 @@ export function createDocument(campaign,images,layout={}) {
   ]});
   if(!Object.keys(layout).length)return document;
   return applyCampaignPlan(document,{version:1,templateId:campaign.id,changes:Object.entries(layout).map(([layerId,values])=>({layerId,values}))});
+}
+
+// Designs without separate layers: the finished photograph becomes one background layer, with every piece of wording editable on top.
+export function createPhotoDocument(campaign,photo) {
+  validateSource(photo);
+  const [paper,ink,accent]=campaign.palette;
+  const base=(id,role,kind,x,y,width,height,extra={})=>({id,role,kind,x,y,width,height,rotation:0,opacity:1,visible:true,locked:false,...extra});
+  const text=(id,value,x,y,w,h,size,extra={})=>base(id,'text','text',x,y,w,h,{text:value,font:'Arial',fontSize:size,color:ink,fill:null,align:'left',bold:false,...extra});
+  return validateDocument({version:1,templateId:campaign.id,width:1080,height:1350,layers:[
+    base('background','background','image',0,0,100,100,{src:photo,fit:'cover'}),
+    text('brand','YOUR BRAND',7,3.5,86,3,1.8,{bold:true}),text('category',campaign.category.toUpperCase(),7,7.7,86,3,1.6),
+    text('hook',campaign.hook,7,12,86,16,7.2,{bold:true}),text('description',campaign.description,7,34,86,6,2.5,{fill:paper}),
+    text('cta',campaign.cta,7,90,86,6,2.7,{fill:accent,color:'#ffffff',align:'center',bold:true}),
+  ]});
 }
