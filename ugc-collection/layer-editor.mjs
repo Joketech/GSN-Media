@@ -84,3 +84,50 @@ $('#bg-library').onclick=()=>{const box=$('#bg-gallery');box.hidden=!box.hidden;
 function shrink(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{const s=Math.min(1,1800/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/webp',.92))};img.onerror=()=>reject(Error('The picture could not be read.'));img.src=src})}
 fetch('/api/v1/images/status',{headers:(()=>{try{const w=localStorage.getItem('gsn_ws');return w?{'X-GSN-Workspace':w}:{}}catch{return {}}})()}).then(r=>r.json()).then(s=>{$('#bg-cost').textContent=s.cost||''}).catch(()=>{$('#bg-cost').textContent='Cost depends on how this server is set up.'});
 $('#bg-generate').onclick=async()=>{const prompt=$('#bg-prompt').value.trim(),b=$('#bg-generate');if(prompt.length<3)return say('Describe the background first, for example: warm terracotta studio wall with soft morning light.');b.disabled=true;b.textContent='Generating…';say('Generating your background. This can take up to a minute.');try{const out=await request('/api/v1/images/generate',{prompt,aspect:'portrait'});setBackground(await shrink(out.image));say('Background generated.')}catch(err){say(err.message)}finally{b.disabled=false;b.textContent='Generate background'}};
+
+// GSN library: the same pictures the dashboard editor offers (campaign photos, people, products, packaging, letters and numbers), plus your uploads and brand people.
+const lib={tab:'pictures',catalogue:null,uploads:null,people:null,shown:24};
+const wsHeaders=()=>{try{const w=localStorage.getItem('gsn_ws');return w?{'X-GSN-Workspace':w}:{}}catch{return {}}};
+async function libLoad(){
+ const m=$('#lib-msg');m.textContent='';
+ try{
+  if(lib.tab==='pictures'&&!lib.catalogue){const r=await fetch('/api/ugc/catalog');if(!r.ok)throw Error('The picture library is unavailable.');const c=await r.json();try{const cr=await fetch('/characters/catalog.json');if(cr.ok)c.pictures.push(...await cr.json())}catch{}lib.catalogue=c.pictures}
+  if(lib.tab==='uploads'&&!lib.uploads){const r=await fetch('/api/v1/uploads',{headers:wsHeaders()});if(!r.ok)throw Error('Your uploads could not be loaded.');lib.uploads=(await r.json()).uploads.map(u=>({id:u.id,name:'Upload '+u.id.slice(0,6),url:u.url}))}
+  if(lib.tab==='people'&&!lib.people){const r=await fetch('/api/v1/people',{headers:wsHeaders()});if(!r.ok)throw Error('Brand people could not be loaded.');lib.people=(await r.json()).people.map(p=>({id:p.id,name:p.name,url:p.image_url}))}
+ }catch(err){m.textContent=err.message}
+ libDraw();
+}
+function libItems(){
+ const q=$('#lib-search').value.trim().toLowerCase(),role=$('#lib-role').value;
+ const all=lib.tab==='pictures'?lib.catalogue||[]:lib.tab==='uploads'?lib.uploads||[]:lib.people||[];
+ return all.filter(p=>(lib.tab!=='pictures'||!role||p.role===role)&&(!q||q.split(/\s+/).every(w=>`${p.name} ${p.category||''} ${p.glyph||''}`.toLowerCase().includes(w))));
+}
+function libDraw(){
+ $('#lib-role').hidden=lib.tab!=='pictures';
+ const list=libItems(),grid=$('#lib-grid'),sel=layer(),canReplace=sel&&sel.kind==='image'&&!sel.locked;
+ $('#lib-count').textContent=`${list.length} ${lib.tab==='pictures'?'pictures':lib.tab==='uploads'?'uploads':'brand people'}. Use one as the background, add it as a new layer, or replace the selected picture.`;
+ grid.innerHTML=list.slice(0,lib.shown).map(p=>`<div class="lib-item"><div class="thumb">${p.region?`<svg viewBox="${p.region.join(' ')}" style="width:100%;height:130px" aria-label="${escape(p.name)}"><image href="${p.url}" width="${p.sheetSize[0]}" height="${p.sheetSize[1]}"></image></svg>`:`<img loading="lazy" src="${p.url}" alt="${escape(p.name)}">`}</div><small title="${escape(p.name)}">${escape(p.name)}</small><div class="acts"><button data-use="${escape(p.id)}" data-mode="background">Background</button><button data-use="${escape(p.id)}" data-mode="add">Add layer</button>${canReplace?`<button data-use="${escape(p.id)}" data-mode="replace">Replace selected</button>`:''}</div></div>`).join('');
+ $('#lib-more').hidden=list.length<=lib.shown;
+ document.querySelectorAll('#lib-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===lib.tab));
+}
+// Turn a library picture into a portable image (cropping a sheet region when needed).
+async function libImage(p){
+ const r=await fetch(p.url,{headers:p.url.startsWith('/api/v1/')?wsHeaders():{}});if(!r.ok)throw Error('That picture could not be loaded.');
+ const bitmap=await createImageBitmap(await r.blob());
+ try{const [sx,sy,sw,sh]=p.region||[0,0,bitmap.width,bitmap.height],scale=Math.min(1,1800/Math.max(sw,sh)),c=document.createElement('canvas');c.width=Math.round(sw*scale);c.height=Math.round(sh*scale);c.getContext('2d').drawImage(bitmap,sx,sy,sw,sh,0,0,c.width,c.height);return {src:c.toDataURL('image/webp',.93),w:c.width,h:c.height}}finally{bitmap.close()}
+}
+$('#open-library').onclick=()=>{$('#library').showModal();libLoad()};
+$('#lib-close').onclick=()=>$('#library').close();
+$('#lib-tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;lib.tab=b.dataset.tab;lib.shown=24;libLoad()};
+$('#lib-search').oninput=$('#lib-role').onchange=()=>{lib.shown=24;libDraw()};
+$('#lib-more').onclick=()=>{lib.shown+=24;libDraw()};
+$('#lib-grid').onclick=async e=>{
+ const b=e.target.closest('[data-use]');if(!b)return;const p=libItems().find(x=>x.id===b.dataset.use);if(!p)return;const msg=$('#lib-msg');msg.textContent='Loading picture…';
+ try{
+  const img=await libImage(p);
+  if(b.dataset.mode==='background')setBackground(img.src);
+  else if(b.dataset.mode==='replace'){const t=selected;mutate(next=>{const l=next.layers.find(x=>x.id===t);if(!l||l.kind!=='image'||l.locked)throw Error('Select an unlocked image layer first.');l.src=img.src})}
+  else mutate(next=>{const id='image-'+crypto.randomUUID().slice(0,8),ratio=img.w/img.h*doc.height/doc.width,w=ratio>=1?50:50*ratio,h=ratio>=1?50/ratio:50;next.layers.push({id,role:'product',kind:'image',src:img.src,x:50-w/2,y:50-h/2,width:w,height:h,rotation:0,opacity:1,visible:true,locked:false,fit:'contain'});selected=id});
+  msg.textContent='Added. Pick another, or close the library.';$('#library').close();
+ }catch(err){msg.textContent=err.message}
+};
