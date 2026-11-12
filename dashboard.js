@@ -40,7 +40,14 @@ const Dashboard=(()=>{
   on:true,
   init(){let v=null;try{v=localStorage.getItem('gsn-motion')}catch{}this.on=v?v==='off'?false:true:true;this.apply()},
   apply(){document.documentElement.dataset.motion=this.on?'on':'off';const s=$('#motionSwitch');if(s){s.setAttribute('aria-checked',String(this.on));s.title='Animation and light: '+(this.on?'on':'off')}if(typeof Water!=='undefined')typeof Ripples!=='undefined'&&Ripples.resume();Water.setMotion();if(typeof HeroGlobe!=='undefined')HeroGlobe.refresh()},
-  set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()}
+  set(on){this.on=on;try{localStorage.setItem('gsn-motion',on?'on':'off')}catch{}this.apply();draw()},
+  // Speed check: if this computer cannot keep the animations smooth, switch them off once and say so. A choice made with the switch always wins.
+  watch(){let chosen=null;try{chosen=localStorage.getItem('gsn-motion')}catch{}if(chosen||this.watched)return;this.watched=true;
+   const run=()=>{let n=0,t0=0,slow=0;const tick=now=>{if(document.hidden){return}if(!t0)t0=now;else{n++;if(now-(tick.last||now)>40)slow++}tick.last=now;
+    if(now-t0<4000){requestAnimationFrame(tick);return}
+    const fps=n/((now-t0)/1000);let c=null;try{c=localStorage.getItem('gsn-motion')}catch{}
+    if(fps<40&&!c&&this.on){this.on=false;this.apply();draw();try{toast('Animations switched off to keep the dashboard fast. Turn them back on with the Motion switch.',7000)}catch{}}};requestAnimationFrame(tick)};
+   setTimeout(run,2500)}
  };
  function build(){
   const stage=$('#stage');
@@ -67,7 +74,7 @@ const Dashboard=(()=>{
   $('#filterBtn').addEventListener('click',()=>togglePop('filter'));$('#bellBtn').addEventListener('click',()=>togglePop('bell'));$('#userBtn').addEventListener('click',()=>togglePop('user'));
   document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))closePops()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePops();closeModal()}});
-  Motion.init();$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
+  Motion.init();Motion.watch();$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
   ui.built=true;
  }
  const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
