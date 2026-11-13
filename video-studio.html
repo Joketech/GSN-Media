@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#3a2a30;--ink2:#7b6a72;--accent:#8a2236;--accent2:#6a1527;--line:rgba(70,40,50,.14);--panel:rgba(255,255,255,.72);--panel2:rgba(255,251,249,.94);--pink:#fbe3e8;--sky:#e4ecff;--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,Arial,sans-serif}
+:root{--ink:#3a2a30;--ink2:#7b6a72;--accent:#FA754E;--accent2:#E2593A;--line:rgba(70,40,50,.14);--panel:rgba(255,255,255,.72);--panel2:rgba(255,251,249,.94);--pink:#fbe3e8;--sky:#e4ecff;--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,Arial,sans-serif}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{font:14px/1.35 var(--sans);color:var(--ink);background:linear-gradient(135deg,#dfe8fb 0%,#f6e6f0 55%,#e8dcf7 100%);overflow:hidden}
@@ -27,7 +27,7 @@ button{cursor:pointer}
 .sp{flex:1}
 .btn{height:34px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:.82rem}
 .btn:hover{background:#fdf4f6}.btn:disabled{opacity:.4;cursor:default}
-.btn.main{background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;border-color:transparent}
+.btn.main{background:linear-gradient(145deg,#FA754E,#E2593A);color:#fff;border-color:transparent}
 .btn.sm{height:28px;padding:0 9px;font-size:.76rem;border-radius:8px}
 .btn.on{background:#f3dde3;border-color:#d9a9b6}
 select.btn{padding-right:6px}
@@ -50,7 +50,7 @@ h3{margin:12px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:upperca
 .transport{display:flex;align-items:center;gap:8px}
 .transport .time{font:600 .85rem ui-monospace,Consolas,monospace;min-width:116px}
 .transport .grow{flex:1}
-.pbtn{width:40px;height:40px;border-radius:50%;border:0;background:linear-gradient(145deg,#a42b43,#6a1527);color:#fff;font-size:15px}
+.pbtn{width:40px;height:40px;border-radius:50%;border:0;background:linear-gradient(145deg,#FA754E,#E2593A);color:#fff;font-size:15px}
 .time-wrap{grid-area:time;display:flex;flex-direction:column;min-height:0}
 .tl-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .tl-head label{font-size:.74rem;color:var(--ink2);display:flex;gap:6px;align-items:center}
@@ -63,7 +63,7 @@ h3{margin:12px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:upperca
 .tname{position:sticky;left:0;z-index:4;display:inline-block;margin:3px;padding:2px 7px;font:700 9px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:#4a2431;color:#fff;border-radius:6px;opacity:.85;pointer-events:none}
 .clip{position:absolute;top:6px;height:44px;border-radius:8px;border:2px solid transparent;overflow:hidden;color:#fff;font:600 10.5px/1.2 var(--sans);padding:3px 6px;cursor:grab;background:#6a4a5a center top/auto 220% no-repeat;box-shadow:0 2px 6px rgba(0,0,0,.22);user-select:none;touch-action:none}
 .clip.v{background-color:#7a3a4e}.clip.t{background:linear-gradient(135deg,#3b6fe0,#6a8cf3)}.clip.a{background:linear-gradient(135deg,#1f9e6e,#46c79a)}
-.clip.sel{border-color:#ffd84d;box-shadow:0 0 0 2px #8a2236,0 4px 12px rgba(0,0,0,.35)}
+.clip.sel{border-color:#ffd84d;box-shadow:0 0 0 2px #FA754E,0 4px 12px rgba(0,0,0,.35)}
 .clip span{text-shadow:0 1px 3px #000c;pointer-events:none;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .clip .rh{position:absolute;right:0;top:0;bottom:0;width:9px;cursor:ew-resize;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55))}
 .clip .tr{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(135deg,#fff5 0 4px,#fff2 4px 8px);pointer-events:none}
@@ -78,7 +78,7 @@ h3{margin:12px 0 4px;font-size:.7rem;letter-spacing:.09em;text-transform:upperca
 .progress{position:fixed;inset:0;background:rgba(40,15,30,.55);display:none;place-items:center;z-index:50}
 .progress.on{display:grid}
 .progress div{background:#fff;border-radius:16px;padding:22px 28px;min-width:320px;text-align:center}
-.bar{height:10px;border-radius:6px;background:#eadde2;overflow:hidden;margin:12px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a42b43,#e0607a)}
+.bar{height:10px;border-radius:6px;background:#eadde2;overflow:hidden;margin:12px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FA754E,#e0607a)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#3a1a28;color:#fff;border-radius:10px;padding:10px 16px;font-size:.82rem;opacity:0;pointer-events:none;transition:.2s;z-index:60}.toast.on{opacity:1}
 @media(max-width:1100px){.app{grid-template-columns:220px 1fr 240px}}
 @media(max-width:820px){
@@ -266,11 +266,11 @@ function demoSlide(i,title,sub,c1,c2){
   return c.toDataURL('image/png');
 }
 $('#demo').onclick=async()=>{
-  const defs=[['Seven signs your\nagent stack is\nover-engineered','Slide 1 · the hook','#2a1a4a','#8a2236'],['Sign 1\nToo many tools','Each tool adds a hand-off\nthat nobody owns.','#10223f','#25a8e0'],['Sign 2\nNo human\napproval step','Nothing should go online\nwithout a person saying yes.','#12351f','#2fb36b'],['Your move','Follow for part two.\nLink in bio.','#4a1a2a','#e0607a']];
+  const defs=[['Seven signs your\nagent stack is\nover-engineered','Slide 1 · the hook','#2a1a4a','#FA754E'],['Sign 1\nToo many tools','Each tool adds a hand-off\nthat nobody owns.','#10223f','#25a8e0'],['Sign 2\nNo human\napproval step','Nothing should go online\nwithout a person saying yes.','#12351f','#2fb36b'],['Your move','Follow for part two.\nLink in bio.','#4a1a2a','#e0607a']];
   media=[];P={title:'Demo: seven signs',aspect:'9:16',bg:'#101323',clips:[],texts:[],music:null};
   defs.forEach((d,i)=>{const url=demoSlide(i+1,...d);loadImg(url);const m={id:id(),type:'image',name:'demo-'+(i+1)+'.png',url,dur:3};media.push(m);P.clips.push({id:id(),type:'image',src:url,name:m.name,dur:i===3?3.5:3,trans:i?['fade','slideleft','zoom'][i-1]:'none',tdur:.6,kb:['in','out','left','in'][i],fit:'cover',vol:1,trim:0})});
   P.texts.push({id:id(),text:'Stop over-engineering',start:.3,dur:2.4,x:50,y:20,size:7,color:'#ffffff',weight:800,font:'bold',anim:'rise',align:'center',box:'',shadow:true});
-  P.texts.push({id:id(),text:'Follow GSN Media',start:9.3,dur:3,x:50,y:84,size:6,color:'#ffffff',weight:700,font:'bold',anim:'fade',align:'center',box:'#8a2236',shadow:false});
+  P.texts.push({id:id(),text:'Follow GSN Media',start:9.3,dur:3,x:50,y:84,size:6,color:'#ffffff',weight:700,font:'bold',anim:'fade',align:'center',box:'#FA754E',shadow:false});
   buildBin();syncAspect();undoS=[];commit();toast('Demo loaded. Press Play.');
 };
 
@@ -280,7 +280,7 @@ const PRESETS={
   title:{text:'Your title here',size:7,weight:700,font:'serif',y:22,anim:'fade',box:'',shadow:true},
   sub:{text:'A short subtitle',size:4.2,weight:500,font:'sans',y:34,anim:'fade',box:'',shadow:true},
   caption:{text:'Caption goes here',size:4.4,weight:700,font:'sans',y:80,anim:'fade',box:'#000000',shadow:false},
-  lower:{text:'Name · Role',size:4,weight:600,font:'sans',y:86,anim:'rise',box:'#8a2236',shadow:false},
+  lower:{text:'Name · Role',size:4,weight:600,font:'sans',y:86,anim:'rise',box:'#FA754E',shadow:false},
   cta:{text:'Follow for more',size:6,weight:800,font:'bold',y:84,anim:'rise',box:'#ffd84d',shadow:false,color:'#2a1a14'}
 };
 $$('[data-preset]').forEach(b=>b.onclick=()=>{

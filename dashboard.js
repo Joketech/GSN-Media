@@ -222,7 +222,7 @@ const Dashboard=(()=>{
    <label>Niche and audience<textarea id="cfgNiche" rows="2" maxlength="300" placeholder="What you post about, and who for."></textarea></label>
    <label>Style of posting<textarea id="cfgStyle" rows="2" maxlength="600" placeholder="e.g. Short carousels, direct, one idea per post."></textarea></label>
    <div class="cfg-colors"><h3>Brand colours</h3><p class="act-note">Every new design, from you or from the agents, starts in these colours. Leave the background or text colour off to keep each template's own.</p>
-    <div class="cfg-crow"><label>Accent<input id="cfgAccent" type="color" value="#ed6843"></label>
+    <div class="cfg-crow"><label>Accent<input id="cfgAccent" type="color" value="#FA754E"></label>
      <label>Background<input id="cfgBg" type="color" value="#101323"><button type="button" class="btn-light" data-off="cfgBg">Template's own</button></label>
      <label>Text<input id="cfgInk" type="color" value="#f8faff"><button type="button" class="btn-light" data-off="cfgInk">Template's own</button></label></div>
     <label>My colour palette<span class="cfg-pal" id="cfgPal"></span></label><div class="cfg-crow"><input id="cfgPalNew" type="color" value="#1e6bff"><button type="button" class="btn-light" id="cfgPalAdd">Add to palette</button></div></div>

@@ -1339,7 +1339,7 @@ const Editor=(()=>{
   body.innerHTML=`<label class="ed-check"><input type="checkbox" id="edBgAll" ${applyAll?'checked':''}> Apply to all pages <small>(untick to style only this page)</small></label>
   <h3>Page colour</h3>
   <label class="ed-colour">Fill the whole page<span><input type="color" id="edBgCol" value="${hex(s.pageFill,'#ffffff')}"><input type="text" id="edBgHex" value="${hex(s.pageFill,'#ffffff')}" maxlength="7" aria-label="Page colour hex"></span></label>
-  <div class="ed-pal">${['#ffffff','#f8f1e7','#fbe3e8','#e4ecff','#e3f6ec','#101323','#1f2a44','#8a2236','#ffd84d','#00a86b','#25c8ff','#000000'].map(c=>`<button data-c="${c}" title="${c}" aria-label="${c}"><i style="background:${c};width:100%"></i></button>`).join('')}</div>
+  <div class="ed-pal">${['#ffffff','#f8f1e7','#fbe3e8','#e4ecff','#e3f6ec','#101323','#1f2a44','#FA754E','#ffd84d','#00a86b','#25c8ff','#000000'].map(c=>`<button data-c="${c}" title="${c}" aria-label="${c}"><i style="background:${c};width:100%"></i></button>`).join('')}</div>
   <h3>Page picture</h3>
   <p class="hint">Use your own picture behind the page, or hide the template's own picture.</p>
   <div class="ed-row"><button class="btn-light" id="edBgUp">Upload picture</button><button class="btn-light" id="edBgLib">GSN pictures</button></div>
