@@ -7,7 +7,7 @@ body:not(.portal-open){margin:0;background:#e9e4f2;color:var(--ink);font-family:
 .ic{width:20px;height:20px;flex:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #8a2236;outline-offset:2px}
-.stage{position:fixed;inset:0;display:grid;grid-template-columns:60px 1fr;grid-template-rows:auto 1fr auto;gap:14px;padding:max(14px,calc((100vh - 860px)/2)) max(18px,calc((100vw - 1100px)/2)) max(18px,calc((100vh - 860px)/2));overflow:hidden;color:var(--ink)}
+.stage{position:fixed;inset:0;display:grid;grid-template-columns:60px minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:14px;padding:max(14px,calc((100vh - 860px)/2)) max(18px,calc((100vw - 1200px)/2)) max(18px,calc((100vh - 860px)/2));overflow:hidden;color:var(--ink)}
 .stage[hidden],.editor-root[hidden]{display:none}
 /* A slowly drifting pastel aurora, calm and cool, so the water ripples have something soft to move across. */
 .stage-bg{position:absolute;inset:0;z-index:-2;background:url(room-bg.jpg) center/cover no-repeat}
@@ -19,13 +19,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .glass-dark{background:rgba(66,44,52,.5);color:#fff;border-color:rgba(255,255,255,.35)}
 .glass-strong{background:var(--glass-strong);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 .glass-inset{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
-.osbar{grid-column:1/3;margin-right:-34px;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
+.osbar{grid-column:2;margin-right:0;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
 .osgroup{display:flex;gap:4px}
 .osbtn{width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
 .osbtn:hover{background:#fff}
 .osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:3px 14px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.74rem;min-width:0;overflow:hidden;white-space:nowrap}
 .osaddress b{font-weight:700;color:var(--accent)}.osdot{width:8px;height:8px;border-radius:50%;background:#5cc79a;box-shadow:0 0 8px #8ee0bd}
-.rail{grid-row:2/4;align-self:center;display:flex;flex-direction:column;gap:12px;padding:16px 5px;border-radius:28px;margin-top:0}
+.rail{grid-column:1;grid-row:1/4;align-self:center;display:flex;flex-direction:column;gap:12px;padding:16px 5px;border-radius:28px;margin-top:0}
 .rail button{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:rgba(255,255,255,.85);display:grid;place-items:center;transition:.25s}
 .rail button .ic{width:18px;height:18px}
 .rail button:hover{background:rgba(255,255,255,.22);color:#fff}
@@ -142,7 +142,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:900px){
  .stage{grid-template-columns:minmax(0,1fr);padding:10px;gap:10px;grid-template-rows:auto auto 1fr auto}
  .osbar{grid-column:1;margin-right:0}.osaddress{display:none}
- .rail{grid-row:2;flex-direction:row;margin:0;justify-content:center;padding:6px;border-radius:999px;align-self:auto}
+ .rail{grid-column:1;grid-row:2;flex-direction:row;margin:0;justify-content:center;padding:6px;border-radius:999px;align-self:auto}
  .rail button{width:42px;height:42px}
  .panel,.tabs{grid-column:1;grid-row:auto}.tabs{overflow-x:auto;max-width:100%}
  .panel-top{flex-wrap:wrap;padding:12px 14px}.search{order:5;width:100%}
@@ -236,16 +236,16 @@ body[data-role=editor] .pp-del{display:none}
 
 /* Agent robots. At rest each one breathes, nods, glances about and sways its antenna, with a soft glow in its own colour.
    While its agent has a job running the arms work, the head bobs and both eyes flash very bright red on and off. */
-.bot{position:relative;flex:none;width:58px;height:66px;display:grid;place-items:center}
+.bot{position:relative;flex:none;width:58px;height:72px;display:grid;place-items:center}
 .bot svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tone) 70%,#fff)) drop-shadow(0 0 9px var(--tone))}
 .bot svg *{transform-box:fill-box}
-.bot .eye{opacity:.85}
+.bot .eye{opacity:.95}
 .bot .body{transform-origin:50% 100%;animation:bbreathe 4s ease-in-out infinite;animation-delay:var(--d,0s)}
 .bot .head{transform-origin:50% 90%;animation:bnod 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
 .bot .ant{transform-origin:50% 100%;animation:bsway 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
 .bot .eyes{animation:bglance 7s ease-in-out infinite;animation-delay:var(--d,0s)}
-.bot .arm.l{transform-origin:70% 12%;animation:barml 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
-.bot .arm.r{transform-origin:30% 12%;animation:barmr 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .arm.l{transform-origin:75% 12%;animation:barml 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bot .arm.r{transform-origin:10% 92%;animation:bwave 2.8s ease-in-out infinite;animation-delay:var(--d,0s)}
 .bot.working svg{animation:botglow 1.9s ease-in-out infinite;animation-delay:var(--d,0s)}
 .bot.working .head{animation:bbob .7s ease-in-out infinite}
 .bot.working .arm.l{animation:barmwork .42s ease-in-out infinite}
@@ -262,6 +262,7 @@ body[data-role=editor] .pp-del{display:none}
 @keyframes bglance{0%,18%,100%{transform:translateX(0)}28%,44%{transform:translateX(-2.4px)}56%,76%{transform:translateX(2.4px)}86%{transform:translateX(0)}}
 @keyframes barml{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
 @keyframes barmr{0%,100%{transform:rotate(0)}50%{transform:rotate(-9deg)}}
+@keyframes bwave{0%,100%{transform:rotate(0)}25%{transform:rotate(-13deg)}50%{transform:rotate(5deg)}75%{transform:rotate(-11deg)}}
 @keyframes barmwork{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(16deg)}}
 
 /* Motion switch (top bar): a small on/off toggle for animation and light. */
@@ -391,3 +392,9 @@ body[data-role=editor] .pp-del{display:none}
 .ed-src-row{display:flex;gap:10px;flex-wrap:wrap}.ed-src-row i{font-style:normal;opacity:.7;margin-left:4px}.ed-src-up{margin-top:6px}
 
 .ugc-frame{display:block;width:100%;height:calc(100vh - 170px);min-height:560px;border:0;border-radius:18px;background:#fff}
+
+/* Mira leads: first in every list of agents, with room to spare. */
+.agent-row.lead{grid-column:1/-1;max-width:none;background:rgba(255,255,255,.5)}.agent-row.lead b{font-size:1.15rem}.agent-row.lead .bot{width:62px;height:76px}
+.agent-card.lead{grid-column:1/-1;max-width:none;background:rgba(255,255,255,.7)}.agent-card.lead .bot{width:150px;height:176px}
+/* The robots stand on their own: no circle or frame around them. */
+.bot svg{overflow:visible}

@@ -6,20 +6,27 @@ const Dashboard=(()=>{
  // Each agent is a small glossy robot in its own colour. The robot glows while a job from that agent is running.
  const agentTone={Mira:'#0f7a4a',Seline:'#ef6f9a',Spectra:'#e5383b',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#1fb5c4'};
  let botCount=0;
- const agentAvatar=(name,i=0)=>{const id='b'+(botCount++),tone=agentTone[name]||'#8b6cf0',ch=name.slice(0,2).toUpperCase();
-  return `<span class="bot" data-agent="${esc(name)}" style="--tone:${tone};--d:${(i*-.6).toFixed(1)}s" role="img" aria-label="${esc(name)}, agent"><svg viewBox="0 0 64 74" aria-hidden="true">
-<defs><linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e9eef8"/><stop offset="1" stop-color="#c9d4ea"/></linearGradient><radialGradient id="${id}h"><stop offset="0" stop-color="var(--tone)" stop-opacity=".55"/><stop offset="1" stop-color="var(--tone)" stop-opacity="0"/></radialGradient></defs>
-<ellipse class="halo" cx="32" cy="68" rx="22" ry="5" fill="url(#${id}h)"/>
-<g class="body"><path d="M16 49 Q32 41 48 49 Q53 63 32 67 Q11 63 16 49Z" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
-<ellipse cx="32" cy="55.5" rx="9.5" ry="7.6" fill="var(--tone)"/><text x="32" y="58.8" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="8.6" letter-spacing=".3" fill="#fff">${ch}</text></g>
-<g class="arm l"><ellipse cx="11" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(14 11 54)"/></g>
-<g class="arm r"><ellipse cx="53" cy="54" rx="4.5" ry="7" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8" transform="rotate(-14 53 54)"/></g>
-<g class="head"><g class="ant"><line x1="32" y1="5" x2="32" y2="13" stroke="#c4cde0" stroke-width="2" stroke-linecap="round"/><circle class="tip" cx="32" cy="4.5" r="3" fill="var(--tone)"/></g>
-<circle cx="8.5" cy="27" r="4.5" fill="var(--tone)"/><circle cx="55.5" cy="27" r="4.5" fill="var(--tone)"/>
-<rect x="10" y="12" width="44" height="31" rx="15" fill="url(#${id}w)" stroke="#cfd8ea" stroke-width=".8"/>
-<rect x="15" y="18" width="34" height="19" rx="9.5" fill="#0d1530"/>
-<g class="eyes"><circle class="eye" cx="25" cy="27.5" r="4.4" fill="var(--tone)"/><circle class="eye" cx="39" cy="27.5" r="4.4" fill="var(--tone)"/>
-<circle class="glint" cx="23.6" cy="26" r="1.2" fill="#fff" opacity=".85"/><circle class="glint" cx="37.6" cy="26" r="1.2" fill="#fff" opacity=".85"/></g></g>
+ // Mira leads the other agents, so she is always first wherever the agents are listed.
+ const lead=list=>[...list].sort((a,b)=>(b[0]==='Mira')-(a[0]==='Mira'));
+ const agentAvatar=(name,i=0)=>{const id='b'+(botCount++),tone=agentTone[name]||'#8b6cf0';
+  // A friendly full-figure robot: dome head with a dark smiling visor, ear piece, antenna, a waving hand and boots. Only its accent colour changes per agent.
+  return `<span class="bot" data-agent="${esc(name)}" style="--tone:${tone};--d:${(i*-.6).toFixed(1)}s" role="img" aria-label="${esc(name)}, agent"><svg viewBox="0 0 80 100" aria-hidden="true">
+<defs><linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#f0ecfa"/><stop offset="1" stop-color="#cfc8e8"/></linearGradient><radialGradient id="${id}h"><stop offset="0" stop-color="var(--tone)" stop-opacity=".5"/><stop offset="1" stop-color="var(--tone)" stop-opacity="0"/></radialGradient></defs>
+<ellipse class="halo" cx="40" cy="95.5" rx="27" ry="4" fill="url(#${id}h)"/>
+<g class="legs"><rect x="29" y="74" width="6" height="11" rx="3" fill="#3a3d4a"/><rect x="46" y="74" width="6" height="11" rx="3" fill="#3a3d4a"/>
+<ellipse cx="29" cy="88" rx="10" ry="5.6" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".7"/><ellipse cx="53" cy="88.5" rx="10" ry="5.6" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".7"/></g>
+<g class="arm l"><path d="M25 61 Q19 66 25 72" fill="none" stroke="#3a3d4a" stroke-width="4.2" stroke-linecap="round"/><ellipse cx="25.5" cy="72.5" rx="4" ry="3.6" fill="#3a3d4a"/><ellipse cx="25" cy="58" rx="6" ry="6.6" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".7"/></g>
+<g class="body"><path d="M24 58 Q24 47 40 47 Q56 47 56 58 Q58 76 40 78 Q22 76 24 58Z" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".8"/>
+<path d="M33.5 58 h13 q0 8.5 -6.5 11 q-6.5 -2.5 -6.5 -11Z" fill="var(--tone)" opacity=".92"/><ellipse cx="38" cy="60.5" rx="2.4" ry="1.4" fill="#fff" opacity=".55"/></g>
+<g class="head"><g class="ant"><line x1="40" y1="17" x2="40" y2="10.5" stroke="#3a3d4a" stroke-width="1.8" stroke-linecap="round"/><circle class="tip" cx="40" cy="8" r="3.4" fill="var(--tone)"/></g>
+<ellipse cx="13.4" cy="33" rx="4.4" ry="8.4" fill="var(--tone)"/><ellipse cx="66.6" cy="33" rx="4.4" ry="8.4" fill="var(--tone)"/>
+<rect x="14" y="17" width="52" height="34" rx="17" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".8"/>
+<rect x="19" y="22" width="42" height="24" rx="12" fill="#0c1230"/>
+<g class="eyes"><path class="eye" d="M26 35 Q31 27.6 36 35 Q31 31.4 26 35Z" fill="var(--tone)"/><path class="eye" d="M44 35 Q49 27.6 54 35 Q49 31.4 44 35Z" fill="var(--tone)"/><path class="eye" d="M35.4 38.6 Q40 43.6 44.6 38.6 Q40 41.2 35.4 38.6Z" fill="var(--tone)"/>
+<circle class="glint" cx="24.6" cy="26" r="1.3" fill="#fff" opacity=".8"/><circle class="glint" cx="56" cy="26" r="1.3" fill="#fff" opacity=".8"/></g></g>
+<g class="arm r"><path d="M56 58 Q68 58 72 47" fill="none" stroke="#3a3d4a" stroke-width="4.2" stroke-linecap="round"/><ellipse cx="74" cy="40.5" rx="6.4" ry="7" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".7"/>
+<path d="M68 36 Q67.4 31.6 69.2 30 Q71 31.6 70.6 36Z" fill="#3a3d4a"/><path d="M72.4 35 Q72.2 29.6 74 28.4 Q75.8 29.6 75.6 35Z" fill="#3a3d4a"/><path d="M77.4 36 Q77.6 31.6 79.4 30.4 Q81 32 79.8 36Z" fill="#3a3d4a"/>
+<ellipse cx="56" cy="57" rx="5.6" ry="6.2" fill="url(#${id}w)" stroke="#cfc8e6" stroke-width=".7"/></g>
 </svg></span>`};
  // Which agents have a job running now. A job counts while it is not finished and was touched in the last 15 minutes.
  let working=new Set(),pollTimer=0;
@@ -142,12 +149,12 @@ const Dashboard=(()=>{
   let found=Library.filter({query:ui.query,format:ui.format,style:ui.style,tab:ui.tab}),note='';
   if(!found.length&&ui.tab!=='Popular'){found=Library.filter({query:ui.query,format:ui.format,style:ui.style});if(found.length)note=`None of these are in the ${ui.tab} tab, so all of them are shown.`}
   const list=ui.style==='All'?Library.mix(found,18):found.slice(0,18),p=curPreset();
-  const agents=GSNKit.agents;
+  const agents=lead(GSNKit.agents);
   return `<div class="dash"><section class="hello"><h1>Hello, GSN Media</h1>${chipsHtml()}</section>
   <section class="hero-row">
    <article class="hero"><canvas class="hero-globe" aria-hidden="true"></canvas><h2>SOCIAL<br>MEDIA PACK</h2><p>One idea for every platform. Hook, write-up pages and a call to action, ready for your agents and your final say.</p><button class="btn-maroon" data-act="newpack">Start a pack</button></article>
    <article class="agents-card"><div class="sec-head"><h2>Your agents</h2><a href="#agents">See more ${icon('chevronRight')}</a></div>
-    <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
+    <div class="agents-grid">${agents.map(([name,role],i)=>`<a class="agent-row${name==='Mira'?' lead':''}" href="#agents">${agentAvatar(name,i)}<span><b>${esc(name)}</b><small>${esc(role)}</small></span>${icon('chevronRight','chev')}</a>`).join('')}</div></article>
   </section>
   <section class="tpass"><div class="sec-head"><h2>Templates</h2><a href="#templates">See more ${icon('chevronRight')}</a></div>
    ${note?`<p class="hint">${esc(note)}</p>`:''}${list.length?`<div class="marquee" id="tgrid" aria-label="Templates, scrolling"><div class="marquee-track" style="--n:${list.length}">${[...list,...list].map(t=>Library.cardHtml(t,p)).join('')}</div></div>`:'<p class="empty">No templates match. Clear the search or filters.</p>'}</section></div>`;
@@ -187,7 +194,7 @@ const Dashboard=(()=>{
  }
  function agentsHtml(){
   return `<section class="hello"><h1>Agents</h1></section>
-  <div class="agents-page">${GSNKit.agents.map(([name,role,text],i)=>`<article class="agent-card">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p><p class="act-stat" data-stat="${esc(name)}">Loading activity…</p></div></article>`).join('')}</div>
+  <div class="agents-page">${lead(GSNKit.agents).map(([name,role,text],i)=>`<article class="agent-card${name==='Mira'?' lead':''}">${agentAvatar(name,i)}<div><h3>${esc(name)}</h3><small>${esc(role)}</small><p>${esc(text)}</p><p class="act-stat" data-stat="${esc(name)}">Loading activity…</p></div></article>`).join('')}</div>
   <section class="act-log"><div class="sec-head"><h2>What the agents did</h2></div><div id="actLog"><p class="act-empty">Loading…</p></div>
   <p class="act-note">These are the agents' own records: each one logs its name, the task, the AI model and the time. Nothing here is estimated.</p></section>`;
  }
