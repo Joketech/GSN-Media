@@ -4,7 +4,7 @@ const Dashboard=(()=>{
  const {$,$$,esc,icon,platformIcon,api,toast,state,preset,ago}=App;
  const ui={view:'dashboard',query:'',format:'All',style:'All',tab:'Popular',designTab:'All',shown:12,built:false};
  // Each agent is a small glossy robot in its own colour. The robot glows while a job from that agent is running.
- const agentTone={Mira:'#0f7a4a',Seline:'#ef6f9a',Spectra:'#e5383b',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#1fb5c4'};
+ const agentTone={Mira:'#0f7a4a',Seline:'#ef6f9a',Spectra:'#8b5cf6',Lyra:'#f0a339',Flux:'#4b8df0',Relay:'#1fb5c4'};
  let botCount=0;
  // Mira leads the other agents, so she is always first wherever the agents are listed.
  const lead=list=>[...list].sort((a,b)=>(b[0]==='Mira')-(a[0]==='Mira'));
