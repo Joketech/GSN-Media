@@ -20,8 +20,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .glass-strong{background:var(--glass-strong);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
 .glass-inset{background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
 .osbar{grid-column:2;margin-right:0;display:flex;align-items:center;gap:10px;padding:3px 12px;border-radius:999px;color:var(--ink)}
-.osgroup{display:flex;gap:4px}
-.osbtn{width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
+.osgroup{display:flex;align-items:center;gap:4px}
+.osbtn{width:26px;height:26px;padding:0;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);display:grid;place-items:center}
 .osbtn:hover{background:#fff}
 .osaddress{flex:1;display:flex;align-items:center;gap:8px;padding:3px 14px;border-radius:999px;background:rgba(255,255,255,.55);font-size:.74rem;min-width:0;overflow:hidden;white-space:nowrap}
 .osaddress b{font-weight:700;color:var(--accent)}.osdot{width:8px;height:8px;border-radius:50%;background:#5cc79a;box-shadow:0 0 8px #8ee0bd}
@@ -385,7 +385,7 @@ body[data-role=editor] .pp-del{display:none}
 
 /* Settings: brand colours */
 .cfg-colors{margin-top:18px;padding-top:6px;border-top:1px solid var(--line)}.cfg-colors h3{margin:12px 0 2px;font:600 1.05rem var(--serif)}
-.cfg-crow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}.cfg-crow label{margin-top:10px!important}
+.cfg-crow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.cfg-crow label{margin-top:10px!important}
 .cfg-crow .btn-light{margin-top:6px;height:28px;font-size:.7rem}
 .cfg-pal{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cfg-sw{position:relative;width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #0003;display:inline-block}
 .cfg-sw button{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;border:0;background:#3a1a28;color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0}
