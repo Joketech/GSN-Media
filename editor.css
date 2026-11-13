@@ -8,7 +8,7 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-title:hover,.ed-title:focus{background:rgba(255,255,255,.7)}
 .ed-icon{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.55);display:grid;place-items:center;color:var(--ink)}
 .ed-icon:hover:not(:disabled){background:#fff}.ed-icon:disabled{opacity:.35;cursor:default}
-.ed-chip{padding:5px 12px;border-radius:999px;background:rgba(122,31,43,.1);color:var(--maroon);font-size:.8rem;font-weight:700;white-space:nowrap}
+.ed-chip{padding:5px 12px;border-radius:999px;background:rgba(250,117,78,.1);color:var(--maroon);font-size:.8rem;font-weight:700;white-space:nowrap}
 .ed-chip.link{border:0;background:rgba(0,0,0,.07);color:var(--ink)}.ed-chip.link:hover{background:rgba(0,0,0,.14)}
 .ed-pack{display:flex;gap:6px;overflow:hidden}
 .ed-save{font-size:.8rem;color:var(--ink2);white-space:nowrap}.ed-save.bad{color:#a3262b;font-weight:700}
@@ -49,7 +49,7 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-dock.open .ed-tools{display:flex;animation:edpop .18s ease-out}
 @keyframes edpop{from{opacity:0;transform:translateY(-6px) scale(.97)}}
 .ed-tools button{width:64px;border:0;background:transparent;border-radius:16px;padding:8px 0 6px;display:grid;justify-items:center;gap:2px;font-size:.66rem;font-weight:700}
-.ed-tools button:hover{background:rgba(122,31,43,.1)}.ed-tools button.on{background:var(--maroon);color:#fff}
+.ed-tools button:hover{background:rgba(250,117,78,.1)}.ed-tools button.on{background:var(--maroon);color:#fff}
 .ed-flyout{position:absolute;z-index:13;left:96px;top:84px;bottom:130px;width:min(330px,calc(100vw - 120px));display:flex;flex-direction:column;border-radius:22px;background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px)}
 .ed-flyout[hidden]{display:none}
 .ed-flyout header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 6px}.ed-flyout h2{margin:0;font-size:1.05rem}
@@ -67,7 +67,7 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-egrid button:hover{border-color:var(--maroon)}.ed-egrid .ic{width:28px;height:28px}
 .ed-bigbtn{border:0;border-radius:14px;background:#fff;text-align:left;padding:14px 16px;border:1px solid rgba(0,0,0,.1)}
 .ed-bigbtn:hover{border-color:var(--maroon)}.h1{font-size:1.5rem;font-weight:800}.h2{font-size:1.1rem;font-weight:700}.h3{font-size:.9rem}
-.ed-drop{display:grid;justify-items:center;gap:2px;padding:22px;border:2px dashed rgba(122,31,43,.4);border-radius:16px;cursor:pointer;text-align:center}.ed-drop small{color:var(--ink2)}
+.ed-drop{display:grid;justify-items:center;gap:2px;padding:22px;border:2px dashed rgba(250,117,78,.4);border-radius:16px;cursor:pointer;text-align:center}.ed-drop small{color:var(--ink2)}
 .ed-ugrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ed-up{position:relative;border-radius:12px;overflow:hidden;background:#222}.ed-up img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .ed-up div{display:grid;gap:3px;padding:4px;background:#fff}.ed-up button{border:0;border-radius:8px;background:rgba(0,0,0,.07);font-size:.7rem;padding:5px}
@@ -123,9 +123,9 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 /* AI cutout picker and touch-up */
 .cut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
 .cut-cell{position:relative;display:flex;flex-direction:column;gap:6px;padding:8px;border:2px solid transparent;border-radius:16px;background:rgba(255,255,255,.55);cursor:pointer;font:inherit;color:inherit;text-align:center}
-.cut-cell:hover,.cut-cell:focus-visible{border-color:rgba(122,31,54,.45)}
-.cut-cell.on{border-color:#7a1f36}
-.cut-cell i{position:absolute;top:14px;left:14px;padding:2px 9px;border-radius:99px;background:#7a1f36;color:#fff;font-style:normal;font-size:11px}
+.cut-cell:hover,.cut-cell:focus-visible{border-color:rgba(250,117,78,.45)}
+.cut-cell.on{border-color:#FA754E}
+.cut-cell i{position:absolute;top:14px;left:14px;padding:2px 9px;border-radius:99px;background:#FA754E;color:#fff;font-style:normal;font-size:11px}
 .cut-checker{display:block;border-radius:12px;overflow:hidden;background:conic-gradient(#e9e4ea 25%,#fff 0 50%,#e9e4ea 0 75%,#fff 0) 0 0/16px 16px}
 .cut-cell img{display:block;width:100%;aspect-ratio:1;object-fit:contain}
 .cut-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
@@ -183,7 +183,7 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 
 /* Colouring single words while typing */
 .ed-etb .dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:1px solid rgba(0,0,0,.25)}
-.ed-etb .txt.main{background:var(--maroon,#7c1d3c);color:#fff;border-radius:10px}
+.ed-etb .txt.main{background:var(--maroon,#FA754E);color:#fff;border-radius:10px}
 .ed-etb{flex-wrap:wrap;max-width:calc(100% - 16px)}
 .fmt{border-radius:.3em}
 
@@ -201,7 +201,7 @@ body.in-editor{overflow:hidden;background:#e8e3f1}
 .ed-fpanel{position:fixed;z-index:80;width:300px;max-height:70vh;display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 14px 40px #2b123a40,0 0 0 1px #0001;padding:12px;gap:8px}
 .fp-head{display:flex;justify-content:space-between;align-items:center;font:700 .95rem 'DM Sans',sans-serif}.fp-x{border:0;background:none;font-size:1.4rem;cursor:pointer;line-height:1}
 .fp-q{height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.16);padding:0 10px;font:inherit}
-.fp-cats{display:flex;flex-wrap:wrap;gap:4px}.fp-cats button{border:1px solid rgba(0,0,0,.14);background:#fff;border-radius:999px;padding:3px 10px;font:600 .72rem 'DM Sans',sans-serif;cursor:pointer}.fp-cats button.on{background:#8a2236;color:#fff;border-color:#8a2236}
+.fp-cats{display:flex;flex-wrap:wrap;gap:4px}.fp-cats button{border:1px solid rgba(0,0,0,.14);background:#fff;border-radius:999px;padding:3px 10px;font:600 .72rem 'DM Sans',sans-serif;cursor:pointer}.fp-cats button.on{background:#FA754E;color:#fff;border-color:#FA754E}
 .fp-list{overflow:auto;min-height:120px;display:flex;flex-direction:column}
 .fp-it{display:flex;justify-content:space-between;align-items:baseline;gap:8px;text-align:left;border:0;background:none;padding:7px 8px;border-radius:8px;font-size:1.15rem;cursor:pointer;color:#222}.fp-it:hover{background:#f3eef5}.fp-it.on{background:#ede4f7}.fp-it small{font:500 .65rem 'DM Sans',sans-serif;color:#8a7f88}
 .fontbtn{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
