@@ -131,7 +131,7 @@ const Dashboard=(()=>{
  const curPreset=()=>preset(App.groupOf(state.platform)?.defaultPreset)||state.presets[0];
 
  function tabsFor(view){
-  if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories']];
+  if(view==='dashboard')return [['Popular','Popular'],['Trending','Trending'],['Carousels','Carousels'],['Stories','Stories'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Photo layouts','Layouts'],['Monthly','Monthly'],['Comic','Comic'],['UGC','UGC · 200']];
   if(view==='templates')return [['All','All styles'],['Photo','Photo'],['3D agency','3D agency'],['Business metaphors','Metaphors'],['Photo layouts','Layouts'],['Monthly','Monthly'],['Comic','Comic']];
   if(view==='schedule')return [['Calendar','Calendar'],['Review',`Needs review${Schedule.needsReview().length?' ('+Schedule.needsReview().length+')':''}`],['Setup','Setup']];
   if(view==='designs')return [['All','All'],['draft','Draft'],['review','In review'],['approved','Approved']];
@@ -139,8 +139,9 @@ const Dashboard=(()=>{
  }
  function drawTabs(){
   const items=tabsFor(ui.view),el=$('#bottomTabs');el.hidden=!items.length;
-  const active=ui.view==='dashboard'?ui.tab:ui.view==='designs'?ui.designTab:ui.view==='schedule'?(ui.schedTab||'Calendar'):ui.style;
+  const active=ui.view==='dashboard'?(ui.style!=='All'?ui.style:ui.tab):ui.view==='designs'?ui.designTab:ui.view==='schedule'?(ui.schedTab||'Calendar'):ui.style;
   el.innerHTML=items.map(([id,label])=>`<button data-tab="${esc(id)}" class="${id===active?'on':''}">${esc(label)}</button>`).join('');
+  if(ui.view==='dashboard')$$('[data-tab]',el).forEach(b=>b.addEventListener('click',e=>{const id=b.dataset.tab;if(id==='UGC'){e.stopImmediatePropagation();location.hash='#ugc';return}const base=['Popular','Trending','Carousels','Stories'].includes(id);ui.style=base?'All':id;if(!base)ui.tab='Popular'},{capture:true}));
   if(ui.view==='templates')$$('[data-tab]',el).forEach(b=>b.addEventListener('click',()=>{ui.style=b.dataset.tab},{capture:true}));
  }
 

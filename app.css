@@ -67,7 +67,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .sec-head h2{margin:0;font:600 1.45rem var(--serif);color:#4a2431}
 .sec-head a{display:flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.08em}.sec-head .ic{width:13px;height:13px}
 .hero-row{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;flex:none;height:300px;min-height:300px}
-.hero{position:relative;border-radius:22px;padding:22px 24px 24px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 55%/cover;border:1px solid var(--line)}
+.hero{position:relative;border-radius:22px;padding:22px 24px 24px;color:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;background:linear-gradient(90deg,rgba(72,24,54,.78),rgba(72,24,54,.05) 75%),url(hero-realistic.png) center 8%/cover;border:1px solid var(--line)}
 .hero:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
 @keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 .hero h2{margin:0;font:600 clamp(1.6rem,2.7vw,2.3rem)/.95 var(--serif);letter-spacing:.01em}
@@ -118,7 +118,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .empty{padding:40px 10px;color:var(--ink2);text-align:center}
 .tabs{grid-column:2;grid-row:3;justify-self:center;display:flex;gap:6px;padding:4px;border-radius:999px}
 .tabs[hidden]{display:none}
-.tabs button{height:30px;padding:0 30px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.7rem;color:var(--ink2);transition:.2s}
+.tabs{max-width:100%;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs button{flex:none;white-space:nowrap;height:30px;padding:0 22px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:.7rem;color:var(--ink2);transition:.2s}
 .tabs button:hover{color:var(--ink)}
 .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 4px 12px rgba(90,70,120,.18)}
 .agents-page{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-bottom:20px}

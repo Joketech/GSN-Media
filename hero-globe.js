@@ -4,7 +4,7 @@
    further round every frame, so the very same Earth (cloud, city lights, grid lines) appears to rotate in the hand. The fingers that cross the
    globe are masked out so they stay in front. The map shows a 100-degree strip and mirrors it, so the spin has no seam. */
 const HeroGlobe=(()=>{
- const IMG={w:1672,h:941,cx:1165,cy:330,R:275,posY:.55,src:'hero-realistic.jpg'};
+ const IMG={w:1672,h:941,cx:1165,cy:330,R:275,posY:.08,src:'hero-realistic.jpg'};
  const S=340,SHOW=.93,STRIP=100*Math.PI/180,TW=512,TH=256,SPEED=.2;
  const FINGERS=[
   [[1245,585],[1255,560],[1262,530],[1275,502],[1290,485],[1312,477],[1332,485],[1335,515],[1325,550],[1317,580],[1300,600],[1255,600]],
