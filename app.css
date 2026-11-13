@@ -418,3 +418,10 @@ body[data-role=editor] .pp-del{display:none}
 .click-dot{position:fixed;z-index:99999;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:3px solid var(--forest);background:rgba(84,183,125,.35);pointer-events:none;animation:clickdot .55s ease-out forwards}
 @keyframes clickdot{to{transform:scale(3.2);opacity:0}}
 [data-motion="off"] .click-dot{display:none}
+
+/* The tab bar under the templates turns Forest Green while the pointer is on it. */
+.stage>.tabs.glass{transition:background .25s,box-shadow .25s}
+.stage>.tabs.glass:hover{background:var(--forest);box-shadow:0 8px 22px rgba(84,183,125,.4)}
+.stage>.tabs.glass:hover button:not(.on){color:#fff}
+.stage>.tabs.glass:hover button:not(.on):hover{background:var(--forest-dark)}
+.stage>.tabs.glass:hover button.on{background:#fff;color:var(--forest-dark)}
