@@ -398,3 +398,23 @@ body[data-role=editor] .pp-del{display:none}
 .agent-card.lead{grid-column:1/-1;max-width:none;background:rgba(255,255,255,.7)}.agent-card.lead .bot{width:150px;height:176px}
 /* The robots stand on their own: no circle or frame around them. */
 .bot svg{overflow:visible}
+
+/* Forest Green is the pointer colour: whatever you point at or press turns Forest Green (#54B77D). Chosen/active items stay Apricot Orange. */
+:root{--forest:#54B77D;--forest-dark:#3F9A64;--forest-soft:rgba(84,183,125,.18)}
+.stage,.modal-back{accent-color:var(--forest);caret-color:var(--forest)}
+.stage ::selection{background:var(--forest);color:#fff}
+.stage :is(button,a,input,select,textarea,summary,[role=button],[tabindex]):focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.stage :is(.btn-maroon,.btn-dark,.chip,.pill-btn,.btn-light,.osbtn,.motion-switch,.round-btn,.user-btn):not(:disabled):hover{background:var(--forest);background-image:none;color:#fff;border-color:var(--forest);box-shadow:0 6px 16px rgba(84,183,125,.38)}
+.stage :is(.btn-maroon,.btn-dark,.chip,.pill-btn,.btn-light,.osbtn,.motion-switch,.round-btn,.user-btn):not(:disabled):active{background:var(--forest-dark);background-image:none;color:#fff;border-color:var(--forest-dark);transform:translateY(1px)}
+.rail button:not(.on):hover,.rail button:not(.on):active{background:var(--forest);color:#fff;box-shadow:0 6px 16px rgba(84,183,125,.4)}
+.tabs button:not(.on):hover{color:#fff;background:var(--forest)}.tabs button:not(.on):active{background:var(--forest-dark);color:#fff}
+.stage a:hover,.stage .sec-head a:hover,.stage .linklike:hover{color:var(--forest-dark)}
+.popover a:hover,.popover>button:hover{background:var(--forest-soft);color:var(--ink)}
+.agent-row:hover,.agent-card:hover{box-shadow:0 0 0 2px var(--forest)}
+.tcard:hover{box-shadow:0 0 0 3px var(--forest),0 12px 28px rgba(40,70,50,.22)}
+.search:focus-within{border-color:var(--forest);box-shadow:0 0 0 3px var(--forest-soft)}
+.stage input:focus,.stage textarea:focus,.stage select:focus{border-color:var(--forest)}
+/* A small green ring where you click or tap. */
+.click-dot{position:fixed;z-index:99999;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:3px solid var(--forest);background:rgba(84,183,125,.35);pointer-events:none;animation:clickdot .55s ease-out forwards}
+@keyframes clickdot{to{transform:scale(3.2);opacity:0}}
+[data-motion="off"] .click-dot{display:none}

@@ -81,7 +81,7 @@ const Dashboard=(()=>{
   $('#filterBtn').addEventListener('click',()=>togglePop('filter'));$('#bellBtn').addEventListener('click',()=>togglePop('bell'));$('#userBtn').addEventListener('click',()=>togglePop('user'));
   document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))closePops()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePops();closeModal()}});
-  Motion.init();Motion.watch();$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
+  Motion.init();Motion.watch();document.addEventListener('pointerdown',e=>{if(document.documentElement.dataset.motion==='off')return;const d=document.createElement('i');d.className='click-dot';d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),600)},{passive:true});$('#motionSwitch').addEventListener('click',()=>Motion.set(!Motion.on));
   ui.built=true;
  }
  const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
