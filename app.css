@@ -419,9 +419,8 @@ body[data-role=editor] .pp-del{display:none}
 @keyframes clickdot{to{transform:scale(3.2);opacity:0}}
 [data-motion="off"] .click-dot{display:none}
 
-/* The tab bar under the templates turns Forest Green while the pointer is on it. */
-.stage>.tabs.glass{transition:background .25s,box-shadow .25s}
-.stage>.tabs.glass:hover{background:var(--forest);box-shadow:0 8px 22px rgba(84,183,125,.4)}
-.stage>.tabs.glass:hover button:not(.on){color:#fff}
-.stage>.tabs.glass:hover button:not(.on):hover{background:var(--forest-dark)}
-.stage>.tabs.glass:hover button.on{background:#fff;color:var(--forest-dark)}
+/* Tab bar stays white. Only the pill under the pointer turns Forest Green, and it follows the pointer from tab to tab. */
+.stage>.tabs.glass button{transition:background .2s,color .2s,box-shadow .2s}
+.stage>.tabs.glass:hover button.on:not(:hover){background:transparent;box-shadow:none}
+.stage>.tabs.glass button:hover,.stage>.tabs.glass button.on:hover{background:var(--forest);color:#fff;box-shadow:0 4px 12px rgba(84,183,125,.4)}
+.stage>.tabs.glass button:not(:hover):active{background:var(--forest-dark)}
