@@ -7,7 +7,7 @@ export async function pictureCatalog(){
  const prepared=new Map(assets.campaigns.map(a=>[a.id,a]));
  const pictures=rows.filter(r=>ready.includes(r.id)).flatMap(({id,product,category})=>{
   const list=[{id:`ugc-${id}-campaign`,templateId:id,name:product,category,role:'campaign',url:`/ugc/assets/ad-${String(id).padStart(3,'0')}.png`}];
-  const a=prepared.get(id);if(a)for(const role of ['person','product','packaging'])list.push({id:`ugc-${id}-${role}`,templateId:id,name:`${product} / ${role}`,category,role,url:'/ugc/'+a.kit,region:a.regions[role],sheetSize:audit.campaigns.find(c=>c.id===id).size});
+  const a=prepared.get(id);if(a&&a.background)list.push({id:`ugc-${id}-background`,templateId:id,name:`${product} / background`,category,role:'background',url:'/ugc/'+a.background});if(a)for(const role of ['person','product','packaging'])list.push({id:`ugc-${id}-${role}`,templateId:id,name:`${product} / ${role}`,category,role,url:'/ugc/'+a.kit,region:a.regions[role],sheetSize:audit.campaigns.find(c=>c.id===id).size});
   return list;
  });
  return {total:rows.length,ready,layered:assets.campaigns.map(a=>a.id),pictures};

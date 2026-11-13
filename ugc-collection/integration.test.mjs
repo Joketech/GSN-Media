@@ -17,8 +17,8 @@ test('200 covers have no repeated colour-independent composition and browser dat
 
 test('picture library includes every campaign plus separately selectable prepared cutouts',async()=>{
  const catalog=await pictureCatalog();assert.equal(catalog.ready.length,200);assert.equal(catalog.layered.length,69);
- assert.equal(catalog.pictures.length,407);assert.equal(new Set(catalog.pictures.map(p=>p.id)).size,407);
- for(const p of catalog.pictures){assert.ok(p.url.startsWith('/ugc/'));if(p.role!=='campaign'){assert.equal(p.region.length,4);assert.equal(p.sheetSize.length,2);}}
+ assert.equal(catalog.pictures.length,476);assert.equal(new Set(catalog.pictures.map(p=>p.id)).size,476);assert.equal(catalog.pictures.filter(p=>p.role==='background').length,69);
+ for(const p of catalog.pictures){assert.ok(p.url.startsWith('/ugc/'));if(p.role!=='campaign'&&p.role!=='background'){assert.equal(p.region.length,4);assert.equal(p.sheetSize.length,2);}}
 });
 
 test('main-server asset adapter serves the collection, rejects unlisted files, and supports HEAD',async()=>{
@@ -31,7 +31,7 @@ test('main-server asset adapter serves the collection, rejects unlisted files, a
   assert.equal((await fetch(base+'/ugc/layered-assets/068-kit.png',{method:'HEAD'})).status,200);
   assert.equal((await fetch(base+'/ugc/server.mjs')).status,404);
   assert.equal((await fetch(base+'/ugc/.env')).status,404);
-  assert.equal((await (await fetch(base+'/api/ugc/catalog')).json()).pictures.length,407);
+  assert.equal((await (await fetch(base+'/api/ugc/catalog')).json()).pictures.length,476);
  }finally{await new Promise(r=>server.close(r))}
 });
 
