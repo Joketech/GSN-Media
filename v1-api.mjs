@@ -13,6 +13,7 @@ import {createAccounts} from './accounts.mjs';
 import {createPublisher} from './publisher.mjs';
 import {createIdeas} from './ideas-api.mjs';
 import {createImageTools} from './image-tools.mjs';
+import {generate as magicGenerate,decode as magicDecode,catalog as magicCatalog,MagicError} from './magic-stick.mjs';
 
 const designTemplateCount=templateCatalog().length;
 const terminal=new Set(['complete','failed','interrupted']);
@@ -192,6 +193,14 @@ export function createV1({publishEnv=process.env,clock=Date.now,dataDir=process.
   const tm=url.pathname.match(/^\/api\/v1\/templates\/(\d{1,3})$/);
   if(tm&&req.method==='GET'){const id=Number(tm[1]);if(id>=designTemplateCount)throw new InputError('Template not found.',404);json(res,200,{id,pages:starterSlides(id),layouts:layoutGuide()});return true;}
   if(await imageTools.handle(req,res,url,ctx))return true;
+  // Magic stick: facts in, finished editable design out. Free and instant, because every layout is plain code.
+  if(url.pathname==='/api/v1/magic/catalog'&&req.method==='GET'){json(res,200,magicCatalog());return true}
+  if(url.pathname==='/api/v1/magic/generate'&&req.method==='POST'){
+   try{const out=magicGenerate(await body(req));sanitizeDesign(out.design,{templateCount:designTemplateCount});json(res,200,out)}catch(e){if(e instanceof MagicError||e instanceof DesignError)throw new InputError(e.message,e.status||400);throw e}
+   return true}
+  if(url.pathname==='/api/v1/magic/decode'&&req.method==='POST'){
+   try{json(res,200,magicDecode((await body(req)).code))}catch(e){if(e instanceof MagicError)throw new InputError(e.message,e.status||400);throw e}
+   return true}
   if(url.pathname==='/api/v1/cutout'&&req.method==='POST'){
    // Background removal: several models run privately and are returned side by side. Open to the owner and to agents.
    const p=await body(req);if(!cutoutUrl)throw new InputError('The cutout worker is not configured. Set CUTOUT_WORKER_URL.',503);

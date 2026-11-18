@@ -20,6 +20,13 @@ export const PRESETS = [
   preset('facebook-story', 'facebook', 'Facebook story', 1080, 1920, 'Full-screen vertical'),
   preset('trending-post', 'trending', 'Trending post', 1080, 1350, 'Fast reaction post for a trending topic'),
   preset('trending-story', 'trending', 'Trending story', 1080, 1920, 'Vertical version of a trending post'),
+  // Print and event sizes used by the Magic stick (150 dpi). They are not social platforms, so they have no chip on the dashboard.
+  preset('print-a4', 'print', 'A4 portrait', 1240, 1754, 'Flyers, programs, schedules'),
+  preset('print-a4-landscape', 'print', 'A4 landscape', 1754, 1240, 'Certificates, wide programs'),
+  preset('print-a5', 'print', 'A5 portrait', 874, 1240, 'Half-page flyers and cards'),
+  preset('print-letter', 'print', 'US Letter', 1275, 1650, 'US flyers and programs'),
+  preset('print-invite', 'print', 'Invitation 5 x 7 in', 1050, 1470, 'Invitation card'),
+  preset('print-wide', 'print', 'Wide 16:9', 1920, 1080, 'Screens, banners, projectors'),
 ];
 
 // The chips shown on the dashboard, in display order.

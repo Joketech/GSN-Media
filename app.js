@@ -7,6 +7,7 @@ const App=(()=>{
  const paths={
   home:'<path d="m3 11 9-8 9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/>',
   templates:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
+  wand:'<path d="m4 20 11-11"/><path d="m14 6 4 4"/><path d="M18 3v3M16.5 4.5h3M20 12v2M19 13h2M7 3v2M6 4h2"/>',
   designs:'<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
   users:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c3 .2 5 2.2 5 5.3"/>',
   team:'<circle cx="12" cy="7.5" r="2.8"/><path d="M7 20c0-3.2 2.2-5.5 5-5.5s5 2.3 5 5.5"/><circle cx="4.8" cy="10" r="2"/><path d="M1.5 19c0-2.4 1.5-4 3.3-4"/><circle cx="19.2" cy="10" r="2"/><path d="M22.5 19c0-2.4-1.5-4-3.3-4"/>',
@@ -107,7 +108,7 @@ const App=(()=>{
    if(editor){show('editor');await Editor.open(editor[1]);return}
    if(fresh){const t=Number(fresh[1]),p=fresh[2];if(!GSNKit.templates[t]||!preset(p)){location.replace('#templates');return}
     await createPack(t,[p],GSNKit.templates[t].cartoon||GSNKit.templates[t].slotKey?GSNKit.templates[t].name:GSNKit.gsnPhoto(t).name);return}
-   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','ideas','templates','ugc','designs','agents','schedule','team','people','settings'].includes(view)?view:'dashboard');
+   const view=hash.slice(1);show('stage');await Dashboard.show(['dashboard','ideas','magic','templates','ugc','designs','agents','schedule','team','people','settings'].includes(view)?view:'dashboard');
   }catch(error){toast(error.message,6000);if(editor||fresh)location.replace('#designs')}
  }
  async function start(){

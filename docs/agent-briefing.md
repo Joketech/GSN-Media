@@ -55,3 +55,7 @@ End every task with this, in plain words:
 2. **Waiting on the owner:** anything needing approval.
 3. **Problems:** failures, missing access or anything you could not verify.
 4. **Model used:** the model name, matching your activity log entry.
+
+## Magic stick
+
+To make a flyer, invitation, event program, food schedule, notice, certificate, menu or thank-you card, call `POST /api/v1/magic/generate` (see `integrations/hermes/API.md`), then `POST /designs` with the returned `design`. Keep the returned `code` so the same layout can be regenerated with new words. Do not invent pictures; only use ones the owner supplied.
