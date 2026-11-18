@@ -44,6 +44,7 @@ export const KINDS = [
     PIC(),
   ] },
   { id: 'invitation', name: 'Invitation', blurb: 'Birthday, wedding, party, dinner or launch.', fields: [
+    T('sides', 'Card sides', 'choice', { options: [['one', 'One side'], ['two', 'Front and back (two pages)']], hint: 'Front and back: the front shows the names and headline, the back shows the details, RSVP and QR code.' }),
     T('occasion', 'Small line on top', 'text', { example: 'Together with their families' }),
     T('names', 'Names or event', 'text', { example: 'Ada & Tunde' }),
     T('headline', 'Line under the names', 'text', { example: 'invite you to celebrate their wedding' }),
@@ -279,7 +280,44 @@ L['flyer-stripe'] = (c) => {
 
 const centre = (b, P, o) => (t, y, s, e = {}) => b.text(t, { x: o.x, y, w: o.w, s, a: 'center', ...e });
 
+
+// Front and back: page 1 is the cover (names and headline), page 2 carries the details, RSVP and the QR code.
+function twoSided(c, style) {
+  const { P, F, W, H } = c, mk = () => board(W, H, P);
+  const w = { classic: 76, arch: 70, photo: 80 }[style], x = (100 - w) / 2;
+  const deco = b => {
+    if (style === 'classic') { b.rect(5, 5, 90, b.Hu - 10, P.accent); b.rect(6.2, 6.2, 87.6, b.Hu - 12.4, P.bg); }
+    else if (style === 'arch') { b.rect(0, 0, 100, b.Hu, P.accent); b.shape('round', 9, 8, 82, b.Hu - 16, P.bg, { radius: 12 }); }
+    else b.rect(0, 0, 100, b.Hu, P.soft);
+  };
+  const nf = style === 'arch' ? 'dmserif' : 'greatvibes';
+  const f = mk(); deco(f);
+  const tf = centre(f, P, { x, w });
+  let y = f.Hu * 0.27;
+  if (style === 'photo') { const d = Math.min(50, f.Hu * 0.3); f.picture(F.picture, 'oval', 50 - d / 2, f.Hu * 0.1, d, d, { line: P.accent, lineW: 3 }); y = f.Hu * 0.1 + d + 8; }
+  y = tf(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 6;
+  const ns = f.fit(F.names, w, style === 'arch' ? 13 : 16, 7, 3, nf, false, false);
+  y = tf(F.names, y, ns, { f: nf, lh: 100 }) + 6;
+  y = tf(F.headline, y, 4.4, { f: 'playfair', i: true }) + 7;
+  if (style === 'classic') { f.rect(38, y, 24, 0.7, P.accent); }
+  else if (style === 'arch') { if (F.date) f.chip(F.date, 50, y, 3.4, P.accent2, P.onaccent, { mid: true }); }
+  else if (F.date) tf(F.date, y, 4.4, { b: true });
+  const k = mk(); deco(k);
+  const tk = centre(k, P, { x, w });
+  y = k.Hu * 0.14;
+  y = tk(F.message, y, 3.8, { c: P.muted, lh: 130 }) + 8;
+  k.rect(38, y, 24, 0.7, P.accent); y += 8;
+  y = tk(F.date, y, 5, { b: true, f: 'playfair' }) + 2;
+  y = tk(F.time, y, 4, {}) + 2;
+  y = tk(F.venue, y, 3.8, { c: P.muted }) + 6;
+  y = tk(F.dress, y, 3.2, { i: true, c: P.accent }) + 4;
+  y = tk(F.rsvp, y, 3.4, { b: true }) + 6;
+  if (F.qrImg && F.qrAuto) { const q = Math.min(26, k.Hu * 0.2); k.qr(F.qrImg, F.qrlabel, 50, Math.max(y, k.Hu - q - 16), q); } else k.qrAt(F);
+  return [page(f, P, F, c.bg), page(k, P, F, c.bg)];
+}
+
 L['inv-classic'] = (c) => {
+  if (c.F.sides === 'two') return twoSided(c, 'classic');
   const { P, F, W, H } = c, b = board(W, H, P), g = F.qrAuto ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(5, 5 / 1, 90, b.Hu - 10, P.accent);
   b.rect(6.2, 6.2, 87.6, b.Hu - 12.4, P.bg);
@@ -301,6 +339,7 @@ L['inv-classic'] = (c) => {
 };
 
 L['inv-arch'] = (c) => {
+  if (c.F.sides === 'two') return twoSided(c, 'arch');
   const { P, F, W, H } = c, b = board(W, H, P), g = F.qrAuto ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(0, 0, 100, b.Hu, P.accent);
   b.shape('round', 9, 8, 82, b.Hu - 16, P.bg, { radius: 12 });
@@ -320,6 +359,7 @@ L['inv-arch'] = (c) => {
 };
 
 L['inv-photo'] = (c) => {
+  if (c.F.sides === 'two') return twoSided(c, 'photo');
   const { P, F, W, H } = c, b = board(W, H, P), g = F.qrAuto ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(0, 0, 100, b.Hu, P.soft);
   const d = Math.min(46, b.Hu * (F.qrAuto ? (H / W <= 1.3 ? 0.16 : 0.22) : 0.3));
@@ -541,7 +581,7 @@ L['thanks-card'] = (c) => {
 };
 
 // ---- Public functions ----
-const FIELD_LIMIT = { text: 160, longtext: 700, list: 3000 };
+const FIELD_LIMIT = { choice: 10, text: 160, longtext: 700, list: 3000 };
 
 function resolve(input) {
   if (!input || typeof input !== 'object') throw new MagicError('Send a JSON object.');
@@ -565,6 +605,7 @@ function resolve(input) {
     if (v === undefined || v === null || v === '') continue;
     if (f.type === 'image') { if (typeof v !== 'string' || v.length > 1_400_000 || !IMAGE.test(v)) throw new MagicError(`${f.id} must be a PNG, JPEG or WebP picture of up to 1.4 MB.`); F[f.id] = v; continue; }
     if (typeof v !== 'string') throw new MagicError(`${f.id} must be text.`);
+    if (f.type === 'choice' && !f.options.some(o => o[0] === v)) throw new MagicError(`${f.id} must be one of: ${f.options.map(o => o[0]).join(', ')}.`);
     if (v.length > FIELD_LIMIT[f.type]) throw new MagicError(`${f.label} is too long (${FIELD_LIMIT[f.type]} characters at most).`);
     F[f.id] = v;
   }

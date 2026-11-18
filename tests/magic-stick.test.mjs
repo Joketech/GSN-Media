@@ -83,3 +83,16 @@ test('QR code can be placed exactly where the person wants it',()=>{
  const wild=generate({template:'inv-arch',fields:{...base,qrsize:'999',qrx:'-5',qry:'abc'}});
  sanitizeDesign(wild.design,{templateCount:count});
 });
+
+test('invitations can be front and back',()=>{
+ for(const tpl of ['inv-classic','inv-arch','inv-photo'])for(const size of ['print-invite','print-a5','instagram-post']){
+  const out=generate({template:tpl,size,fields:{names:'Ada & Tunde',date:'Sat 20 June',venue:'Grand Hall',rsvp:'RSVP 0803',qr:'https://example.com/rsvp',sides:'two'}});
+  const d=sanitizeDesign(out.design,{templateCount:count});
+  assert.equal(d.pages.length,2,tpl);
+  assert.ok(d.pages[0].texts.some(t=>t.text==='Ada & Tunde'));
+  assert.ok(d.pages[1].shapes.some(s=>/^data:image\/png/.test(s.src||'')),'QR on the back');
+  assert.ok(!d.pages[0].shapes.some(s=>/^data:image\/png/.test(s.src||'')));
+ }
+ assert.equal(generate({template:'inv-classic',fields:{names:'A',sides:'one'}}).design.pages.length,1);
+ assert.throws(()=>generate({template:'inv-classic',fields:{names:'A',sides:'three'}}),MagicError);
+});
