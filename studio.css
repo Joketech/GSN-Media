@@ -9,3 +9,5 @@
 .art.page-hide-art .campaign-visual{visibility:hidden!important}
 .art.page-no-deco:before,.art.page-no-deco:after{display:none!important}
 .art [data-canvas-copy],.art .free-text{unicode-bidi:plaintext}
+/* Pages made from blank text boxes and shapes (Magic stick) carry none of the template chrome: counters, glows, pills, photos. */
+.art.page-custom.page-hide-art.page-no-deco .dk-count,.art.page-custom.page-hide-art.page-no-deco .dk-fx,.art.page-custom.page-hide-art.page-no-deco .dk-pill,.art.page-custom.page-hide-art.page-no-deco .dk-visual,.art.page-custom.page-hide-art.page-no-deco .campaign-visual,.art.page-custom.page-hide-art.page-no-deco .art-foot{display:none!important}

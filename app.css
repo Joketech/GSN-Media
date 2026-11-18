@@ -424,3 +424,45 @@ body[data-role=editor] .pp-del{display:none}
 .stage>.tabs.glass:hover button.on:not(:hover){background:transparent;box-shadow:none}
 .stage>.tabs.glass button:hover,.stage>.tabs.glass button.on:hover{background:var(--forest);color:#fff;box-shadow:0 4px 12px rgba(84,183,125,.4)}
 .stage>.tabs.glass button:not(:hover):active{background:var(--forest-dark)}
+
+/* Magic stick */
+.mg-free{align-self:center;padding:3px 12px;border-radius:999px;background:var(--forest-soft);color:#2b6b47;font-size:.72rem;font-weight:800;letter-spacing:.04em}
+.mg-modes{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.mg-modes button{height:32px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.6);font-weight:700;font-size:.78rem;color:var(--ink);cursor:pointer}
+.mg-modes button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.mg-modes button[aria-selected=false]:hover{background:var(--forest);border-color:var(--forest);color:#fff}
+.mg-kinds{display:flex;flex-wrap:wrap;gap:6px}
+.mg-blurb{margin:8px 0 12px;color:var(--ink2);font-size:.84rem}
+.mg-cards{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px}
+.mg-card{flex:none;width:150px;display:flex;flex-direction:column;gap:4px;text-align:left;padding:8px;border-radius:16px;border:2px solid transparent;background:rgba(255,255,255,.6);cursor:pointer;color:var(--ink)}
+.mg-card[aria-pressed=true]{border-color:var(--accent);background:#fff}
+.mg-card:hover{border-color:var(--forest)}
+.mg-card b{font-size:.82rem}.mg-card small{font-size:.68rem;color:var(--ink2);line-height:1.3}
+.mg-thumb{display:block;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 8px rgba(60,40,30,.15);min-height:60px}
+.mg-thumb>.mg-inner,.mg-page>.mg-inner,.mg-thumb [class~=mg-inner]{position:relative}
+.mg-inner{width:100%;height:100%;display:block}
+.mg-cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start;margin-top:4px}
+.mg-form{padding:18px;border-radius:20px;background:rgba(255,255,255,.5);border:1px solid var(--line)}
+.mg-f{margin:0 0 12px}
+.mg-f label,.mg-simple label{display:block;margin:0 0 4px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#7b6a72;font-weight:700}
+.mg-f input[type=text],.mg-f textarea,.mg-f select,.mg-simple textarea,.mg-simple select,.mg-form select{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-size:.9rem;color:#3a2a30;letter-spacing:0;text-transform:none}
+.mg-pal{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mg-sw{display:flex;width:62px;height:30px;border-radius:999px;overflow:hidden;border:2px solid #fff;box-shadow:0 0 0 1px #0003;padding:0;cursor:pointer}
+.mg-sw i{flex:1}.mg-sw i:nth-child(1){background:var(--c1)}.mg-sw i:nth-child(2){background:var(--c2)}.mg-sw i:nth-child(3){background:var(--c3)}
+.mg-sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--accent)}
+.mg-sw:hover{box-shadow:0 0 0 3px var(--forest)}
+.mg-own{display:flex!important;align-items:center;gap:6px;margin:0!important}
+.mg-own input{width:40px;height:28px;border:1px solid var(--line);border-radius:8px;padding:1px;background:#fff}
+.mg-img{display:flex;gap:8px;align-items:center}.mg-img input{font-size:.8rem;max-width:100%}
+.mg-bg{margin:4px 0 10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.55)}.mg-bg summary{cursor:pointer;font-weight:700;font-size:.82rem}
+.mg-side{position:sticky;top:0}
+.mg-pages{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px}
+.mg-page{flex:none;width:min(100%,330px);border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(60,40,30,.22);position:relative}
+.mg-pages .mg-page:only-child{width:min(100%,380px);margin:0 auto}
+.mg-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.mg-msg{min-height:1.2em;font-size:.78rem;color:var(--ink2);margin:4px 0}
+.mg-simple{max-width:640px;padding:18px;border-radius:20px;background:rgba(255,255,255,.5);border:1px solid var(--line)}
+.mg-simple p{margin:0 0 10px;font-size:.86rem}
+@media(max-width:900px){.mg-cols{grid-template-columns:1fr}.mg-side{position:static}}
+
+.mg-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 14px;padding:0;list-style:none}.mg-how li{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4}.mg-how b{color:#FA754E}

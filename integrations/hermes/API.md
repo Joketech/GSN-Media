@@ -96,3 +96,13 @@ When the owner turns on accounts (Team page), the studio is split into workspace
 ### Monthly and comic templates
 
 Ids 412–423 are the twelve monthly templates (`month: true`). Ids 424–523 are 100 comic business-humour templates (`funny: true`): ten designs in ten colourways, each with a `main` picture slot and a `sticker` mascot slot that can be replaced through `slots.<key>.src`.
+
+### Magic stick (flyers, invitations, programs, food schedules, notices, certificates, menus, thank-you cards)
+
+Built-in smart forms; no paid AI is used. You supply the materials, the generator lays them out.
+
+- `GET /magic/catalog` lists `sizes`, `palettes`, `kinds` (with their `fields`) and `templates` (each with the `sizes` it allows).
+- `POST /magic/generate` takes `{template, size?, palette?, accent?, fields, images?, wash?}` or `{code, fields}` and returns `{design, code, template, size}`. `design` is a normal design body: send it to `POST /designs` to save it and open it in the editor. `code` looks like `MS1.…`; the same code plus the same `fields` always regenerates the exact same design. Pictures are never part of the code.
+- `POST /magic/decode {code}` returns the template, size, palette and accent stored in a code.
+- Invitations accept `sides: "two"` for a front page (names, headline) and a back page (details, RSVP, QR code), and `qr`, `qrlabel`, `qrsize`, `qrx`, `qry` for a scannable QR code placed exactly where you ask (percent of the card; leave `qrsize`, `qrx`, `qry` out for automatic placement).
+- Long programs, schedules and menus paginate automatically. Certificates only allow landscape sizes; everything else allows the portrait print sizes, invite and Instagram post/story.

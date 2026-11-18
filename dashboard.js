@@ -38,8 +38,8 @@ const Dashboard=(()=>{
    working=new Set(jobs.filter(j=>!['complete','failed','error','cancelled','rejected'].includes(j.state)&&now-Date.parse(j.updated_at||j.created_at||0)<15*60e3).map(j=>String(j.agent||'').toLowerCase()));applyWorking()}catch{}
   pollTimer=setTimeout(pollJobs,6000);
  }
- const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['templates','templates','Templates'],['ugc','templates','UGC'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
- const titles={dashboard:'Dashboard',ideas:'Ideas',templates:'Templates',ugc:'UGC collection',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
+ const navItems=[['dashboard','home','Home'],['ideas','ideas','Ideas'],['magic','wand','Magic stick'],['templates','templates','Templates'],['ugc','templates','UGC'],['designs','designs','My designs'],['schedule','calendar','Schedule'],['agents','agents','Agents'],['people','users','People'],['team','team','Team'],['settings','brand','Settings']];
+ const titles={dashboard:'Dashboard',ideas:'Ideas',magic:'Magic stick',templates:'Templates',ugc:'UGC collection',designs:'My designs',agents:'Agents',schedule:'Schedule',people:'People',team:'Team',settings:'Settings'};
  const statusText={draft:'Draft',review:'In review',approved:'Approved'};
 
  // Motion switch: turns every animation and light off (rain, robots, scrolling templates) and back on. Animation is on by default; the switch remembers your choice.
@@ -264,7 +264,7 @@ const Dashboard=(()=>{
   Library.dispose();libObserver?.disconnect();
   if(refresh||ui.view==='designs'||ui.view==='agents'){try{await App.loadDesigns()}catch(e){toast(e.message)}}
   const view=$('#view');
-  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():ui.view==='ugc'?ugcHtml():dashboardHtml();
+  view.innerHTML=ui.view==='templates'?libraryHtml():ui.view==='designs'?designsHtml():ui.view==='agents'?agentsHtml():ui.view==='schedule'?Schedule.html(ui.schedTab||'Calendar'):ui.view==='team'?Team.html():ui.view==='settings'?configHtml():ui.view==='people'?People.html():ui.view==='ideas'?Ideas.html():ui.view==='magic'?Magic.html():ui.view==='ugc'?ugcHtml():dashboardHtml();
   $('#osPath').textContent='/'+ui.view;
   $$('.rail [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===ui.view));
   document.title=`GSN Media · ${titles[ui.view]}`;
@@ -277,6 +277,7 @@ const Dashboard=(()=>{
   applyWorking();pollJobs();if(ui.view==='dashboard')HeroGlobe.mount($('.hero-globe'));
   if(ui.view==='people')People.mount($('#ppHost'));
   if(ui.view==='ideas')Ideas.mount($('#ideasHost'));
+  if(ui.view==='magic')Magic.mount($('#mgHost'));else Magic.stop();
  }
  async function show(view){
   ui.view=view;ui.shown=12;
