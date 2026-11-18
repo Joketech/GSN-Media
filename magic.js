@@ -15,7 +15,7 @@ const Magic=(()=>{
  async function load(){if(!S.cat)S.cat=await api('/magic/catalog');sizeOk()}
 
  function html(){
-  return `<section class="hello"><h1>Magic stick</h1><span class="mg-free">Free. Built with plain code, no AI charges.</span></section><div id="mgHost" class="mg"><p class="hint">Loading…</p></div>`;
+  return `<section class="hello"><h1>Magic stick</h1><span class="mg-free">Free. Built with plain code, no AI charges.</span></section><ol class="mg-how"><li><b>1. Choose</b> what you are making (flyer, invitation, program, food schedule, certificate…) and pick a design.</li><li><b>2. Type your details</b> (names, dates, place). Add a picture, or a link if you want a scannable QR code on the card.</li><li><b>3. Press Create</b> and fine-tune it in the editor. <b>Copy template code</b> saves the design as a short code (starts with MS1.) that anyone can paste later to get the same design back.</li></ol><div id="mgHost" class="mg"><p class="hint">Loading…</p></div>`;
  }
  async function mount(el){host=el;try{await load()}catch(e){host.innerHTML=`<p class="empty">${esc(e.message)}</p>`;return}draw()}
  function stop(){clearTimeout(timer);host=null}
@@ -41,7 +41,7 @@ const Magic=(()=>{
   const v=S.fields[f.id]||'';
   if(f.type==='image')return `<div class="mg-f"><label>${esc(f.label)}</label><div class="mg-img"><input type="file" accept="image/*" data-img="picture"><button class="btn-light" data-clear="picture" ${S.images.picture?'':'hidden'}>Remove</button></div></div>`;
   const ph=f.example?`e.g. ${f.example.split('\n')[0]}`:'';
-  return `<div class="mg-f"><label for="mg-${f.id}">${esc(f.label)}</label>${f.type==='text'?`<input id="mg-${f.id}" data-f="${f.id}" type="text" maxlength="160" value="${esc(v)}" placeholder="${esc(ph)}">`:`<textarea id="mg-${f.id}" data-f="${f.id}" rows="${f.type==='list'?6:3}" maxlength="${f.type==='list'?3000:700}" placeholder="${esc(ph)}">${esc(v)}</textarea>`}</div>`;
+  return `<div class="mg-f"><label for="mg-${f.id}">${esc(f.label)}</label>${f.hint?`<p class="hint">${esc(f.hint)}</p>`:''}${f.type==='text'?`<input id="mg-${f.id}" data-f="${f.id}" type="text" maxlength="160" value="${esc(v)}" placeholder="${esc(ph)}">`:`<textarea id="mg-${f.id}" data-f="${f.id}" rows="${f.type==='list'?6:3}" maxlength="${f.type==='list'?3000:700}" placeholder="${esc(ph)}">${esc(v)}</textarea>`}</div>`;
  }
 
  function pickHtml(){

@@ -464,3 +464,5 @@ body[data-role=editor] .pp-del{display:none}
 .mg-simple{max-width:640px;padding:18px;border-radius:20px;background:rgba(255,255,255,.5);border:1px solid var(--line)}
 .mg-simple p{margin:0 0 10px;font-size:.86rem}
 @media(max-width:900px){.mg-cols{grid-template-columns:1fr}.mg-side{position:static}}
+
+.mg-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 14px;padding:0;list-style:none}.mg-how li{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4}.mg-how b{color:#FA754E}

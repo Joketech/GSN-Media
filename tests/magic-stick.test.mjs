@@ -59,3 +59,16 @@ test('magic API routes work',async()=>{
   assert.equal((await fetch(base+'/magic/generate',{method:'POST',headers:h,body:JSON.stringify({template:'nope'})})).status,400);
  }finally{server.close();await rm(dir,{recursive:true,force:true})}
 });
+
+test('invitations can carry a scannable QR code, kept out of the template code',()=>{
+ for(const tpl of ['inv-classic','inv-arch','inv-photo'])for(const size of ['print-invite','print-a5','instagram-post','instagram-story']){
+  const out=generate({template:tpl,size,fields:{names:'Ada & Tunde',rsvp:'RSVP 0803',qr:'https://example.com/rsvp',qrlabel:'Scan to RSVP'}});
+  const d=sanitizeDesign(out.design,{templateCount:count});
+  const q=d.pages[0].shapes.filter(s=>/^data:image\/png/.test(s.src||''));
+  assert.equal(q.length,1,tpl+size);assert.ok(d.pages[0].texts.some(t=>t.text==='Scan to RSVP'));
+  assert.ok(out.code.length<600);assert.equal(decode(out.code).fields.qr,'https://example.com/rsvp');
+ }
+ const none=generate({template:'inv-classic',fields:{names:'A'}});
+ assert.equal(none.design.pages[0].shapes.filter(s=>s.src).length,0);
+ assert.throws(()=>generate({template:'inv-classic',fields:{names:'A',qr:'x'.repeat(161)}}),MagicError);
+});

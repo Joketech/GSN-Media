@@ -25,6 +25,8 @@ export const PALETTES = [
   { id: 'gold', name: 'Gold', bg: '#FBF6E9', ink: '#2B2410', accent: '#C99A2E', accent2: '#7A5C12', onaccent: '#FFFFFF', soft: '#F0E3BC', muted: '#6E6038' },
 ];
 
+import { qrPng } from './qr.mjs';
+
 const T = (id, label, type = 'text', extra = {}) => ({ id, label, type, ...extra });
 const PIC = (label = 'Picture (optional)') => T('picture', label, 'image');
 
@@ -51,6 +53,8 @@ export const KINDS = [
     T('venue', 'Place', 'text', { example: 'The Grand Hall, Victoria Island, Lagos' }),
     T('dress', 'Dress code', 'text', { example: 'Dress code: Gold and cream' }),
     T('rsvp', 'RSVP', 'text', { example: 'RSVP by 1 June: 0803 000 0000' }),
+    T('qr', 'QR code link (optional)', 'text', { example: 'https://example.com/rsvp', hint: 'Paste a web link, phone number or any text. A scannable QR code is added to the card. Leave empty for no QR code.' }),
+    T('qrlabel', 'Words under the QR code', 'text', { example: 'Scan to RSVP' }),
     PIC(),
   ] },
   { id: 'program', name: 'Event program', blurb: 'Order of events with times. Adds pages when it is long.', fields: [
@@ -169,7 +173,15 @@ function board(W, H, P) {
     text(t, { x: left, y: y + (hh - s * 1.18) / 2, w, s, c: color, a: 'center', b, f, u, lh: 100 });
     return y + hh;
   };
-  return { ar, Hu, texts, shapes, lines, text, rect, pill, shape, fit, picture, chip, widthOf };
+  // A scannable QR code (a picture with its own white quiet zone) centred on x, top at y; returns where it and its label end.
+  const qr = (img, label, x, y, size, color) => {
+    if (!img) return y;
+    shape('rect', x - size / 2, y, size, size, '#ffffff', { src: img, px: 50, py: 50, z: 100 });
+    if (!label) return y + size;
+    text(label, { x: x - 30, y: y + size + 1, w: 60, s: 2.8, a: 'center', b: true, c: color ?? P.muted, lh: 100 });
+    return y + size + 1 + 2.8 * 1.2;
+  };
+  return { ar, Hu, texts, shapes, lines, text, rect, pill, shape, fit, picture, chip, widthOf, qr };
 }
 
 const split = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
@@ -257,59 +269,62 @@ L['flyer-stripe'] = (c) => {
 const centre = (b, P, o) => (t, y, s, e = {}) => b.text(t, { x: o.x, y, w: o.w, s, a: 'center', ...e });
 
 L['inv-classic'] = (c) => {
-  const { P, F, W, H } = c, b = board(W, H, P);
+  const { P, F, W, H } = c, b = board(W, H, P), g = F.qrImg ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(5, 5 / 1, 90, b.Hu - 10, P.accent);
   b.rect(6.2, 6.2, 87.6, b.Hu - 12.4, P.bg);
   const t = centre(b, P, { x: 12, w: 76 });
-  let y = b.Hu * 0.13;
-  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 5;
+  let y = b.Hu * (F.qrImg ? 0.075 : 0.13);
+  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 5 * g;
   const ns = b.fit(F.names, 76, 15, 7, 3, 'greatvibes', false, false);
-  y = t(F.names, y, ns, { f: 'greatvibes', lh: 100 }) + 4;
-  y = t(F.headline, y, 4.4, { f: 'playfair', i: true }) + 5;
+  y = t(F.names, y, ns, { f: 'greatvibes', lh: 100 }) + 4 * g;
+  y = t(F.headline, y, 4.4, { f: 'playfair', i: true }) + 5 * g;
   b.rect(38, y, 24, 0.7, P.accent); y += 6;
-  y = t(F.message, y, 3.6, { c: P.muted }) + 6;
-  y = t(F.date, y, 5, { b: true, f: 'playfair' }) + 1.5;
-  y = t(F.time, y, 4, {}) + 1.5;
-  y = t(F.venue, y, 3.8, { c: P.muted }) + 5;
-  y = t(F.dress, y, 3.2, { i: true, c: P.accent }) + 2;
-  t(F.rsvp, Math.max(y, b.Hu - 15), 3.2, { b: true });
+  y = (F.qrImg && H / W <= 1.3 ? y : t(F.message, y, 3.6, { c: P.muted }) + 6 * g);
+  y = t(F.date, y, 5, { b: true, f: 'playfair' }) + 1.5 * g;
+  y = t(F.time, y, 4, {}) + 1.5 * g;
+  y = t(F.venue, y, 3.8, { c: P.muted }) + 5 * g;
+  y = F.qrImg && H / W <= 1.3 ? y : t(F.dress, y, 3.2, { i: true, c: P.accent }) + 2 * g;
+  if (F.qrImg) { y = t(F.rsvp, y, 3.2, { b: true }) + 4 * g; const q = H / W <= 1.3 ? 13 : Math.min(18, b.Hu * 0.15); b.qr(F.qrImg, F.qrlabel, 50, Math.min(Math.max(y, b.Hu - q - 12), b.Hu - q - 8), q); }
+  else t(F.rsvp, Math.max(y, b.Hu - 15), 3.2, { b: true });
   return [page(b, P, F, c.bg)];
 };
 
 L['inv-arch'] = (c) => {
-  const { P, F, W, H } = c, b = board(W, H, P);
+  const { P, F, W, H } = c, b = board(W, H, P), g = F.qrImg ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(0, 0, 100, b.Hu, P.accent);
   b.shape('round', 9, 8, 82, b.Hu - 16, P.bg, { radius: 12 });
   const t = centre(b, P, { x: 15, w: 70 });
-  let y = b.Hu * 0.14;
-  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 5;
+  let y = b.Hu * (F.qrImg ? 0.085 : 0.14);
+  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 5 * g;
   const ns = b.fit(F.names, 70, 12, 6, 3, 'dmserif', false, false);
-  y = t(F.names, y, ns, { f: 'dmserif', lh: 100 }) + 4;
-  y = t(F.headline, y, 4, { c: P.muted }) + 6;
-  y = t(F.message, y, 3.5, { c: P.muted }) + 7;
-  y = b.chip([F.date, F.time].filter(Boolean).join('  ·  '), 50, y, 3.4, P.accent2, P.onaccent, { mid: true }) + 8;
-  y = t(F.venue, y, 4, { b: true }) + 3;
-  y = t(F.dress, y, 3.2, { i: true, c: P.muted }) + 2;
-  t(F.rsvp, Math.max(y + 2, b.Hu - 20), 3.2, { c: P.accent, b: true });
+  y = t(F.names, y, ns, { f: 'dmserif', lh: 100 }) + 4 * g;
+  y = t(F.headline, y, 4, { c: P.muted }) + 6 * g;
+  y = (F.qrImg && H / W <= 1.3 ? y : t(F.message, y, 3.5, { c: P.muted }) + 7 * g);
+  y = b.chip([F.date, F.time].filter(Boolean).join('  ·  '), 50, y, 3.4, P.accent2, P.onaccent, { mid: true }) + 8 * g;
+  y = t(F.venue, y, 4, { b: true }) + 3 * g;
+  y = F.qrImg && H / W <= 1.3 ? y : t(F.dress, y, 3.2, { i: true, c: P.muted }) + 2 * g;
+  if (F.qrImg) { y = t(F.rsvp, y, 3.2, { c: P.accent, b: true }) + 4 * g; const q = H / W <= 1.3 ? 13 : Math.min(18, b.Hu * 0.15); b.qr(F.qrImg, F.qrlabel, 50, Math.min(Math.max(y, b.Hu - q - 12), b.Hu - q - 8), q); }
+  else t(F.rsvp, Math.max(y + 2, b.Hu - 20), 3.2, { c: P.accent, b: true });
   return [page(b, P, F, c.bg)];
 };
 
 L['inv-photo'] = (c) => {
-  const { P, F, W, H } = c, b = board(W, H, P);
+  const { P, F, W, H } = c, b = board(W, H, P), g = F.qrImg ? (H / W <= 1.3 ? 0.4 : 0.72) : 1;
   b.rect(0, 0, 100, b.Hu, P.soft);
-  const d = Math.min(46, b.Hu * 0.3);
+  const d = Math.min(46, b.Hu * (F.qrImg ? (H / W <= 1.3 ? 0.16 : 0.22) : 0.3));
   b.picture(F.picture, 'oval', 50 - d / 2, 9, d, d, { line: P.accent, lineW: 3 });
   const t = centre(b, P, { x: 10, w: 80 });
-  let y = 9 + d + 6;
-  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 3;
+  let y = 9 + d + 6 * g;
+  y = t(F.occasion, y, 3, { c: P.accent, u: true, b: true, sp: 6 }) + 3 * g;
   const ns = b.fit(F.names, 80, 13, 7, 2, 'greatvibes', false, false);
-  y = t(F.names, y, ns, { f: 'greatvibes', lh: 100 }) + 3;
-  y = t(F.headline, y, 4, { f: 'playfair', i: true }) + 4;
-  y = t(F.message, y, 3.4, { c: P.muted }) + 5;
-  y = t([F.date, F.time].filter(Boolean).join('  ·  '), y, 4.4, { b: true }) + 2;
-  y = t(F.venue, y, 3.6, { c: P.muted }) + 4;
-  y = t(F.dress, y, 3.1, { i: true, c: P.accent }) + 1.5;
-  t(F.rsvp, Math.max(y, b.Hu - 12), 3.1, { b: true });
+  y = t(F.names, y, ns, { f: 'greatvibes', lh: 100 }) + 3 * g;
+  y = t(F.headline, y, 4, { f: 'playfair', i: true }) + 4 * g;
+  y = (F.qrImg && H / W <= 1.3 ? y : t(F.message, y, 3.4, { c: P.muted }) + 5 * g);
+  y = t([F.date, F.time].filter(Boolean).join('  ·  '), y, 4.4, { b: true }) + 2 * g;
+  y = t(F.venue, y, 3.6, { c: P.muted }) + 4 * g;
+  y = F.qrImg && H / W <= 1.3 ? y : t(F.dress, y, 3.1, { i: true, c: P.accent }) + 1.5 * g;
+  if (F.qrImg) { y = t(F.rsvp, y, 3.1, { b: true }) + 3 * g; const q = H / W <= 1.3 ? 13 : Math.min(18, b.Hu * 0.15); b.qr(F.qrImg, F.qrlabel, 50, Math.min(Math.max(y, b.Hu - q - 12), b.Hu - q - 8), q); }
+  else t(F.rsvp, Math.max(y, b.Hu - 12), 3.1, { b: true });
   return [page(b, P, F, c.bg)];
 };
 
@@ -542,6 +557,7 @@ function resolve(input) {
     if (v.length > FIELD_LIMIT[f.type]) throw new MagicError(`${f.label} is too long (${FIELD_LIMIT[f.type]} characters at most).`);
     F[f.id] = v;
   }
+  if (F.qr) { try { F.qrImg = qrPng(F.qr, /^#[0-9a-f]{6}$/i.test(P.ink) && parseInt(P.ink.slice(1, 3), 16) + parseInt(P.ink.slice(3, 5), 16) + parseInt(P.ink.slice(5, 7), 16) < 330 ? P.ink : '#000000'); } catch (e) { throw new MagicError(e.message); } }
   const must = { flyer: 'title', invitation: 'names', program: 'title', food: 'title', notice: 'title', certificate: 'name', menu: 'title', thanks: 'title' }[tpl.kind];
   if (!F[must]) throw new MagicError(`${kind.fields.find(f => f.id === must).label} is needed.`);
   let bg;
@@ -568,7 +584,7 @@ export function generate(input) {
 // A template code carries everything except the pictures (they are too big), so pasting it rebuilds the same design.
 export function encode(input) {
   const r = resolve(input), f = { ...r.F };
-  delete f.picture;
+  delete f.picture; delete f.qrImg;
   const o = { t: r.tpl.id, z: r.size, p: r.palette, c: r.colours && Object.keys(r.colours).length ? r.colours : undefined, f, w: r.bg ? r.bg.wash : undefined };
   return 'MS1.' + Buffer.from(JSON.stringify(o)).toString('base64url');
 }
