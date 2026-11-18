@@ -72,3 +72,14 @@ test('invitations can carry a scannable QR code, kept out of the template code',
  assert.equal(none.design.pages[0].shapes.filter(s=>s.src).length,0);
  assert.throws(()=>generate({template:'inv-classic',fields:{names:'A',qr:'x'.repeat(161)}}),MagicError);
 });
+
+test('QR code can be placed exactly where the person wants it',()=>{
+ const base={names:'Ada & Tunde',rsvp:'RSVP 0803',qr:'https://example.com/rsvp'};
+ const out=generate({template:'inv-arch',fields:{...base,qrsize:'20',qrx:'85',qry:'10'}});
+ const d=sanitizeDesign(out.design,{templateCount:count});
+ const q=d.pages[0].shapes.find(s=>/^data:image\/png/.test(s.src||''));
+ assert.ok(Math.abs(q.x+q.w/2-85)<1.5);assert.ok(Math.abs(q.w-20)<1.5);assert.ok(q.y<12);
+ assert.equal(decode(out.code).fields.qrx,'85');
+ const wild=generate({template:'inv-arch',fields:{...base,qrsize:'999',qrx:'-5',qry:'abc'}});
+ sanitizeDesign(wild.design,{templateCount:count});
+});

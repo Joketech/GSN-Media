@@ -40,6 +40,7 @@ const Magic=(()=>{
  function fieldHtml(f){
   const v=S.fields[f.id]||'';
   if(f.type==='image')return `<div class="mg-f"><label>${esc(f.label)}</label><div class="mg-img"><input type="file" accept="image/*" data-img="picture"><button class="btn-light" data-clear="picture" ${S.images.picture?'':'hidden'}>Remove</button></div></div>`;
+  if(['qrsize','qrx','qry'].includes(f.id)){const d={qrsize:16,qrx:50,qry:80}[f.id],[mn,mx]=f.id==='qrsize'?[8,40]:[0,100];return `<div class="mg-f mg-qrpos"><label for="mg-${f.id}">${esc(f.label)}: <b id="mgv-${f.id}">${v===''?'automatic':esc(v)+'%'}</b></label>${f.hint?`<p class="hint">${esc(f.hint)}</p>`:''}<input id="mg-${f.id}" data-f="${f.id}" type="range" min="${mn}" max="${mx}" value="${v||d}">${f.id==='qry'?'<button class="btn-light" data-qrauto="1">Back to automatic</button>':''}</div>`}
   const ph=f.example?`e.g. ${f.example.split('\n')[0]}`:'';
   return `<div class="mg-f"><label for="mg-${f.id}">${esc(f.label)}</label>${f.hint?`<p class="hint">${esc(f.hint)}</p>`:''}${f.type==='text'?`<input id="mg-${f.id}" data-f="${f.id}" type="text" maxlength="160" value="${esc(v)}" placeholder="${esc(ph)}">`:`<textarea id="mg-${f.id}" data-f="${f.id}" rows="${f.type==='list'?6:3}" maxlength="${f.type==='list'?3000:700}" placeholder="${esc(ph)}">${esc(v)}</textarea>`}</div>`;
  }
@@ -88,6 +89,7 @@ const Magic=(()=>{
    if(b.dataset.tpl){S.tpl=b.dataset.tpl;sizeOk();draw();return}
    if(b.dataset.pal){S.palette=b.dataset.pal;S.accent='';draw();return}
    if('actAccent' in b.dataset){S.accent='';draw();return}
+   if(b.dataset.qrauto){for(const k of ['qrsize','qrx','qry'])delete S.fields[k];draw();return}
    if(b.dataset.clear){delete S.images[b.dataset.clear];draw();return}
    if(b.id==='mgCreate')return create();
    if(b.id==='mgCopy'){const out=S.last?.code;if(!out)return;try{await navigator.clipboard.writeText(out);toast('Template code copied.')}catch{prompt('Copy this template code:',out)}return}
@@ -96,7 +98,7 @@ const Magic=(()=>{
   };
   host.oninput=e=>{
    const t=e.target;
-   if(t.dataset.f!==undefined){S.fields[t.dataset.f]=t.value;soon();return}
+   if(t.dataset.f!==undefined){S.fields[t.dataset.f]=t.value;const lv=host.querySelector('#mgv-'+t.dataset.f);if(lv)lv.textContent=t.value+'%';soon();return}
    if(t.id==='mgAccent'){S.accent=t.value;soon();return}
    if(t.id==='mgWash'){S.wash=Number(t.value);$('#mgWashV').textContent=t.value;soon();return}
    if(t.dataset.mt!==undefined){S.mine.texts[Number(t.dataset.mt)].text=t.value}
